@@ -66,12 +66,18 @@ class ChatHandler:
     def get_response(self, message):
         """Main entry point for handling messages"""
         try:
-            # Check if it's a command
-            if message.startswith('/') or message.lower().startswith(('start trivia', 'end trivia')):
-                return self.handle_command(message.lower().split())
+            message = message.lower().strip()
             
-            # If we're in a trivia game, handle the answer
+            # Check if it's a command
+            if message.startswith('/') or message.startswith(('start trivia', 'end trivia')):
+                return self.handle_command(message.split())
+            
+            # If we're in a trivia game
             if self.trivia_active:
+                # Handle "next" command for new questions
+                if message == 'next':
+                    return self.get_next_trivia_question()
+                # Otherwise treat as an answer
                 return self.handle_trivia_answer(message)
             
             # Otherwise, use Mixtral for chat responses
@@ -138,14 +144,15 @@ Type 'start trivia' to play again!"""
         self.current_question = question_data
         self.questions_asked += 1
         
-        options_text = '\n'.join(f"{i+1}. {opt}" for i, opt in enumerate(question_data['options']))
-        return f"""📝 Question {self.questions_asked}:
-        
+        options_text = '\n'.join(f"  {i+1}. {opt}" for i, opt in enumerate(question_data['options']))
+        return f"""🎯 Question {self.questions_asked}
+━━━━━━━━━━━━━━━━━━━━━━━━━
+
 {question_data['question']}
 
 {options_text}
 
-Type the number of your answer (1-{len(question_data['options'])})"""
+Type a number (1-{len(question_data['options'])}) to answer."""
 
     def handle_trivia_answer(self, answer):
         """Handle a trivia game answer"""
@@ -160,16 +167,24 @@ Type the number of your answer (1-{len(question_data['options'])})"""
             user_answer = self.current_question['options'][answer_idx]
             correct = user_answer == self.current_question['correct']
             
+            # Show answer result and explanation
             if correct:
                 self.trivia_score += 1
                 response = f"""✅ Correct! 
-{self.current_question['explanation']}"""
+
+{self.current_question['explanation']}
+
+Current Score: {self.trivia_score}/{self.questions_asked}"""
             else:
-                response = f"""❌ Not quite! The correct answer is: {self.current_question['correct']}
-{self.current_question['explanation']}"""
+                response = f"""❌ Not quite! 
+
+The correct answer was: {self.current_question['correct']}
+{self.current_question['explanation']}
+
+Current Score: {self.trivia_score}/{self.questions_asked}"""
             
-            # Get next question
-            response += "\n\n" + self.get_next_trivia_question()
+            # Add delay prompt before next question
+            response += "\n\n🎲 Ready for the next question? Type 'next' to continue or 'end trivia' to finish the game."
             return response
             
         except ValueError:
