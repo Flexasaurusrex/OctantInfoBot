@@ -16,6 +16,7 @@ class ChatHandler:
         self.current_question = None
         self.trivia_score = 0
         self.questions_asked = 0
+        self.asked_questions = set()  # Track asked questions to avoid repetition
         
         # Initialize trivia questions
         self.trivia_questions = {
@@ -110,6 +111,7 @@ class ChatHandler:
         self.trivia_active = True
         self.trivia_score = 0
         self.questions_asked = 0
+        self.asked_questions.clear()  # Clear the set of asked questions
         return self.get_next_trivia_question()
 
     def end_trivia_game(self):
@@ -137,9 +139,20 @@ Type 'start trivia' to play again!"""
 
     def get_next_trivia_question(self):
         """Get the next random trivia question"""
-        # Get a random category
-        category = random.choice(list(self.trivia_questions.keys()))
-        question_data = random.choice(self.trivia_questions[category])
+        # Get all available questions
+        available_questions = []
+        for category in self.trivia_questions:
+            for question in self.trivia_questions[category]:
+                if question['question'] not in self.asked_questions:
+                    available_questions.append(question)
+        
+        # Check if we've run out of questions
+        if not available_questions:
+            return "You've answered all available questions! Type 'end trivia' to see your final score."
+            
+        # Get a random question from remaining ones
+        question_data = random.choice(available_questions)
+        self.asked_questions.add(question_data['question'])
         
         self.current_question = question_data
         self.questions_asked += 1
