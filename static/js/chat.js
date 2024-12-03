@@ -150,3 +150,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+    // Add click handlers for trivia options
+    messagesContainer.addEventListener('click', (e) => {
+        const triviaOption = e.target.closest('.trivia-option');
+        if (triviaOption && !isWaitingForResponse) {
+            const option = triviaOption.getAttribute('data-option');
+            messageInput.value = option;
+            sendMessage();
+        }
+    });

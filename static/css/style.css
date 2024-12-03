@@ -152,11 +152,33 @@ body {
     padding: 1rem;
     cursor: pointer;
     transition: all 0.2s ease;
+    user-select: none;
+    position: relative;
 }
 
 .trivia-option:hover {
     background-color: var(--message-bg);
     transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.trivia-option:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+.trivia-option::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 8px;
+    border: 2px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.trivia-option:focus::after,
+.trivia-option:hover::after {
+    border-color: var(--primary-color);
 }
 
 .trivia-option.correct {
