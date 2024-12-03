@@ -228,10 +228,11 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
 
     def format_conversation_history(self):
         """Format the conversation history for the prompt."""
-        history_text = ""
-        for entry in self.conversation_history[-self.max_history:]:
-            history_text += f"\nUser: {entry['user']}\nAssistant: {entry['assistant']}\n"
-        return history_text
+        if not self.conversation_history:
+            return ""
+        # Only include the last message for immediate context
+        last_entry = self.conversation_history[-1]
+        return f"\nPrevious message: {last_entry['assistant']}\n"
 
     def get_response(self, user_message):
         try:
@@ -282,9 +283,9 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
                 "Content-Type": "application/json"
             }
             
-            # Include conversation history in the prompt
+            # Include minimal context in the prompt
             history = self.format_conversation_history()
-            prompt = f"{self.system_prompt}\n\nPrevious conversation:{history}\n\nUser: {user_message}\nAssistant:"
+            prompt = f"{self.system_prompt}\n\n{history}Current user message: {user_message}\n\nRespond naturally:"
             
             data = {
                 "model": self.model,
