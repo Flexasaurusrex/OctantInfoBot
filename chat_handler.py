@@ -10,10 +10,19 @@ class ChatHandler:
         self.model = "mistralai/Mixtral-8x7B-Instruct-v0.1"
         self.base_url = "https://api.together.xyz/inference"
         
-        self.system_prompt = """You are a helpful assistant that provides information about Octant, 
-        a developer-centric web interface for Kubernetes clusters. You should focus on helping users 
-        understand Octant's features, capabilities, and how it can help them manage and visualize 
-        their Kubernetes clusters. Be concise but informative in your responses."""
+        self.system_prompt = """You are a helpful assistant that provides information about Octant Public Goods (https://octant.build/). 
+        Octant is a public goods organization focused on solving critical coordination problems in web3 through 
+        innovative incentive mechanisms and governance solutions.
+
+        Focus on Octant's key areas:
+        - Public goods funding and coordination
+        - Incentive mechanism design
+        - Web3 governance solutions
+        - Community-driven initiatives
+        - Research and development in web3 space
+
+        Only provide information about Octant Public Goods (https://octant.build/), not any other meanings or uses of 
+        the word 'octant'. Be concise but informative in your responses."""
         
     def get_response(self, user_message):
         headers = {
