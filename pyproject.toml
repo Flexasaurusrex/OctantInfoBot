@@ -12,4 +12,5 @@ dependencies = [
     "requests>=2.32.3",
     "flask-cors>=5.0.0",
     "flask-limiter>=3.9.2",
+    "eventlet>=0.38.0",
 ]

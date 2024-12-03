@@ -2,6 +2,8 @@ import os
 import logging
 from datetime import datetime
 from flask import Flask, render_template, request
+import eventlet
+eventlet.monkey_patch()
 import logging
 logger = logging.getLogger('app')
 logger.setLevel(logging.INFO)
@@ -37,7 +39,7 @@ limiter = Limiter(
     storage_uri="memory://"
 )
 
-socketio = SocketIO(app, cors_allowed_origins="*")
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet', ping_timeout=5, ping_interval=1)
 chat_handler = None
 
 try:

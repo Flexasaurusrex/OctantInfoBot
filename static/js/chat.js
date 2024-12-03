@@ -1,10 +1,19 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const socket = io({
+    let socket = null;
+    
+    // Close any existing connections
+    if (socket) {
+        socket.close();
+    }
+    
+    socket = io({
         reconnection: true,
         reconnectionAttempts: 5,
         reconnectionDelay: 1000,
         reconnectionDelayMax: 5000,
-        timeout: 10000
+        timeout: 10000,
+        transports: ['websocket'],
+        upgrade: false
     });
     const messageInput = document.getElementById('message-input');
     const sendButton = document.getElementById('send-button');
