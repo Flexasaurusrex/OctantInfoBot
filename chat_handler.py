@@ -12,7 +12,8 @@ class CommandHandler:
             '/learn': self.learn_command,
             '/funding': self.funding_command,
             '/governance': self.governance_command,
-            '/rewards': self.rewards_command
+            '/rewards': self.rewards_command,
+            '/trivia': self.trivia_command
         }
 
     def handle_command(self, command):
@@ -28,7 +29,8 @@ class CommandHandler:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 🎮 Game Commands:
-• start trivia - Start a trivia game
+• /trivia - Start a trivia game
+• start trivia - Also starts trivia game
 • end trivia - End current trivia game
 
 📋 Information Commands:
@@ -161,6 +163,9 @@ Distribution Schedule:
 Use /learn for detailed tutorials!
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"""
 
+    def trivia_command(self):
+        return self.trivia_game.start_game()
+
 class ChatHandler:
     def __init__(self):
         self.api_key = os.environ.get("TOGETHER_API_KEY")
@@ -211,6 +216,8 @@ class ChatHandler:
             if user_message.startswith('/'):
                 command_response = self.command_handler.handle_command(user_message)
                 if command_response:
+                    if user_message.lower() == '/trivia':
+                        self.is_playing_trivia = True
                     return command_response
             
             # Handle trivia commands
