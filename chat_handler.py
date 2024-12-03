@@ -49,16 +49,26 @@ class ChatHandler:
             response = requests.post(
                 self.base_url,
                 headers=headers,
-                json=data
+                json=data,
+                timeout=30
             )
             response.raise_for_status()
             
             result = response.json()
-            if "output" in result:
+            if "output" in result and result["output"]["choices"]:
                 return result["output"]["choices"][0]["text"].strip()
             else:
+                print("Unexpected API response format:", result)
                 return "I apologize, but I couldn't generate a response at the moment. Please try again."
                 
-        except Exception as e:
-            print(f"Error generating response: {str(e)}")
+        except requests.exceptions.Timeout:
+            print("API request timed out")
+            return "I apologize, but the request took too long to process. Please try again."
+            
+        except requests.exceptions.RequestException as e:
+            print(f"API request error: {str(e)}")
             return "I apologize, but I encountered an error while processing your request. Please try again later."
+            
+        except Exception as e:
+            print(f"Unexpected error: {str(e)}")
+            return "I apologize, but something unexpected happened. Please try again later."

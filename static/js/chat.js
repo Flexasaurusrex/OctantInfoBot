@@ -11,11 +11,14 @@ document.addEventListener('DOMContentLoaded', () => {
     
     socket.on('connect_error', (error) => {
         console.error('Connection error:', error);
-        if (!isWaitingForResponse) {
-            const errorMessage = createMessageElement('Sorry, there seems to be a connection issue. Please try again.', true);
-            messagesContainer.appendChild(errorMessage);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        const loadingIndicator = messagesContainer.querySelector('.loading');
+        if (loadingIndicator) {
+            loadingIndicator.remove();
         }
+        isWaitingForResponse = false;
+        const errorMessage = createMessageElement('Sorry, there seems to be a connection issue. Please try again.', true);
+        messagesContainer.appendChild(errorMessage);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
     });
     
     socket.on('error', (error) => {
