@@ -212,6 +212,10 @@ class ChatHandler:
             # Validate and sanitize input
             user_message = self.validate_message(user_message)
             
+            # Handle commands
+            if user_message.startswith('/'):
+                return self.handle_command(user_message)
+            
             # Handle trivia commands
             lower_message = user_message.lower()
             if lower_message == "start trivia":
@@ -311,6 +315,159 @@ class ChatHandler:
             print(f"Unexpected error: {str(e)}")
             return "I encountered an unexpected issue. Please try again, and if the problem persists, try rephrasing your question."
             
+    def handle_command(self, command):
+        """Handle special commands starting with '/'"""
+        command = command.lower().split()
+        cmd = command[0]
+        args = command[1:] if len(command) > 1 else []
+
+        commands = {
+            '/help': self.cmd_help,
+            '/showcase': self.cmd_showcase,
+            '/learn': self.cmd_learn,
+            '/calculate': self.cmd_calculate,
+            '/search': self.cmd_search
+        }
+
+        if cmd in commands:
+            return commands[cmd](args)
+        return "Unknown command. Type /help to see available commands."
+
+    def cmd_help(self, args):
+        """Show help message with available commands"""
+        return """Available commands:
+• /help - Show this help message
+• /showcase - Learn about Octant projects
+• /learn - Access interactive learning modules
+• /calculate - Use calculator tools
+• /search [query] - Search Octant documentation
+• start trivia - Start a trivia game
+• end trivia - End the current trivia game"""
+
+    def cmd_showcase(self, args):
+        """Display project information"""
+        return """🌟 Featured Octant Projects:
+
+1. Public Goods Funding
+• Supports open-source projects
+• Uses quadratic funding mechanism
+• Maximum funding cap: 20% of Matched Rewards pool
+
+2. GLM Token Integration
+• Minimum requirement: 100 GLM
+• Non-custodial locking system
+• Transparent reward calculation
+
+Type /learn to access detailed modules about these features."""
+
+    def cmd_learn(self, args):
+        """Access learning modules"""
+        modules = """📚 Available Learning Modules:
+
+1. Quadratic Funding
+2. GLM Token Mechanics
+3. Project Submission Guide
+4. Governance Participation
+
+Reply with a module number or type /help for other commands."""
+        if not args:
+            return modules
+        try:
+            module = int(args[0])
+            if module == 1:
+                return self.get_quadratic_funding_info()
+            elif module == 2:
+                return self.get_glm_token_info()
+            elif module == 3:
+                return self.get_project_submission_info()
+            elif module == 4:
+                return self.get_governance_info()
+            else:
+                return "Invalid module number. " + modules
+        except ValueError:
+            return "Please specify a valid module number. " + modules
+
+    def cmd_calculate(self, args):
+        """Handle calculator tools"""
+        if not args:
+            return """🧮 Calculator Tools:
+
+1. Reward Estimation
+2. Token Lock Duration Impact
+3. Quadratic Funding Match
+
+Type /calculate [number] to use a specific calculator."""
+        
+        try:
+            tool = int(args[0])
+            if tool == 1:
+                return "Reward Calculator: Coming soon! This tool will help estimate potential rewards based on GLM locked."
+            elif tool == 2:
+                return "Lock Duration Calculator: Coming soon! This tool will show how lock duration affects rewards."
+            elif tool == 3:
+                return "Quadratic Funding Calculator: Coming soon! This tool will demonstrate how matching works."
+            else:
+                return "Invalid calculator number. Type /calculate to see available options."
+        except ValueError:
+            return "Please specify a valid calculator number. Type /calculate to see options."
+
+    def cmd_search(self, args):
+        """Search documentation"""
+        if not args:
+            return "Please provide a search term. Usage: /search [query]"
+        
+        query = " ".join(args).lower()
+        
+        # Simple keyword-based search implementation
+        if "quadratic" in query or "funding" in query:
+            return self.get_quadratic_funding_info()
+        elif "glm" in query or "token" in query:
+            return self.get_glm_token_info()
+        elif "project" in query or "submit" in query:
+            return self.get_project_submission_info()
+        elif "govern" in query:
+            return self.get_governance_info()
+        else:
+            return f"No direct matches found for '{' '.join(args)}'. Try using more specific terms or check /help for available commands."
+
+    def get_quadratic_funding_info(self):
+        return """🔄 Quadratic Funding in Octant:
+
+• Introduced in Epoch 4
+• Emphasizes broad community support
+• Maximum funding cap: 20% of Matched Rewards pool
+• Uses Gitcoin Passport for Sybil resistance
+• Minimum score requirement: 15"""
+
+    def get_glm_token_info(self):
+        return """🪙 GLM Token Mechanics:
+
+• Minimum lock requirement: 100 GLM
+• Non-custodial locking system
+• 90-day epoch duration
+• Time-weighted average calculations
+• Instant withdrawal capability"""
+
+    def get_project_submission_info(self):
+        return """📝 Project Submission Guide:
+
+Requirements:
+• Public good status
+• Open-source commitment
+• Funding transparency
+• Social proof
+• Sustainability plan
+• Development stage (MVP minimum)
+• Clear problem/solution statement"""
+
+    def get_governance_info(self):
+        return """🏛️ Governance Participation:
+
+• Community-driven decision making
+• Epoch-based voting system
+• Project selection through Snapshot
+• Transparent fund allocation
+• Regular community feedback"""
     def clear_conversation_history(self):
         """Clear the conversation history."""
         self.conversation_history = []

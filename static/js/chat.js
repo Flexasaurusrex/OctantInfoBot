@@ -1,9 +1,10 @@
 document.addEventListener('DOMContentLoaded', () => {
     const socket = io({
-        reconnectionAttempts: 5,
-        timeout: 10000,
-        reconnectionDelay: 1000,
-        reconnectionDelayMax: 5000
+        reconnectionAttempts: 10,
+        timeout: 20000,
+        reconnectionDelay: 2000,
+        reconnectionDelayMax: 10000,
+        transports: ['polling', 'websocket']
     });
     
     const messagesContainer = document.getElementById('messages');
@@ -31,18 +32,28 @@ document.addEventListener('DOMContentLoaded', () => {
         
         isWaitingForResponse = false;
         
+        const reconnectMessage = `Connection issues detected. Attempting to reconnect... (Attempt ${reconnectAttempts}/10)`;
+        
         if (!messagesContainer.querySelector('.connection-error')) {
             const errorMessage = document.createElement('div');
             errorMessage.className = 'message system-message connection-error';
-            errorMessage.textContent = `Connection lost. Attempting to reconnect... (Attempt ${reconnectAttempts}/5)`;
+            errorMessage.textContent = reconnectMessage;
             messagesContainer.appendChild(errorMessage);
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
         } else {
             const errorMessage = messagesContainer.querySelector('.connection-error');
-            errorMessage.textContent = `Connection lost. Attempting to reconnect... (Attempt ${reconnectAttempts}/5)`;
+            errorMessage.textContent = reconnectMessage;
+        }
+        
+        // If max reconnection attempts reached, show permanent error
+        if (reconnectAttempts >= 10) {
+            const finalError = document.createElement('div');
+            finalError.className = 'message system-message connection-error';
+            finalError.textContent = 'Unable to establish connection. Please refresh the page to try again.';
+            messagesContainer.appendChild(finalError);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
 
-        // Handle the rejection explicitly
         return Promise.resolve();
     });
     
