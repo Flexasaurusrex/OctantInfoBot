@@ -11,4 +11,5 @@ dependencies = [
     "flask-socketio>=5.4.1",
     "requests>=2.32.3",
     "flask-cors>=5.0.0",
+    "flask-limiter>=3.9.2",
 ]

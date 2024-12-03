@@ -1,9 +1,35 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const socket = io();
+    const socket = io({
+        reconnection: true,
+        reconnectionAttempts: 5,
+        reconnectionDelay: 1000,
+        reconnectionDelayMax: 5000,
+        timeout: 10000
+    });
     const messageInput = document.getElementById('message-input');
     const sendButton = document.getElementById('send-button');
     const messagesContainer = document.getElementById('messages');
     let isWaitingForResponse = false;
+
+    socket.on('connect_error', (error) => {
+        console.log('Connection error:', error);
+        if (!document.querySelector('.connection-error')) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'message bot-message connection-error';
+            errorDiv.innerHTML = 'Connection lost. Attempting to reconnect...';
+            messagesContainer.appendChild(errorDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+    });
+
+    socket.on('reconnect', (attemptNumber) => {
+        console.log('Reconnected after', attemptNumber, 'attempts');
+        const errorDiv = document.querySelector('.connection-error');
+        if (errorDiv) {
+            errorDiv.remove();
+        }
+        appendMessage('Connection restored!', true);
+    });
 
     function triggerConfetti() {
         confetti({

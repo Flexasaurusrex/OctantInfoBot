@@ -4,6 +4,8 @@ from datetime import datetime
 from flask import Flask, render_template, request
 from flask_socketio import SocketIO
 from flask_cors import CORS
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from chat_handler import ChatHandler
 
 # Configure logging
@@ -21,6 +23,13 @@ if os.environ.get('FLASK_ENV') == 'production':
     CORS(app, resources={r"/*": {"origins": "*"}})
 else:
     CORS(app)
+# Configure rate limiter
+limiter = Limiter(
+    app=app,
+    key_func=get_remote_address,
+    default_limits=["200 per day", "50 per hour"],
+    storage_uri="memory://"
+)
 
 socketio = SocketIO(app, cors_allowed_origins="*")
 chat_handler = None
