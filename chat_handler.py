@@ -11,42 +11,58 @@ class Trivia:
         self.questions = [
             {
                 "question": "What is the minimum amount of GLM tokens required to participate in Octant?",
-                "answer": "100",
+                "options": ["50", "100", "200", "500"],
+                "answer": "B",
+                "correct_option": "100",
                 "explanation": "🎯 Users need to lock a minimum of 100 GLM tokens to participate in Octant's ecosystem through the non-custodial Deposits smart contract."
             },
             {
                 "question": "What is the length of an Octant epoch?",
-                "answer": "90",
+                "options": ["30", "60", "90", "120"],
+                "answer": "C",
+                "correct_option": "90",
                 "explanation": "⏳ Each Octant epoch lasts 90 days. During this period, rewards are calculated based on time-weighted averages of locked tokens."
             },
             {
                 "question": "What is the minimum Gitcoin Passport score required for maximum matching funding?",
-                "answer": "15",
+                "options": ["10", "15", "20", "25"],
+                "answer": "B",
+                "correct_option": "15",
                 "explanation": "🎫 A Gitcoin Passport score of 15 or higher is required for maximum matching funding. Users with lower scores have their donations scaled down by 90% as an anti-Sybil measure."
             },
             {
                 "question": "What is the maximum funding cap for projects as a percentage of the Matched Rewards pool?",
-                "answer": "20",
+                "options": ["10%", "15%", "20%", "25%"],
+                "answer": "C",
+                "correct_option": "20%",
                 "explanation": "💰 Projects can receive up to 20% of the Matched Rewards pool in funding, ensuring fair distribution among multiple projects."
             },
             {
                 "question": "What happens if a project doesn't reach the minimum funding threshold in two consecutive epochs?",
-                "answer": "cooling-off",
+                "options": ["Permanent ban", "Cooling-off period", "Reduced funding", "Warning only"],
+                "answer": "B",
+                "correct_option": "Cooling-off period",
                 "explanation": "⏸️ The project enters a cooling-off period of one epoch before being eligible to reapply."
             },
             {
                 "question": "What type of wallet is officially supported for multisig operations in Octant?",
-                "answer": "safe",
+                "options": ["MetaMask", "Safe", "Ledger", "Trezor"],
+                "answer": "B",
+                "correct_option": "Safe",
                 "explanation": "🔐 Safe (formerly Gnosis Safe) is the officially supported multisig wallet for Octant operations."
             },
             {
                 "question": "How are matched rewards calculated in Octant's quadratic funding system?",
-                "answer": "community support",
+                "options": ["Large donations", "Community support", "Random selection", "Time-based"],
+                "answer": "B",
+                "correct_option": "Community support",
                 "explanation": "📊 Matched rewards are calculated based on broad community support rather than large individual donations, emphasizing the number of contributors over amount size."
             },
             {
                 "question": "What is one of the key requirements for project proposals regarding their source code?",
-                "answer": "open-source",
+                "options": ["Closed source", "Open source", "Proprietary", "Private"],
+                "answer": "B",
+                "correct_option": "Open source",
                 "explanation": "🌐 Projects must maintain a publicly accessible repository under an OSI-approved open-source license with comprehensive documentation."
             }
         ]
@@ -66,26 +82,34 @@ class Trivia:
         self.current_question = self.questions[question_index]
         
         question_number = len(self.asked_questions)
+        options_text = "\n".join([
+            f"[{chr(65+i)}] {option}" 
+            for i, option in enumerate(self.current_question['options'])
+        ])
+        
         return f"""
 🎮 Question {question_number}/{self.total_questions}
 
 ❓ {self.current_question['question']}
 
-Type your answer below! (or type 'end trivia' to finish the game)"""
+{options_text}
+
+Type A, B, C, or D to answer! (or type 'end trivia' to finish the game)"""
 
     def check_answer(self, user_answer):
         if not self.current_question:
             return "❗ Please start a new game first by typing 'start trivia'!"
         
+        user_answer = str(user_answer).strip().upper()
         correct_answer = self.current_question['answer']
+        correct_option = self.current_question['correct_option']
         explanation = self.current_question['explanation']
-        user_answer = str(user_answer).strip().lower()
-        correct_answer = str(correct_answer).lower()
         
         if user_answer == correct_answer:
             self.score += 1
             response = f"""
 ✨ Correct! 
+The answer is {correct_option}
 {explanation}
 
 📊 Score: {self.score}/{self.total_questions}
@@ -93,7 +117,7 @@ Type your answer below! (or type 'end trivia' to finish the game)"""
         else:
             response = f"""
 ❌ Not quite! 
-The correct answer was: {correct_answer}
+The correct answer was [{correct_answer}] {correct_option}
 {explanation}
 
 📊 Score: {self.score}/{self.total_questions}
