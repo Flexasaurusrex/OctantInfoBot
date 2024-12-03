@@ -46,6 +46,13 @@ body {
     box-shadow: var(--shadow-sm);
     position: relative;
     z-index: 10;
+    width: 100%;
+}
+
+.header .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
 }
 
 .header-logo {
