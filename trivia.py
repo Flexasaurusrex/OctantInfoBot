@@ -149,13 +149,19 @@ class Trivia:
 """
             return response
         else:
+            # Get the current question's information
+            current_question = self.questions[current_question_index]
+            correct_answer = current_question['correct']
+            correct_option = current_question['options'][correct_answer]
+            explanation = current_question['explanation']
+            
             response = f"""
 <div class="trivia-container">
     <div class="trivia-score" style="color: #dc3545">❌ Not quite! Let's learn from this one!</div>
     
     <div style="margin: 1rem 0;">
         <strong>The correct answer was:</strong><br>
-        [{correct_answer}] {correct_option}
+        {correct_answer}) {correct_option}
     </div>
     
     <div class="trivia-explanation">
