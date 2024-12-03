@@ -19,8 +19,9 @@ body {
 }
 
 .header-logo {
-    height: 40px;
+    height: 48px;
     width: auto;
+    margin-right: 10px;
 }
 
 .chat-container {
