@@ -131,10 +131,10 @@ h1 {
 .bot-avatar {
     width: 24px;
     height: 24px;
-    border-radius: 50%;
     margin-right: 8px;
     vertical-align: middle;
     display: inline-block;
+    object-fit: contain;
 }
 .message-profile {
     width: 40px;

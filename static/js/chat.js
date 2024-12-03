@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (isBot) {
             const botAvatar = document.createElement('img');
-            botAvatar.src = '/static/images/octant-logo.svg';
+            botAvatar.src = '/static/images/2.png';
             botAvatar.className = 'bot-avatar';
             messageDiv.appendChild(botAvatar);
         }
