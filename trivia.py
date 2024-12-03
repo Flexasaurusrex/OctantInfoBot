@@ -138,6 +138,11 @@ class Trivia:
     <div class="trivia-score">
         Current Score: {self.score}/{self.total_questions}
     </div>
+
+    <div class="trivia-actions">
+        <button class="trivia-button" onclick="document.getElementById('message-input').value='next question';document.getElementById('send-button').click()">Next Question</button>
+        <button class="trivia-button secondary" onclick="document.getElementById('message-input').value='end trivia';document.getElementById('send-button').click()">End Game</button>
+    </div>
 </div>
 """
         else:
@@ -156,6 +161,11 @@ class Trivia:
     
     <div class="trivia-score">
         Current Score: {self.score}/{self.total_questions}
+    </div>
+
+    <div class="trivia-actions">
+        <button class="trivia-button" onclick="document.getElementById('message-input').value='next question';document.getElementById('send-button').click()">Next Question</button>
+        <button class="trivia-button secondary" onclick="document.getElementById('message-input').value='end trivia';document.getElementById('send-button').click()">End Game</button>
     </div>
 </div>
 """

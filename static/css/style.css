@@ -206,3 +206,36 @@ body {
     margin-top: 1rem;
     font-style: italic;
 }
+
+.trivia-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 1.5rem;
+}
+
+.trivia-button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.trivia-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.trivia-button:active {
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+.trivia-button.secondary {
+    background-color: var(--message-bg);
+    color: var(--text-color);
+}
