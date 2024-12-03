@@ -5,7 +5,8 @@ from collections import deque
 from trivia import Trivia
 
 class CommandHandler:
-    def __init__(self):
+    def __init__(self, trivia_game):
+        self.trivia_game = trivia_game
         self.commands = {
             '/help': self.help_command,
             '/stats': self.stats_command,
@@ -177,7 +178,7 @@ class ChatHandler:
         self.max_history = 5
         self.trivia_game = Trivia()
         self.is_playing_trivia = False
-        self.command_handler = CommandHandler()
+        self.command_handler = CommandHandler(self.trivia_game)
         
         self.system_prompt = """You are a friendly and clear-speaking assistant focused on explaining Octant Public Goods (https://octant.build/). 
         Your goal is to make complex information easy to understand by:
