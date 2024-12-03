@@ -1,47 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const socket = io({
-        reconnection: true,
-        reconnectionAttempts: 5,
-        reconnectionDelay: 1000,
-        reconnectionDelayMax: 5000,
-        timeout: 20000,
-    });
-    
+    const socket = io();
     const messageInput = document.getElementById('message-input');
     const sendButton = document.getElementById('send-button');
     const messagesContainer = document.getElementById('messages');
     let isWaitingForResponse = false;
-
-    // Connection event handlers
-    socket.on('connect', () => {
-        console.log('Connected to server');
-        if (messagesContainer) {
-            const statusDiv = document.createElement('div');
-            statusDiv.className = 'message bot-message';
-            statusDiv.innerHTML = '<span>Connected to server ✓</span>';
-            messagesContainer.appendChild(statusDiv);
-        }
-    });
-
-    socket.on('connect_error', (error) => {
-        console.error('Connection error:', error);
-        if (messagesContainer) {
-            const statusDiv = document.createElement('div');
-            statusDiv.className = 'message bot-message';
-            statusDiv.innerHTML = '<span>Connection error. Attempting to reconnect...</span>';
-            messagesContainer.appendChild(statusDiv);
-        }
-    });
-
-    socket.on('disconnect', () => {
-        console.log('Disconnected from server');
-        if (messagesContainer) {
-            const statusDiv = document.createElement('div');
-            statusDiv.className = 'message bot-message';
-            statusDiv.innerHTML = '<span>Disconnected from server. Reconnecting...</span>';
-            messagesContainer.appendChild(statusDiv);
-        }
-    });
 
     function triggerConfetti() {
         confetti({
