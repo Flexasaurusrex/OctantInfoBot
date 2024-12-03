@@ -52,6 +52,48 @@ h1, h2, h3, .header h1, .trivia-score {
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
+.theme-toggle {
+    position: fixed;
+    top: 1.5rem;
+    right: 1.5rem;
+    background: var(--toggle-bg);
+    border: none;
+    color: var(--text-color);
+    padding: 0.75rem;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.theme-toggle:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    background: var(--message-bg);
+}
+
+.theme-toggle svg {
+    width: 24px;
+    height: 24px;
+    fill: var(--text-color);
+}
+
+.theme-icon .light-icon {
+    display: none;
+}
+
+[data-theme="dark"] .theme-icon .light-icon {
+    display: block;
+}
+
+[data-theme="dark"] .theme-icon .dark-icon {
+    display: none;
+}
+
 .header-logo {
     height: 48px;
     width: auto;
@@ -99,12 +141,6 @@ h1, h2, h3, .header h1, .trivia-score {
     font-weight: 400;
 }
 
-.bot-avatar {
-    width: 24px;
-    height: 24px;
-    margin-right: 8px;
-}
-
 .input-container {
     display: flex;
     gap: 1rem;
@@ -130,37 +166,6 @@ h1, h2, h3, .header h1, .trivia-score {
 
 #send-button:hover {
     opacity: 0.9;
-}
-.bot-link {
-    color: #0066cc;
-    text-decoration: underline;
-    word-break: break-word;
-}
-
-.bot-link:hover {
-    color: #004999;
-    text-decoration: none;
-}
-
-.loading {
-    display: inline-block;
-    margin-left: 8px;
-}
-
-.loading span {
-    display: inline-block;
-    width: 4px;
-    height: 4px;
-    border-radius: 50%;
-    background-color: var(--primary-color);
-    margin: 0 2px;
-    animation: bounce 0.6s infinite alternate;
-}
-
-@keyframes bounce {
-    to {
-        transform: translateY(-4px);
-    }
 }
 
 .description {
@@ -219,58 +224,6 @@ h1, h2, h3, .header h1, .trivia-score {
     border-color: var(--primary-color);
 }
 
-.trivia-option:active {
-    transform: translateY(0);
-    box-shadow: none;
-}
-
-.trivia-option::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 8px;
-    border: 2px solid transparent;
-    transition: all 0.2s ease;
-}
-
-.trivia-option:focus::after,
-.trivia-option:hover::after {
-    border-color: var(--primary-color);
-}
-
-.trivia-option.correct {
-    border-color: #28a745;
-    background-color: rgba(40, 167, 69, 0.1);
-}
-
-.trivia-option.incorrect {
-    border-color: #dc3545;
-    background-color: rgba(220, 53, 69, 0.1);
-}
-
-.trivia-score {
-    font-size: 1.2rem;
-    font-weight: 500;
-    text-align: center;
-    margin: 1rem 0;
-    color: var(--primary-color);
-}
-
-.trivia-explanation {
-    background-color: var(--bot-message-bg);
-    border-radius: 8px;
-    padding: 1rem;
-    margin-top: 1rem;
-    font-style: italic;
-}
-
-.trivia-actions {
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-    margin-top: 1.5rem;
-}
-
 .trivia-button {
     background-color: var(--primary-color);
     color: white;
@@ -284,47 +237,6 @@ h1, h2, h3, .header h1, .trivia-score {
 
 .trivia-button:hover {
     transform: translateY(-2px);
-.theme-toggle {
-    position: fixed;
-    top: 1.5rem;
-    right: 1.5rem;
-    background: var(--toggle-bg);
-    border: none;
-    color: var(--text-color);
-    padding: 0.75rem;
-    border-radius: 50%;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    z-index: 1000;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.theme-toggle:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    background: var(--message-bg);
-}
-
-.theme-toggle svg {
-    width: 24px;
-    height: 24px;
-    fill: var(--text-color);
-}
-
-.theme-icon .light-icon {
-    display: none;
-}
-
-[data-theme="dark"] .theme-icon .light-icon {
-    display: block;
-}
-
-[data-theme="dark"] .theme-icon .dark-icon {
-    display: none;
-}
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
