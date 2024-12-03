@@ -5,10 +5,9 @@ import random
 
 class ChatHandler:
     def __init__(self):
-        # Initialize Mixtral
-        self.mixtral = Together()
-        self.mixtral.api_key = os.environ["TOGETHER_API_KEY"]
-        self.mixtral.model = "mistralai/Mixtral-8x7B-Instruct-v0.1"
+        # Initialize Together API client
+        self.api_key = os.environ["TOGETHER_API_KEY"]
+        self.model = "mistralai/Mixtral-8x7B-Instruct-v0.1"
         
         # Initialize conversation and trivia game state
         self.conversation_history = []
@@ -81,10 +80,27 @@ class ChatHandler:
                 # Otherwise treat as an answer
                 return self.handle_trivia_answer(message)
             
-            # Otherwise, use Mixtral for chat responses
-            prompt = self.format_chat_prompt(message)
-            response = self.mixtral.chat_completion(prompt)
-            return response['output']['content']
+            # Otherwise, use Together API for chat responses
+            import requests
+            headers = {
+                "Authorization": f"Bearer {self.api_key}",
+                "Content-Type": "application/json"
+            }
+            data = {
+                "model": self.model,
+                "messages": self.format_chat_prompt(message),
+                "max_tokens": 1024,
+                "temperature": 0.7,
+            }
+            response = requests.post(
+                "https://api.together.xyz/inference",
+                headers=headers,
+                json=data
+            )
+            if response.status_code == 200:
+                return response.json()['output']['content']
+            else:
+                raise Exception(f"API request failed: {response.text}")
 
         except Exception as e:
             print(f"Unexpected error: {str(e)}")
@@ -274,7 +290,11 @@ Reply with a module number or type /help for other commands."""
         if not args:
             return modules
         try:
-            module = int(args[0])
+            module = args[0]
+            if module.isdigit():
+                module = int(module)
+            else:
+                return "Please specify a valid module number. " + modules
             if module == 1:
                 return self.get_quadratic_funding_info()
             elif module == 2:
