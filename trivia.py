@@ -81,19 +81,32 @@ class Trivia:
         question = self.questions[question_index]
         
         formatted_question = f"""
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-❓ Question {len(self.asked_questions)}/{self.total_questions}:
-
-{question['question']}
-
-🔤 Options:
-A) {question['options']['A']}
-B) {question['options']['B']}
-C) {question['options']['C']}
-D) {question['options']['D']}
-
-Type A, B, C, or D to answer!
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+<div class="trivia-container">
+    <div class="trivia-score">Question {len(self.asked_questions)}/{self.total_questions}</div>
+    
+    <div class="trivia-question">
+        {question['question']}
+    </div>
+    
+    <div class="trivia-options">
+        <div class="trivia-option" data-option="A">
+            <strong>A)</strong> {question['options']['A']}
+        </div>
+        <div class="trivia-option" data-option="B">
+            <strong>B)</strong> {question['options']['B']}
+        </div>
+        <div class="trivia-option" data-option="C">
+            <strong>C)</strong> {question['options']['C']}
+        </div>
+        <div class="trivia-option" data-option="D">
+            <strong>D)</strong> {question['options']['D']}
+        </div>
+    </div>
+    
+    <div style="text-align: center; font-size: 0.9rem;">
+        Type A, B, C, or D to answer!
+    </div>
+</div>
 """
         return formatted_question
         
@@ -115,26 +128,36 @@ Type A, B, C, or D to answer!
         if user_answer == correct_answer:
             self.score += 1
             response = f"""
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-✅ Correct! Well done!
-
-📖 {explanation}
-
-📊 Current Score: {self.score}/{self.total_questions}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+<div class="trivia-container">
+    <div class="trivia-score" style="color: #28a745">✅ Correct! Well done!</div>
+    
+    <div class="trivia-explanation">
+        {explanation}
+    </div>
+    
+    <div class="trivia-score">
+        Current Score: {self.score}/{self.total_questions}
+    </div>
+</div>
 """
         else:
             response = f"""
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-❌ Not quite! Let's learn from this one!
-
-🎯 The correct answer was: [{correct_answer}] {correct_option}
-
-📖 Explanation:
-{explanation}
-
-📊 Current Score: {self.score}/{self.total_questions}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+<div class="trivia-container">
+    <div class="trivia-score" style="color: #dc3545">❌ Not quite! Let's learn from this one!</div>
+    
+    <div style="margin: 1rem 0;">
+        <strong>The correct answer was:</strong><br>
+        [{correct_answer}] {correct_option}
+    </div>
+    
+    <div class="trivia-explanation">
+        {explanation}
+    </div>
+    
+    <div class="trivia-score">
+        Current Score: {self.score}/{self.total_questions}
+    </div>
+</div>
 """
         
         if len(self.asked_questions) == self.total_questions:
@@ -162,19 +185,26 @@ Want to play again? Type 'start trivia'!
         """Start a new game."""
         self.reset_game()
         return """
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🎮 Welcome to Octant Trivia! 🎮
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Test your knowledge about Octant's ecosystem, funding mechanisms, 
-and community initiatives!
-
-📋 Game Rules:
-• Answer each question using A, B, C, or D
-• Type 'end trivia' at any time to finish
-• Each correct answer earns you points
-• Learn interesting facts about Octant!
-
-Get ready for some exciting questions...
-
+<div class="trivia-container">
+    <div class="trivia-score" style="font-size: 1.4rem">🎮 Welcome to Octant Trivia! 🎮</div>
+    
+    <div style="margin: 1.5rem 0; text-align: center;">
+        Test your knowledge about Octant's ecosystem, funding mechanisms,
+        and community initiatives!
+    </div>
+    
+    <div style="background-color: var(--message-bg); padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+        <strong>📋 Game Rules:</strong>
+        <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
+            <li>Answer each question using A, B, C, or D</li>
+            <li>Type 'end trivia' at any time to finish</li>
+            <li>Each correct answer earns you points</li>
+            <li>Learn interesting facts about Octant!</li>
+        </ul>
+    </div>
+    
+    <div style="text-align: center; margin: 1rem 0;">
+        Get ready for some exciting questions...
+    </div>
+</div>
 """ + self.get_next_question()
