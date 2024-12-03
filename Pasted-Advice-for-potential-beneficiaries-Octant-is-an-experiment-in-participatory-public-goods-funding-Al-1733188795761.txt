@@ -1,0 +1,66 @@
+Advice for potential beneficiaries
+Octant is an experiment in participatory public goods funding. Although the Golem Foundation (opens new window)seeds Octant's financial base by staking 100,000 ETH from its treasury, the power of decision-making about these funds' distribution lies with the Octant users. It is they who decide where the funds are directed.
+
+Users can claim their part of User Rewards to themselves, donate it in full or in part to shortlisted public good projects, or allocate it in full towards the Octant Matching Pool. Given these options and the number of potential beneficiaries from which Octant users can choose, community engagement is of key importance for a successful funding round.
+
+Mobilizing Your Community
+Your primary mission is to connect with the Octant community, making a compelling case for why your project deserves their backing.
+
+The outcomes of Epoch One highlighted an important trend (opens new window): projects that could rally both their own community and Octant's community stood out in success. While the size of a community is undoubtedly a factor, it was observed that even more compact communities could wield substantial influence with a well-devised engagement strategy.
+
+If you have your own community or can engage with Octant's user base, it is to your advantage to activate them to support your project. Collaborations with other projects, curating events, or simply amplifying awareness, every bit counts!
+
+It's important to understand that users can modify their allocation decisions repeatedly while the allocation window is open. We actively encourage them to routinely assess the performance of their favored projects, observe the allocations of other users, and adjust their strategies in response.
+
+Given this dynamic, it's a good idea for projects to keep an eye on their community contributions throughout the allocation window. Securing ongoing support from your backers is crucial. Remember: No allocation decisions are final until the allocation window closes!
+
+Technical Considerations
+As part of the submission process, we require each project to provide their ETH wallet address. This address must be an externally owned account or a multisig wallet capable of initiating transactions.
+
+Before opening the Allocation window, we'll verify with you to ensure the address you've given us is accurate. It's crucial to understand that donations can only be withdrawn to this specified address. Once the Allocation window begins, this address cannot be modified by either you or us!
+
+All projects that receive community donations exceeding the minimum funding threshold will be able to withdraw the funds directly from the app to the wallet they provided to Octant.
+
+Please be aware that:
+
+Withdrawals are enabled after the Allocation window ends.
+Due to security precautions, the withdrawal function will be initiated manually by the Octant team shortly after the allocation concludes. We will notify you once this feature is ready for use.
+The in-app withdrawal process is the sole method to retrieve Octant donations, and as emphasized, they can only be routed to the address you initially supplied. Should there be an error in the provided withdrawal address, the Golem Foundation won't be in a position to aid in fund recovery.
+All associated gas fees during withdrawal are borne by the beneficiaries.
+Using Admin Mode
+Admin mode is a great way to manage your project in Octant.
+
+When accessing the Octant App (opens new window)from your project's specified Ethereum address, Admin Mode activates automatically. This mode streamlines the Octant user interface, filtering out components unnecessary for funding-eligible projects. It simplifies app navigation, facilitating the process of withdrawing ETH funds from Octant.
+
+Note: Admin Mode is exclusive to project administrators; regular users cannot access it.
+
+Multisig Wallet Octant App Usage
+Official support for multisig wallets is currently limited to Safe.
+
+Connecting your Safe multisig to Octant is a slightly more intricate process compared to using an externally owned account.
+
+Here's a step-by-step guide to link a multisig to the Octant App.
+
+Navigate to the Octant.app (opens new window).
+Opt for a connection via WalletConnect and use the copy the "Connect your wallet" Pairing Code.
+Transition to the Safe web app (opens new window), click on the WalletConnect button (top left) and paste your Pairing Code.
+Returning to Octant App, review the provided Terms of Use. To proceed, you must acknowledge your agreement by marking the checkbox. Subsequently, you'll be requested to sign a message within your Safe wallet, confirming your acceptance.
+All the designated owners need to affix their signatures to a message, and a specific count is required for validation.
+Once the Safe signing procedure is completed for the signee threshold, revert to the Octant App.
+Here is a video walkthrough helping guide you through those same steps:
+
+Octant Safe Multisig Walkthrough(opens new window)
+
+Next Steps After the Allocation Window
+If the Octant community funded your project, we'd appreciate it if you shared your success on your social media channels. (You can find our brand assets on Figma (opens new window)should you need them).
+
+Projects that successfully received funding in the last allocation window are eligible to proceed to the next epoch's Allocation Window, provided they update their Discuss post with details on the use of their received funds and future spending plans. This update must be submitted by the Project Information Submission Deadline specified here.
+
+If your project did not meet the funding threshold previously, you will need to conduct another temp-check to seek community input on how to increase interest. Completing this step before the deadline ensures your project's inclusion in the Snapshot vote, alongside other successful new entries.
+
+Failure to secure a place via Snapshot or to meet the funding threshold again will result in a cooling-off period of one epoch before you can reapply.
+
+Projects choosing not to participate in the next Epoch need not take any further action.
+
+Further Assistance
+If you have further questions, feel free to reach out to the Octant team on Discord

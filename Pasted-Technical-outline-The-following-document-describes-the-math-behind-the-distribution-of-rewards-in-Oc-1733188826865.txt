@@ -1,0 +1,64 @@
+Technical outline
+The following document describes the math behind the distribution of rewards in Octant. If you would rather read a math-free description of how Octant works click here.
+
+📝 Note: Since publishing this outline, we have revised the algorithm we use to calculate User Rewards. The new changes, which have yet to be reflected in this document, significantly increase the ETH rewards for users. You can read about Octant's algorithm overhaul here (opens new window). We will update the formulas provided in this document shortly.
+
+The original Octant paper, which explains the logic behind the math, is available here (opens new window). 📝
+
+Notation:
+
+, ,  denotes time/subsequent epochs;
+ denotes Octant users. In particular it is assumed that in epoch  there are  participants.  may vary from epoch to epoch;
+ denotes eligible causes. In particular it is assumed that in epoch  there are  causes purposes eligible to receive donations.  may vary from epoch to epoch.
+If user  decides to participate in Octant in epoch , the GLM amount she locked in is denoted as .
+
+User Rewards
+Individual rewards that a Octant user can claim or donate in epoch  are .
+
+In every epoch  Octant participants are entitled to claim a share of rewards which is proportional to the ratio of the amount of GLM they locked in the Octant smart contract () to the entire supply of GLM ().
+
+
+At the aggregate level, the entire budget available for individual rewards  amounts to:
+
+
+Users may choose to claim only a fraction of the available individual reward and to donate the remaining available amount to one (or more) of the public good purposes/organizations. In every epoch  there are  potential beneficiaries.
+
+A user  thus decides on the value of a vector of parameters ,  which represent the fraction of their individual reward in epoch  they are willing to donate to purpose/organization . Note that  and .
+
+The individual reward claimed by the user () is thus equal to:
+
+
+The aggregate amount of redeemed individual rewards () amounts to:
+
+
+Matched Rewards
+If users decide not to claim their individual rewards, they can choose to donate it for one (or more) of the eligible causes. In this case, their individual contribution  (in the amount of ) is automatically increased by the matched rewards ().
+
+At the aggregate level, the budget available for matched rewards in epoch  () amounts to the difference between the total amount of staking proceeds allocated to Octant in epoch  () and the total amount of user rewards ().
+
+
+In order to be eligible for receiving donations in epoch , a purpose/organization must pass a predefined threshold of individual donations. Tentatively, it is proposed to set this threshold at the level of . We thus introduce the parameter of the user's effective allocation decisions.
+
+
+
+At the level of an individual () the distribution scheme proposed for the MVP is based on the individual's share in the staking amount in epoch weighted by how much each user effectively donated to public good purposes/organizations instead of claiming the individual reward.
+
+
+The fraction of  , which users allocate to purposes/organizations that do not pass the threshold, is transferred to Golem Foundation. The same applies to the  of users who make no decisions with respect to the available rewards.
+
+Example: How funding works from a Octant user’s perspective
+Alice (denoted as ) is participating in Octant in epoch .
+
+She decides to claim/withdraw 30% of the available user reward ().
+
+She also decides to split the remaining 70% between 4 organizations: 10% to organization A, 10% to organization B, 20% to organization C, and 30% to organization D.
+
+When other Octant participants have made their decisions, it turns out that only organizations C and D are eligible for funding, as organizations A and B did not reach the minimum threshold of contributions.
+
+This results in the following distribution:
+
+30% of Alice's user reward goes to her.
+
+20% of Alice's user reward (i.e., allocations to organizations A [10%] and B [10%] that haven't passed the threshold) is transferred to Golem Foundation.
+
+50% of Alices' individual rewards (i.e., allocations to organizations C [20%] and D [30%]) is donated to the recipients, proportionally increased by Alice's matched rewards: organization C receives 40% of the matched rewards  and organization D receives 60% ().

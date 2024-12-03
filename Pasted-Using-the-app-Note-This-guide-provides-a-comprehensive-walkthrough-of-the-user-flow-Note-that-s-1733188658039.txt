@@ -1,0 +1,170 @@
+Using the app
+📝 Note: This guide provides a comprehensive walkthrough of the user-flow. Note that some features mentioned here are only available during an allocation window.
+
+Outside of these windows, the Octant app provides functionalities such as:
+
+Locking and unlocking GLM
+Browsing the list of potential beneficiaries
+Reviewing outcomes from past epochs
+Modifying various app settings (e.g., opting for ETH or a selected fiat currency as the primary display)
+Monitoring real-time metrics related to the Golem Foundation's staked ETH and the GLM amounts locked by Octant users.
+If you encounter any issues while using the Octant app, seek assistance on our dedicated Discord channel (opens new window).
+
+We also have a separate Discord channel specifically for UI and UX feedback (opens new window). 📝
+
+Getting started
+The first thing you need to do after launching the app (opens new window)is to connect your WalletConnect-compatible wallet (opens new window)to it.
+
+To connect your wallet, click on the Connect wallet button at the top of the screen and follow the instructions in your wallet.
+
+During onboarding, you'll be prompted to review the Terms of Use and indicate your agreement by clicking the checkbox. You'll also be asked to sign a message in your wallet to confirm your acceptance of these terms. Rest assured, this action won't initiate any transactions.
+
+After connecting your wallet, lock some GLM in the Home view. GLM (opens new window)is an ERC-20 Ethereum-based token native to the Golem Network (opens new window). If you don't have GLM, you can acquire it at various exchanges (opens new window)or on Uniswap (opens new window).
+
+Click on the image below to watch a video explainer of the entire process on Vimeo: How to lock GLM - video explainer(opens new window)
+
+While you can lock as little as 1 GLM, an effective locked balance of at least 100 GLM is necessary to qualify for user rewards. Your rewards are influenced by a time-weighted average, meaning the more GLM you lock and the longer they remain locked, the higher your reward.
+
+To estimate the rewards you can earn by locking a specific amount, use the in-app Reward calculator. Enter your GLM quantity and desired locking period in the Rewards estimator in the Home view to get an estimate of your rewards and the matching amount if you donate to public goods projects seeking Octant funding. Note that, unlike user rewards, matching funding depends on your Uniqueness Quotient Score (UQ). A UQ score of at least 15 is required to receive the maximum available matching. A toggle in the Rewards estimator lets you see the difference in matching between users with a passing UQ score and those below the threshold.
+
+For a deeper dive into how rewards and matched funds are calculated, refer to Octant's Technical Outline.
+
+Be aware that both locking and unlocking GLM occur on-chain, and executing these actions will incur gas fees.
+
+Octant's GLM time-locking mechanism is non-custodial, meaning you have full control of your funds. You can unlock your GLM at any time. However, reducing your lock before the current epoch ends will adjust your time-weighted average to the smallest locked amount.
+
+You can access your Octant-connected wallet at any time by clicking on the tile showing your Ethereum address at the top right corner of the screen.
+
+The main app views
+
+The app has 3 main views, which you can access by clicking the appropriate tab in the top left corner of the screen right next to the Octant logo:
+
+Home: View your connected wallet balances in ETH, GLM, and their fiat equivalents (currency data is fetched using the CoinGecko (opens new window)API). You can also see your rewards budget, donation history, pending allocations, withdrawals, UQ score, and boost options. There is also an interactive chart showing live project results during allocation or final results from the previous epoch. Hover over any bar to see the project’s details and click to open that project’s page to donate.
+Projects: Browse and search through the list of projects available for donations in the current epoch, as well as review past epochs. Click on any project to learn more.
+Metrics: View statistics about current and previous epochs to help you make allocation decisions and understand community preferences.
+Allocate your Octant funds
+With an effective GLM lock balance of at least 100 GLM, you'll receive user rewards in ETH at the end of each epoch (viewable in the Home view).
+
+You can decide what to do with your rewards during a two-week allocation window after each epoch.
+
+You may keep your rewards, donate them in part or in full to shortlisted public goods projects, or become a Patron and donate all your rewards to the Matching Fund.
+
+If you have rewards, open the side drawer by clicking the shopping cart icon at the top right of the page.
+
+Use the slider to determine how much of your funds you'd like to keep and how much you'd like to donate. Adjust the slider as needed throughout the allocation window.
+
+To allocate all your rewards to yourself, move the slider all the way to the left. To donate part of your rewards, move it to the right.
+
+After deciding how much to donate, go to the Projects view to browse public goods projects shortlisted for funding (information on the eligibility criteria and on how users can submit a project can be found here).
+
+If you come across projects you'd like to support with your User Rewards, click on the Heart button next to them. All projects you consider for allocation will then appear in the Allocate drawer.
+
+
+To remove a project from your shortlist, slide or drag the project tile left in the Allocate view to reveal the remove button.
+
+In the Allocate drawer, you'll find your shortlisted projects with metrics to guide your allocation.
+
+There are two ways to allocate funds to projects:
+
+Use the in-app slider for auto-allocation among all your chosen projects (including yourself, if you opt to retain part of your User Reward).
+Click the donation amount field on a project tile to edit it directly.
+In manual mode, you can allocate any amount within your budget to any project. If you attempt to allocate more than available, the input fields will shake and reset.
+
+Regardless of the allocation mode, the app provides a live preview of your donation's impact. Project tiles update with each change, giving you an immediate view of the potential impact.
+
+After adjusting your donation, the app displays the combined impact of your donation and the current matching funding.
+
+Click on the image below to watch a video explainer of the entire allocation process on Vimeo: How to allocate rewards - video explainer(opens new window)
+
+Matching Funding and Uniqueness Quotient
+Octant uses a quadratic funding formula to determine the matching amount for your donations. Your matching multiplier depends on your Uniqueness Quotient, derived from your Gitcoin Passport (opens new window)score:
+
+Users with a Gitcoin Passport score of 15 or higher receive maximum matching.
+Users with a score lower than 15 have their donations scaled down by 90%.
+Users flagged as Sybils have their UQ score slashed to 0 and do not get any matching at all. A "Sybil Account" tag will be displayed if suspected in the Your uniqueness score section of the Home view. If flagged incorrectly, you can dispute this by filling out a form (opens new window)(changes take effect in the next allocation window).
+Improving Your Score
+You can check your score in the Home view of the app. If your score is lower than 15, and you are not flagged as a suspected sybil, you have two options to improve it:
+
+Visit our Gitcoin Passport dashboard (opens new window)and add more stamps to increase your score (opens new window). After boosting your score, return to the Octant app, go to Home view, and click the "Recalculate" button.
+If you have a different account with a Gitcoin Passport score of at least 15, you can use the "Delegate" option in Home view to assign this score to your primary Octant account (the one used for locking GLM).
+Follow these steps to delegate your score:
+
+Click the "Delegate" button in the Your Uniqueness score section of the Home view. Connect your secondary address (with a Gitcoin Passport score of at least 15 points) to the app.
+Ensure your primary wallet is unchecked in your wallet settings, or the delegation will fail.
+The app will fetch the Gitcoin Passport score of your secondary address.
+If the score is 15 or above, you'll be asked to sign a message with your secondary address to confirm ownership.
+If the score is lower, the delegation will fail, and you'll need to start over using a different secondary address.
+After signing the message with your secondary address, choose "Switch accounts" and select your primary address in your wallet (the one used to lock GLM into Octant).
+Reconnect your primary account and sign a message confirming the delegation.
+The delegation is now complete, and your primary account is assigned the Gitcoin Passport score of your secondary address.
+Important notes:
+
+You can only successfully delegate to one address. If your delegation attempt fails because the secondary address has a lower score than your primary account, you can try again with another account.
+If you try to delegate from an account with GLM locked in Octant, the delegation will be rejected.
+The app records your Uniqueness Quotient score and associated matching funding leverage when you make your first allocation. These values remain unchanged until the end of the Allocation Window. To maximize your matching leverage, improve your score before making your first allocation. Boosting your score afterward will not increase your leverage in the ongoing Allocation Window.
+To preserve user privacy, the delegation scheme uses obfuscation.
+Please note that if the app flags you as a sybil, both the Recalculate and Delegate options are disabled.
+
+Finalizing Your Allocation
+Once you've finalized your allocation, a summary will appear in the Allocate drawer. If you wish to make changes, simply click "Edit," make your adjustments, and confirm in your wallet to save the changes.
+
+Please note that the matching and leverage you see when finalizing your donation are just estimates. They reflect how much funding you would direct toward your selected projects if the allocation window closed at the moment of your allocation. Unless you're making your allocations in the very last minute of the window, these values will change as other Octant users make their decisions. The final impact of your allocations will be calculated at the end of the allocation window.
+
+Patron mode
+If you're unsure about which projects to back but still want to help, we have a simple solution. By using the Patron mode, you can send all your rewards to the Octant Matching Fund. This helps boost community donations by increasing the donation amount.
+
+Please note the following nuances with Patron Mode:
+
+Once activated, users cannot personally claim or distribute rewards.
+Allocation choices made prior to switching on the mode become void.
+The Patron mode persists across future allocation windows unless deactivated.
+To enable or disable Patron Mode, navigate to "Settings" by clicking the cogwheel icon in the top right corner of the app, then use the provided toggle.
+
+Locking and withdrawing funds
+In the Home view, you can edit your GLM lock-in, withdraw your user rewards in ETH, and check your transaction history.
+
+Your current and effective epoch lock will be displayed. Click the "Edit Locked GLM" button to change the amount of tokens you would like to lock.
+
+To make changes:
+
+Choose the amount you'd like to add or remove and click either "Lock" or "Unlock."
+Approve your decision in your connected wallet.
+You can adjust your lock at any time. However, please bear in mind:
+
+You earn user rewards only from amounts of 100 GLM or more.
+If you reduce your lock before the end of the current epoch, your time-weighted average balance will be adjusted to reflect the smallest locked amount.
+You can also withdraw your claimed rewards to your wallet in the Home view. Note that withdrawals are only possible after the current allocation window ends. There is no deadline for withdrawing your claimed rewards, so you have flexibility in managing your assets.
+
+To view your locking operations, allocated rewards, and withdrawals, refer to the Transactions section of the Home view.
+
+Click on the image below to watch a video explainer of the entire process on Vimeo: How to withdraw rewards - video explainer(opens new window)
+
+Metrics
+In the Metrics view you can check the following information:
+
+The total amount of ETH staked by the Golem Foundation and GLM time-locked by Octant users
+The fraction of GLM time-locked by Octant users in relation to the Total GLM supply
+The current value of ETH rewards transferred by Golem Foundation to Octant, and the value of users and matched donations to community chosen projects
+How much money has been claimed by community members versus donated to eligible projects
+Funding leaderboard, with the amount donated to each project
+Average leverage, and the number of current donors
+Information on the amount of User Rewards that are unallocated at the end of the epoch
+Multisig Support
+Using Octant with a Multisig account is easy, with one key difference: each action that requires confirmation must be signed by all designated owners (up to your Safe's threshold). Below is a guide with step-by-step instructions for crucial user actions within Octant.
+
+Creating a Multisig User Account in Octant
+
+Navigate to octant.app (opens new window), click on the 'Connect' button at the top, and select the 'WalletConnect' option. Click on the 'Copy' icon next to 'Connect your wallet' to copy the pairing code.
+Log into your Safe account at app.safe.global (opens new window), click on 'Use WalletConnect', and paste the pairing code.
+Return to octant.app (opens new window). You'll see an onboarding modal with a Terms of Service checkbox. Accept the terms, then switch back to the Safe tab in your browser. A message asking for confirmation will appear. Review and click 'Sign'. Have other Multisig owners do the same in their Safe accounts. Once all owners have signed, return to octant.app (opens new window)to complete onboarding.
+Lock GLM into Octant
+
+With your wallet connected to Octant, navigate to the Home view and select 'Lock GLM'. Choose the amount to lock and click 'Lock'. The app will now wait for confirmation.
+At app.safe.global (opens new window), a new message from Octant will ask for lock confirmation. Click 'Sign' to confirm. Other Multisig owners must also confirm the lock in their Safe accounts. Once all owners have signed, the lock is complete.
+Keep your GLM locked in Octant until the next allocation window to earn rewards.
+Allocate Your Rewards
+
+When the allocation window opens, log into Octant using WalletConnect by copying the pairing code as before and pasting it into the Safe web app.
+Go to the Allocate drawer to decide how much of your rewards to claim for yourself and how much to donate to projects. Once satisfied, click Confirm. The app will wait for confirmation.
+At app.safe.global (opens new window), a new message from Octant will ask for allocation confirmation. Click Sign to confirm. Have other Multisig owners log into their Safe accounts and confirm the allocation. Once all owners have signed, the allocation is complete.
+Note: It's not necessary to keep the Octant tab open in your browser while waiting for other Multisig owners to sign the confirmation.

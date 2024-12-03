@@ -41,6 +41,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const errorMessage = messagesContainer.querySelector('.connection-error');
             errorMessage.textContent = `Connection lost. Attempting to reconnect... (Attempt ${reconnectAttempts}/5)`;
         }
+
+        // Handle the rejection explicitly
+        return Promise.resolve();
     });
     
     socket.on('error', (error) => {

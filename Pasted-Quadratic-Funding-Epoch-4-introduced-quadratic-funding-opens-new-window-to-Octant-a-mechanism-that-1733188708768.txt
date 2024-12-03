@@ -1,0 +1,46 @@
+Quadratic Funding
+Epoch 4 introduced quadratic funding (opens new window)to Octant, a mechanism that empowers communities by assigning greater weight to a large number of small donations over a small number of large donations. This method ensures that projects with a broad base of support benefit the most. Widely regarded as an excellent consensus-building mechanism, quadratic funding is considered an optimal way to distribute funds to public goods in democratic communities (opens new window).
+
+Epoch 4 also introduced two additional changes (opens new window)to Octant's public goods funding mechanism:
+
+Removal of the minimum funding threshold;
+Introduction of a maximum funding cap for projects, set at 20% of the Matched Rewards pool.
+All individual contributions to participating public goods projects receive matching up to the funding cap. Users can still donate to projects that have reached the cap, but these donations will not receive additional matching.
+
+Anti-Sybil Measures
+The integrity of the quadratic funding relies on ensuring that users do not create multiple accounts, a practice known as a Sybil attack (opens new window). To mitigate the risk of users trying to gain undue influence through sock-puppet accounts, Octant uses a Uniqueness Quotient mechanism based on the Gitcoin Passport (opens new window)score, the most widely used anti-Sybil solution in the Web3 space.
+
+Verifying Uniqueness
+To confirm each Octant account represents a unique individual, the app fetches the Gitcoin Passport score (opens new window)for each user. Users with a Gitcoin Passport score of 15 or higher will receive the maximum available matching funding. Users with a score lower than 15 will have their donations scaled down by 90% as an anti-Sybil measure.
+
+Please note that, based on community feedback, we’ve removed GTC staking stamps from the UQ score calculation.
+
+Improving Your Uniqueness Score
+You can check your score in the Home view of the Octant app. If your score is lower than 15, you have two options to improve it:
+
+Boost Your Gitcoin Passport Score: Visit our custom Gitcoin Passport dashboard (opens new window)and add more stamps to increase your score (opens new window). Once you've boosted your score, return to the Octant app, go to the Home view, and click the Recalculate button.
+Delegate from Another Account: If you have a different account with a Gitcoin Passport score of at least 15, you can use the "Delegate" option in Home view. You'll be asked to sign a message with this secondary address to prove ownership. If the score is sufficient, it will be assigned to your primary Octant account (the one you use to lock GLM into Octant). Once the score is assigned, you'll be prompted to switch back to your primary account to confirm the delegation by signing a message with it.
+For detailed, step-by-step instructions on the delegation process, please refer to the "Using the App" section of the Documentation.
+
+Important notes:
+
+Only delegate from an address with a Gitcoin Passport score of at least 15.
+You can only successfully delegate to one address. If your delegation attempt fails because the secondary address has a lower score than your primary account, you can try again with another account.
+If you try to delegate from an account with GLM locked in Octant, the delegation will be rejected.
+The app records your Uniqueness Quotient score and the associated matching funding leverage when you make your first allocation. These recorded values remain unchanged until the end of the Allocation Window.
+To maximize your matching leverage, ensure you've taken steps to improve your score before making your first allocation. Boosting your score after making your first allocation will not increase your leverage in the ongoing Allocation Window.
+There are only two ways to increase your Uniqueness Quotient: adding new Gitcoin Passport stamps to your locking address or delegating the score from a different address that you own. The Octant team cannot increase your score for you.
+Do not try to boost your score by adding GTC staking stamps. Following community feedback, they are no longer counted toward your UQ score.
+If you have issues with your Gitcoin Passport score, please refer to Passport's documentation (opens new window).
+Privacy and Security Measures
+To preserve user privacy, the delegation scheme uses obfuscation. Both the primary and secondary addresses are hashed using the SHA-256 hash function with a hardcoded salt. Only the primary address is stored in plaintext in our database. To prevent multiple delegations to the same high-scoring account, the app checks for previous delegation hashes in the database.
+
+Sybil Detection and Time-out List
+To further safeguard the integrity of Octant's funding mechanism, we’ve partnered with the Gitcoin Passport team to conduct Sybil Account Detection on all Octant GLM-locking addresses before each Allocation Window. This analysis will flag any addresses suspected of belonging to the same owner, preventing attempts to unfairly manipulate the distribution of the matching fund.
+
+Addresses flagged as suspected Sybil accounts will be placed on a timeout list for the current allocation window. These accounts will have a UQ score of 0, and their donations will not receive matching.
+
+Users on the timeout list will not be able to delegate a passing Passport score from another address or raise their UQ score by adding more stamps to their Passport. However, users on this list can dispute their placement and re-verify their accounts (opens new window), with any changes taking effect in the next allocation window.
+
+Existing Community Considerations
+In Epoch 4, as a courtesy to our community, we created a special allowlist for all known non-Sybil Octant users (opens new window). Users on the allowlist received a 21-point boost to their Passport score, ensuring they would receive the maximum available matching for their donations. In Epoch 5, based on community feedback, we’ve extended the allowlist (opens new window)to include all new users from our recent community-building initiatives.

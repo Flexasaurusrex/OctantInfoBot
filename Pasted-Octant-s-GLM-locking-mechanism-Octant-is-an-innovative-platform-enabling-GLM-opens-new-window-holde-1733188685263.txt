@@ -1,0 +1,88 @@
+Octant's GLM-locking mechanism
+Octant is an innovative platform enabling GLM (opens new window)holders to earn ETH rewards and support projects they care about.
+
+Developed by the Golem Foundation (opens new window), Octant explores motivations for public goods support. It employs recurring funding rounds and rewards active participants with ETH.
+
+The Golem Foundation fuels Octant by regularly donating a portion of its rewards from staking 100,000 ETH. To participate in the distribution of the Octant funds, individuals are required to "lock" some amount of GLM tokens (100 or more) in the Octant Deposits smart contract.
+
+GLM-locking Design
+The idea behind the design of the Deposits locking contract is to make it as simple as possible and minimize any additional manipulations with GLM tokens. It is transparent and easy to understand, even for users who may not be tech-savvy.
+
+The GLM Deposits contract only does two things:
+
+“Lock” by depositing GLM tokens into the contract.
+“Unlock” by withdrawing them back to the wallet.
+The name is derived from the idea that you lock them into the contract for a specific duration. It's not staking in the traditional sense.
+
+The Octant locking mechanism is non-custodial. It does not put the tokens into a pool or mint Liquidity Pool (LP) tokens for a user, nor does it engage in any other form of manipulation. Users retain complete control and can “unlock” the tokens at any moment (you can trace all GLM-locking and unlocking transactions directly on Etherscan (opens new window)).
+
+The purpose of this contract is to simply track how many GLM tokens users deposited. It gives them proportional voting power in the Octant public goods funding process, and the ability to claim rewards from the ETH staked by Golem Foundation.
+
+Deposits Contract
+The deposit contract's lock function performs three essential actions:
+
+It tracks the current user’s deposit.
+It deposits GLM tokens from the user’s wallet into the contract.
+It emits an event detailing the current and previous locked amounts.
+/// @notice GLM token contract address
+ERC20 public immutable glm;
+
+/// ...
+
+/// @notice Lock GLM to enable participation in Octant experiment.
+/// This can be done at any time, but it is most capital effective at the end of the epoch.
+/// @param amount Amount of GLM to be locked.
+function lock(uint256 amount) external {
+    require(amount != 0, CommonErrors.INVALID_ARGUMENT);
+
+    uint256 oldDeposit = deposits[msg.sender];
+    deposits[msg.sender] = oldDeposit + amount;
+    require(
+        glm.transferFrom(msg.sender, address(this), amount),
+        DepositsErrors.GLM_TRANSFER_FAILED
+    );
+    emit Locked(oldDeposit, amount, block.timestamp, msg.sender);
+}
+The unlock function performs the opposite role:
+
+It reduces the current user’s deposit in the contract.
+It transfers the tokens back to the user’s wallet.
+It emits an event detailing the previous and the current locked amounts.
+/// @notice Unlock GLM. This can be done at any time, but it is most capital effective at the beginning of the epoch.
+/// @param amount Amount of GLM to be unlocked.
+function unlock(uint256 amount) external {
+    uint256 oldDeposit = deposits[msg.sender];
+    require(oldDeposit >= amount, DepositsErrors.DEPOSIT_IS_TO_SMALL);
+    deposits[msg.sender] = oldDeposit - amount;
+    require(glm.transfer(msg.sender, amount));
+    emit Unlocked(oldDeposit, amount, block.timestamp, msg.sender);
+}
+That’s it, really. As simple as it gets!
+
+Octant v1 also includes other smart contracts that manage proposals for public goods funding projects, epochs, and more. Feel free to explore the code on your own here (opens new window). You can also familiarize yourself with the results of the Least Authority audit of the Octant's smart contracts, which are available at their website (opens new window).
+
+GLM-locking Strategy
+Octant operates in epochs. An epoch is a designated period, currently set at 90 days. During an epoch, Octant generates ETH staking rewards and monitors user-deposited GLM tokens.
+
+Rewards for users are determined by a time-weighted average - users receive rewards proportionally to the period for which they have locked GLM tokens during that epoch. If a user locks 100 GLM at the beginning of an epoch, and later adds 1000 GLM in the middle of that epoch, their resulting voting power will be proportional to 600 GLM.
+
+600 GLM = 100 GLM * 1 + 1000 GLM * 0.5
+Lowering the lock-in amount during an epoch will recalibrate the user's time-weighted average to reflect the smallest locked amount.
+
+Maximizing Your Rewards
+You can lock your tokens at any time, but the earlier you lock your GLM in the epoch, the higher your rewards will get. To maximize your rewards, you should keep your tokens locked in Octant throughout the whole 90-day epoch.
+
+Keep in mind that the allocation window for epoch N overlaps with the first two weeks of epoch N+1. For example, the allocation window for epoch 2 happens during the first two weeks of epoch 3. Therefore, to get the maximum rewards, follow these two rules:
+
+Lock your tokens before the current epoch's allocation window begins and keep them locked until the next epoch's allocation window opens.
+Avoid unlocking your tokens. Unlocking, even briefly, means your rewards will be calculated as if you held the smaller amount for the entire period.
+Why this works:
+
+The allocation window determines rewards for the previous epoch.
+Tokens locked during an allocation window for epoch N earn you rewards for epoch N+1.
+Rewards are time-weighted. Unlocking tokens lowers your time-weighted average.
+You may wonder - shouldn't locking GLM at the very beginning of an allocation window and keeping them locked till the next allocation window opens be enough to get maximum rewards?
+
+Octant is deployed on the Ethereum blockchain therefore the rewards are calculated not per days but per blocks. Currently, a new block is included in the Ethereum blockchain on average around every 12 seconds (opens new window). You would have to time your lock very precisely to match the opening of the allocation window. Therefore, locking slightly before the allocation window opens is a safer bet to maximize rewards. Note: For most users, the difference in rewards between locking on the first day of the allocation window and just before it starts will be negligible.
+
+Remember also that the strength of Octant lies in the recurring rewards. Every 90 days, users who locked their GLM into Octant are rewarded with ETH. So lock in when it is most convenient for you, and keep your tokens locked throughout as many epochs as you feel comfortable. After each epoch you will get new rewards!

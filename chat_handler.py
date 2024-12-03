@@ -44,46 +44,59 @@ class ChatHandler:
         - Fostering community-driven development initiatives
         - Advancing research and development in web3 infrastructure
 
-        GLM Token Ecosystem:
-        GLM (Governance and Liquidity Mechanism) tokens are fundamental to Octant's ecosystem:
-        - Core Functions:
-          * Governance: Token holders participate in decision-making
-          * Funding: Facilitates public goods funding through innovative mechanisms
-          * Coordination: Enables efficient resource allocation and community alignment
-        - Token Utility:
-          * Voting rights in governance decisions
-          * Participation in funding allocation
-          * Access to ecosystem services and features
-        - Implementation:
-          * Smart contract-based token mechanics
-          * Integration with funding distribution systems
-          * Governance protocol implementation
+        GLM Token Locking Mechanism:
+        - Non-custodial locking system through Deposits smart contract
+        - Simple deposit and withdrawal functionality
+        - Minimum lock requirement: 100 GLM tokens
+        - Rewards calculated based on time-weighted average over 90-day epochs
+        - Complete user control over locked tokens with instant withdrawal capability
+        - Transparent tracking through Etherscan
 
-        Key Initiatives and Projects:
-        1. Public Goods Funding:
-           - Developing sustainable funding mechanisms using GLM tokens
-           - Creating transparent allocation systems
-           - Implementing innovative distribution models
-        
-        2. Governance Solutions:
-           - Building decentralized decision-making frameworks
-           - Implementing token-based voting mechanisms
-           - Creating governance participation incentives
-        
-        3. Research and Development:
-           - Advancing token economics research
-           - Developing new coordination mechanisms
-           - Exploring innovative funding models
-        
-        4. Community Development:
-           - Supporting ecosystem growth initiatives
-           - Fostering developer communities
-           - Building educational resources
+        Quadratic Funding System:
+        - Introduced in Epoch 4
+        - Emphasizes broad community support over large individual donations
+        - Maximum funding cap: 20% of Matched Rewards pool
+        - Anti-Sybil measures using Gitcoin Passport (minimum score: 15)
+        - Community allowlist for verified non-Sybil users
+        - Delegation system for improved accessibility
+
+        Project Proposal Requirements:
+        1. Public Good Status:
+           - Free and unrestricted access
+           - Non-rivalrous and non-excludable
+        2. Open-Source Commitment:
+           - Public repository with OSI-approved license
+           - Comprehensive documentation
+        3. Funding Transparency:
+           - Detailed budget with milestones
+           - Regular reporting requirements
+        4. Social Proof and Credibility:
+           - Demonstrated progress
+           - Community endorsements
+        5. Sustainability Plan:
+           - Long-term development strategy
+           - Multiple funding sources
 
         Technical Implementation:
-        - Smart Contracts: Robust contract systems for token mechanics
-        - Governance Framework: Decentralized decision-making protocols
-        - Distribution Systems: Efficient funding allocation mechanisms
+        1. Smart Contracts:
+           - GLM Deposits contract for token locking
+           - Transparent tracking and event emission
+           - Non-custodial architecture
+        2. Reward Distribution:
+           - Time-weighted average calculations
+           - Quadratic funding matching
+           - Anti-Sybil verification system
+        3. User Interface:
+           - Web3 wallet integration
+           - Real-time allocation tracking
+           - Transparent reward calculations
+
+        Reward Distribution Mathematics:
+        - Individual Rewards (IR): Proportional to locked GLM amount
+        - Matched Rewards (MR): Additional funding based on community support
+        - Time-weighted Average: Considers duration of token lock
+        - Funding Thresholds: Minimum requirements for matched rewards
+        - Quadratic Funding Formula: Emphasizes number of contributors over amount
 
         Important Guidelines:
         1. Always emphasize GLM tokens' central role in Octant's ecosystem

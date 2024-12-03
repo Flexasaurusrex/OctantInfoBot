@@ -1,0 +1,47 @@
+Propose a project
+Octant is a community-driven platform for experiments in decentralized governance. During its MVP stage we will be using Octant to test various hypotheses related to sustainable financing of public goods and infrastructure. For every 90-day epoch, a range of public good projects will be chosen as potential donation recipients.
+
+Golem Foundation (opens new window)will be maintaining and curating the list of projects eligible to receive funds from the Octant reward pool, based on inputs from the Octant community.
+
+To be considered for inclusion, potential donation recipients should meet the Eligibility criteria, and not trigger the Exclusion criteria:
+
+Eligibility Criteria
+1. Public Good Status
+The project must be a public good, which means it should be available to everyone and free to use without any restrictions. It also means that anyone can use it, no matter how many people are using it at the same time. Examples of public goods include open-source software, public digital tools, educational resources that anyone can access, or platforms that help people work together and share information.
+Projects can still make revenue through optional paid features or services, as long as the main part of the project stays free to use and open to anyone (i.e. non-rivalrous and non-excludable).
+2. Open-Source Commitment
+Software projects applying for Octant funding must maintain a publicly accessible repository (e.g., GitHub, GitLab) under an OSI-approved open-source license (opens new window). The repository should have a consistent history of updates and include comprehensive documentation to enable outside contributions.
+For non-software projects where open-source contributions aren't feasible, project representatives should clearly explain how the project contributes to openness and accessibility and be able to share proof of accessibility supplemented with links, resources, etc.
+3. Funding Transparency
+Ability to submit a detailed, itemized budget that outlines how the funds will be used. This budget must include specific milestones and expected deliverables.
+Commit to periodic reporting for each Octant Epoch in which your project receives funding, detailing the use of funds and progress on deliverables.
+If your project is funded from multiple sources, explain how the requested Octant funds fit into your overall budget and what the funding will be used for.
+In the event of the project pivoting and any significant change in the project, reapplication as a new project is required.
+For example: If you’re Project A, an open-source voting tool, and have already secured $50,000 for platform development from other grants, but now you’re requesting $20,000 from Octant for UX/UI design and user testing, your budget should clearly itemize how Octant funds will be used (e.g., $15,000 for designer contracts, $5,000 for testing). You would also outline specific milestones, such as hiring the designer and completing testing, with expected outcomes for each. If the scope of your project changes—like expanding beyond voting into broader governance—you would need to reapply as a new project.
+
+4. Social Proof and Credibility
+Projects must demonstrate credibility or progress to be eligible. This can be shown through social media announcements (e.g., Twitter, Farcaster), blog posts, open-access software repositories, or other relevant public content. Projects should also have endorsements from relevant communities or demonstrate contributions to industry events and discussions. Proof of past successful project completions or evidence of progress must be provided when submitting the full application form.
+5. Sustainability Plan
+Outline a clear plan for sustaining project development and operations beyond Octant and other funding sources.
+6. Development Stage
+Projects must be at least at the MVP stage and demonstrate measurable progress. Conceptual or in-progress MVP projects are encouraged to further develop before applying.
+7. Problem Statement and Solution
+Clearly define the problem your project aims to solve and explain how it offers a solution. Highlight the public value, innovation, or improvements it offers over existing alternatives.
+Exclusion Criteria
+1. Financial Products
+Projects developing or operating lending, investing, or trading/swap services.
+2. Misconduct or Unethical Behavior
+Projects with evidence of unethical behavior or misconduct (e.g., misuse of funds, fraud, failure to meet obligations, bullying).
+3. Charities
+Projects that primarily offer direct aid or support without developing long-term, scalable solutions.
+4. Grant Distribution Projects
+Projects that run grant rounds or distribute funding for a mechanism that involves users voting.
+Note: Projects interested in running funding rounds can apply under the Octant Community Fund's (opens new window)"Community" category, specifically designed for community-led rounds and voting-based grant distributions.
+
+Every Octant user can submit proposals for new additions to the list of eligible projects, a change in the eligibility criteria, or a theme for an epoch.
+
+Once a cause or an organization is listed on the eligibility index, it can be selected as one of the potential beneficiaries in a given epoch (depending on its theme). There are no limits to the number of times a project can be a potential beneficiary.
+
+The voting for donation recipients to be included in an epoch will happen on Octant's Snapshot (opens new window). Only users with GLM locked into Octant are eligible to vote.
+
+A detailed description of the submission process is available here.

@@ -1,0 +1,31 @@
+Introduction
+Octant is a novel platform for experiments in participatory public goods funding, centered on Golem's (opens new window)native ERC-20 token, GLM (opens new window).
+
+Developed by the Golem Foundation (opens new window)to explore motivations and behaviors that drive engagement in funding public goods, Octant uses recurring funding rounds and rewards active user participation with ETH.
+
+Key points:
+Golem Foundation stakes 100,000 ETH to help the Ethereum network reach consensus. Every 90 days, a fraction of the staking rewards is used to fund the Octant reward pool.
+The Octant reward pool is split into two streams: User Rewards and Matched Rewards.
+To participate in the distribution of Octant funds, users must lock a minimum of 100 GLM (opens new window)into the Octant contract.
+Users with an effective locked balance of at least 100 GLM become eligible for User Rewards.
+Rewards for users are calculated using a time-weighted average. The greater the volume of GLM locked and the longer its duration, the higher the reward. For optimal rewards, users should lock as much GLM as they are comfortable with and maintain that lock in Octant throughout the entire 90-day epoch.
+The GLM time-locking mechanism is non-custodial. Octant users retain full control of their tokens and can withdraw their GLM at any time. Lowering the lock-in amount during an epoch will recalibrate the user's time-weighted average to reflect the smallest locked amount. If the effective locked balance falls below 100 GLM, no rewards will be calculated.
+At the beginning of a new epoch, users with valid lock-ins will have a two-week-long decision window during which they can claim their User Rewards for themselves or donate their share of Octant rewards, in part or in full, to one or more eligible public goods projects. The impact of each individual donation will be magnified through Matched Rewards.
+The list of projects eligible for Octant funding is curated by Golem Foundation, based on inputs from the Octant community. Every community member can suggest new additions to the list, a change in eligibility criteria, or a theme for an epoch.
+The flow of funds in Octant
+
+
+Current status
+Octant officially launched on the Ethereum mainnet on August 8th, 2023 (opens new window).
+
+Since launch, we've completed five successful allocation windows. The Octant community has shown incredible generosity, donating over 1464 ETH to over 50 high-impact public goods causes while claiming 803 ETH in rewards. For a breakdown of each individual allocation window, please check out the metrics tab in the Octant app (opens new window).
+
+In Epoch Three, Octant got a major algorithm makeover (opens new window), and in Epoch Four we switched to quadratic funding.
+
+We are now in Epoch Six, with the upcoming Allocation Window scheduled to begin on January 11, 2025. New users are welcome to join at any time.
+
+If you are already familiar with Octant and want to jump right into the DApp, see the Using the App guide.
+
+If you want to know more about the Octant rationale and the overall design, read the How Octant works section of the Docs.
+
+To know more about how Octant total reward pool, users’ rewards, and matched rewards are calculated, check the Octant Technical Outline or read Octant paper (opens new window).

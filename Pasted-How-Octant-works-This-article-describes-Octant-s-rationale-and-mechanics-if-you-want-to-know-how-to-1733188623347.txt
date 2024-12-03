@@ -1,0 +1,50 @@
+How Octant works
+This article describes Octant's rationale and mechanics, if you want to know how to use the app, clik here.
+
+Overview and rationale
+With the Ethereum switch from Proof-of-Work to Proof-of-Stake (opens new window)consensus mechanism, the Golem Foundation (opens new window), which is developing Octant, has decided to become a validator in the network (opens new window). The Foundation has staked 100,000 ETH to secure the network and assist in reaching consensus.
+
+In exchange for staking its Ether and serving as a validator, the Foundation receives a steady stream of rewards directly from the protocol (opens new window). A portion of these staking rewards is transferred to the Octant community every 90 days. Community members then decide, through individual actions and polls, how to allocate these funds. They can choose to either claim a portion of the reward for themselves or donate it to qualifying public goods causes.
+
+Through this initiative, the Golem Foundation aims to gather empirical evidence on user participation in decentralized governance. This information will guide our search for effective decentralized governance solutions (opens new window)and further the development of the User-Defined Organization (opens new window)project.
+
+The distribution of the Golem Foundation's staking yield
+Initially, the transfer of staking rewards from the Golem Foundation to Octant depended on the percentage of the total GLM supply locked by Octant users (opens new window)— the more GLM locked in the Octant contract, the greater the portion of the Foundation’s staking rewards directed to the Octant community. However, in Epoch Three, we shifted to a predetermined split (opens new window):
+
+70% of the staking yield contributes to Octant's Total Rewards budget, split evenly between User Rewards and Matched Rewards.
+25% of the staking yield goes to the Golem Foundation, helping cover expenses like validator management, Octant administration, development, marketing, and other initiatives.
+5% of the staking yield bolsters the Octant Community Fund.
+Governance over Octant's Total Rewards Budget
+Anyone holding GLM tokens (opens new window)(the ERC-20 token native to the Golem Network (opens new window)) can become part of the Octant community by locking a certain minimum amount of their tokens in the Octant contract. It's possible to lock as little as 1 GLM, but a minimum effective balance of 100 GLM is required to qualify for user rewards.
+
+The GLM-locking mechanism is non-custodial. Tokens locked by users aren't pooled with others' funds. Users maintain full control over their funds and can unlock their GLM at any time.
+
+Governance of the Total Rewards budget occurs through a cyclical process known as 'epochs,' each spanning 90 days, although this duration is subject to potential adjustments.
+
+Each epoch starts with the Octant community selecting eligible public goods projects for funding. (Details on eligibility and how to submit a project are in the Propose a project section.)
+
+During an epoch, users with at least 100 GLM in effective locked balance earn ETH rewards. The distribution of rewards is linear: the percentage of the total GLM supply a user locks in Octant corresponds directly to their percentage of User Rewards.
+
+User Rewards for GLM lockers are further enhanced by the Participation Promotion Fund (PPF), introduced in Epoch 3 (opens new window). Half of the PPF boosts ETH rewards, with the rest earmarked for a special GLM incentive. (This fund will provide incremental boosts to User Rewards and will decrease periodically as more GLM is locked, phasing out completely at a 35% lock-in rate.)
+
+User Rewards are determined by a time-weighted average: the more GLM locked and the longer it remains, the greater the User Reward. Users can adjust their lock amount during an epoch; however, reducing a lock recalibrates the time-weighted average to the smallest amount locked.
+
+An epoch is followed by a two-week allocation window, during which users can:
+
+Claim the rewards for themselves,
+Donate all or a portion to any of the shortlisted public goods projects,
+Allocate them to the Octant Matching Fund via Patron mode.
+Donations from User Rewards to projects are potentially increased by Octant's Matched Rewards, calculated using a quadratic funding formula. This formula considers both the number of unique contributors and the amount donated, giving more weight to projects with broad community support.
+
+The matching multiplier for each donation depends on the user's Gitcoin Passport score. Users with a score of 15 or higher receive the maximum matching multiplier, while those with lower scores have their donations scaled down as an anti-Sybil measure.
+
+To ensure a balanced distribution of funds, a maximum funding cap is set at 20% of the total Matched Rewards fund (including funds from Patron mode). Users can still donate to projects that have reached this cap, but these donations will not receive additional matching from the Matched Rewards pool.
+
+Post-allocation window:
+
+Users opting to claim rewards can transfer ETH to their wallets.
+Projects can withdraw community donations.
+Rewards not claimed or allocated, are returned to the Golem Foundation.
+For insights into the Octant App’s functionality and how to participate, consult the Using the App section.
+
+For a detailed explanation of reward and matched fund calculations, refer to Octant’s Technical Outline.

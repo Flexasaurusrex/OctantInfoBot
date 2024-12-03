@@ -1,0 +1,195 @@
+This section outlines templates that projects funded by Octant should use when participating in Octant funding and be sharing on the Octant Discuss Forum (opens new window). Templates include:
+
+Project proposal template: This template should be used when first making a submission to Octant and the project has made it through the eligibility check.
+Short-term reporting template: This short-term update template is for the subsequent epoch a project's participating in after initial submission. For example, if your first epoch participated in was Epoch Four and you're now participating in Epoch Five, you would use this template.
+Long-term reporting template: This long-term update template is the main template for reporting and should be used for projects where it's been 2 or more epochs since their initial application. For example, your project was first submitted in Epoch Three and it's now Epoch Five, Six, Seven, etc.
+Karma GAP impact criteria: Following being funded, project's will be expected to set up and update their project's Karma GAP profile.
+Project Proposal Template
+
+**Project Description:** [Please remember to include links to relevant resources]
+
+**Public Repository:** [GitHub Link or relevant link to access public information.]
+
+### **Budget Breakdown**
+
+E.g.
+
+Milestone 1: [$ / ETH and Milestone Description]
+
+- **Expected Outcome**: [Describe the immediate result this milestone will achieve.]
+
+Milestone 2: [$ / ETH and Milestone Description]
+
+- **Expected Outcome**: [Describe the immediate result this milestone will achieve.]
+
+Milestone […]:
+
+**Funding Requested: $ / ETH**
+
+**Plans should you fall below, reach or exceed funding goals:**
+
+### **Impact Measurement and Reporting**
+
+**Inputs > Activities > Outputs > Outcomes > Long Term Impact**
+
+**Short-term Outcomes (0-3 months):**
+
+- [Describe the immediate results expected from the project, such as the completion of specific milestones or deliverables.]
+
+**Mid-term Outcomes (3-6+ months):**
+
+- [Describe the anticipated outcomes from the project, such as increased user engagement, adoption rates, or community growth.]
+
+**Long-term Impact (5+ years):**
+
+- [Describe the long-term vision for your project, including how it will create lasting changes and benefits for the community or ecosystem.]
+
+**Outcomes Measurement:**
+
+- [Explain how you will measure the outcomes and impact of your project, both quantitatively and qualitatively. Include specific metrics or indicators you will use, such as user engagement, adoption rates, community impact, and user satisfaction. Also share the tools you’ll be using for this purpose.]
+
+### **Interim Reporting**
+
+**Regular Updates:**
+
+- [Detail how often you will provide updates on your progress (e.g., monthly, quarterly).]
+
+**Milestone Verification:**
+
+- [Explain how you will verify that milestones have been achieved, such as through deliverables or progress reports. Should your project receive funding, you'll be expected to setup a Karma GAP project page: https://gap.karmahq.xyz/]
+
+### **Sustainability Plan**
+
+[Outline your path to financial sustainability, focusing on key strategies such as your revenue model (e.g., product sales, subscriptions), strategic partnerships or collaborations, or any plans for securing future funding. You may choose to address one or more of these pathways.]
+
+### **Case Studies and Testimonials**
+
+**Gathering Feedback:**
+
+- [Describe how you plan to collect feedback and testimonials from users, stakeholders, and beneficiaries to showcase the impact of your project.]
+
+**Showcasing Success:**
+
+- [Detail how you will compile and present case studies and testimonials, such as through blog posts, social media, or formal reports.]
+
+### **Advancing Values of Freedom and Privacy**
+
+[describe how you are advancing values of freedom and privacy]
+
+### **Supporting Decentralization**
+
+[describe how you’re supporting decentralization]
+
+### **Team Information**
+
+[Including backgrounds, roles and relevant links]
+
+### **Social Proof**
+
+[Give relevant material to show how you are recognizable in the the ecosystem. Please include links. E.g. “Our project has been endorsed by [Name], a recognized expert in the ecosystem, and has completed previous milestones successfully, as detailed in our GitHub repository.”]
+
+### **Transparency**
+
+[E.g. “Our internal procedure is to transfer any funding on-chain / sell on CEX to pay wages / other, which is used to pay salaries of our employees, pay for office equipment, and buy tokens for our LP. Should we receive funding from Octant it will primarily go towards XYZ.” - This is just an example to help you, it’s just about being transparent. We hope you don’t use Octant funding to buy tokens in your LP, like in the example.]
+
+### **Other funding**
+
+- Grant funding received since the last Epoch (e.g., RetroPGF, Gitcoin, etc.), including funding amounts:
+- Other non-grant funding sources (like user payments, donations, staking or LP contributions to treasury, VC investments, etc.):
+Short-term Update Template
+
+- **Total Funds Received (Previous Round)**: $ / ETH [Amount received in the previous round]
+- **Total Funds Requested:** $ / ETH [Amount requested from initial application]
+- **Funds Spent**: $ / ETH [Detailed breakdown of expenditures]
+- **Remaining Balance**: $ / ETH [Remaining funds from the previous round]
+
+**Plans for Next Epoch**
+
+- **Updated Milestone 1**:
+    - **Description**: [Brief description]
+    - **Expected Immediate Outcome**: [Describe the expected immediate result]
+    - **Funding Needed**: $ / ETH [Amount needed]
+- **Updated Milestone 2**:
+    - **Description**: [Brief description]
+    - **Expected Immediate Outcome**: [Describe the expected immediate result]
+    - **Funding Needed**: $ / ETH [Amount needed]
+- **Karma GAP**: [Make sure to create a Karma Gap page, add relevant milestones, and link your project's Karma GAP page: https://gap.karmahq.xyz/octant]
+- **Additional Funding Request**: $ / ETH [Total additional funding required]
+Long-term Update Template
+
+- **Total Funds Received from Octant so far**: $ / ETH
+- **Funds Spent**: $ / ETH
+- **Detailed Utilization**:[ Provide a detailed account of how Octant funds have been used so far. You may copy & then build upon previous responses, adding new details as appropriate.]
+
+### **Milestones and Deliverables**
+
+- **Milestone 1**:
+    - **Description**: [Brief description of the milestone]
+    - **Immediate Outcome**: [Describe the immediate result]
+    - **Funding Used**: $ [Amount spent]
+- **Milestone 2**:
+    - **Description**: [Brief description of the milestone]
+    - **Immediate Outcome**: [Describe the immediate result]
+    - **Funding Used**: $ [Amount spent]
+- **Karma GAP**: [If you haven't already, make sure to set up your Karma GAP page, add relevant milestones, and link your project's Karma GAP page: https://gap.karmahq.xyz/octant]
+
+### **Challenges**
+
+- **Previous Challenges**:
+    - **Description**: [Did you outline any challenges in your previous submissions? If so, provide a brief reminder of those challenges.]
+    - **Updates**: [What are the updates on these challenges? Have they been resolved or are they ongoing?]
+    - **Resolution**: [How did you resolve these challenges? Describe the steps and strategies used.]
+    - **Lessons Learned**: [What lessons were learned from these experiences? Share any insights or best practices that can benefit the community.]
+
+### **Outputs and Outcomes**
+
+**Outputs (Last Epoch)**:
+
+- **Output 1**: [Specific, measurable results from activities, e.g., number of users onboarded, number of features shipped, training sessions conducted]
+- **Output 2**: [Specific, measurable results from activities]
+
+**Short-term Outcomes**:
+
+- **Outcome 1**: [Describe the short-term outcomes resulting from the outputs, e.g., increased user engagement, higher retention rates, immediate feedback from users, increase in transaction volume]
+- **Outcome 2**: [Describe the short-term effects resulting from the outputs]
+
+**Long-term Outcomes**:
+
+- **Outcome 1**: [Describe the long-term effects and impact, e.g., sustained community growth, improved user satisfaction and loyalty, enhanced ecosystem functionality, significant reduction in costs or inefficiencies]
+- **Outcome 2**: [Describe the long-term effects and impact]
+    
+    **Metrics for Outcomes:**
+    
+    1. **User Engagement**: Active users (daily, weekly, monthly), user retention rates, time spent on the platform.
+    2. **Adoption and Usage**: Number of new users or customers acquired, frequency of feature usage, increase in transactions or interactions.
+    3. **Community Impact**: Growth in community size, level of community participation and contribution, number of collaborations or partnerships formed.
+    4. **Financial Metrics**: Revenue generated, cost savings achieved, return on investment (ROI).
+    5. **User Satisfaction**: User satisfaction scores (e.g., Net Promoter Score, user surveys, number of positive testimonials or reviews.)
+    6. **Innovation and Development**: Number of new features or products successfully launched, impact of new features on overall project goals, feedback from users on new features.
+
+### **Plans for Potential Funds Raised in the Next Octant Allocation Window**
+
+- **Goal 1**:
+    - **Description**: [Brief description of the goal]
+    - **Expected Outcome**: [Describe the expected result]
+    - **Funding Needed**: $ [Amount needed]
+- **Goal 2**:
+    - **Description**: [Brief description of the goal]
+    - **Expected Outcome**: [Describe the expected result]
+    - **Funding Needed**: $ [Amount needed]
+
+### **Other Funding**
+
+- **Grant Funding Received Since the Last Epoch**: [Detail any grant funding received, including amounts]
+- **Other Non-Grant Funding Sources**: [Detail other sources of funding, such as user payments, donations, staking, LP contributions, VC investments, etc.]
+
+### **Future Plans for Financial Sustainability**
+
+It’s now been 4+ months from your initial application.  Have there been any changes to  revenue sources and income generation plans. Share your story on how your project plans to achieve long-term financial sustainability and the progress since the previous epoch. You may include updates on any of the following aspects:
+
+- Changes to your revenue sources and income generation plans since your initial application.
+- New or ongoing strategic partnerships or collaborations that support your project.
+- Plans for securing additional funding and ensuring diverse funding sources.
+Karma GAP Impact Criteria
+You'll notice in the reporting requirements you're requested to include a link to your project's Karma GAP (opens new window). We ask that you fill out the Milestones and Impact Criteria. If you have broader reaching milestones (>3 months), we ask that you break it down into smaller milestones. Then have separate bigger milestones that you can reference. Please include sources of truth, such as links.
+
