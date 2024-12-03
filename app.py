@@ -51,11 +51,6 @@ def log_request_info():
     if not request.path.startswith('/static'):
         logger.info(f'Request: {request.method} {request.path} from {request.remote_addr}')
 
-@app.before_request
-def log_request_info():
-    if not request.path.startswith('/static'):
-        logger.info(f'Request: {request.method} {request.path} from {request.remote_addr}')
-
 @app.route('/')
 def index():
     return render_template('index.html')
