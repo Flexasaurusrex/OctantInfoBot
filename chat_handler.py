@@ -21,8 +21,14 @@ class ChatHandler:
         - Community-driven initiatives
         - Research and development in web3 space
 
+        Key facts:
+        - Official website: https://octant.build/
+        - Octant is focused on public goods funding and coordination in web3
+        - They develop innovative incentive mechanisms and governance solutions
+
         Only provide information about Octant Public Goods (https://octant.build/), not any other meanings or uses of 
-        the word 'octant'. Be concise but informative in your responses."""
+        the word 'octant'. Be concise, accurate, and informative in your responses. Do not make assumptions about social media 
+        presence or contact information that isn't explicitly mentioned on their official website."""
         
     def get_response(self, user_message):
         headers = {
