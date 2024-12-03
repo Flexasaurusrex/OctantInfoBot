@@ -61,8 +61,30 @@ def index():
 def handle_connect():
     logger.info(f"Client connected: {request.sid}")
     try:
+        help_message = """
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📚 Available Commands
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎮 Game Commands:
+• /trivia - Start a trivia game
+• start trivia - Also starts trivia game
+• end trivia - End current trivia game
+
+📋 Information Commands:
+• /help - Show this help message
+• /stats - View your chat statistics
+• /learn - Access learning modules
+
+📌 Topic-Specific Commands:
+• /funding - Learn about Octant's funding
+• /governance - Understand governance
+• /rewards - Explore reward system
+
+Type any command to get started!
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"""
         socketio.emit('receive_message', {
-            'message': 'Hello! I\'m the Octant Information Bot. How can I help you learn about Octant today?',
+            'message': help_message,
             'is_bot': True
         }, room=request.sid)
     except Exception as e:

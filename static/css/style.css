@@ -123,6 +123,18 @@ body {
     }
 }
 
+.description {
+    font-size: 1.2rem;
+    color: var(--text-color);
+    opacity: 0.9;
+    font-weight: 500;
+    margin-bottom: 0;
+    padding: 0.5rem 1rem;
+    background-color: var(--message-bg);
+    border-radius: 8px;
+    display: inline-block;
+}
+
 /* Trivia Game Styles */
 .trivia-container {
     background-color: var(--chat-bg);
