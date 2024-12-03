@@ -91,6 +91,16 @@ body {
 #send-button:hover {
     opacity: 0.9;
 }
+.bot-link {
+    color: #0066cc;
+    text-decoration: underline;
+    word-break: break-word;
+}
+
+.bot-link:hover {
+    color: #004999;
+    text-decoration: none;
+}
 
 .loading {
     display: inline-block;

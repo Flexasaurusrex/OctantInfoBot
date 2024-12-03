@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         const messageContent = document.createElement('span');
-        messageContent.textContent = message;
+        messageContent.innerHTML = message;
         messageDiv.appendChild(messageContent);
         
         return messageDiv;

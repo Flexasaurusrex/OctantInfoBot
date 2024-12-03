@@ -56,7 +56,16 @@ class ChatHandler:
             
             result = response.json()
             if "output" in result and result["output"]["choices"]:
-                return result["output"]["choices"][0]["text"].strip()
+                response_text = result["output"]["choices"][0]["text"].strip()
+                # Convert URLs to clickable links
+                import re
+                url_pattern = r'https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+'
+                response_text = re.sub(
+                    url_pattern,
+                    lambda m: f'<a href="{m.group(0)}" target="_blank" class="bot-link">{m.group(0)}</a>',
+                    response_text
+                )
+                return response_text
             else:
                 print("Unexpected API response format:", result)
                 return "I apologize, but I couldn't generate a response at the moment. Please try again."
