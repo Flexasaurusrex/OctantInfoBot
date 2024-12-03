@@ -62,11 +62,13 @@ class Trivia:
         self.score = 0
         self.total_questions = len(self.questions)
         self.asked_questions = set()
+        self.current_question = None
         
     def reset_game(self):
         """Reset the game state."""
         self.score = 0
         self.asked_questions = set()
+        self.current_question = None
         
     def get_next_question(self):
         """Get the next random question."""
@@ -78,28 +80,28 @@ class Trivia:
             
         question_index = random.choice(available_questions)
         self.asked_questions.add(question_index)
-        question = self.questions[question_index]
+        self.current_question = self.questions[question_index]
         
         formatted_question = f"""
 <div class="trivia-container">
     <div class="trivia-score">Question {len(self.asked_questions)}/{self.total_questions}</div>
     
     <div class="trivia-question">
-        {question['question']}
+        {self.current_question['question']}
     </div>
     
     <div class="trivia-options">
         <div class="trivia-option" data-option="A">
-            <strong>A)</strong> {question['options']['A']}
+            <strong>A)</strong> {self.current_question['options']['A']}
         </div>
         <div class="trivia-option" data-option="B">
-            <strong>B)</strong> {question['options']['B']}
+            <strong>B)</strong> {self.current_question['options']['B']}
         </div>
         <div class="trivia-option" data-option="C">
-            <strong>C)</strong> {question['options']['C']}
+            <strong>C)</strong> {self.current_question['options']['C']}
         </div>
         <div class="trivia-option" data-option="D">
-            <strong>D)</strong> {question['options']['D']}
+            <strong>D)</strong> {self.current_question['options']['D']}
         </div>
     </div>
     
@@ -112,20 +114,17 @@ class Trivia:
         
     def check_answer(self, user_answer):
         """Check if the answer is correct and return appropriate response."""
-        if not self.asked_questions:
+        if not self.current_question:
             return "Please start a new game first!"
             
-        # Get the last question that was asked
-        current_question_index = max(self.asked_questions)
-        current_question = self.questions[current_question_index]
         user_answer = user_answer.strip().upper()
         
         if user_answer not in ['A', 'B', 'C', 'D']:
             return "Please answer with A, B, C, or D!"
-            
-        correct_answer = current_question['correct']
-        correct_option = current_question['options'][correct_answer]
-        explanation = current_question['explanation']
+        
+        correct_answer = self.current_question['correct']
+        correct_option = self.current_question['options'][correct_answer]
+        explanation = self.current_question['explanation']
         
         if user_answer == correct_answer:
             self.score += 1
@@ -147,8 +146,7 @@ class Trivia:
     </div>
 </div>
 """
-            return response
-        else:            
+        else:
             response = f"""
 <div class="trivia-container">
     <div class="trivia-score" style="color: #dc3545">❌ Not quite! Let's learn from this one!</div>
@@ -172,9 +170,9 @@ class Trivia:
     </div>
 </div>
 """
-            if len(self.asked_questions) == self.total_questions:
-                return response + "\n" + self.end_game()
-            return response
+        if len(self.asked_questions) == self.total_questions:
+            return response + "\n" + self.end_game()
+        return response
         
     def end_game(self):
         """End the game and show final score."""
