@@ -49,9 +49,10 @@ body {
 }
 
 .header-logo {
-    height: 50px;
+    height: 35px;
     width: auto;
     filter: var(--primary-color);
+    object-fit: contain;
 }
 
 .description {
