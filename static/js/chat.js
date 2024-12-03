@@ -13,12 +13,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     socket.on('connect_error', (error) => {
         console.log('Connection error:', error);
+        const messages = document.getElementById('messages');
         if (!document.querySelector('.connection-error')) {
             const errorDiv = document.createElement('div');
             errorDiv.className = 'message bot-message connection-error';
             errorDiv.innerHTML = 'Connection lost. Attempting to reconnect...';
-            messagesContainer.appendChild(errorDiv);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            messages.appendChild(errorDiv);
+            messages.scrollTop = messages.scrollHeight;
         }
     });
 
