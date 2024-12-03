@@ -2,6 +2,12 @@ import os
 import logging
 from datetime import datetime
 from flask import Flask, render_template, request
+import logging
+logger = logging.getLogger('app')
+logger.setLevel(logging.INFO)
+handler = logging.StreamHandler()
+handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+logger.addHandler(handler)
 from flask_socketio import SocketIO
 from flask_cors import CORS
 from flask_limiter import Limiter
@@ -45,6 +51,11 @@ def log_request_info():
     if not request.path.startswith('/static'):
         logger.info(f'Request: {request.method} {request.path} from {request.remote_addr}')
 
+@app.before_request
+def log_request_info():
+    if not request.path.startswith('/static'):
+        logger.info(f'Request: {request.method} {request.path} from {request.remote_addr}')
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -52,6 +63,13 @@ def index():
 @socketio.on('connect')
 def handle_connect():
     logger.info(f"Client connected: {request.sid}")
+    try:
+        socketio.emit('receive_message', {
+            'message': 'Hello! I\'m the Octant Information Bot. How can I help you learn about Octant today?',
+            'is_bot': True
+        })
+    except Exception as e:
+        logger.error(f"Error sending welcome message: {str(e)}")
 
 @socketio.on('disconnect')
 def handle_disconnect():
@@ -64,6 +82,7 @@ def handle_message(data):
         logger.info(f"Received message from {request.sid}: {message[:50]}...")
         
         if chat_handler is None:
+            logger.error("ChatHandler not initialized")
             raise RuntimeError("ChatHandler not initialized")
             
         response = chat_handler.get_response(message)
@@ -72,10 +91,22 @@ def handle_message(data):
             'is_bot': True
         })
         logger.info(f"Sent response to {request.sid}")
-    except Exception as e:
-        logger.error(f"Error handling message: {str(e)}")
+    except KeyError as e:
+        logger.error(f"Invalid message format from {request.sid}: {str(e)}")
         socketio.emit('receive_message', {
-            'message': "I apologize, but I encountered an error processing your message. Please try again.",
+            'message': "I couldn't process your message. Please try again with a valid message format.",
+            'is_bot': True
+        })
+    except RuntimeError as e:
+        logger.error(f"Runtime error: {str(e)}")
+        socketio.emit('receive_message', {
+            'message': "The chat service is currently unavailable. Please try again in a few moments.",
+            'is_bot': True
+        })
+    except Exception as e:
+        logger.error(f"Unexpected error handling message: {str(e)}")
+        socketio.emit('receive_message', {
+            'message': "I apologize, but I encountered an unexpected error. Please try again.",
             'is_bot': True
         })
 
