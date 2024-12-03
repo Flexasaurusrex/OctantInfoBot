@@ -1,32 +1,52 @@
 document.addEventListener('DOMContentLoaded', () => {
     const socket = io({
         reconnectionAttempts: 5,
-        timeout: 10000
+        timeout: 10000,
+        reconnectionDelay: 1000,
+        reconnectionDelayMax: 5000
     });
     
     const messagesContainer = document.getElementById('messages');
     const messageInput = document.getElementById('message-input');
     const sendButton = document.getElementById('send-button');
     let isWaitingForResponse = false;
+    let reconnectAttempts = 0;
+    const maxMessageLength = 500;
     
+    socket.on('connect', () => {
+        reconnectAttempts = 0;
+        if (messagesContainer.querySelector('.connection-error')) {
+            messagesContainer.querySelector('.connection-error').remove();
+        }
+    });
+
     socket.on('connect_error', (error) => {
         console.error('Connection error:', error);
+        reconnectAttempts++;
+        
         const loadingIndicator = messagesContainer.querySelector('.loading');
         if (loadingIndicator) {
             loadingIndicator.remove();
         }
+        
         isWaitingForResponse = false;
-        const errorMessage = createMessageElement('Sorry, there seems to be a connection issue. Please try again.', true);
-        messagesContainer.appendChild(errorMessage);
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        
+        if (!messagesContainer.querySelector('.connection-error')) {
+            const errorMessage = document.createElement('div');
+            errorMessage.className = 'message system-message connection-error';
+            errorMessage.textContent = `Connection lost. Attempting to reconnect... (Attempt ${reconnectAttempts}/5)`;
+            messagesContainer.appendChild(errorMessage);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        } else {
+            const errorMessage = messagesContainer.querySelector('.connection-error');
+            errorMessage.textContent = `Connection lost. Attempting to reconnect... (Attempt ${reconnectAttempts}/5)`;
+        }
     });
     
     socket.on('error', (error) => {
         console.error('Socket error:', error);
         if (!isWaitingForResponse) {
-            const errorMessage = createMessageElement('An error occurred. Please try again.', true);
-            messagesContainer.appendChild(errorMessage);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            showError('An error occurred. Please try again.');
         }
     });
 
@@ -62,20 +82,50 @@ document.addEventListener('DOMContentLoaded', () => {
         return loadingDiv;
     }
 
-    function sendMessage() {
-        if (isWaitingForResponse || !messageInput.value.trim()) return;
+    function validateMessage(message) {
+        if (!message.trim()) {
+            throw new Error("Please enter a message");
+        }
+        if (message.length > maxMessageLength) {
+            throw new Error(`Message is too long (maximum ${maxMessageLength} characters)`);
+        }
+        return message.trim();
+    }
 
-        const message = messageInput.value.trim();
-        const messageElement = createMessageElement(message, false);
-        messagesContainer.appendChild(messageElement);
-        
-        const loadingIndicator = addLoadingIndicator();
-        isWaitingForResponse = true;
-        
-        socket.emit('send_message', { message: message });
-        messageInput.value = '';
-        
+    function showError(message) {
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'message system-message error';
+        errorDiv.textContent = message;
+        messagesContainer.appendChild(errorDiv);
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        
+        // Auto-remove error message after 5 seconds
+        setTimeout(() => {
+            errorDiv.remove();
+        }, 5000);
+    }
+
+    function sendMessage() {
+        if (isWaitingForResponse) {
+            showError("Please wait for the previous response");
+            return;
+        }
+
+        try {
+            const message = validateMessage(messageInput.value);
+            const messageElement = createMessageElement(message, false);
+            messagesContainer.appendChild(messageElement);
+            
+            const loadingIndicator = addLoadingIndicator();
+            isWaitingForResponse = true;
+            
+            socket.emit('send_message', { message: message });
+            messageInput.value = '';
+            
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        } catch (error) {
+            showError(error.message);
+        }
     }
 
     socket.on('receive_message', (data) => {
