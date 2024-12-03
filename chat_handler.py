@@ -1,7 +1,6 @@
 import os
 import html
 import requests
-from time import time
 from collections import deque
 from trivia import Trivia
 
@@ -162,25 +161,6 @@ Distribution Schedule:
 Use /learn for detailed tutorials!
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"""
 
-class RateLimiter:
-    def __init__(self, max_requests=5, window_seconds=10):
-        self.max_requests = max_requests
-        self.window_seconds = window_seconds
-        self.requests = []
-        
-    def is_allowed(self):
-        """Check if a new request is allowed."""
-        current_time = time.time()
-        # Remove old requests
-        self.requests = [req_time for req_time in self.requests 
-                        if current_time - req_time < self.window_seconds]
-        
-        if len(self.requests) >= self.max_requests:
-            return False
-            
-        self.requests.append(current_time)
-        return True
-
 class ChatHandler:
     def __init__(self):
         self.api_key = os.environ.get("TOGETHER_API_KEY")
@@ -188,7 +168,6 @@ class ChatHandler:
             raise ValueError("TOGETHER_API_KEY environment variable is not set")
         self.model = "mistralai/Mixtral-8x7B-Instruct-v0.1"
         self.base_url = "https://api.together.xyz/inference"
-        self.rate_limiter = RateLimiter()
         self.conversation_history = []
         self.max_history = 5
         self.trivia_game = Trivia()
@@ -225,10 +204,6 @@ class ChatHandler:
 
     def get_response(self, user_message):
         try:
-            # Rate limiting check
-            if not self.rate_limiter.is_allowed():
-                return "I'm receiving too many requests right now. Please wait a moment before trying again."
-
             # Validate and sanitize input
             user_message = self.validate_message(user_message)
             
