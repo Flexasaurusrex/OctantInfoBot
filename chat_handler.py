@@ -4,7 +4,9 @@ import requests
 
 class ChatHandler:
     def __init__(self):
-        self.api_key = os.environ.get("TOGETHER_API_KEY", "your-api-key-here")
+        self.api_key = os.environ.get("TOGETHER_API_KEY")
+        if not self.api_key:
+            raise ValueError("TOGETHER_API_KEY environment variable is not set")
         self.model = "mistralai/Mixtral-8x7B-Instruct-v0.1"
         self.base_url = "https://api.together.xyz/inference"
         

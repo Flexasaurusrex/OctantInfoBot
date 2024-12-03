@@ -1,9 +1,31 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const socket = io();
+    const socket = io({
+        reconnectionAttempts: 5,
+        timeout: 10000
+    });
+    
     const messagesContainer = document.getElementById('messages');
     const messageInput = document.getElementById('message-input');
     const sendButton = document.getElementById('send-button');
     let isWaitingForResponse = false;
+    
+    socket.on('connect_error', (error) => {
+        console.error('Connection error:', error);
+        if (!isWaitingForResponse) {
+            const errorMessage = createMessageElement('Sorry, there seems to be a connection issue. Please try again.', true);
+            messagesContainer.appendChild(errorMessage);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+    });
+    
+    socket.on('error', (error) => {
+        console.error('Socket error:', error);
+        if (!isWaitingForResponse) {
+            const errorMessage = createMessageElement('An error occurred. Please try again.', true);
+            messagesContainer.appendChild(errorMessage);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+    });
 
     function createMessageElement(message, isBot) {
         const messageDiv = document.createElement('div');
