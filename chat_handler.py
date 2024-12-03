@@ -12,22 +12,42 @@ class Trivia:
             {
                 "question": "What is the minimum amount of GLM tokens required to participate in Octant?",
                 "answer": "100",
-                "explanation": "Users need to lock a minimum of 100 GLM tokens to participate in Octant's ecosystem."
+                "explanation": "🎯 Users need to lock a minimum of 100 GLM tokens to participate in Octant's ecosystem through the non-custodial Deposits smart contract."
             },
             {
                 "question": "What is the length of an Octant epoch?",
                 "answer": "90",
-                "explanation": "Each Octant epoch lasts 90 days, during which rewards are calculated based on time-weighted averages."
+                "explanation": "⏳ Each Octant epoch lasts 90 days. During this period, rewards are calculated based on time-weighted averages of locked tokens."
             },
             {
                 "question": "What is the minimum Gitcoin Passport score required for maximum matching funding?",
                 "answer": "15",
-                "explanation": "Users need a Gitcoin Passport score of 15 or higher to receive maximum matching funding."
+                "explanation": "🎫 A Gitcoin Passport score of 15 or higher is required for maximum matching funding. Users with lower scores have their donations scaled down by 90% as an anti-Sybil measure."
             },
             {
                 "question": "What is the maximum funding cap for projects as a percentage of the Matched Rewards pool?",
                 "answer": "20",
-                "explanation": "Projects can receive up to 20% of the Matched Rewards pool in funding."
+                "explanation": "💰 Projects can receive up to 20% of the Matched Rewards pool in funding, ensuring fair distribution among multiple projects."
+            },
+            {
+                "question": "What happens if a project doesn't reach the minimum funding threshold in two consecutive epochs?",
+                "answer": "cooling-off",
+                "explanation": "⏸️ The project enters a cooling-off period of one epoch before being eligible to reapply."
+            },
+            {
+                "question": "What type of wallet is officially supported for multisig operations in Octant?",
+                "answer": "safe",
+                "explanation": "🔐 Safe (formerly Gnosis Safe) is the officially supported multisig wallet for Octant operations."
+            },
+            {
+                "question": "How are matched rewards calculated in Octant's quadratic funding system?",
+                "answer": "community support",
+                "explanation": "📊 Matched rewards are calculated based on broad community support rather than large individual donations, emphasizing the number of contributors over amount size."
+            },
+            {
+                "question": "What is one of the key requirements for project proposals regarding their source code?",
+                "answer": "open-source",
+                "explanation": "🌐 Projects must maintain a publicly accessible repository under an OSI-approved open-source license with comprehensive documentation."
             }
         ]
         self.current_question = None
@@ -44,24 +64,55 @@ class Trivia:
         question_index = random.choice(available_questions)
         self.asked_questions.add(question_index)
         self.current_question = self.questions[question_index]
-        return f"Trivia Question: {self.current_question['question']}"
+        
+        question_number = len(self.asked_questions)
+        return f"""
+🎮 Question {question_number}/{self.total_questions}
+
+❓ {self.current_question['question']}
+
+Type your answer below! (or type 'end trivia' to finish the game)"""
 
     def check_answer(self, user_answer):
         if not self.current_question:
-            return "Please start a new game first!"
+            return "❗ Please start a new game first by typing 'start trivia'!"
         
         correct_answer = self.current_question['answer']
         explanation = self.current_question['explanation']
+        user_answer = str(user_answer).strip().lower()
+        correct_answer = str(correct_answer).lower()
         
-        if str(user_answer).strip() == str(correct_answer):
+        if user_answer == correct_answer:
             self.score += 1
-            response = f"Correct! {explanation}\n\nYour current score: {self.score}/{self.total_questions}"
+            response = f"""
+✨ Correct! 
+{explanation}
+
+📊 Score: {self.score}/{self.total_questions}
+"""
         else:
-            response = f"Not quite! The correct answer is {correct_answer}. {explanation}\n\nYour current score: {self.score}/{self.total_questions}"
+            response = f"""
+❌ Not quite! 
+The correct answer was: {correct_answer}
+{explanation}
+
+📊 Score: {self.score}/{self.total_questions}
+"""
         
         if len(self.asked_questions) == self.total_questions:
-            response += f"\n\nGame Over! Final score: {self.score}/{self.total_questions}"
+            final_percentage = (self.score / self.total_questions) * 100
+            response += f"""
+🎮 Game Over! 
+
+🏆 Final Score: {self.score}/{self.total_questions} ({final_percentage:.0f}%)
+
+Want to play again? Type 'start trivia'!
+"""
             self.reset_game()
+        else:
+            next_question = self.get_next_question()
+            if next_question:
+                response += f"\n{next_question}"
         
         return response
 
@@ -72,7 +123,17 @@ class Trivia:
 
     def start_game(self):
         self.reset_game()
-        return "Welcome to Octant Trivia! Let's test your knowledge about Octant.\n\n" + self.get_next_question()
+        return """
+🎮 Welcome to Octant Trivia! 
+
+Test your knowledge about Octant's ecosystem, funding mechanisms, and community initiatives.
+
+🎯 Rules:
+• Answer each question to the best of your knowledge
+• Type 'end trivia' at any time to finish the game
+• Get ready for some challenging questions!
+
+""" + self.get_next_question()
 class RateLimiter:
     def __init__(self, max_requests=5, time_window=60):
         self.max_requests = max_requests
