@@ -190,6 +190,8 @@ Want to play again? Type 'start trivia'!
         
     def start_game(self):
         """Start a new game."""
+        if self.current_question:
+            return "You're already in a game! Please finish the current game or type 'end trivia' to start a new one."
         self.reset_game()
         return """
 <div class="trivia-container">

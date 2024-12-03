@@ -256,13 +256,21 @@ Remember to weave these facts naturally into your responses, maintaining accurac
                 return "Thanks for playing Octant Trivia! Feel free to start a new game anytime by saying 'start trivia'."
             elif self.is_playing_trivia:
                 lower_message = user_message.lower()
+                # Check for trivia-specific commands first
                 if lower_message == "next question":
                     return self.trivia_game.get_next_question()
                 elif lower_message in ['a', 'b', 'c', 'd']:
                     return self.trivia_game.check_answer(user_message)
-                else:
-                    # If the message doesn't look like a trivia answer, treat it as a regular chat
+                elif lower_message.startswith('/') or lower_message in ['help', 'stats', 'learn']:
+                    # Allow certain commands during trivia
+                    command_response = self.command_handler.handle_command(user_message)
+                    if command_response:
+                        return command_response
                     self.is_playing_trivia = False
+                else:
+                    # Only exit trivia mode if explicitly requested or after game completion
+                    if lower_message != "end trivia":
+                        return "You're currently in a trivia game! Please answer with A, B, C, or D, or type 'end trivia' to quit."
                     headers = {
                         "Authorization": f"Bearer {self.api_key}",
                         "Content-Type": "application/json"
