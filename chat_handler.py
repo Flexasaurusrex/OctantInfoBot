@@ -258,7 +258,15 @@ Remember to weave these facts naturally into your responses, maintaining accurac
                 lower_message = user_message.lower()
                 if lower_message == "next question":
                     return self.trivia_game.get_next_question()
-                return self.trivia_game.check_answer(user_message)
+                elif lower_message in ['a', 'b', 'c', 'd']:
+                    return self.trivia_game.check_answer(user_message)
+                else:
+                    # If the message doesn't look like a trivia answer, treat it as a regular chat
+                    self.is_playing_trivia = False
+                    headers = {
+                        "Authorization": f"Bearer {self.api_key}",
+                        "Content-Type": "application/json"
+                    }
             
             headers = {
                 "Authorization": f"Bearer {self.api_key}",
