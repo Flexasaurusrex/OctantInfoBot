@@ -4,6 +4,18 @@
     --chat-bg: #f8f9fa;
     --message-bg: #e9ecef;
     --bot-message-bg: #f1f3f5;
+    --text-color: #000000;
+    --toggle-bg: #f0f0f0;
+}
+
+[data-theme="dark"] {
+    --primary-color: #ffffff;
+    --background-color: #1a1a1a;
+    --chat-bg: #2d2d2d;
+    --message-bg: #3d3d3d;
+    --bot-message-bg: #363636;
+    --text-color: #ffffff;
+    --toggle-bg: #3d3d3d;
 }
 
 body {
@@ -244,6 +256,34 @@ body {
 
 .trivia-button:hover {
     transform: translateY(-2px);
+.theme-toggle {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    background: var(--toggle-bg);
+    border: 2px solid var(--primary-color);
+    color: var(--text-color);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.theme-toggle:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.theme-toggle svg {
+    width: 16px;
+    height: 16px;
+    fill: var(--text-color);
+}
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
