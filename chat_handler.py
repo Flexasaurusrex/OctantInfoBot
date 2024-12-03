@@ -6,6 +6,73 @@ from collections import deque
 from time import time
 import html
 
+class Trivia:
+    def __init__(self):
+        self.questions = [
+            {
+                "question": "What is the minimum amount of GLM tokens required to participate in Octant?",
+                "answer": "100",
+                "explanation": "Users need to lock a minimum of 100 GLM tokens to participate in Octant's ecosystem."
+            },
+            {
+                "question": "What is the length of an Octant epoch?",
+                "answer": "90",
+                "explanation": "Each Octant epoch lasts 90 days, during which rewards are calculated based on time-weighted averages."
+            },
+            {
+                "question": "What is the minimum Gitcoin Passport score required for maximum matching funding?",
+                "answer": "15",
+                "explanation": "Users need a Gitcoin Passport score of 15 or higher to receive maximum matching funding."
+            },
+            {
+                "question": "What is the maximum funding cap for projects as a percentage of the Matched Rewards pool?",
+                "answer": "20",
+                "explanation": "Projects can receive up to 20% of the Matched Rewards pool in funding."
+            }
+        ]
+        self.current_question = None
+        self.score = 0
+        self.total_questions = len(self.questions)
+        self.asked_questions = set()
+
+    def get_next_question(self):
+        available_questions = [i for i in range(len(self.questions)) if i not in self.asked_questions]
+        if not available_questions:
+            return None
+        
+        import random
+        question_index = random.choice(available_questions)
+        self.asked_questions.add(question_index)
+        self.current_question = self.questions[question_index]
+        return f"Trivia Question: {self.current_question['question']}"
+
+    def check_answer(self, user_answer):
+        if not self.current_question:
+            return "Please start a new game first!"
+        
+        correct_answer = self.current_question['answer']
+        explanation = self.current_question['explanation']
+        
+        if str(user_answer).strip() == str(correct_answer):
+            self.score += 1
+            response = f"Correct! {explanation}\n\nYour current score: {self.score}/{self.total_questions}"
+        else:
+            response = f"Not quite! The correct answer is {correct_answer}. {explanation}\n\nYour current score: {self.score}/{self.total_questions}"
+        
+        if len(self.asked_questions) == self.total_questions:
+            response += f"\n\nGame Over! Final score: {self.score}/{self.total_questions}"
+            self.reset_game()
+        
+        return response
+
+    def reset_game(self):
+        self.current_question = None
+        self.score = 0
+        self.asked_questions.clear()
+
+    def start_game(self):
+        self.reset_game()
+        return "Welcome to Octant Trivia! Let's test your knowledge about Octant.\n\n" + self.get_next_question()
 class RateLimiter:
     def __init__(self, max_requests=5, time_window=60):
         self.max_requests = max_requests
@@ -32,6 +99,8 @@ class ChatHandler:
         self.rate_limiter = RateLimiter()
         self.conversation_history = []
         self.max_history = 5
+        self.trivia_game = Trivia()
+        self.is_playing_trivia = False
         
         self.system_prompt = """You are an expert assistant focused on providing accurate information about Octant Public Goods (https://octant.build/). 
         Your primary role is to help users understand Octant's mission, initiatives, and their GLM token ecosystem in the web3 space.
@@ -131,6 +200,18 @@ class ChatHandler:
 
             # Validate and sanitize input
             user_message = self.validate_message(user_message)
+            
+            # Handle trivia commands
+            lower_message = user_message.lower()
+            if lower_message == "start trivia":
+                self.is_playing_trivia = True
+                return self.trivia_game.start_game()
+            elif lower_message == "end trivia":
+                self.is_playing_trivia = False
+                self.trivia_game.reset_game()
+                return "Thanks for playing Octant Trivia! Feel free to start a new game anytime by saying 'start trivia'."
+            elif self.is_playing_trivia:
+                return self.trivia_game.check_answer(user_message)
             
             headers = {
                 "Authorization": f"Bearer {self.api_key}",
