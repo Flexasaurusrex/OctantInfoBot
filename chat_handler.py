@@ -53,7 +53,7 @@ Assistant:"""
             
             # Process response
             response_data = response.json()
-            if 'output' in response_data:
+            if 'output' in response_data and 'text' in response_data['output']:
                 assistant_response = response_data['output']['text'].strip()
                 
                 # Update conversation history
@@ -64,6 +64,7 @@ Assistant:"""
                 
                 return assistant_response
             else:
+                print(f"Unexpected response structure: {response_data.keys()}")
                 return "I apologize, but I'm having trouble processing your request. Please try again."
                 
         except Exception as e:
