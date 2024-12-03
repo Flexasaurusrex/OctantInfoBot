@@ -211,7 +211,8 @@ Current Score: {self.trivia_score}/{self.questions_asked}"""
                 '/showcase': self.cmd_showcase,
                 '/learn': self.cmd_learn,
                 '/calculate': self.cmd_calculate,
-                '/search': self.cmd_search
+                '/search': self.cmd_search,
+                '/trivia': lambda args: self.start_trivia_game()
             }
             
             if command in commands:
@@ -227,7 +228,8 @@ Current Score: {self.trivia_score}/{self.questions_asked}"""
 • /learn - Access interactive learning modules
 • /calculate - Use calculator tools
 • /search [query] - Search Octant documentation
-• start trivia - Start a trivia game
+• /trivia - Start a trivia game
+• start trivia - Also starts a trivia game
 • end trivia - End the current trivia game"""
 
     def cmd_showcase(self, args):
