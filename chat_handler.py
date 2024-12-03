@@ -1,201 +1,185 @@
 import os
-import json
-import requests
-
-from collections import deque
-from time import time
 import html
+import requests
+from time import time
+from collections import deque
+from trivia import Trivia
 
-class Trivia:
+class CommandHandler:
     def __init__(self):
-        self.questions = [
-            {
-                "question": "What is the minimum amount of GLM tokens required to participate in Octant?",
-                "options": ["50", "100", "200", "500"],
-                "answer": "B",
-                "correct_option": "100",
-                "explanation": "🎯 Users need to lock a minimum of 100 GLM tokens to participate in Octant's ecosystem through the non-custodial Deposits smart contract."
-            },
-            {
-                "question": "What is the length of an Octant epoch?",
-                "options": ["30", "60", "90", "120"],
-                "answer": "C",
-                "correct_option": "90",
-                "explanation": "⏳ Each Octant epoch lasts 90 days. During this period, rewards are calculated based on time-weighted averages of locked tokens."
-            },
-            {
-                "question": "What is the minimum Gitcoin Passport score required for maximum matching funding?",
-                "options": ["10", "15", "20", "25"],
-                "answer": "B",
-                "correct_option": "15",
-                "explanation": "🎫 A Gitcoin Passport score of 15 or higher is required for maximum matching funding. Users with lower scores have their donations scaled down by 90% as an anti-Sybil measure."
-            },
-            {
-                "question": "What is the maximum funding cap for projects as a percentage of the Matched Rewards pool?",
-                "options": ["10%", "15%", "20%", "25%"],
-                "answer": "C",
-                "correct_option": "20%",
-                "explanation": "💰 Projects can receive up to 20% of the Matched Rewards pool in funding, ensuring fair distribution among multiple projects."
-            },
-            {
-                "question": "What happens if a project doesn't reach the minimum funding threshold in two consecutive epochs?",
-                "options": ["Permanent ban", "Cooling-off period", "Reduced funding", "Warning only"],
-                "answer": "B",
-                "correct_option": "Cooling-off period",
-                "explanation": "⏸️ The project enters a cooling-off period of one epoch before being eligible to reapply."
-            },
-            {
-                "question": "What type of wallet is officially supported for multisig operations in Octant?",
-                "options": ["MetaMask", "Safe", "Ledger", "Trezor"],
-                "answer": "B",
-                "correct_option": "Safe",
-                "explanation": "🔐 Safe (formerly Gnosis Safe) is the officially supported multisig wallet for Octant operations."
-            },
-            {
-                "question": "How are matched rewards calculated in Octant's quadratic funding system?",
-                "options": ["Large donations", "Community support", "Random selection", "Time-based"],
-                "answer": "B",
-                "correct_option": "Community support",
-                "explanation": "📊 Matched rewards are calculated based on broad community support rather than large individual donations, emphasizing the number of contributors over amount size."
-            },
-            {
-                "question": "What is one of the key requirements for project proposals regarding their source code?",
-                "options": ["Closed source", "Open source", "Proprietary", "Private"],
-                "answer": "B",
-                "correct_option": "Open source",
-                "explanation": "🌐 Projects must maintain a publicly accessible repository under an OSI-approved open-source license with comprehensive documentation."
-            }
-        ]
-        self.current_question = None
-        self.score = 0
-        self.total_questions = len(self.questions)
-        self.asked_questions = set()
+        self.commands = {
+            '/help': self.help_command,
+            '/stats': self.stats_command,
+            '/learn': self.learn_command,
+            '/funding': self.funding_command,
+            '/governance': self.governance_command,
+            '/rewards': self.rewards_command
+        }
 
-    def get_next_question(self):
-        available_questions = [i for i in range(len(self.questions)) if i not in self.asked_questions]
-        if not available_questions:
-            return None
-        
-        import random
-        question_index = random.choice(available_questions)
-        self.asked_questions.add(question_index)
-        self.current_question = self.questions[question_index]
-        
-        question_number = len(self.asked_questions)
-        options_text = "\n".join([
-            f"[{chr(65+i)}] {option}" 
-            for i, option in enumerate(self.current_question['options'])
-        ])
-        
-        return f"""
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🎯 Question {question_number}/{self.total_questions}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    def handle_command(self, command):
+        command = command.lower().split()[0]  # Get the first word of the command
+        if command in self.commands:
+            return self.commands[command]()
+        return None
 
-❓ {self.current_question['question']}
-
-📝 Your options:
-{options_text}
-
-✨ How to play:
-• Type A, B, C, or D to answer
-• Type 'end trivia' to finish the game
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"""
-
-    def check_answer(self, user_answer):
-        if not self.current_question:
-            return "❗ Please start a new game first by typing 'start trivia'!"
-        
-        user_answer = str(user_answer).strip().upper()
-        correct_answer = self.current_question['answer']
-        correct_option = self.current_question['correct_option']
-        explanation = self.current_question['explanation']
-        
-        if user_answer == correct_answer:
-            self.score += 1
-            response = f"""
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-✨ CORRECT! ✨
-
-🎯 The answer is: {correct_option}
-
-📖 Explanation:
-{explanation}
-
-📊 Current Score: {self.score}/{self.total_questions}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-"""
-        else:
-            response = f"""
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-❌ Not quite! Let's learn from this one!
-
-🎯 The correct answer was: [{correct_answer}] {correct_option}
-
-📖 Explanation:
-{explanation}
-
-📊 Current Score: {self.score}/{self.total_questions}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-"""
-        
-        if len(self.asked_questions) == self.total_questions:
-            final_percentage = (self.score / self.total_questions) * 100
-            response += f"""
-🎮 Game Over! 
-
-🏆 Final Score: {self.score}/{self.total_questions} ({final_percentage:.0f}%)
-
-Want to play again? Type 'start trivia'!
-"""
-            self.reset_game()
-        else:
-            next_question = self.get_next_question()
-            if next_question:
-                response += f"\n{next_question}"
-        
-        return response
-
-    def reset_game(self):
-        self.current_question = None
-        self.score = 0
-        self.asked_questions.clear()
-
-    def start_game(self):
-        self.reset_game()
+    def help_command(self):
         return """
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🎮 Welcome to Octant Trivia! 🎮
+📚 Available Commands
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Test your knowledge about Octant's ecosystem, funding mechanisms, 
-and community initiatives!
+🎮 Game Commands:
+• start trivia - Start a trivia game
+• end trivia - End current trivia game
 
-📋 Game Rules:
-• Answer each question using A, B, C, or D
-• Type 'end trivia' at any time to finish
-• Each correct answer earns you points
-• Learn interesting facts about Octant!
+📋 Information Commands:
+• /help - Show this help message
+• /stats - View your chat statistics
+• /learn - Access learning modules
 
-Get ready for some exciting questions...
+📌 Topic-Specific Commands:
+• /funding - Learn about Octant's funding
+• /governance - Understand governance
+• /rewards - Explore reward system
 
-""" + self.get_next_question()
+Type any command to get started!
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"""
+
+    def stats_command(self):
+        return """
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📊 Chat Statistics
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Coming soon! This feature will show:
+• Messages exchanged
+• Topics discussed
+• Trivia performance
+• Learning progress
+
+Stay tuned for updates!
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"""
+
+    def learn_command(self):
+        return """
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📚 Learning Modules
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Choose a topic to learn about:
+
+1. Octant Basics
+• What is Octant?
+• How it works
+• Getting started
+
+2. Token Economics
+• GLM token utility
+• Staking mechanism
+• Reward distribution
+
+3. Participation Guide
+• How to contribute
+• Community roles
+• Decision making
+
+Type /funding, /governance, or /rewards 
+for specific topic details.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"""
+
+    def funding_command(self):
+        return """
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+💰 Octant Funding System
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Key Components:
+• Quadratic Funding mechanism
+• Community-driven allocation
+• Matched rewards system
+
+📋 Funding Process:
+1. Project Submission
+2. Community Voting
+3. Allocation Period
+4. Distribution of Funds
+
+🎯 Important Points:
+• 20% maximum funding cap
+• Anti-Sybil measures
+• Transparent tracking
+
+Want to learn more? Try /learn for 
+detailed tutorials!
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"""
+
+    def governance_command(self):
+        return """
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🏛️ Octant Governance
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Decision Making Process:
+• Community-driven proposals
+• Token-weighted voting
+• Transparent execution
+
+Key Areas:
+1. Project Selection
+2. Fund Allocation
+3. Protocol Updates
+4. Community Initiatives
+
+Participation Methods:
+• Submit proposals
+• Vote on decisions
+• Join discussions
+
+For more details, use /learn command!
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"""
+
+    def rewards_command(self):
+        return """
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🌟 Octant Rewards System
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Types of Rewards:
+• Individual Rewards (IR)
+• Matched Rewards (MR)
+• Community Incentives
+
+Calculation Factors:
+• Locked GLM amount
+• Time-weighted average
+• Community support level
+
+Distribution Schedule:
+• 90-day epochs
+• Regular calculations
+• Transparent tracking
+
+Use /learn for detailed tutorials!
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"""
+
 class RateLimiter:
-    def __init__(self, max_requests=5, time_window=60):
+    def __init__(self, max_requests=5, window_seconds=10):
         self.max_requests = max_requests
-        self.time_window = time_window
-        self.requests = deque()
-
-    def is_allowed(self):
-        current_time = time()
-        while self.requests and current_time - self.requests[0] > self.time_window:
-            self.requests.popleft()
+        self.window_seconds = window_seconds
+        self.requests = []
         
-        if len(self.requests) < self.max_requests:
-            self.requests.append(current_time)
-            return True
-        return False
+    def is_allowed(self):
+        """Check if a new request is allowed."""
+        current_time = time.time()
+        # Remove old requests
+        self.requests = [req_time for req_time in self.requests 
+                        if current_time - req_time < self.window_seconds]
+        
+        if len(self.requests) >= self.max_requests:
+            return False
+            
+        self.requests.append(current_time)
+        return True
 
 class ChatHandler:
     def __init__(self):
@@ -209,6 +193,7 @@ class ChatHandler:
         self.max_history = 5
         self.trivia_game = Trivia()
         self.is_playing_trivia = False
+        self.command_handler = CommandHandler()
         
         self.system_prompt = """You are a friendly and clear-speaking assistant focused on explaining Octant Public Goods (https://octant.build/). 
         Your goal is to make complex information easy to understand by:
@@ -217,85 +202,12 @@ class ChatHandler:
         2. Using short, clear sentences
         3. Adding spacing between paragraphs for readability
         4. Using bullet points for lists
-        5. Highlighting key terms in a natural way
+        5. Using emojis sparingly to highlight key sections
+        6. Keep paragraphs short (2-3 sentences max)
+        7. End with a simple summary if the answer is long
 
-        When explaining Octant's mission, remember to:
+        Remember to format your response in a clear, easy-to-read way."""
 
-        📌 Core Purpose:
-        • Help people understand how Octant improves the web3 space
-        • Explain things in simple terms, avoiding technical jargon when possible
-        • Break down complex concepts into digestible pieces
-
-        🎯 Main Focus Areas:
-        • Public Goods Funding: How Octant helps support important projects
-        • GLM Tokens: Their role and how they work in simple terms
-        • Community Participation: How people can get involved
-        • Governance: How decisions are made together
-
-        GLM Token Locking Mechanism:
-        - Non-custodial locking system through Deposits smart contract
-        - Simple deposit and withdrawal functionality
-        - Minimum lock requirement: 100 GLM tokens
-        - Rewards calculated based on time-weighted average over 90-day epochs
-        - Complete user control over locked tokens with instant withdrawal capability
-        - Transparent tracking through Etherscan
-
-        Quadratic Funding System:
-        - Introduced in Epoch 4
-        - Emphasizes broad community support over large individual donations
-        - Maximum funding cap: 20% of Matched Rewards pool
-        - Anti-Sybil measures using Gitcoin Passport (minimum score: 15)
-        - Community allowlist for verified non-Sybil users
-        - Delegation system for improved accessibility
-
-        Project Proposal Requirements:
-        1. Public Good Status:
-           - Free and unrestricted access
-           - Non-rivalrous and non-excludable
-        2. Open-Source Commitment:
-           - Public repository with OSI-approved license
-           - Comprehensive documentation
-        3. Funding Transparency:
-           - Detailed budget with milestones
-           - Regular reporting requirements
-        4. Social Proof and Credibility:
-           - Demonstrated progress
-           - Community endorsements
-        5. Sustainability Plan:
-           - Long-term development strategy
-           - Multiple funding sources
-
-        Technical Implementation:
-        1. Smart Contracts:
-           - GLM Deposits contract for token locking
-           - Transparent tracking and event emission
-           - Non-custodial architecture
-        2. Reward Distribution:
-           - Time-weighted average calculations
-           - Quadratic funding matching
-           - Anti-Sybil verification system
-        3. User Interface:
-           - Web3 wallet integration
-           - Real-time allocation tracking
-           - Transparent reward calculations
-
-        Reward Distribution Mathematics:
-        - Individual Rewards (IR): Proportional to locked GLM amount
-        - Matched Rewards (MR): Additional funding based on community support
-        - Time-weighted Average: Considers duration of token lock
-        - Funding Thresholds: Minimum requirements for matched rewards
-        - Quadratic Funding Formula: Emphasizes number of contributors over amount
-
-        Important Guidelines:
-        1. Always emphasize GLM tokens' central role in Octant's ecosystem
-        2. Be precise when explaining token mechanics and utility
-        3. Highlight the connection between GLM tokens and governance
-        4. Focus on the technological and practical aspects of implementation
-        5. Reference official documentation and verified sources
-        6. Acknowledge the innovative nature of Octant's approach to public goods funding
-
-        For more detailed information, refer to https://octant.build/"""
-        
     def validate_message(self, message):
         """Validate and sanitize user input."""
         if not message or not message.strip():
@@ -320,6 +232,12 @@ class ChatHandler:
             # Validate and sanitize input
             user_message = self.validate_message(user_message)
             
+            # Check for commands
+            if user_message.startswith('/'):
+                command_response = self.command_handler.handle_command(user_message)
+                if command_response:
+                    return command_response
+            
             # Handle trivia commands
             lower_message = user_message.lower()
             if lower_message == "start trivia":
@@ -339,23 +257,7 @@ class ChatHandler:
             
             # Include conversation history in the prompt
             history = self.format_conversation_history()
-            prompt = f"""<s>[INST] {self.system_prompt}
-
-            Response Formatting Guidelines:
-            1. Start with a brief, direct answer
-            2. Use bullet points for lists
-            3. Add spacing between paragraphs
-            4. Break down complex explanations into numbered steps
-            5. Use emojis sparingly to highlight key sections
-            6. Keep paragraphs short (2-3 sentences max)
-            7. End with a simple summary if the answer is long
-
-            Previous conversation:{history}
-
-            Remember to format your response in a clear, easy-to-read way.
-
-            User: {user_message}
-            Assistant: [/INST]"""
+            prompt = f"{self.system_prompt}\n\nPrevious conversation:{history}\n\nUser: {user_message}\nAssistant:"
             
             data = {
                 "model": self.model,
