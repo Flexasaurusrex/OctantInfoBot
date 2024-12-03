@@ -88,13 +88,20 @@ class Trivia:
         ])
         
         return f"""
-🎮 Question {question_number}/{self.total_questions}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎯 Question {question_number}/{self.total_questions}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ❓ {self.current_question['question']}
 
+📝 Your options:
 {options_text}
 
-Type A, B, C, or D to answer! (or type 'end trivia' to finish the game)"""
+✨ How to play:
+• Type A, B, C, or D to answer
+• Type 'end trivia' to finish the game
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"""
 
     def check_answer(self, user_answer):
         if not self.current_question:
@@ -108,19 +115,29 @@ Type A, B, C, or D to answer! (or type 'end trivia' to finish the game)"""
         if user_answer == correct_answer:
             self.score += 1
             response = f"""
-✨ Correct! 
-The answer is {correct_option}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✨ CORRECT! ✨
+
+🎯 The answer is: {correct_option}
+
+📖 Explanation:
 {explanation}
 
-📊 Score: {self.score}/{self.total_questions}
+📊 Current Score: {self.score}/{self.total_questions}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 """
         else:
             response = f"""
-❌ Not quite! 
-The correct answer was [{correct_answer}] {correct_option}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+❌ Not quite! Let's learn from this one!
+
+🎯 The correct answer was: [{correct_answer}] {correct_option}
+
+📖 Explanation:
 {explanation}
 
-📊 Score: {self.score}/{self.total_questions}
+📊 Current Score: {self.score}/{self.total_questions}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 """
         
         if len(self.asked_questions) == self.total_questions:
@@ -148,14 +165,20 @@ Want to play again? Type 'start trivia'!
     def start_game(self):
         self.reset_game()
         return """
-🎮 Welcome to Octant Trivia! 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎮 Welcome to Octant Trivia! 🎮
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Test your knowledge about Octant's ecosystem, funding mechanisms, and community initiatives.
+Test your knowledge about Octant's ecosystem, funding mechanisms, 
+and community initiatives!
 
-🎯 Rules:
-• Answer each question to the best of your knowledge
-• Type 'end trivia' at any time to finish the game
-• Get ready for some challenging questions!
+📋 Game Rules:
+• Answer each question using A, B, C, or D
+• Type 'end trivia' at any time to finish
+• Each correct answer earns you points
+• Learn interesting facts about Octant!
+
+Get ready for some exciting questions...
 
 """ + self.get_next_question()
 class RateLimiter:
