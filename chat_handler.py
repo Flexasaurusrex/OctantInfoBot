@@ -223,6 +223,9 @@ class ChatHandler:
                 self.trivia_game.reset_game()
                 return "Thanks for playing Octant Trivia! Feel free to start a new game anytime by saying 'start trivia'."
             elif self.is_playing_trivia:
+                lower_message = user_message.lower()
+                if lower_message == "next question":
+                    return self.trivia_game.get_next_question()
                 return self.trivia_game.check_answer(user_message)
             
             headers = {

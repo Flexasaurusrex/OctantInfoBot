@@ -145,6 +145,7 @@ class Trivia:
     </div>
 </div>
 """
+            return response
         else:
             response = f"""
 <div class="trivia-container">
@@ -169,6 +170,7 @@ class Trivia:
     </div>
 </div>
 """
+            return response
         
         if len(self.asked_questions) == self.total_questions:
             response += self.end_game()
