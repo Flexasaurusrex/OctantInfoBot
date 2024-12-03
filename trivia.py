@@ -12,29 +12,29 @@ class Trivia:
                     "D": "Private Investment"
                 },
                 "correct": "B",
-                "explanation": "Octant uses Quadratic Funding, which empowers communities by giving greater weight to many small donations over fewer large ones."
+                "explanation": "Octant uses Quadratic Funding which considers both the number of unique contributors and the amount donated, giving more weight to projects with broad community support."
             },
             {
-                "question": "What is the maximum funding cap for projects in Octant?",
+                "question": "What percentage of staking yield contributes to Octant's Total Rewards budget?",
                 "options": {
-                    "A": "10%",
-                    "B": "15%",
-                    "C": "20%",
-                    "D": "25%"
+                    "A": "50%",
+                    "B": "60%",
+                    "C": "70%",
+                    "D": "80%"
                 },
                 "correct": "C",
-                "explanation": "Projects have a maximum funding cap of 20% of the Matched Rewards pool to ensure fair distribution."
+                "explanation": "70% of the staking yield contributes to Octant's Total Rewards budget, split evenly between User Rewards and Matched Rewards."
             },
             {
-                "question": "What score is required on Gitcoin Passport for maximum matching funding?",
+                "question": "What is the minimum effective GLM balance required to qualify for user rewards?",
                 "options": {
-                    "A": "10",
-                    "B": "15",
-                    "C": "20",
-                    "D": "25"
+                    "A": "1 GLM",
+                    "B": "50 GLM",
+                    "C": "100 GLM",
+                    "D": "500 GLM"
                 },
-                "correct": "B",
-                "explanation": "Users need a Gitcoin Passport score of 15 or higher to receive maximum available matching funding."
+                "correct": "C",
+                "explanation": "While you can lock as little as 1 GLM, a minimum effective balance of 100 GLM is required to qualify for user rewards."
             },
             {
                 "question": "How long is an Octant epoch?",
@@ -45,18 +45,18 @@ class Trivia:
                     "D": "120 days"
                 },
                 "correct": "C",
-                "explanation": "Each Octant epoch lasts 90 days, during which funds are distributed and decisions are made."
+                "explanation": "Each Octant epoch lasts 90 days, followed by a two-week allocation window where users can claim rewards or donate to projects."
             },
             {
-                "question": "What happens to donations that don't meet the minimum threshold?",
+                "question": "What is the maximum funding cap for a single project from the Matched Rewards pool?",
                 "options": {
-                    "A": "Returned to donors",
-                    "B": "Rolled over to next epoch",
-                    "C": "Transferred to Golem Foundation",
-                    "D": "Added to matching pool"
+                    "A": "10%",
+                    "B": "15%",
+                    "C": "20%",
+                    "D": "25%"
                 },
                 "correct": "C",
-                "explanation": "Donations that don't meet the threshold are transferred to the Golem Foundation."
+                "explanation": "A maximum funding cap of 20% of the total Matched Rewards fund (including Patron mode) ensures balanced distribution. Users can still donate to projects at the cap, but these won't receive additional matching."
             }
         ]
         self.score = 0
@@ -115,7 +115,9 @@ class Trivia:
         if not self.asked_questions:
             return "Please start a new game first!"
             
-        current_question = self.questions[list(self.asked_questions)[-1]]
+        # Get the last question that was asked
+        current_question_index = max(self.asked_questions)
+        current_question = self.questions[current_question_index]
         user_answer = user_answer.strip().upper()
         
         if user_answer not in ['A', 'B', 'C', 'D']:
@@ -170,14 +172,9 @@ class Trivia:
     </div>
 </div>
 """
+            if len(self.asked_questions) == self.total_questions:
+                return response + "\n" + self.end_game()
             return response
-        
-        if len(self.asked_questions) == self.total_questions:
-            response += self.end_game()
-        else:
-            response += "\n" + self.get_next_question()
-            
-        return response
         
     def end_game(self):
         """End the game and show final score."""

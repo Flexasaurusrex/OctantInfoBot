@@ -1,10 +1,9 @@
+import eventlet
+eventlet.monkey_patch()
 import os
 import logging
 from datetime import datetime
 from flask import Flask, render_template, request
-import eventlet
-eventlet.monkey_patch()
-import logging
 logger = logging.getLogger('app')
 logger.setLevel(logging.INFO)
 handler = logging.StreamHandler()
