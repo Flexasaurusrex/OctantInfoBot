@@ -5,6 +5,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const messagesContainer = document.getElementById('messages');
     let isWaitingForResponse = false;
 
+    function triggerConfetti() {
+        confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 },
+            colors: ['#ff0000', '#00ff00', '#0000ff'],
+            disableForReducedMotion: true
+        });
+    }
+
     function appendMessage(message, isBot = false) {
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${isBot ? 'bot-message' : 'user-message'}`;
@@ -22,6 +32,11 @@ document.addEventListener('DOMContentLoaded', () => {
         
         messagesContainer.appendChild(messageDiv);
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+        // Check for correct answer and trigger confetti
+        if (isBot && message.includes('✅ Correct! Well done!')) {
+            triggerConfetti();
+        }
     }
 
     function sendMessage() {
