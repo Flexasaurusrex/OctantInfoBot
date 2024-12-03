@@ -1,162 +1,71 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const socket = io({
-        reconnectionAttempts: 5,
-        timeout: 10000,
-        reconnectionDelay: 1000,
-        reconnectionDelayMax: 5000
-    });
-    
-    const messagesContainer = document.getElementById('messages');
+    const socket = io();
     const messageInput = document.getElementById('message-input');
     const sendButton = document.getElementById('send-button');
+    const messagesContainer = document.getElementById('messages');
     let isWaitingForResponse = false;
-    let reconnectAttempts = 0;
-    const maxMessageLength = 500;
-    
-    socket.on('connect', () => {
-        reconnectAttempts = 0;
-        if (messagesContainer.querySelector('.connection-error')) {
-            messagesContainer.querySelector('.connection-error').remove();
-        }
-    });
 
-    socket.on('connect_error', (error) => {
-        console.error('Connection error:', error);
-        reconnectAttempts++;
-        
-        const loadingIndicator = messagesContainer.querySelector('.loading');
-        if (loadingIndicator) {
-            loadingIndicator.remove();
-        }
-        
-        isWaitingForResponse = false;
-        
-        if (!messagesContainer.querySelector('.connection-error')) {
-            const errorMessage = document.createElement('div');
-            errorMessage.className = 'message system-message connection-error';
-            errorMessage.textContent = `Connection lost. Attempting to reconnect... (Attempt ${reconnectAttempts}/5)`;
-            messagesContainer.appendChild(errorMessage);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        } else {
-            const errorMessage = messagesContainer.querySelector('.connection-error');
-            errorMessage.textContent = `Connection lost. Attempting to reconnect... (Attempt ${reconnectAttempts}/5)`;
-        }
-
-        // Handle the rejection explicitly
-        return Promise.resolve();
-    });
-    
-    socket.on('error', (error) => {
-        console.error('Socket error:', error);
-        if (!isWaitingForResponse) {
-            showError('An error occurred. Please try again.');
-        }
-    });
-
-    function createMessageElement(message, isBot) {
+    function appendMessage(message, isBot = false) {
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${isBot ? 'bot-message' : 'user-message'}`;
         
         if (isBot) {
-            const avatarImg = document.createElement('img');
-            avatarImg.src = '/static/images/octant-logo.svg';
-            avatarImg.className = 'bot-avatar';
-            messageDiv.appendChild(avatarImg);
+            const botAvatar = document.createElement('img');
+            botAvatar.src = '/static/images/octant-logo.svg';
+            botAvatar.className = 'bot-avatar';
+            messageDiv.appendChild(botAvatar);
         }
-        
+
         const messageContent = document.createElement('span');
         messageContent.innerHTML = message;
         messageDiv.appendChild(messageContent);
         
-        return messageDiv;
-    }
-
-    function addLoadingIndicator() {
-        const loadingDiv = document.createElement('div');
-        loadingDiv.className = 'message bot-message loading';
-        loadingDiv.innerHTML = `
-            <img src="/static/images/octant-logo.svg" class="bot-avatar">
-            <span></span>
-            <span></span>
-            <span></span>
-        `;
-        messagesContainer.appendChild(loadingDiv);
+        messagesContainer.appendChild(messageDiv);
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        return loadingDiv;
-    }
-
-    function validateMessage(message) {
-        if (!message.trim()) {
-            throw new Error("Please enter a message");
-        }
-        if (message.length > maxMessageLength) {
-            throw new Error(`Message is too long (maximum ${maxMessageLength} characters)`);
-        }
-        return message.trim();
-    }
-
-    function showError(message) {
-        const errorDiv = document.createElement('div');
-        errorDiv.className = 'message system-message error';
-        errorDiv.textContent = message;
-        messagesContainer.appendChild(errorDiv);
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        
-        // Auto-remove error message after 5 seconds
-        setTimeout(() => {
-            errorDiv.remove();
-        }, 5000);
     }
 
     function sendMessage() {
-        if (isWaitingForResponse) {
-            showError("Please wait for the previous response");
-            return;
-        }
-
-        try {
-            const message = validateMessage(messageInput.value);
-            const messageElement = createMessageElement(message, false);
-            messagesContainer.appendChild(messageElement);
-            
-            const loadingIndicator = addLoadingIndicator();
-            isWaitingForResponse = true;
-            
-            socket.emit('send_message', { message: message });
-            messageInput.value = '';
-            
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        } catch (error) {
-            showError(error.message);
-        }
+        if (isWaitingForResponse) return;
+        
+        const message = messageInput.value.trim();
+        if (!message) return;
+        
+        appendMessage(message);
+        messageInput.value = '';
+        
+        isWaitingForResponse = true;
+        sendButton.disabled = true;
+        messageInput.disabled = true;
+        
+        socket.emit('send_message', { message });
     }
 
     socket.on('receive_message', (data) => {
-        const loadingIndicator = messagesContainer.querySelector('.loading');
-        if (loadingIndicator) {
-            loadingIndicator.remove();
-        }
-        
-        const messageElement = createMessageElement(data.message, true);
-        messagesContainer.appendChild(messageElement);
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        appendMessage(data.message, data.is_bot);
         isWaitingForResponse = false;
+        sendButton.disabled = false;
+        messageInput.disabled = false;
+        messageInput.focus();
     });
 
     sendButton.addEventListener('click', sendMessage);
+
     messageInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
             sendMessage();
         }
     });
-});
 
-    // Add click handlers for trivia options
+    // Trivia click handlers
     messagesContainer.addEventListener('click', (e) => {
         const triviaOption = e.target.closest('.trivia-option');
         if (triviaOption && !isWaitingForResponse) {
-            const option = triviaOption.getAttribute('data-option');
-            messageInput.value = option;
-            sendMessage();
+            const option = triviaOption.dataset.option;
+            if (option) {
+                messageInput.value = option;
+                sendMessage();
+            }
         }
     });
+});
