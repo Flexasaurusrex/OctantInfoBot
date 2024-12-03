@@ -314,6 +314,138 @@ class ChatHandler:
         except Exception as e:
             print(f"Unexpected error: {str(e)}")
             return "I encountered an unexpected issue. Please try again, and if the problem persists, try rephrasing your question."
+    def __init__(self):
+        self.conversation_history = []
+        self.trivia_active = False
+        self.current_question = None
+        self.trivia_score = 0
+        self.questions_asked = 0
+        self.trivia_questions = {
+            'quadratic_funding': [
+                {
+                    'question': 'What is the minimum Gitcoin Passport score required for maximum funding in Octant?',
+                    'options': ['10', '15', '20', '25'],
+                    'correct': '15',
+                    'explanation': 'Users need a Gitcoin Passport score of 15 or higher to receive maximum funding.'
+                },
+                {
+                    'question': 'What is the maximum funding cap for projects in Octant\'s Matched Rewards pool?',
+                    'options': ['10%', '15%', '20%', '25%'],
+                    'correct': '20%',
+                    'explanation': 'Projects have a maximum funding cap of 20% of the Matched Rewards pool.'
+                }
+            ],
+            'governance': [
+                {
+                    'question': 'How are project selections made in Octant?',
+                    'options': ['Direct admin choice', 'Through Snapshot voting', 'Random selection', 'First come first serve'],
+                    'correct': 'Through Snapshot voting',
+                    'explanation': 'Project selection is done through community voting on Snapshot.'
+                },
+                {
+                    'question': 'What is the duration of an Octant epoch?',
+                    'options': ['30 days', '60 days', '90 days', '120 days'],
+                    'correct': '90 days',
+                    'explanation': 'Each Octant epoch lasts for 90 days.'
+                }
+            ],
+            'project_submission': [
+                {
+                    'question': 'What is NOT required for project submission in Octant?',
+                    'options': ['Public good status', 'Open-source commitment', 'Minimum user base', 'Funding transparency'],
+                    'correct': 'Minimum user base',
+                    'explanation': 'While many criteria are required, having a minimum user base is not one of them.'
+                },
+                {
+                    'question': 'What development stage must projects be at minimum?',
+                    'options': ['Concept stage', 'MVP stage', 'Beta stage', 'Production stage'],
+                    'correct': 'MVP stage',
+                    'explanation': 'Projects must be at least at the MVP (Minimum Viable Product) stage.'
+                }
+            ]
+        }
+
+    def start_trivia_game(self):
+        """Start a new trivia game"""
+        if self.trivia_active:
+            return "A trivia game is already in progress! Type 'end trivia' to end it."
+        
+        self.trivia_active = True
+        self.trivia_score = 0
+        self.questions_asked = 0
+        return self.get_next_trivia_question()
+
+    def end_trivia_game(self):
+        """End the current trivia game and show final score"""
+        if not self.trivia_active:
+            return "No trivia game is currently active. Type 'start trivia' to begin!"
+        
+        final_score = self.trivia_score
+        total_questions = self.questions_asked
+        self.trivia_active = False
+        self.current_question = None
+        
+        if total_questions == 0:
+            return "Game ended. You haven't answered any questions yet!"
+        
+        percentage = (final_score / total_questions) * 100
+        return f"""🎮 Game Over! 
+Final Score: {final_score}/{total_questions} ({percentage:.1f}%)
+
+{'🌟 Excellent knowledge of Octant!' if percentage >= 80
+ else '👍 Good job!' if percentage >= 60
+ else '🎯 Keep learning about Octant!'}
+
+Type 'start trivia' to play again!"""
+
+    def get_next_trivia_question(self):
+        """Get the next random trivia question"""
+        import random
+        
+        # Get a random category
+        category = random.choice(list(self.trivia_questions.keys()))
+        question_data = random.choice(self.trivia_questions[category])
+        
+        self.current_question = question_data
+        self.questions_asked += 1
+        
+        options_text = '\n'.join(f"{i+1}. {opt}" for i, opt in enumerate(question_data['options']))
+        return f"""📝 Question {self.questions_asked}:
+        
+{question_data['question']}
+
+{options_text}
+
+Type the number of your answer (1-{len(question_data['options'])})"""
+
+    def handle_trivia_answer(self, answer):
+        """Handle a trivia game answer"""
+        if not self.current_question:
+            return "Something went wrong. Let's start a new game! Type 'start trivia'"
+        
+        try:
+            answer_idx = int(answer) - 1
+            if answer_idx < 0 or answer_idx >= len(self.current_question['options']):
+                return f"Please enter a number between 1 and {len(self.current_question['options'])}"
+            
+            user_answer = self.current_question['options'][answer_idx]
+            correct = user_answer == self.current_question['correct']
+            
+            if correct:
+                self.trivia_score += 1
+                response = f"""✅ Correct! 
+{self.current_question['explanation']}"""
+            else:
+                response = f"""❌ Not quite! The correct answer is: {self.current_question['correct']}
+{self.current_question['explanation']}"""
+            
+            # Get next question
+            response += "\n\n" + self.get_next_trivia_question()
+            return response
+            
+        except ValueError:
+            return "Please enter a valid number as your answer!"
+            
             
     def handle_command(self, command):
         """Handle special commands starting with '/'"""
@@ -321,6 +453,12 @@ class ChatHandler:
         cmd = command[0]
         args = command[1:] if len(command) > 1 else []
 
+        # Handle trivia game commands
+        if cmd == "start" and args and args[0] == "trivia":
+            return self.start_trivia_game()
+        elif cmd == "end" and args and args[0] == "trivia":
+            return self.end_trivia_game()
+        
         commands = {
             '/help': self.cmd_help,
             '/showcase': self.cmd_showcase,
@@ -331,6 +469,11 @@ class ChatHandler:
 
         if cmd in commands:
             return commands[cmd](args)
+        
+        # Check if we're in a trivia game and handle answers
+        if hasattr(self, 'trivia_active') and self.trivia_active:
+            return self.handle_trivia_answer(command[0])
+            
         return "Unknown command. Type /help to see available commands."
 
     def cmd_help(self, args):

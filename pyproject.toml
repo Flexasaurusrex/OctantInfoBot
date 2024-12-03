@@ -13,4 +13,5 @@ dependencies = [
     "python-engineio",
     "eventlet",
     "python-socketio>=5.11.4",
+    "together>=1.3.5",
 ]
