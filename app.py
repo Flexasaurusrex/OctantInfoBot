@@ -62,7 +62,7 @@ def handle_connect():
         socketio.emit('receive_message', {
             'message': 'Hello! I\'m the Octant Information Bot. How can I help you learn about Octant today?',
             'is_bot': True
-        })
+        }, room=request.sid)
     except Exception as e:
         logger.error(f"Error sending welcome message: {str(e)}")
 
