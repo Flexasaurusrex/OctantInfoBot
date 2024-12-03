@@ -88,9 +88,10 @@ class ChatHandler:
             }
             data = {
                 "model": self.model,
-                "messages": self.format_chat_prompt(message),
+                "prompt": self.format_chat_prompt(message),
                 "max_tokens": 1024,
                 "temperature": 0.7,
+                "stop": ["</s>", "[/INST]", "[INST]"]
             }
             response = requests.post(
                 "https://api.together.xyz/inference",
@@ -98,7 +99,13 @@ class ChatHandler:
                 json=data
             )
             if response.status_code == 200:
-                return response.json()['output']['content']
+                response_data = response.json()
+                if 'choices' in response_data:
+                    return response_data['choices'][0]['message']['content']
+                elif 'output' in response_data:
+                    return response_data['output']['text']
+                else:
+                    raise Exception("Unexpected API response format")
             else:
                 raise Exception(f"API request failed: {response.text}")
 
@@ -107,17 +114,10 @@ class ChatHandler:
             return "I encountered an unexpected issue. Please try again, and if the problem persists, try rephrasing your question."
 
     def format_chat_prompt(self, message):
-        """Format the chat prompt for Mixtral"""
-        return [
-            {
-                "role": "system",
-                "content": "You are a helpful assistant for Octant, a platform for experiments in participatory public goods funding. Provide accurate, concise information about Octant's features, processes, and governance. Use a friendly, professional tone."
-            },
-            {
-                "role": "user",
-                "content": message
-            }
-        ]
+        """Format the chat prompt for Together.ai API"""
+        system_prompt = "<s>[INST] You are a helpful assistant for Octant, a platform for experiments in participatory public goods funding. Provide accurate, concise information about Octant's features, processes, and governance. Use a friendly, professional tone. [/INST]</s>"
+        user_prompt = f"<s>[INST] {message} [/INST]"
+        return system_prompt + "\n" + user_prompt
 
     def start_trivia_game(self):
         """Start a new trivia game"""
