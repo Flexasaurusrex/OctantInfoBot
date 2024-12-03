@@ -333,20 +333,51 @@ Type /calculate [number] to use a specific calculator."""
     def get_quadratic_funding_info(self):
         return """🔄 Quadratic Funding in Octant:
 
-• Introduced in Epoch 4
-• Emphasizes broad community support
+• Introduced in Epoch 4 to empower communities
+• Assigns greater weight to many small donations over few large ones
 • Maximum funding cap: 20% of Matched Rewards pool
-• Uses Gitcoin Passport for Sybil resistance
-• Minimum score requirement: 15"""
+• Anti-Sybil protection via Gitcoin Passport
+• Minimum score requirement: 15 for maximum funding
+• Donations from users with scores below 15 scaled down by 90%
+• Community-driven funding decisions
+• No minimum funding threshold
+
+💡 Key Benefits:
+• Promotes democratic funding distribution
+• Supports broad-based community projects
+• Ensures fair resource allocation
+• Prevents manipulation through strict verification
+
+Type '/learn 2' for GLM token info or '/help' for more options."""
 
     def get_glm_token_info(self):
         return """🪙 GLM Token Mechanics:
 
-• Minimum lock requirement: 100 GLM
-• Non-custodial locking system
-• 90-day epoch duration
-• Time-weighted average calculations
-• Instant withdrawal capability"""
+Key Features:
+• Safe non-custodial locking system
+• 90-day epoch duration for stability
+• Transparent reward calculations
+• Flexible allocation options
+
+User Options:
+• Claim rewards directly
+• Donate to public good projects
+• Contribute to matching pool
+• Participate in governance voting
+
+Reward System:
+• Proportional to locked GLM amount
+• Based on total GLM supply ratio
+• Time-weighted calculations
+• Regular distribution cycles
+
+💡 Pro Tips:
+• Monitor your allocations during windows
+• Review project performance regularly
+• Adjust strategies based on community feedback
+• Participate in governance decisions
+
+Type '/learn 3' for project submission info or '/help' for more options."""
 
     def get_project_submission_info(self):
         return """📝 Project Submission Guide:
