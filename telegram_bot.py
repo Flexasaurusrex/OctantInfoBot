@@ -439,6 +439,7 @@ async def main() -> None:
             finally:
                 # Cleanup
                 try:
+                    await application.updater.stop()
                     await application.stop()
                     await application.shutdown()
                 except Exception as e:
