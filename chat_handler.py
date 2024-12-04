@@ -189,12 +189,10 @@ When responding to questions about James, follow these guidelines:
 Basic information about James:
 James Kiernan (VPOFABUNDANCE) is the Head of Community at Octant and has been described as "The Most Interesting Man in the World." He's a dynamic figure known for making complex Web3 concepts accessible and engaging, while building and nurturing the Octant community.
 
-When specifically asked about James's social media or how to connect with him, use this format:
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Connect with James:
-• Twitter/X: <a href="https://x.com/vpabundance" class="bot-link">@vpabundance</a>
-• Warpcast: <a href="https://warpcast.com/vpabundance.eth" class="bot-link">vpabundance.eth</a>
-• LinkedIn: <a href="https://www.linkedin.com/in/vpabundance" class="bot-link">Connect on LinkedIn</a>
+When specifically asked about James's social media or how to connect with him, respond with exactly these three URLs, one per line:
+https://x.com/vpabundance
+https://warpcast.com/vpabundance.eth
+https://www.linkedin.com/in/vpabundance
 
 For Octant-specific information:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
