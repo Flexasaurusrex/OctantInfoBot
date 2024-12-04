@@ -337,7 +337,8 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
                 def create_clean_link(url, display_text=None):
                     """Create a clean HTML link with optional display text."""
                     display = display_text if display_text else url
-                    return f'<a href="{url}" class="bot-link">{display}</a>'
+                    # For Telegram compatibility, remove class attributes
+                    return f'<a href="{url}">{display}</a>'
 
                 # Define social media mappings with display names
                 social_media = {
