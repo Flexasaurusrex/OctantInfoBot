@@ -211,9 +211,9 @@ James Kiernan (VPOFABUNDANCE)
 • Role: Head of Community, Jack of all trades
 • Known as: "The most interesting man in the world" 🌟
 • Connect with James:
-  • Twitter/X: <a href="https://x.com/vpabundance" class="bot-link">@vpabundance</a>
-  • Warpcast: <a href="https://warpcast.com/vpabundance.eth" class="bot-link">vpabundance.eth</a>
-  • LinkedIn: <a href="https://www.linkedin.com/in/vpabundance" class="bot-link">Connect on LinkedIn</a>
+  • Twitter/X: <a href="https://x.com/vpabundance" class="bot-link" target="_blank">@vpabundance</a>
+• Warpcast: <a href="https://warpcast.com/vpabundance.eth" class="bot-link" target="_blank">vpabundance.eth</a>
+• LinkedIn: <a href="https://www.linkedin.com/in/vpabundance" class="bot-link" target="_blank">Connect on LinkedIn</a>
 
 Core Facts About Octant (or as I like to call it, "The Greatest Show in Blockchain"):
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -343,10 +343,20 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
                 response_text = result["output"]["choices"][0]["text"].strip()
                 # Convert URLs to clickable links
                 import re
-                url_pattern = r'https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+'
+                # Handle social media links with custom display text
+                social_patterns = [
+                    (r'@vpabundance\b(?!\</a\>)', '<a href="https://x.com/vpabundance" class="bot-link" target="_blank">@vpabundance</a>'),
+                    (r'vpabundance\.eth\b(?!\</a\>)', '<a href="https://warpcast.com/vpabundance.eth" class="bot-link" target="_blank">vpabundance.eth</a>'),
+                ]
+                
+                for pattern, replacement in social_patterns:
+                    response_text = re.sub(pattern, replacement, response_text)
+                
+                # Handle regular URLs
+                url_pattern = r'https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+(?!\</a\>)'
                 response_text = re.sub(
                     url_pattern,
-                    lambda m: f'<a href="{m.group(0)}" target="_blank" class="bot-link">{m.group(0)}</a>',
+                    lambda m: f'<a href="{m.group(0)}" class="bot-link" target="_blank">{m.group(0)}</a>',
                     response_text
                 )
                 
