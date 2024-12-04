@@ -1,34 +1,14 @@
 import random
+import html
 
 class Trivia:
     def __init__(self):
+        """Initialize the trivia game with questions."""
         self.questions = [
             {
-                "question": "What is Octant's main funding mechanism?",
+                "question": "What is the minimum effective GLM balance required for user rewards?",
                 "options": {
-                    "A": "Traditional Grants",
-                    "B": "Quadratic Funding",
-                    "C": "Direct Donations",
-                    "D": "Private Investment"
-                },
-                "correct": "B",
-                "explanation": "Octant uses Quadratic Funding which considers both the number of unique contributors and the amount donated, giving more weight to projects with broad community support."
-            },
-            {
-                "question": "What percentage of staking yield contributes to Octant's Total Rewards budget?",
-                "options": {
-                    "A": "50%",
-                    "B": "60%",
-                    "C": "70%",
-                    "D": "80%"
-                },
-                "correct": "C",
-                "explanation": "70% of the staking yield contributes to Octant's Total Rewards budget, split evenly between User Rewards and Matched Rewards."
-            },
-            {
-                "question": "What is the minimum effective GLM balance required to qualify for user rewards?",
-                "options": {
-                    "A": "1 GLM",
+                    "A": "10 GLM",
                     "B": "50 GLM",
                     "C": "100 GLM",
                     "D": "500 GLM"
@@ -112,6 +92,61 @@ class Trivia:
                 },
                 "correct": "A",
                 "explanation": "5% of rewards are allocated to community initiatives, fostering growth and innovation within the Octant ecosystem."
+            },
+            {
+                "question": "What type of staking mechanism does Octant use for GLM tokens?",
+                "options": {
+                    "A": "Liquid staking",
+                    "B": "Locked staking",
+                    "C": "Flexible staking",
+                    "D": "Delegated staking"
+                },
+                "correct": "B",
+                "explanation": "Octant uses a locked staking mechanism where GLM tokens must be locked to participate in the ecosystem and earn rewards."
+            },
+            {
+                "question": "Which organization oversees Octant's development?",
+                "options": {
+                    "A": "Ethereum Foundation",
+                    "B": "Golem Foundation",
+                    "C": "Octant DAO",
+                    "D": "Decentralized Council"
+                },
+                "correct": "B",
+                "explanation": "The Golem Foundation oversees Octant's development, backed by their commitment of 100,000 ETH to support public goods funding."
+            },
+            {
+                "question": "What is the primary goal of Octant's funding model?",
+                "options": {
+                    "A": "Maximum profit generation",
+                    "B": "Token price stability",
+                    "C": "Public goods funding",
+                    "D": "Network security"
+                },
+                "correct": "C",
+                "explanation": "Octant's primary goal is to support public goods funding through its innovative quadratic funding mechanism and community-driven allocation."
+            },
+            {
+                "question": "How are project funding decisions made in Octant?",
+                "options": {
+                    "A": "Foundation decides alone",
+                    "B": "Community voting only",
+                    "C": "Quadratic funding + community",
+                    "D": "Random selection"
+                },
+                "correct": "C",
+                "explanation": "Project funding in Octant is determined through a combination of quadratic funding mechanics and community participation, ensuring fair and democratic resource allocation."
+            },
+            {
+                "question": "What happens to GLM tokens during the locking period?",
+                "options": {
+                    "A": "They're burned",
+                    "B": "They're traded freely",
+                    "C": "They're locked and illiquid",
+                    "D": "They're converted to ETH"
+                },
+                "correct": "C",
+                "explanation": "During the locking period, GLM tokens become illiquid and cannot be transferred or traded, ensuring committed participation in the ecosystem."
             }
         ]
         self.score = 0
@@ -192,7 +227,7 @@ class Trivia:
     </div>
     
     <div class="trivia-score">
-        Current Score: {self.score}/{self.total_questions}
+        Current Score: {self.score}/{len(self.asked_questions)}
     </div>
 
     <div class="trivia-actions">
@@ -216,7 +251,7 @@ class Trivia:
     </div>
     
     <div class="trivia-score">
-        Current Score: {self.score}/{self.total_questions}
+        Current Score: {self.score}/{len(self.asked_questions)}
     </div>
 
     <div class="trivia-actions">
