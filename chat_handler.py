@@ -336,11 +336,20 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
 
                 def create_clean_link(url, display_text=None):
                     """Create a clean HTML link with optional display text."""
+                    # Clean the URL first
+                    url = url.strip()
+                    if url.endswith('"'):
+                        url = url[:-1]
+                    
+                    # For social media links, keep URL only
+                    if any(domain in url.lower() for domain in ['x.com', 'warpcast.com', 'linkedin.com']):
+                        return url
+                    
+                    # For other links, use Telegram's HTML link format
                     display = display_text if display_text else url
-                    # For Telegram compatibility, remove class attributes
                     return f'<a href="{url}">{display}</a>'
 
-                # Define social media mappings with display names
+                # Define social media mappings
                 social_media = {
                     '@vpabundance': 'https://x.com/vpabundance',
                     'vpabundance.eth': 'https://warpcast.com/vpabundance.eth',
@@ -363,20 +372,40 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
                     )
 
                 # Only format URLs if they're not the specific James social media response
-                if not all(url in response_text for url in [
+                # Clean up any HTML class attributes first
+                response_text = re.sub(r'class="[^"]*"', '', response_text)
+                
+                # Check if this is a social media-only response
+                is_social_media_response = all(url in response_text for url in [
                     "https://x.com/vpabundance",
                     "https://warpcast.com/vpabundance.eth",
                     "https://www.linkedin.com/in/vpabundance"
-                ]):
-                    # Handle any remaining URLs
-                    url_pattern = r'https?://[^\s<>"\']+?(?=[.,;:!?)\s]|$)'
+                ])
+                
+                if not is_social_media_response:
+                    # Handle URLs, avoiding duplicates
+                    seen_urls = set()
                     def replace_remaining_url(match):
-                        url = match.group(0).rstrip('.,;:!?)')
-                        if url not in social_media.values():
-                            return create_clean_link(url)
-                        return match.group(0)
-                    
-                    response_text = re.sub(url_pattern, replace_remaining_url, response_text)
+                        url = match.group(0).rstrip('.,;:!?)"')
+                        # Clean malformed URLs
+                        url = re.sub(r'(?:https?://[^/]+/)+(?=https?://)', '', url)
+                        url = url.replace('""', '"').strip('"')
+                        
+                        if url in seen_urls:
+                            return ""
+                        seen_urls.add(url)
+                        
+                        # Special handling for social media URLs
+                        if any(domain in url.lower() for domain in ['x.com', 'warpcast.com', 'linkedin.com']):
+                            return url
+                        return create_clean_link(url)
+                
+                # Match URLs more precisely to avoid partial matches
+                url_pattern = r'https?://(?:www\.)?[^\s<>"\']+?(?=[.,;:!?)\s]|$)'
+                response_text = re.sub(url_pattern, replace_remaining_url, response_text)
+                
+                # Clean up any remaining bot-link references
+                response_text = re.sub(r'">(?:https?://[^<]+?)</a>', lambda m: '">' + m.group(0)[2:-4] + '</a>', response_text)
                 
                 # Update conversation history
                 self.conversation_history.append({
