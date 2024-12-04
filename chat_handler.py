@@ -211,9 +211,9 @@ James Kiernan (VPOFABUNDANCE)
 • Role: Head of Community, Jack of all trades
 • Known as: "The most interesting man in the world" 🌟
 • Connect with James:
-  • Twitter/X: <a href="https://x.com/vpabundance" class="bot-link" target="_blank">@vpabundance</a>
-• Warpcast: <a href="https://warpcast.com/vpabundance.eth" class="bot-link" target="_blank">vpabundance.eth</a>
-• LinkedIn: <a href="https://www.linkedin.com/in/vpabundance" class="bot-link" target="_blank">Connect on LinkedIn</a>
+  • Twitter/X: @vpabundance
+• Warpcast: vpabundance.eth
+• LinkedIn: https://www.linkedin.com/in/vpabundance
 
 Core Facts About Octant (or as I like to call it, "The Greatest Show in Blockchain"):
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -343,17 +343,20 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
                 response_text = result["output"]["choices"][0]["text"].strip()
                 # Convert URLs to clickable links
                 import re
-                # Handle social media links with custom display text
-                social_patterns = [
-                    (r'@vpabundance\b(?!\</a\>)', '<a href="https://x.com/vpabundance" class="bot-link" target="_blank">@vpabundance</a>'),
-                    (r'vpabundance\.eth\b(?!\</a\>)', '<a href="https://warpcast.com/vpabundance.eth" class="bot-link" target="_blank">vpabundance.eth</a>'),
-                ]
+                # Define social media patterns with simpler formatting
+                social_links = {
+                    '@vpabundance': 'https://x.com/vpabundance',
+                    'vpabundance.eth': 'https://warpcast.com/vpabundance.eth'
+                }
                 
-                for pattern, replacement in social_patterns:
+                # First replace social media handles with properly formatted links
+                for handle, url in social_links.items():
+                    pattern = f'\\b{re.escape(handle)}\\b(?!["\'])'
+                    replacement = f'<a href="{url}" class="bot-link" target="_blank">{handle}</a>'
                     response_text = re.sub(pattern, replacement, response_text)
                 
-                # Handle regular URLs
-                url_pattern = r'https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+(?!\</a\>)'
+                # Then handle any remaining URLs
+                url_pattern = r'https?://[^\s<>"\']+(?<![.,])'
                 response_text = re.sub(
                     url_pattern,
                     lambda m: f'<a href="{m.group(0)}" class="bot-link" target="_blank">{m.group(0)}</a>',
