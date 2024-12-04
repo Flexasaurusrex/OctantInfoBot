@@ -211,9 +211,9 @@ James Kiernan (VPOFABUNDANCE)
 • Role: Head of Community, Jack of all trades
 • Known as: "The most interesting man in the world" 🌟
 • Connect with James:
-  • Twitter/X: <a href="https://x.com/vpabundance" target="_blank" class="bot-link">https://x.com/vpabundance</a>
-  • Warpcast: <a href="https://warpcast.com/vpabundance.eth" target="_blank" class="bot-link">https://warpcast.com/vpabundance.eth</a>
-  • LinkedIn: <a href="https://www.linkedin.com/in/vpabundance" target="_blank" class="bot-link">https://www.linkedin.com/in/vpabundance</a>
+  • Twitter/X: @vpabundance (<a href="https://x.com/vpabundance">Follow on X</a>)
+  • Warpcast: vpabundance.eth (<a href="https://warpcast.com/vpabundance.eth">Connect on Warpcast</a>)
+  • LinkedIn: (<a href="https://www.linkedin.com/in/vpabundance">Connect on LinkedIn</a>)
 
 Core Facts About Octant (or as I like to call it, "The Greatest Show in Blockchain"):
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
