@@ -55,21 +55,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${isBot ? 'bot-message' : 'user-message'}`;
         
-        const messageWrapper = document.createElement('div');
-        messageWrapper.className = 'message-wrapper';
-        
         if (isBot) {
             const botAvatar = document.createElement('img');
             botAvatar.src = '/static/images/2.png';
             botAvatar.className = 'bot-avatar';
-            messageWrapper.appendChild(botAvatar);
+            messageDiv.appendChild(botAvatar);
         }
 
-        const messageContent = document.createElement('div');
-        messageContent.className = 'message-content';
+        const messageContent = document.createElement('span');
         messageContent.innerHTML = message;
-        messageWrapper.appendChild(messageContent);
-        messageDiv.appendChild(messageWrapper);
+        messageDiv.appendChild(messageContent);
         
         messagesContainer.appendChild(messageDiv);
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
