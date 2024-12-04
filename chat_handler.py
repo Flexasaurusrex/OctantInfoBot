@@ -334,78 +334,46 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
                 # Convert URLs to clickable links
                 import re
 
-                def create_clean_link(url, display_text=None):
-                    """Create a clean HTML link with optional display text."""
-                    # Clean the URL first
-                    url = url.strip()
-                    if url.endswith('"'):
-                        url = url[:-1]
+                def format_urls(text):
+                    """Format URLs in text, keeping social media links clean."""
+                    # Remove any HTML class attributes
+                    text = re.sub(r'class="[^"]*"', '', text)
                     
-                    # For social media links, keep URL only
-                    if any(domain in url.lower() for domain in ['x.com', 'warpcast.com', 'linkedin.com']):
-                        return url
+                    # Handle James's social media response
+                    social_urls = [
+                        "https://x.com/vpabundance",
+                        "https://warpcast.com/vpabundance.eth",
+                        "https://www.linkedin.com/in/vpabundance"
+                    ]
                     
-                    # For other links, use Telegram's HTML link format
-                    display = display_text if display_text else url
-                    return f'<a href="{url}">{display}</a>'
-
-                # Define social media mappings
-                social_media = {
-                    '@vpabundance': 'https://x.com/vpabundance',
-                    'vpabundance.eth': 'https://warpcast.com/vpabundance.eth',
-                    'Connect on LinkedIn': 'https://www.linkedin.com/in/vpabundance'
-                }
-
-                # Replace social media handles and URLs
-                for display, url in social_media.items():
-                    # Handle the raw URL version
-                    response_text = re.sub(
-                        re.escape(url),
-                        create_clean_link(url),
-                        response_text
-                    )
-                    # Handle the display text version
-                    response_text = re.sub(
-                        f'\\b{re.escape(display)}\\b(?!["\'])',
-                        create_clean_link(url, display),
-                        response_text
-                    )
-
-                # Only format URLs if they're not the specific James social media response
-                # Clean up any HTML class attributes first
-                response_text = re.sub(r'class="[^"]*"', '', response_text)
-                
-                # Check if this is a social media-only response
-                is_social_media_response = all(url in response_text for url in [
-                    "https://x.com/vpabundance",
-                    "https://warpcast.com/vpabundance.eth",
-                    "https://www.linkedin.com/in/vpabundance"
-                ])
-                
-                if not is_social_media_response:
-                    # Handle URLs, avoiding duplicates
-                    seen_urls = set()
-                    def replace_remaining_url(match):
+                    # If it's a social media response, return as is
+                    if all(url in text for url in social_urls):
+                        return text
+                    
+                    # Process other URLs
+                    def clean_url(match):
                         url = match.group(0).rstrip('.,;:!?)"')
-                        # Clean malformed URLs
-                        url = re.sub(r'(?:https?://[^/]+/)+(?=https?://)', '', url)
-                        url = url.replace('""', '"').strip('"')
+                        url = url.strip('"').strip()
                         
-                        if url in seen_urls:
-                            return ""
-                        seen_urls.add(url)
-                        
-                        # Special handling for social media URLs
+                        # Keep social media links as plain URLs
                         if any(domain in url.lower() for domain in ['x.com', 'warpcast.com', 'linkedin.com']):
                             return url
-                        return create_clean_link(url)
+                        
+                        # Format other URLs as HTML links
+                        return f'<a href="{url}">{url}</a>'
+                    
+                    # Find and replace URLs
+                    url_pattern = r'https?://(?:www\.)?[^\s<>"\']+?(?=[.,;:!?)\s]|$)'
+                    return re.sub(url_pattern, clean_url, text)
                 
-                # Match URLs more precisely to avoid partial matches
-                url_pattern = r'https?://(?:www\.)?[^\s<>"\']+?(?=[.,;:!?)\s]|$)'
-                response_text = re.sub(url_pattern, replace_remaining_url, response_text)
+                # Format the response text
+                response_text = format_urls(response_text)
                 
                 # Clean up any remaining bot-link references
                 response_text = re.sub(r'">(?:https?://[^<]+?)</a>', lambda m: '">' + m.group(0)[2:-4] + '</a>', response_text)
+                
+                # Log formatted response for verification
+                print(f"Formatted response: {response_text}")
                 
                 # Update conversation history
                 self.conversation_history.append({

@@ -8,11 +8,12 @@ import threading
 from datetime import datetime, timedelta
 
 class WatchdogTimer:
-    def __init__(self, timeout=300):  # 5 minutes default timeout
+    def __init__(self, timeout=600):  # 10 minutes default timeout
         self.timeout = timeout
         self.last_ping = datetime.now()
         self.lock = threading.Lock()
         self.running = True
+        self.warn_threshold = timeout * 0.8  # Warn at 80% of timeout
         self.start_monitor()
 
     def ping(self):
@@ -33,7 +34,14 @@ Time Since Last Ping: {time_since_ping:.2f}s
 Timeout Threshold: {self.timeout}s
 ━━━━━━━━━━━━━━━━━━━━━━━━""")
                         os._exit(1)  # Force restart
-                time.sleep(60)  # Check every minute
+                    elif time_since_ping > self.warn_threshold:
+                        logger.warning(f"""━━━━━━ Watchdog Warning ━━━━━━
+Last Ping: {self.last_ping}
+Current Time: {current_time}
+Time Since Last Ping: {time_since_ping:.2f}s
+Warning Threshold: {self.warn_threshold}s
+━━━━━━━━━━━━━━━━━━━━━━━━""")
+                time.sleep(30)  # Check every 30 seconds
         
         thread = threading.Thread(target=monitor, daemon=True)
         thread.start()
@@ -113,14 +121,30 @@ Just type your question and I'll help you out! 📚
     await update.message.reply_text(help_text)
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Handle incoming messages."""
+    """Handle incoming messages with enhanced reliability."""
     try:
         # Ping watchdog on message receipt
         if hasattr(context.application, 'watchdog'):
             context.application.watchdog.ping()
+        
         user_message = update.message.text
+        logger.info(f"Received message: {user_message}")
+        
+        # Get response with formatting
         response = chat_handler.get_response(user_message)
-        await update.message.reply_text(response, parse_mode='HTML')
+        
+        # Log formatted response for verification
+        logger.info("Formatted response ready for sending")
+        
+        # Send response with HTML parsing
+        await update.message.reply_text(
+            response,
+            parse_mode='HTML',
+            disable_web_page_preview=False  # Enable link previews
+        )
+        
+        logger.info("Response sent successfully")
+        
     except Exception as e:
         logger.error(f"Error handling message: {str(e)}")
         await update.message.reply_text("I encountered an error processing your message. Please try again.")
@@ -252,8 +276,10 @@ def main() -> None:
             # Ping watchdog to indicate bot is alive
             watchdog.ping()
             
-            # Regular health checks
+            # Regular health checks and watchdog pings
             if current_time - last_health_check >= health_check_interval:
+                # Ping watchdog on successful health check
+                watchdog.ping()
                 if not log_system_stats():
                     consecutive_failures += 1
                     logger.warning(f"Health check failed. Consecutive failures: {consecutive_failures}")
@@ -263,6 +289,10 @@ def main() -> None:
                 else:
                     consecutive_failures = 0
                 last_health_check = current_time
+            else:
+                # Additional watchdog ping every 60 seconds
+                if (current_time - watchdog.last_ping.timestamp()) > 60:
+                    watchdog.ping()
             
             logger.info("Initializing Telegram bot...")
             
@@ -300,14 +330,16 @@ def main() -> None:
             # Store watchdog instance in application
             application.watchdog = watchdog
 
-            # Enhanced startup logging
+            # Enhanced startup logging with version tracking
             logger.info("━━━━━━ Bot Configuration ━━━━━━")
             logger.info(f"Start Time: {time.strftime('%Y-%m-%d %H:%M:%S')}")
             logger.info(f"Retry Count: {retry_count}")
+            logger.info(f"Bot Version: 1.0.1")
             logger.info("Connection Parameters:")
             logger.info("- Polling Timeout: 60s")
             logger.info("- Connection Retries: infinite")
             logger.info("- Update Mode: polling")
+            logger.info("- Health Check: Active")
             logger.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
 
             # Reset retry count on successful start
