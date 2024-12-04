@@ -68,6 +68,11 @@ httpx_logger.setLevel(logging.INFO)
 telegram_logger = logging.getLogger("telegram")
 telegram_logger.setLevel(logging.INFO)
 
+# Message rate monitoring
+message_count = 0
+last_message_time = time.time()
+MESSAGE_RATE_INTERVAL = 60  # Check message rate every minute
+MIN_MESSAGE_RATE = 0  # Minimum expected messages per minute (0 means no minimum)
 # Add file handler for persistent logging with rotation
 from logging.handlers import RotatingFileHandler
 file_handler = RotatingFileHandler(
@@ -237,24 +242,47 @@ def main() -> None:
             total_memory = psutil.virtual_memory().total / 1024 / 1024
             memory_percent = (memory_usage / total_memory) * 100
             
-            # Trigger garbage collection if memory usage is high (> 70%)
-            if memory_percent > 70:
+            # Enhanced memory management
+            if memory_percent > 60:  # Lower threshold for proactive cleanup
                 import gc
                 gc.collect()
-                logger.info("Triggered garbage collection due to high memory usage")
+                logger.info("Proactive garbage collection triggered")
+                
+            # Get network stats
+            net_io = psutil.net_io_counters()
+            bytes_sent = net_io.bytes_sent / 1024 / 1024  # Convert to MB
+            bytes_recv = net_io.bytes_recv / 1024 / 1024  # Convert to MB
             
-            # Enhanced status logging
+            # Get disk usage
+            disk = psutil.disk_usage('/')
+            disk_percent = disk.percent
+            
+            # Enhanced status logging with more metrics
             logger.info("━━━━━━ System Health Check ━━━━━━")
             logger.info(f"Uptime: {int(hours)}h {int(minutes)}m {int(seconds)}s")
             logger.info(f"Memory Usage: {memory_usage:.2f} MB ({memory_percent:.1f}%)")
             logger.info(f"CPU Usage: {cpu_percent:.1f}%")
+            logger.info(f"Network I/O: ↑{bytes_sent:.1f}MB ↓{bytes_recv:.1f}MB")
+            logger.info(f"Disk Usage: {disk_percent}%")
             logger.info(f"Retry Count: {retry_count}")
             logger.info(f"Last Update Time: {time.strftime('%Y-%m-%d %H:%M:%S')}")
+            logger.info(f"Message Processing Rate: {getattr(context.application, 'msg_count', 0)}/min")
             logger.info("Connection Status: Active" if not retry_count else f"Connection Status: Reconnecting (Attempt {retry_count})")
             logger.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
             
-            # Trigger recovery if system metrics are concerning
-            if memory_percent > 80 or cpu_percent > 90:
+            # Smarter recovery triggers
+            should_recover = False
+            if memory_percent > 80:
+                logger.warning("Memory usage critical")
+                should_recover = True
+            if cpu_percent > 90:
+                logger.warning("CPU usage critical")
+                should_recover = True
+            if disk_percent > 90:
+                logger.warning("Disk usage critical")
+                should_recover = True
+                
+            if should_recover:
                 logger.warning("System resources critical - initiating recovery procedure")
                 return False
             return True
