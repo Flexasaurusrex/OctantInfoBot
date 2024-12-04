@@ -343,25 +343,27 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
                 response_text = result["output"]["choices"][0]["text"].strip()
                 # Convert URLs to clickable links
                 import re
-                # Define social media patterns with simpler formatting
-                social_links = {
-                    '@vpabundance': 'https://x.com/vpabundance',
-                    'vpabundance.eth': 'https://warpcast.com/vpabundance.eth'
-                }
+                # Define James' social media links
+                social_urls = [
+                    'https://x.com/vpabundance',
+                    'https://warpcast.com/vpabundance.eth',
+                    'https://www.linkedin.com/in/vpabundance'
+                ]
                 
-                # First replace social media handles with properly formatted links
-                for handle, url in social_links.items():
-                    pattern = f'\\b{re.escape(handle)}\\b(?!["\'])'
-                    replacement = f'<a href="{url}" class="bot-link" target="_blank">{handle}</a>'
+                # Simple regex to match exact URLs
+                for url in social_urls:
+                    escaped_url = re.escape(url)
+                    pattern = f'\\b{escaped_url}\\b'
+                    replacement = f'<a href="{url}" class="bot-link" target="_blank">{url}</a>'
                     response_text = re.sub(pattern, replacement, response_text)
                 
-                # Then handle any remaining raw URLs
+                # Handle any remaining URLs that aren't in our predefined list
                 url_pattern = r'https?://[^\s<>"\']+?(?=[.,;:!?)\s]|$)'
                 def replace_url(match):
-                    url = match.group(0)
-                    # Remove any trailing punctuation
-                    url = url.rstrip('.,;:!?)')
-                    return f'<a href="{url}" class="bot-link" target="_blank">{url}</a>'
+                    url = match.group(0).rstrip('.,;:!?)')
+                    if url not in social_urls:  # Only process if not already handled
+                        return f'<a href="{url}" class="bot-link" target="_blank">{url}</a>'
+                    return match.group(0)
                 
                 response_text = re.sub(url_pattern, replace_url, response_text)
                 
