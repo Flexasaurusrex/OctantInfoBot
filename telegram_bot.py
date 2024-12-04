@@ -1,21 +1,46 @@
 import os
 import logging
 from telegram import Update
-from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
+from telegram.ext import Application, CommandHandler, MessageHandler, CallbackQueryHandler, filters, ContextTypes
+from telegram_trivia import TelegramTrivia
 import time
 import asyncio
 from telegram.error import NetworkError, TimedOut, RetryAfter
 from chat_handler import ChatHandler
 
-# Enable logging
+# Enhanced logging configuration with HTTP request tracking
 logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=logging.INFO
+    format='%(asctime)s - %(name)s - %(levelname)s - [%(module)s:%(lineno)d] - %(message)s',
+    level=logging.INFO,
+    datefmt='%Y-%m-%d %H:%M:%S'
 )
 logger = logging.getLogger(__name__)
 
-# Initialize chat handler
+# Configure httpx logging
+httpx_logger = logging.getLogger("httpx")
+httpx_logger.setLevel(logging.INFO)
+
+# Configure telegram library logging
+telegram_logger = logging.getLogger("telegram")
+telegram_logger.setLevel(logging.INFO)
+
+# Add file handler for persistent logging with rotation
+from logging.handlers import RotatingFileHandler
+file_handler = RotatingFileHandler(
+    'telegram_bot.log',
+    maxBytes=10*1024*1024,  # 10MB
+    backupCount=5
+)
+file_handler.setFormatter(logging.Formatter(
+    '%(asctime)s - %(name)s - %(levelname)s - [%(module)s:%(lineno)d] - %(message)s'
+))
+logger.addHandler(file_handler)
+httpx_logger.addHandler(file_handler)
+telegram_logger.addHandler(file_handler)
+
+# Initialize handlers
 chat_handler = ChatHandler()
+telegram_trivia = TelegramTrivia()
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Send a message when the command /start is issued."""
@@ -62,39 +87,96 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         await update.message.reply_text("I encountered an error processing your message. Please try again.")
 
 async def error_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Handle errors in the telegram bot."""
+    """Handle errors in the telegram bot with enhanced recovery and monitoring."""
     try:
-        if update:
-            logger.error(f"Update {update.update_id} caused error {context.error}")
-        else:
-            logger.error(f"Error occurred without update: {context.error}")
+        error_time = time.strftime("%Y-%m-%d %H:%M:%S")
         
-        if isinstance(context.error, NetworkError):
-            logger.info("Network error occurred, will retry...")
-            await asyncio.sleep(1)
-        elif isinstance(context.error, TimedOut):
-            logger.info("Request timed out, will retry...")
-            await asyncio.sleep(0.5)
-        elif isinstance(context.error, RetryAfter):
-            logger.info(f"Rate limit hit. Sleeping for {context.error.retry_after} seconds")
-            await asyncio.sleep(context.error.retry_after)
+        # Log detailed error information
+        if update:
+            logger.error(f"[{error_time}] Update {update.update_id} caused error: {context.error}")
+            if update.effective_user:
+                logger.error(f"User info: ID={update.effective_user.id}, Username={update.effective_user.username}")
         else:
-            logger.error("Unknown error occurred")
-            logger.error(f"Error details: {str(context.error)}")
+            logger.error(f"[{error_time}] Error occurred without update: {context.error}")
+        
+        # Enhanced error classification and handling
+        if isinstance(context.error, NetworkError):
+            logger.warning(f"[{error_time}] Network error detected: {str(context.error)}")
+            logger.info("Implementing exponential backoff strategy...")
+            retry_delay = min(300, 2 ** context.error_count if hasattr(context, 'error_count') else 1)
+            logger.info(f"Waiting {retry_delay} seconds before retry...")
+            await asyncio.sleep(retry_delay)
             
-        if update and update.message:
-            await update.message.reply_text(
-                "Sorry, I encountered a temporary issue. Please try again in a moment."
-            )
+        elif isinstance(context.error, TimedOut):
+            logger.warning(f"[{error_time}] Request timed out: {str(context.error)}")
+            logger.info("Implementing adaptive retry strategy...")
+            retry_delay = min(60, 1 + (context.error_count * 0.5) if hasattr(context, 'error_count') else 1)
+            logger.info(f"Waiting {retry_delay} seconds before retry...")
+            await asyncio.sleep(retry_delay)
+            
+        elif isinstance(context.error, RetryAfter):
+            retry_after = context.error.retry_after
+            logger.warning(f"[{error_time}] Rate limit exceeded. Retry after: {retry_after}s")
+            logger.info(f"Implementing rate limit cooldown...")
+            await asyncio.sleep(retry_after)
+            
+        else:
+            logger.error(f"[{error_time}] Unhandled error type: {type(context.error).__name__}")
+            logger.error(f"Error details: {str(context.error)}")
+            logger.info("Implementing default error recovery...")
+            await asyncio.sleep(5)
+        
+        # Monitor memory usage during errors
+        import psutil
+        process = psutil.Process()
+        memory_usage = process.memory_info().rss / 1024 / 1024
+        logger.info(f"Current memory usage: {memory_usage:.2f} MB")
+        
+        # Provide user feedback if possible
+        if update and update.effective_message:
+            try:
+                await update.effective_message.reply_text(
+                    "I encountered a temporary issue. Please try again in a moment. "
+                    "Our system is actively working to resolve this."
+                )
+            except Exception as reply_error:
+                logger.error(f"Failed to send error message to user: {str(reply_error)}")
+                
     except Exception as e:
-        logger.error(f"Error in error handler: {str(e)}")
+        logger.error(f"Critical error in error handler: {str(e)}")
+        logger.error("Error handler failed to process the error properly")
 
 def main() -> None:
-    """Start the bot with enhanced error handling and reconnection logic."""
+    """Start the bot with enhanced monitoring and reconnection logic."""
     retry_count = 0
-    max_retries = 5  # Set to -1 for infinite retries
+    max_retries = -1  # Infinite retries for 24/7 uptime
     base_delay = 5
     max_delay = 300  # 5 minutes
+    start_time = time.time()
+    last_stats_time = time.time()
+    stats_interval = 3600  # Log statistics every hour
+    
+    # Initialize system monitoring
+    import psutil
+    process = psutil.Process()
+
+    def log_system_stats():
+        """Log system statistics."""
+        try:
+            memory_usage = process.memory_info().rss / 1024 / 1024
+            cpu_percent = process.cpu_percent()
+            current_uptime = time.time() - start_time
+            hours, remainder = divmod(current_uptime, 3600)
+            minutes, seconds = divmod(remainder, 60)
+            
+            logger.info("━━━━━━ System Statistics ━━━━━━")
+            logger.info(f"Uptime: {int(hours)}h {int(minutes)}m {int(seconds)}s")
+            logger.info(f"Memory Usage: {memory_usage:.2f} MB")
+            logger.info(f"CPU Usage: {cpu_percent:.1f}%")
+            logger.info(f"Retry Count: {retry_count}")
+            logger.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+        except Exception as e:
+            logger.error(f"Error logging system stats: {str(e)}")
 
     while True:
         try:
@@ -106,53 +188,85 @@ def main() -> None:
                 logger.error("TELEGRAM_BOT_TOKEN environment variable is not set!")
                 return
 
-            # Create the Application with detailed configuration
+            # Create the Application with detailed configuration and health checks
             application = (
                 Application.builder()
                 .token(token)
-                .read_timeout(30)
-                .write_timeout(30)
-                .connect_timeout(30)
-                .pool_timeout(30)
+                .get_updates_read_timeout(60)
+                .get_updates_write_timeout(60)
+                .get_updates_connect_timeout(60)
+                .get_updates_pool_timeout(None)
+                .connect_timeout(60)
+                .read_timeout(60)
+                .write_timeout(60)
+                .pool_timeout(None)
                 .build()
             )
 
-            # Add handlers
+            # Add handlers with enhanced monitoring
             application.add_handler(CommandHandler("start", start))
             application.add_handler(CommandHandler("help", help_command))
             application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
-
-            # Configure error handlers
+            application.add_handler(CallbackQueryHandler(telegram_trivia.handle_answer, pattern="^trivia_"))
+            application.add_handler(CommandHandler("trivia", telegram_trivia.start_game))
             application.add_error_handler(error_handler)
 
-            logger.info("Starting Telegram bot...")
-            
+            # Enhanced startup logging
+            logger.info("━━━━━━ Bot Configuration ━━━━━━")
+            logger.info(f"Start Time: {time.strftime('%Y-%m-%d %H:%M:%S')}")
+            logger.info(f"Retry Count: {retry_count}")
+            logger.info("Connection Parameters:")
+            logger.info("- Polling Timeout: 60s")
+            logger.info("- Connection Retries: infinite")
+            logger.info("- Update Mode: polling")
+            logger.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+
             # Reset retry count on successful start
             retry_count = 0
             
-            # Start the bot with persistent configuration
+            # Log initial system statistics
+            log_system_stats()
+            
+            # Start polling with enhanced error recovery
             application.run_polling(
                 allowed_updates=Update.ALL_TYPES,
                 drop_pending_updates=True,
-                pool_timeout=30,
-                read_timeout=30,
-                write_timeout=30,
-                connect_timeout=30
+                read_timeout=60,
+                write_timeout=60,
+                connect_timeout=60,
+                pool_timeout=None
             )
+            
+            logger.info("Polling started successfully")
+            
         except Exception as e:
             retry_count += 1
-            # Calculate exponential backoff delay
             delay = min(base_delay * (2 ** (retry_count - 1)), max_delay)
             
-            logger.error(f"Error in main loop: {str(e)}")
-            logger.info(f"Attempt {retry_count}/{max_retries if max_retries > 0 else 'infinite'}")
-            logger.info(f"Retrying in {delay} seconds...")
+            # Enhanced error logging
+            logger.error("━━━━━━ Error Report ━━━━━━")
+            logger.error(f"Error Type: {type(e).__name__}")
+            logger.error(f"Error Message: {str(e)}")
+            logger.error(f"Retry Count: {retry_count}")
+            logger.error(f"Next Retry: {delay} seconds")
+            logger.error("━━━━━━━━━━━━━━━━━━━━━━━━")
             
-            # If max retries reached, log and continue with base delay
+            # Log system statistics on error
+            log_system_stats()
+            
+            # If it's time to log periodic statistics
+            current_time = time.time()
+            if current_time - last_stats_time >= stats_interval:
+                log_system_stats()
+                last_stats_time = current_time
+            
+            # Reset retry count if max retries reached
             if max_retries > 0 and retry_count >= max_retries:
                 logger.warning("Max retries reached, resetting retry count")
                 retry_count = 0
             
+            # Implement exponential backoff
+            logger.info(f"Waiting {delay} seconds before retry...")
             time.sleep(delay)
 
 if __name__ == '__main__':
