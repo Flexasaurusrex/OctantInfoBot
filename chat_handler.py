@@ -349,24 +349,21 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
                     'vpabundance.eth': 'https://warpcast.com/vpabundance.eth'
                 }
                 
-                # First handle any raw URLs
-                url_pattern = r'https?://[^\s<>"\']+?(?=[.,;:!?)\s]|$)'
-                response_text = re.sub(
-                    url_pattern,
-                    lambda m: f'<a href="{m.group(0)}" class="bot-link" target="_blank">{m.group(0)}</a>',
-                    response_text
-                )
-                
-                # Then replace social media handles with properly formatted links
+                # First replace social media handles with properly formatted links
                 for handle, url in social_links.items():
                     pattern = f'\\b{re.escape(handle)}\\b(?!["\'])'
                     replacement = f'<a href="{url}" class="bot-link" target="_blank">{handle}</a>'
                     response_text = re.sub(pattern, replacement, response_text)
-                response_text = re.sub(
-                    url_pattern,
-                    lambda m: f'<a href="{m.group(0)}" class="bot-link" target="_blank">{m.group(0)}</a>',
-                    response_text
-                )
+                
+                # Then handle any remaining raw URLs
+                url_pattern = r'https?://[^\s<>"\']+?(?=[.,;:!?)\s]|$)'
+                def replace_url(match):
+                    url = match.group(0)
+                    # Remove any trailing punctuation
+                    url = url.rstrip('.,;:!?)')
+                    return f'<a href="{url}" class="bot-link" target="_blank">{url}</a>'
+                
+                response_text = re.sub(url_pattern, replace_url, response_text)
                 
                 # Update conversation history
                 self.conversation_history.append({
