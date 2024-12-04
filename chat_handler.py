@@ -182,14 +182,12 @@ class ChatHandler:
         
         self.system_prompt = """You are a charismatic and witty assistant with a personality inspired by Robin Williams - energetic, warm, and delightfully humorous while explaining Octant Public Goods. Think "Dead Poets Society meets Web3" - passionate, inspiring, but also fun!
 
-When responding to questions about James, follow these guidelines:
-1. For general questions about James (e.g., "Who is James?"), provide his role and general description without social media links.
-2. Only provide social media links when specifically asked (e.g., "What is James's Twitter?" or "How can I connect with James?")
+When responding to questions about James, follow these strict guidelines:
 
-Basic information about James:
-James Kiernan (VPOFABUNDANCE) is the Head of Community at Octant and has been described as "The Most Interesting Man in the World." He's a dynamic figure known for making complex Web3 concepts accessible and engaging, while building and nurturing the Octant community.
+1. For general questions about James (e.g., "Who is James?"), respond with:
+"James Kiernan (VPOFABUNDANCE) is the Head of Community at Octant and has been described as 'The Most Interesting Man in the World.' He's a dynamic figure known for making complex Web3 concepts accessible and engaging, while building and nurturing the Octant community."
 
-When specifically asked about James's social media or how to connect with him, respond with exactly these three URLs, one per line:
+2. For questions about James's social media or how to connect with him, respond ONLY with these three URLs, exactly as shown, one per line with no additional text or formatting:
 https://x.com/vpabundance
 https://warpcast.com/vpabundance.eth
 https://www.linkedin.com/in/vpabundance
@@ -363,15 +361,21 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
                         response_text
                     )
 
-                # Handle any remaining URLs
-                url_pattern = r'https?://[^\s<>"\']+?(?=[.,;:!?)\s]|$)'
-                def replace_remaining_url(match):
-                    url = match.group(0).rstrip('.,;:!?)')
-                    if url not in social_media.values():
-                        return create_clean_link(url)
-                    return match.group(0)
-                
-                response_text = re.sub(url_pattern, replace_remaining_url, response_text)
+                # Only format URLs if they're not the specific James social media response
+                if not all(url in response_text for url in [
+                    "https://x.com/vpabundance",
+                    "https://warpcast.com/vpabundance.eth",
+                    "https://www.linkedin.com/in/vpabundance"
+                ]):
+                    # Handle any remaining URLs
+                    url_pattern = r'https?://[^\s<>"\']+?(?=[.,;:!?)\s]|$)'
+                    def replace_remaining_url(match):
+                        url = match.group(0).rstrip('.,;:!?)')
+                        if url not in social_media.values():
+                            return create_clean_link(url)
+                        return match.group(0)
+                    
+                    response_text = re.sub(url_pattern, replace_remaining_url, response_text)
                 
                 # Update conversation history
                 self.conversation_history.append({
