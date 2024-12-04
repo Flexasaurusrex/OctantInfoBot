@@ -343,29 +343,43 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
                 response_text = result["output"]["choices"][0]["text"].strip()
                 # Convert URLs to clickable links
                 import re
-                # Define James' social media links
-                social_urls = [
-                    'https://x.com/vpabundance',
-                    'https://warpcast.com/vpabundance.eth',
-                    'https://www.linkedin.com/in/vpabundance'
-                ]
-                
-                # Simple regex to match exact URLs
-                for url in social_urls:
-                    escaped_url = re.escape(url)
-                    pattern = f'\\b{escaped_url}\\b'
-                    replacement = f'<a href="{url}" class="bot-link" target="_blank">{url}</a>'
-                    response_text = re.sub(pattern, replacement, response_text)
-                
-                # Handle any remaining URLs that aren't in our predefined list
+
+                def create_clean_link(url, display_text=None):
+                    """Create a clean HTML link with optional display text."""
+                    display = display_text if display_text else url
+                    return f'<a href="{url}" class="bot-link">{display}</a>'
+
+                # Define social media mappings with display names
+                social_media = {
+                    '@vpabundance': 'https://x.com/vpabundance',
+                    'vpabundance.eth': 'https://warpcast.com/vpabundance.eth',
+                    'Connect on LinkedIn': 'https://www.linkedin.com/in/vpabundance'
+                }
+
+                # Replace social media handles and URLs
+                for display, url in social_media.items():
+                    # Handle the raw URL version
+                    response_text = re.sub(
+                        re.escape(url),
+                        create_clean_link(url),
+                        response_text
+                    )
+                    # Handle the display text version
+                    response_text = re.sub(
+                        f'\\b{re.escape(display)}\\b(?!["\'])',
+                        create_clean_link(url, display),
+                        response_text
+                    )
+
+                # Handle any remaining URLs
                 url_pattern = r'https?://[^\s<>"\']+?(?=[.,;:!?)\s]|$)'
-                def replace_url(match):
+                def replace_remaining_url(match):
                     url = match.group(0).rstrip('.,;:!?)')
-                    if url not in social_urls:  # Only process if not already handled
-                        return f'<a href="{url}" class="bot-link" target="_blank">{url}</a>'
+                    if url not in social_media.values():
+                        return create_clean_link(url)
                     return match.group(0)
                 
-                response_text = re.sub(url_pattern, replace_url, response_text)
+                response_text = re.sub(url_pattern, replace_remaining_url, response_text)
                 
                 # Update conversation history
                 self.conversation_history.append({
