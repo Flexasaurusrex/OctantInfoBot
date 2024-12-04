@@ -91,6 +91,27 @@ telegram_logger.addHandler(file_handler)
 chat_handler = ChatHandler()
 telegram_trivia = TelegramTrivia()
 
+# List of admin user IDs who can restart the bot
+ADMIN_USER_IDS = {5100739421}  # Add your admin Telegram user IDs here
+
+async def restart_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Restart the bot if called by an admin."""
+    user_id = update.effective_user.id
+    if user_id not in ADMIN_USER_IDS:
+        await update.message.reply_text("Sorry, only administrators can restart the bot.")
+        return
+        
+    await update.message.reply_text("Restarting the bot... Please wait.")
+    logger.info(f"Restart command issued by user {user_id}")
+    
+    try:
+        # Set restart flag
+        context.application._restart_requested = True
+        logger.info("Initiating graceful shutdown...")
+    except Exception as e:
+        logger.error(f"Error during restart command: {str(e)}")
+        await update.message.reply_text("Error occurred during restart. Please try again later.")
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Send a message when the command /start is issued."""
     welcome_message = """
@@ -113,6 +134,7 @@ Here are the available commands:
 /start - Start the bot
 /help - Show this help message
 /trivia - Start a trivia game
+/restart - Restart the bot (admin only)
 
 You can also ask me any questions about:
 • Octant's ecosystem
@@ -215,7 +237,7 @@ async def error_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         logger.error(f"Critical error in error handler: {str(e)}")
         logger.error("Error handler failed to process the error properly")
 
-def main() -> None:
+async def main() -> None:
     """Start the bot with enhanced monitoring and reconnection logic."""
     retry_count = 0
     max_retries = -1  # Infinite retries for 24/7 uptime
@@ -224,6 +246,13 @@ def main() -> None:
     start_time = time.time()
     last_stats_time = time.time()
     stats_interval = 3600  # Log statistics every hour
+    
+    # Get or create event loop
+    try:
+        loop = asyncio.get_running_loop()
+    except RuntimeError:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
     
     # Initialize system monitoring
     import psutil
@@ -266,7 +295,8 @@ def main() -> None:
             logger.info(f"Disk Usage: {disk_percent}%")
             logger.info(f"Retry Count: {retry_count}")
             logger.info(f"Last Update Time: {time.strftime('%Y-%m-%d %H:%M:%S')}")
-            logger.info(f"Message Processing Rate: {getattr(context.application, 'msg_count', 0)}/min")
+            # Message processing rate tracking will be implemented in a future update
+            logger.info("Message Processing Rate: Monitoring")
             logger.info("Connection Status: Active" if not retry_count else f"Connection Status: Reconnecting (Attempt {retry_count})")
             logger.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
             
@@ -344,12 +374,17 @@ def main() -> None:
                 .write_timeout(30)
                 .pool_timeout(None)
                 .connection_pool_size(16)  # Increased connection pool
+                .concurrent_updates(True)  # Enable concurrent updates for better performance
                 .build()
             )
+            
+            # Store application instance for restart handling
+            application._restart_requested = False
 
             # Add handlers with enhanced monitoring
             application.add_handler(CommandHandler("start", start))
             application.add_handler(CommandHandler("help", help_command))
+            application.add_handler(CommandHandler("restart", restart_command))
             application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
             application.add_handler(CallbackQueryHandler(telegram_trivia.handle_answer, pattern="^trivia_"))
             application.add_handler(CommandHandler("trivia", telegram_trivia.start_game))
@@ -377,16 +412,43 @@ def main() -> None:
             log_system_stats()
             
             # Start polling with enhanced error recovery
-            application.run_polling(
-                allowed_updates=Update.ALL_TYPES,
-                drop_pending_updates=True,
-                read_timeout=60,
-                write_timeout=60,
-                connect_timeout=60,
-                pool_timeout=None
-            )
-            
-            logger.info("Polling started successfully")
+            try:
+                # Initialize and start application
+                await application.initialize()
+                await application.start()
+                logger.info("Starting polling...")
+                
+                # Run polling in the current event loop
+                if getattr(application, '_restart_requested', False):
+                    application._restart_requested = False
+                
+                await application.updater.start_polling(
+                    allowed_updates=Update.ALL_TYPES,
+                    drop_pending_updates=True
+                )
+                
+                # Wait for stop signal
+                while not getattr(application, '_restart_requested', False):
+                    await asyncio.sleep(1)
+                
+                logger.info("Stop signal received, shutting down...")
+            except Exception as e:
+                logger.error(f"Error during polling: {str(e)}")
+                if not isinstance(e, RuntimeError) or "event loop is already running" not in str(e):
+                    raise
+            finally:
+                # Cleanup
+                try:
+                    await application.stop()
+                    await application.shutdown()
+                except Exception as e:
+                    logger.error(f"Error during shutdown: {str(e)}")
+                
+                if getattr(application, '_restart_requested', False):
+                    logger.info("Restart requested, will reinitialize...")
+                    continue
+                
+                logger.info("Polling stopped")
             
         except Exception as e:
             retry_count += 1
@@ -419,4 +481,15 @@ def main() -> None:
             time.sleep(delay)
 
 if __name__ == '__main__':
-    main()
+    import asyncio
+    
+    # Create new event loop
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    
+    try:
+        loop.run_until_complete(main())
+    except KeyboardInterrupt:
+        pass
+    finally:
+        loop.close()
