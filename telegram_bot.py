@@ -4,6 +4,42 @@ from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, CallbackQueryHandler, filters, ContextTypes
 from telegram_trivia import TelegramTrivia
 import time
+import threading
+from datetime import datetime, timedelta
+
+class WatchdogTimer:
+    def __init__(self, timeout=300):  # 5 minutes default timeout
+        self.timeout = timeout
+        self.last_ping = datetime.now()
+        self.lock = threading.Lock()
+        self.running = True
+        self.start_monitor()
+
+    def ping(self):
+        with self.lock:
+            self.last_ping = datetime.now()
+
+    def start_monitor(self):
+        def monitor():
+            while self.running:
+                with self.lock:
+                    current_time = datetime.now()
+                    time_since_ping = (current_time - self.last_ping).total_seconds()
+                    if time_since_ping > self.timeout:
+                        logger.error(f"""━━━━━━ Watchdog Timeout ━━━━━━
+Last Ping: {self.last_ping}
+Current Time: {current_time}
+Time Since Last Ping: {time_since_ping:.2f}s
+Timeout Threshold: {self.timeout}s
+━━━━━━━━━━━━━━━━━━━━━━━━""")
+                        os._exit(1)  # Force restart
+                time.sleep(60)  # Check every minute
+        
+        thread = threading.Thread(target=monitor, daemon=True)
+        thread.start()
+
+    def stop(self):
+        self.running = False
 import asyncio
 from telegram.error import NetworkError, TimedOut, RetryAfter
 from chat_handler import ChatHandler
@@ -79,6 +115,9 @@ Just type your question and I'll help you out! 📚
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Handle incoming messages."""
     try:
+        # Ping watchdog on message receipt
+        if hasattr(context.application, 'watchdog'):
+            context.application.watchdog.ping()
         user_message = update.message.text
         response = chat_handler.get_response(user_message)
         await update.message.reply_text(response, parse_mode='HTML')
@@ -87,7 +126,8 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         await update.message.reply_text("I encountered an error processing your message. Please try again.")
 
 async def error_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Handle errors in the telegram bot with enhanced recovery and monitoring."""
+    """Handle errors in the telegram bot with aggressive recovery and monitoring."""
+    global consecutive_failures  # Track failures across retries
     try:
         error_time = time.strftime("%Y-%m-%d %H:%M:%S")
         
@@ -161,7 +201,7 @@ def main() -> None:
     process = psutil.Process()
 
     def log_system_stats():
-        """Log system statistics."""
+        """Log system statistics and perform health check."""
         try:
             memory_usage = process.memory_info().rss / 1024 / 1024
             cpu_percent = process.cpu_percent()
@@ -169,17 +209,61 @@ def main() -> None:
             hours, remainder = divmod(current_uptime, 3600)
             minutes, seconds = divmod(remainder, 60)
             
-            logger.info("━━━━━━ System Statistics ━━━━━━")
+            # Check if memory usage is too high (> 80% of system memory)
+            total_memory = psutil.virtual_memory().total / 1024 / 1024
+            memory_percent = (memory_usage / total_memory) * 100
+            
+            # Trigger garbage collection if memory usage is high (> 70%)
+            if memory_percent > 70:
+                import gc
+                gc.collect()
+                logger.info("Triggered garbage collection due to high memory usage")
+            
+            # Enhanced status logging
+            logger.info("━━━━━━ System Health Check ━━━━━━")
             logger.info(f"Uptime: {int(hours)}h {int(minutes)}m {int(seconds)}s")
-            logger.info(f"Memory Usage: {memory_usage:.2f} MB")
+            logger.info(f"Memory Usage: {memory_usage:.2f} MB ({memory_percent:.1f}%)")
             logger.info(f"CPU Usage: {cpu_percent:.1f}%")
             logger.info(f"Retry Count: {retry_count}")
+            logger.info(f"Last Update Time: {time.strftime('%Y-%m-%d %H:%M:%S')}")
+            logger.info("Connection Status: Active" if not retry_count else f"Connection Status: Reconnecting (Attempt {retry_count})")
             logger.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+            
+            # Trigger recovery if system metrics are concerning
+            if memory_percent > 80 or cpu_percent > 90:
+                logger.warning("System resources critical - initiating recovery procedure")
+                return False
+            return True
         except Exception as e:
             logger.error(f"Error logging system stats: {str(e)}")
+            return False
 
+    last_health_check = time.time()
+    health_check_interval = 60  # Check every minute
+    consecutive_failures = 0
+    max_consecutive_failures = 3
+    
+    # Initialize watchdog
+    watchdog = WatchdogTimer(timeout=300)  # 5 minute timeout
+    
     while True:
         try:
+            current_time = time.time()
+            # Ping watchdog to indicate bot is alive
+            watchdog.ping()
+            
+            # Regular health checks
+            if current_time - last_health_check >= health_check_interval:
+                if not log_system_stats():
+                    consecutive_failures += 1
+                    logger.warning(f"Health check failed. Consecutive failures: {consecutive_failures}")
+                    if consecutive_failures >= max_consecutive_failures:
+                        logger.error("Maximum consecutive failures reached - forcing restart")
+                        raise Exception("Forced restart due to health check failures")
+                else:
+                    consecutive_failures = 0
+                last_health_check = current_time
+            
             logger.info("Initializing Telegram bot...")
             
             # Get the token from environment variable
@@ -189,17 +273,19 @@ def main() -> None:
                 return
 
             # Create the Application with detailed configuration and health checks
+            # Enhanced configuration for aggressive reconnection
             application = (
                 Application.builder()
                 .token(token)
-                .get_updates_read_timeout(60)
-                .get_updates_write_timeout(60)
-                .get_updates_connect_timeout(60)
+                .get_updates_read_timeout(30)  # Shorter timeouts for faster failure detection
+                .get_updates_write_timeout(30)
+                .get_updates_connect_timeout(30)
                 .get_updates_pool_timeout(None)
-                .connect_timeout(60)
-                .read_timeout(60)
-                .write_timeout(60)
+                .connect_timeout(30)
+                .read_timeout(30)
+                .write_timeout(30)
                 .pool_timeout(None)
+                .connection_pool_size(16)  # Increased connection pool
                 .build()
             )
 
@@ -210,6 +296,9 @@ def main() -> None:
             application.add_handler(CallbackQueryHandler(telegram_trivia.handle_answer, pattern="^trivia_"))
             application.add_handler(CommandHandler("trivia", telegram_trivia.start_game))
             application.add_error_handler(error_handler)
+            
+            # Store watchdog instance in application
+            application.watchdog = watchdog
 
             # Enhanced startup logging
             logger.info("━━━━━━ Bot Configuration ━━━━━━")
