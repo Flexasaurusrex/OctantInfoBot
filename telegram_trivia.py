@@ -37,6 +37,83 @@ class TelegramTrivia:
                 },
                 "correct": "C",
                 "explanation": "While you can lock as little as 1 GLM, a minimum effective balance of 100 GLM is required to qualify for user rewards."
+            },
+            {
+                "question": "How long is an Octant epoch?",
+                "options": {
+                    "A": "30 days",
+                    "B": "60 days",
+                    "C": "90 days",
+                    "D": "120 days"
+                },
+                "correct": "C",
+                "explanation": "Each Octant epoch lasts 90 days, followed by a two-week allocation window where users can claim rewards or donate to projects."
+            },
+            {
+                "question": "What is the maximum funding cap for a single project from the Matched Rewards pool?",
+                "options": {
+                    "A": "10%",
+                    "B": "15%",
+                    "C": "20%",
+                    "D": "25%"
+                },
+                "correct": "C",
+                "explanation": "A maximum funding cap of 20% of the total Matched Rewards fund (including Patron mode) ensures balanced distribution. Users can still donate to projects at the cap, but these won't receive additional matching."
+            },
+            {
+                "question": "What percentage of Octant's rewards goes to foundation operations?",
+                "options": {
+                    "A": "15%",
+                    "B": "20%",
+                    "C": "25%",
+                    "D": "30%"
+                },
+                "correct": "C",
+                "explanation": "25% of Octant's rewards are allocated to foundation operations to maintain and develop the platform, while 70% goes to user and matched rewards, and 5% to community initiatives."
+            },
+            {
+                "question": "What is the purpose of Patron mode in Octant?",
+                "options": {
+                    "A": "To increase personal rewards",
+                    "B": "To boost project funding",
+                    "C": "To skip voting periods",
+                    "D": "To reduce fees"
+                },
+                "correct": "B",
+                "explanation": "Patron mode allows users to boost project funding by allocating their rewards directly to the matched rewards pool, enhancing the support for community projects."
+            },
+            {
+                "question": "How much ETH backs Octant's operations?",
+                "options": {
+                    "A": "50,000 ETH",
+                    "B": "75,000 ETH",
+                    "C": "100,000 ETH",
+                    "D": "125,000 ETH"
+                },
+                "correct": "C",
+                "explanation": "Octant is backed by 100,000 ETH from the Golem Foundation, providing a substantial foundation for its public goods funding initiatives."
+            },
+            {
+                "question": "What happens after each 90-day epoch in Octant?",
+                "options": {
+                    "A": "Immediate reward distribution",
+                    "B": "Two-week allocation window",
+                    "C": "One-month voting period",
+                    "D": "System maintenance"
+                },
+                "correct": "B",
+                "explanation": "After each 90-day epoch, there's a two-week allocation window where users can claim their rewards or choose to donate them to projects."
+            },
+            {
+                "question": "What percentage of rewards goes to community initiatives?",
+                "options": {
+                    "A": "5%",
+                    "B": "10%",
+                    "C": "15%",
+                    "D": "20%"
+                },
+                "correct": "A",
+                "explanation": "5% of rewards are allocated to community initiatives, fostering growth and innovation within the Octant ecosystem."
             }
         ]
         self.current_games = {}  # Store game state per user

@@ -57,6 +57,61 @@ class Trivia:
                 },
                 "correct": "C",
                 "explanation": "A maximum funding cap of 20% of the total Matched Rewards fund (including Patron mode) ensures balanced distribution. Users can still donate to projects at the cap, but these won't receive additional matching."
+            },
+            {
+                "question": "What percentage of Octant's rewards goes to foundation operations?",
+                "options": {
+                    "A": "15%",
+                    "B": "20%",
+                    "C": "25%",
+                    "D": "30%"
+                },
+                "correct": "C",
+                "explanation": "25% of Octant's rewards are allocated to foundation operations to maintain and develop the platform, while 70% goes to user and matched rewards, and 5% to community initiatives."
+            },
+            {
+                "question": "What is the purpose of Patron mode in Octant?",
+                "options": {
+                    "A": "To increase personal rewards",
+                    "B": "To boost project funding",
+                    "C": "To skip voting periods",
+                    "D": "To reduce fees"
+                },
+                "correct": "B",
+                "explanation": "Patron mode allows users to boost project funding by allocating their rewards directly to the matched rewards pool, enhancing the support for community projects."
+            },
+            {
+                "question": "How much ETH backs Octant's operations?",
+                "options": {
+                    "A": "50,000 ETH",
+                    "B": "75,000 ETH",
+                    "C": "100,000 ETH",
+                    "D": "125,000 ETH"
+                },
+                "correct": "C",
+                "explanation": "Octant is backed by 100,000 ETH from the Golem Foundation, providing a substantial foundation for its public goods funding initiatives."
+            },
+            {
+                "question": "What happens after each 90-day epoch in Octant?",
+                "options": {
+                    "A": "Immediate reward distribution",
+                    "B": "Two-week allocation window",
+                    "C": "One-month voting period",
+                    "D": "System maintenance"
+                },
+                "correct": "B",
+                "explanation": "After each 90-day epoch, there's a two-week allocation window where users can claim their rewards or choose to donate them to projects."
+            },
+            {
+                "question": "What percentage of rewards goes to community initiatives?",
+                "options": {
+                    "A": "5%",
+                    "B": "10%",
+                    "C": "15%",
+                    "D": "20%"
+                },
+                "correct": "A",
+                "explanation": "5% of rewards are allocated to community initiatives, fostering growth and innovation within the Octant ecosystem."
             }
         ]
         self.score = 0
