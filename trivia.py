@@ -147,6 +147,39 @@ class Trivia:
                 },
                 "correct": "C",
                 "explanation": "During the locking period, GLM tokens become illiquid and cannot be transferred or traded, ensuring committed participation in the ecosystem."
+            },
+            {
+                "question": "What percentage of user rewards goes to Patron mode participants?",
+                "options": {
+                    "A": "10%",
+                    "B": "25%",
+                    "C": "50%",
+                    "D": "100%"
+                },
+                "correct": "D",
+                "explanation": "In Patron mode, 100% of user rewards are allocated directly to the matched rewards pool, maximizing support for community projects."
+            },
+            {
+                "question": "How often can users change their reward allocation preferences?",
+                "options": {
+                    "A": "Daily",
+                    "B": "Weekly",
+                    "C": "Monthly",
+                    "D": "Every epoch"
+                },
+                "correct": "D",
+                "explanation": "Users can adjust their reward allocation preferences at the end of each epoch during the two-week allocation window."
+            },
+            {
+                "question": "What is the minimum locking period for GLM tokens in Octant?",
+                "options": {
+                    "A": "30 days",
+                    "B": "60 days",
+                    "C": "90 days",
+                    "D": "180 days"
+                },
+                "correct": "C",
+                "explanation": "The minimum locking period for GLM tokens in Octant is 90 days, aligning with the epoch duration."
             }
         ]
         self.score = 0
