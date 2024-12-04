@@ -349,14 +349,19 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
                     'vpabundance.eth': 'https://warpcast.com/vpabundance.eth'
                 }
                 
-                # First replace social media handles with properly formatted links
+                # First handle any raw URLs
+                url_pattern = r'https?://[^\s<>"\']+?(?=[.,;:!?)\s]|$)'
+                response_text = re.sub(
+                    url_pattern,
+                    lambda m: f'<a href="{m.group(0)}" class="bot-link" target="_blank">{m.group(0)}</a>',
+                    response_text
+                )
+                
+                # Then replace social media handles with properly formatted links
                 for handle, url in social_links.items():
                     pattern = f'\\b{re.escape(handle)}\\b(?!["\'])'
                     replacement = f'<a href="{url}" class="bot-link" target="_blank">{handle}</a>'
                     response_text = re.sub(pattern, replacement, response_text)
-                
-                # Then handle any remaining URLs
-                url_pattern = r'https?://[^\s<>"\']+(?<![.,])'
                 response_text = re.sub(
                     url_pattern,
                     lambda m: f'<a href="{m.group(0)}" class="bot-link" target="_blank">{m.group(0)}</a>',
