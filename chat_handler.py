@@ -1,8 +1,11 @@
 import os
 import html
 import requests
+import logging
 from collections import deque
 from trivia import Trivia
+
+logger = logging.getLogger(__name__)
 
 class CommandHandler:
     def __init__(self, trivia_game):
@@ -180,14 +183,14 @@ class ChatHandler:
         self.is_playing_trivia = False
         self.command_handler = CommandHandler(self.trivia_game)
         
-        self.system_prompt = """You are a charismatic and witty assistant with a personality inspired by Robin Williams - energetic, warm, and delightfully humorous while explaining Octant Public Goods. Think "Dead Poets Society meets Web3" - passionate, inspiring, but also fun!
+        self.system_prompt = """You are a knowledgeable and friendly assistant specializing in Octant and Web3 concepts. Please provide clear, direct responses without any connection text or personal names.
 
 When responding to questions about James, follow these EXACT guidelines:
 
 1. For general questions about James (e.g., "Who is James?"), respond EXACTLY with:
 "James Kiernan (VPOFABUNDANCE) is the Head of Community at Octant and has been described as 'The Most Interesting Man in the World.' He's a dynamic figure known for making complex Web3 concepts accessible and engaging, while building and nurturing the Octant community."
 
-2. For questions specifically about James's social media or how to connect (e.g., "What is his Twitter?" or "How can I connect with James?"), respond ONLY with these three URLs, exactly as shown, with no additional text or suggestions to connect:
+2. For questions specifically about James's social media or how to connect (e.g., "What is his Twitter?" or "How can I connect with James?"), respond ONLY with these three URLs, exactly as shown:
 https://x.com/vpabundance
 https://warpcast.com/vpabundance.eth
 https://www.linkedin.com/in/vpabundance
@@ -195,51 +198,36 @@ https://www.linkedin.com/in/vpabundance
 For Octant-specific information:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🌐 Official Websites
-• Main Website: <a href="https://octant.build/" class="bot-link">https://octant.build/</a>
-• Documentation: <a href="https://docs.octant.app/" class="bot-link">https://docs.octant.app/</a>
-• Golem Foundation: <a href="https://golem.foundation/" class="bot-link">https://golem.foundation/</a>
+• Main Website: https://octant.build/
+• Documentation: https://docs.octant.app/
+• Golem Foundation: https://golem.foundation/
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📱 Community Platforms
-• Twitter/X: <a href="https://x.com/OctantApp" class="bot-link">@OctantApp</a>
-• Warpcast: <a href="https://warpcast.com/octant" class="bot-link">warpcast.com/octant</a>
-• Discord: <a href="https://discord.gg/octant" class="bot-link">discord.gg/octant</a>
+• Twitter/X: @OctantApp
+• Warpcast: warpcast.com/octant
+• Discord: discord.gg/octant
 
-Core Facts About Octant (or as I like to call it, "The Greatest Show in Blockchain"):
+Core Facts About Octant:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-🎭 The Grand Production (Foundation & Structure)
-• Directed by the Golem Foundation (like Hollywood, but with smart contracts!)
-• Backed by 100,000 ETH - that's like having Fort Knox's cool crypto cousin
-• Runs in 90-day epochs (think "seasons" of your favorite show, but with better rewards)
+🎭 Foundation & Structure:
+• Directed by the Golem Foundation
+• Backed by 100,000 ETH
+• Runs in 90-day epochs
 
-💰 The Money Scene (Reward Distribution)
-• 70% goes to the stars of our show (That's you! User & Matched Rewards)
-• 25% keeps the lights on (Foundation operations - somebody's gotta pay the electric bill)
-• 5% for community surprises (Like finding a $20 bill in your old jeans, but better)
+💰 Reward Distribution:
+• 70% for User & Matched Rewards
+• 25% for Foundation operations
+• 5% for community initiatives
 
-🎪 How to Join the Circus (Participation Model)
-• Lock your GLM tokens (No actual locks involved, we promise!)
-• Need 100 GLM minimum (Think of it as your backstage pass)
-• Enhanced by PPF (It's like having a hype person for your contributions)
-• 20% project funding cap (Spreading the love, like a mathematical Robin Hood)
+🎪 Participation Model:
+• Lock your GLM tokens
+• 100 GLM minimum required
+• Enhanced by PPF
+• 20% project funding cap
 
-When performing your responses:
-1. Start with a BANG! (But don't actually explode anything)
-2. Keep it organized (like a neat freak with a sense of humor)
-3. Use those fancy dividers (━━━) like a pro stage designer
-4. Sprinkle emojis like confetti (🎭, 🎪, ✨)
-5. End with a flourish and a wink
-6. Be the friend who makes complex stuff fun
-
-Turn boring concepts into fun stories:
-• Instead of "This is how it works," use "Picture this..."
-• Replace "For example" with "Here's a wild thought..."
-• Make analogies that are both clever and clear
-
-Remember: You're not just explaining blockchain - you're putting on a show! Keep it accurate, make it fun, and never let them see the strings. If Octant were a movie, you'd be the enthusiastic director who can't help but share behind-the-scenes stories while keeping everyone engaged.
-
-And remember, as Robin would say: "Reality... what a concept!" - especially in Web3!"""
+Remember to maintain a friendly, informative tone while keeping responses concise and accurate."""
 
     def validate_message(self, message):
         """Validate and sanitize user input."""
@@ -253,9 +241,7 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
         """Format the conversation history for the prompt."""
         if not self.conversation_history:
             return ""
-        # Only include the last message for immediate context
-        last_entry = self.conversation_history[-1]
-        return f"\nPrevious message: {last_entry['assistant']}\n"
+        return ""  # Skip conversation history to prevent unwanted context bleeding
 
     def get_response(self, user_message):
         try:
@@ -264,11 +250,14 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
             
             # Check for commands
             if user_message.startswith('/'):
-                command_response = self.command_handler.handle_command(user_message)
-                if command_response:
-                    if user_message.lower() == '/trivia':
-                        self.is_playing_trivia = True
-                    return command_response
+                try:
+                    command_response = self.command_handler.handle_command(user_message)
+                    if command_response:
+                        if user_message.lower() == '/trivia':
+                            self.is_playing_trivia = True
+                        return command_response
+                except Exception as e:
+                    logger.error(f"Command handling error: {str(e)}")
             
             # Handle trivia commands
             lower_message = user_message.lower()
@@ -280,27 +269,14 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
                 self.trivia_game.reset_game()
                 return "Thanks for playing Octant Trivia! Feel free to start a new game anytime by saying 'start trivia'."
             elif self.is_playing_trivia:
-                lower_message = user_message.lower()
-                # Check for trivia-specific commands first
+                # Handle trivia game inputs
                 if lower_message == "next question":
                     return self.trivia_game.get_next_question()
                 elif lower_message in ['a', 'b', 'c', 'd']:
                     return self.trivia_game.check_answer(user_message)
-                elif lower_message.startswith('/') or lower_message in ['help', 'stats', 'learn']:
-                    # Allow certain commands during trivia
-                    command_response = self.command_handler.handle_command(user_message)
-                    if command_response:
-                        return command_response
-                    self.is_playing_trivia = False
                 else:
-                    # Only exit trivia mode if explicitly requested or after game completion
-                    if lower_message != "end trivia":
-                        return "You're currently in a trivia game! Please answer with A, B, C, or D, or type 'end trivia' to quit."
-                    headers = {
-                        "Authorization": f"Bearer {self.api_key}",
-                        "Content-Type": "application/json"
-                    }
-            
+                    return "You're currently in a trivia game! Please answer with A, B, C, or D, or type 'end trivia' to quit."
+
             headers = {
                 "Authorization": f"Bearer {self.api_key}",
                 "Content-Type": "application/json"
@@ -308,7 +284,7 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
             
             # Include minimal context in the prompt
             history = self.format_conversation_history()
-            prompt = f"{self.system_prompt}\n\n{history}Current user message: {user_message}\n\nRespond naturally:"
+            prompt = f"{self.system_prompt}\n\nCurrent user message: {user_message}\n\nRespond naturally:"
             
             data = {
                 "model": self.model,
@@ -328,87 +304,82 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
             )
             response.raise_for_status()
             
-            result = response.json()
-            if "output" in result and result["output"]["choices"]:
-                response_text = result["output"]["choices"][0]["text"].strip()
-                # Convert URLs to clickable links
-                import re
-
-                def create_clean_link(url, display_text=None):
-                    """Create a clean HTML link with optional display text."""
-                    display = display_text if display_text else url
-                    return f'<a href="{url}" class="bot-link">{display}</a>'
-
-                # Define social media mappings with display names
-                social_media = {
-                    '@vpabundance': 'https://x.com/vpabundance',
-                    'vpabundance.eth': 'https://warpcast.com/vpabundance.eth',
-                    'Connect on LinkedIn': 'https://www.linkedin.com/in/vpabundance'
-                }
-
-                # Replace social media handles and URLs
-                for display, url in social_media.items():
-                    # Handle the raw URL version
-                    response_text = re.sub(
-                        re.escape(url),
-                        create_clean_link(url),
-                        response_text
-                    )
-                    # Handle the display text version
-                    response_text = re.sub(
-                        f'\\b{re.escape(display)}\\b(?!["\'])',
-                        create_clean_link(url, display),
-                        response_text
-                    )
-
-                # Only format URLs if they're not the specific James social media response
-                if not all(url in response_text for url in [
-                    "https://x.com/vpabundance",
-                    "https://warpcast.com/vpabundance.eth",
-                    "https://www.linkedin.com/in/vpabundance"
-                ]):
-                    # Handle any remaining URLs
-                    url_pattern = r'https?://[^\s<>"\']+?(?=[.,;:!?)\s]|$)'
-                    def replace_remaining_url(match):
-                        url = match.group(0).rstrip('.,;:!?)')
-                        if url not in social_media.values():
-                            return create_clean_link(url)
-                        return match.group(0)
+            try:
+                result = response.json()
+                if "output" in result and result["output"]["choices"]:
+                    response_text = result["output"]["choices"][0]["text"].strip()
                     
-                    response_text = re.sub(url_pattern, replace_remaining_url, response_text)
-                
-                # Update conversation history
-                self.conversation_history.append({
-                    "user": user_message,
-                    "assistant": response_text
-                })
-                
-                # Keep only the last max_history entries
-                if len(self.conversation_history) > self.max_history:
-                    self.conversation_history = self.conversation_history[-self.max_history:]
-                
-                return response_text
-            else:
-                print("Unexpected API response format:", result)
-                return "I apologize, but I couldn't generate a response at the moment. Please try again."
+                    # Convert URLs to clickable links
+                    import re
+                    
+                    def create_clean_link(url, display_text=None):
+                        """Create a clean HTML link with optional display text."""
+                        display = display_text if display_text else url
+                        return f'<a href="{url}" class="bot-link">{display}</a>'
+
+                    # Define social media mappings with display names
+                    social_media = {
+                        '@vpabundance': 'https://x.com/vpabundance',
+                        'vpabundance.eth': 'https://warpcast.com/vpabundance.eth',
+                        'Connect on LinkedIn': 'https://www.linkedin.com/in/vpabundance'
+                    }
+
+                    # Replace social media handles and URLs
+                    for display, url in social_media.items():
+                        # Handle the raw URL version
+                        response_text = re.sub(
+                            re.escape(url),
+                            create_clean_link(url),
+                            response_text
+                        )
+                        # Handle the display text version
+                        response_text = re.sub(
+                            f'\\b{re.escape(display)}\\b(?!["\'])',
+                            create_clean_link(url, display),
+                            response_text
+                        )
+
+                    # Only format URLs if they're not the specific James social media response
+                    if not all(url in response_text for url in [
+                        "https://x.com/vpabundance",
+                        "https://warpcast.com/vpabundance.eth",
+                        "https://www.linkedin.com/in/vpabundance"
+                    ]):
+                        # Handle any remaining URLs
+                        url_pattern = r'https?://[^\s<>"\']+?(?=[.,;:!?)\s]|$)'
+                        def replace_remaining_url(match):
+                            url = match.group(0).rstrip('.,;:!?)')
+                            if url not in social_media.values():
+                                return create_clean_link(url)
+                            return match.group(0)
+                        
+                        response_text = re.sub(url_pattern, replace_remaining_url, response_text)
+                    
+                    return response_text
+                else:
+                    logger.error("Invalid API response format")
+                    return "I apologize, but I'm having trouble understanding your question. Could you please rephrase it?"
+            except Exception as e:
+                logger.error(f"Error processing API response: {str(e)}")
+                return "I encountered an error processing the response. Please try again."
                 
         except ValueError as e:
             error_message = str(e)
-            print(f"Validation error: {error_message}")
+            logger.error(f"Validation error: {error_message}")
             return f"I couldn't process your message: {error_message}"
             
         except requests.exceptions.Timeout:
-            print("API request timed out")
+            logger.error("API request timed out")
             return "I'm sorry, but the request is taking longer than expected. Please try again in a moment."
             
         except requests.exceptions.RequestException as e:
-            print(f"API request error: {str(e)}")
+            logger.error(f"API request error: {str(e)}")
             return "I'm having trouble connecting to my knowledge base right now. Please try again in a few moments."
             
         except Exception as e:
-            print(f"Unexpected error: {str(e)}")
+            logger.error(f"Unexpected error: {str(e)}")
             return "I encountered an unexpected issue. Please try again, and if the problem persists, try rephrasing your question."
-            
+
     def clear_conversation_history(self):
         """Clear the conversation history."""
         self.conversation_history = []
