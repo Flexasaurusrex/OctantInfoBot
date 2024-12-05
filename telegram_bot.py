@@ -92,15 +92,11 @@ chat_handler = ChatHandler()
 telegram_trivia = TelegramTrivia()
 
 # List of admin user IDs who can restart the bot
-ADMIN_USER_IDS = {5100739421}  # Add your admin Telegram user IDs here
+ADMIN_USER_IDS = {5100739421, 5365683947, 1087968824}  # Updated admin list with all admin IDs
 
 async def restart_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Restart the bot if called by an admin."""
+    """Restart the bot."""
     user_id = update.effective_user.id
-    if user_id not in ADMIN_USER_IDS:
-        await update.message.reply_text("Sorry, only administrators can restart the bot.")
-        return
-        
     await update.message.reply_text("Restarting the bot... Please wait.")
     logger.info(f"Restart command issued by user {user_id}")
     
