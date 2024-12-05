@@ -191,23 +191,18 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
             logger.error(f"Failed to send error message: {str(reply_error)}")
 
 async def error_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Handle errors in the telegram bot with aggressive recovery and monitoring."""
-    global consecutive_failures  # Track failures across retries
+    """Simple error handler with basic recovery."""
     try:
         error_time = time.strftime("%Y-%m-%d %H:%M:%S")
+        logger.error(f"Error at {error_time}: {context.error}")
         
-        # Enhanced error logging
-        logger.error("━━━━━━ Error Details ━━━━━━")
-        if update:
-            logger.error(f"Time: {error_time}")
-            logger.error(f"Update ID: {update.update_id}")
-            logger.error(f"Error: {context.error}")
-            if update.effective_user:
-                logger.error(f"User: ID={update.effective_user.id}, Username={update.effective_user.username}")
-        else:
-            logger.error(f"Time: {error_time}")
-            logger.error(f"Error: {context.error}")
-        logger.error("━━━━━━━━━━━━━━━━━━━━━━━")
+        # Basic error classification
+        if isinstance(context.error, NetworkError):
+            logger.info("Network error - will retry automatically")
+            await asyncio.sleep(1)
+        elif isinstance(context.error, TimedOut):
+            logger.info("Timeout - will retry automatically")
+            await asyncio.sleep(1)
         
         # Enhanced error classification and handling
         if isinstance(context.error, NetworkError):
@@ -257,14 +252,14 @@ async def error_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         logger.error("Error handler failed to process the error properly")
 
 async def main() -> None:
-    """Start the bot with enhanced monitoring and reconnection logic."""
-    retry_count = 0
-    max_retries = -1  # Infinite retries for 24/7 uptime
-    base_delay = 5
-    max_delay = 300  # 5 minutes
+    """Start the bot with basic monitoring and reliability."""
+    # Initialize all variables at start
     start_time = time.time()
-    last_stats_time = time.time()
-    stats_interval = 3600  # Log statistics every hour
+    retry_count = 0
+    max_retries = -1  # Infinite retries
+    retry_delay = 10
+    health_check_interval = 60
+    last_health_check = time.time()
     
     # Get or create event loop
     try:
@@ -278,45 +273,29 @@ async def main() -> None:
     process = psutil.Process()
 
     def log_system_stats():
-        """Log system statistics and perform health check."""
+        """Basic system statistics logging for stability monitoring."""
         try:
-            memory_usage = process.memory_info().rss / 1024 / 1024
+            # Get basic system metrics
+            memory = psutil.virtual_memory()
+            memory_usage = process.memory_info().rss / 1024 / 1024  # MB
+            memory_percent = (memory_usage / memory.total * 1024 * 1024) * 100
             cpu_percent = process.cpu_percent()
             current_uptime = time.time() - start_time
             hours, remainder = divmod(current_uptime, 3600)
             minutes, seconds = divmod(remainder, 60)
             
-            # Check if memory usage is too high (> 80% of system memory)
-            total_memory = psutil.virtual_memory().total / 1024 / 1024
-            memory_percent = (memory_usage / total_memory) * 100
-            
-            # Enhanced memory management
-            if memory_percent > 60:  # Lower threshold for proactive cleanup
+            # Basic memory management
+            if memory_usage > 200:  # Simple threshold of 200MB
                 import gc
                 gc.collect()
-                logger.info("Proactive garbage collection triggered")
-                
-            # Get network stats
-            net_io = psutil.net_io_counters()
-            bytes_sent = net_io.bytes_sent / 1024 / 1024  # Convert to MB
-            bytes_recv = net_io.bytes_recv / 1024 / 1024  # Convert to MB
+                logger.info("Memory cleanup triggered")
             
-            # Get disk usage
-            disk = psutil.disk_usage('/')
-            disk_percent = disk.percent
-            
-            # Enhanced status logging with more metrics
+            # Simple status logging
             logger.info("━━━━━━ System Health Check ━━━━━━")
             logger.info(f"Uptime: {int(hours)}h {int(minutes)}m {int(seconds)}s")
             logger.info(f"Memory Usage: {memory_usage:.2f} MB ({memory_percent:.1f}%)")
             logger.info(f"CPU Usage: {cpu_percent:.1f}%")
-            logger.info(f"Network I/O: ↑{bytes_sent:.1f}MB ↓{bytes_recv:.1f}MB")
-            logger.info(f"Disk Usage: {disk_percent}%")
-            logger.info(f"Retry Count: {retry_count}")
-            logger.info(f"Last Update Time: {time.strftime('%Y-%m-%d %H:%M:%S')}")
-            # Message processing rate tracking will be implemented in a future update
-            logger.info("Message Processing Rate: Monitoring")
-            logger.info("Connection Status: Active" if not retry_count else f"Connection Status: Reconnecting (Attempt {retry_count})")
+            logger.info(f"Status: {'Active' if not retry_count else f'Reconnecting ({retry_count})'}")
             logger.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
             
             # Smarter recovery triggers
@@ -350,27 +329,11 @@ async def main() -> None:
     
     while True:
         try:
+            # Simple periodic health check
             current_time = time.time()
-            # Ping watchdog to indicate bot is alive
-            watchdog.ping()
-            
-            # Regular health checks and watchdog pings
             if current_time - last_health_check >= health_check_interval:
-                # Ping watchdog on successful health check
-                watchdog.ping()
-                if not log_system_stats():
-                    consecutive_failures += 1
-                    logger.warning(f"Health check failed. Consecutive failures: {consecutive_failures}")
-                    if consecutive_failures >= max_consecutive_failures:
-                        logger.error("Maximum consecutive failures reached - forcing restart")
-                        raise Exception("Forced restart due to health check failures")
-                else:
-                    consecutive_failures = 0
+                log_system_stats()
                 last_health_check = current_time
-            else:
-                # Additional watchdog ping every 60 seconds
-                if (current_time - watchdog.last_ping.timestamp()) > 60:
-                    watchdog.ping()
             
             logger.info("Initializing Telegram bot...")
             
@@ -380,21 +343,14 @@ async def main() -> None:
                 logger.error("TELEGRAM_BOT_TOKEN environment variable is not set!")
                 return
 
-            # Create the Application with detailed configuration and health checks
-            # Enhanced configuration for aggressive reconnection
+            # Simple bot configuration with basic settings
             application = (
                 Application.builder()
                 .token(token)
-                .get_updates_read_timeout(30)  # Shorter timeouts for faster failure detection
-                .get_updates_write_timeout(30)
-                .get_updates_connect_timeout(30)
-                .get_updates_pool_timeout(None)
                 .connect_timeout(30)
                 .read_timeout(30)
                 .write_timeout(30)
-                .pool_timeout(None)
-                .connection_pool_size(16)  # Increased connection pool
-                .concurrent_updates(True)  # Enable concurrent updates for better performance
+                .get_updates_read_timeout(30)
                 .build()
             )
             
