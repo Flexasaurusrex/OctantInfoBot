@@ -144,7 +144,7 @@ Just type your question and I'll help you out! 📚
     await update.message.reply_text(help_text)
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Handle incoming messages with enhanced reliability."""
+    """Handle incoming messages with enhanced reliability and recovery."""
     try:
         # Ping watchdog on message receipt
         if hasattr(context.application, 'watchdog'):
@@ -153,24 +153,42 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         user_message = update.message.text
         logger.info(f"Received message: {user_message}")
         
-        # Get response with formatting
-        response = chat_handler.get_response(user_message)
-        
-        # Log formatted response for verification
-        logger.info("Formatted response ready for sending")
-        
-        # Send response with HTML parsing
-        await update.message.reply_text(
-            response,
-            parse_mode='HTML',
-            disable_web_page_preview=False  # Enable link previews
-        )
-        
-        logger.info("Response sent successfully")
+        # Enhanced message handling with retries
+        max_retries = 3
+        retry_count = 0
+        while retry_count < max_retries:
+            try:
+                # Get response with formatting
+                response = chat_handler.get_response(user_message)
+                
+                # Log formatted response for verification
+                logger.info("Formatted response ready for sending")
+                
+                # Send response with HTML parsing
+                await update.message.reply_text(
+                    response,
+                    parse_mode='HTML',
+                    disable_web_page_preview=False  # Enable link previews
+                )
+                
+                logger.info("Response sent successfully")
+                return  # Success, exit the retry loop
+                
+            except Exception as retry_error:
+                retry_count += 1
+                logger.warning(f"Attempt {retry_count} failed: {str(retry_error)}")
+                if retry_count < max_retries:
+                    await asyncio.sleep(1)  # Wait before retry
+                else:
+                    raise  # Re-raise the last error if all retries failed
         
     except Exception as e:
         logger.error(f"Error handling message: {str(e)}")
-        await update.message.reply_text("I encountered an error processing your message. Please try again.")
+        error_message = "I encountered an error processing your message. I'll try to recover and respond shortly."
+        try:
+            await update.message.reply_text(error_message)
+        except Exception as reply_error:
+            logger.error(f"Failed to send error message: {str(reply_error)}")
 
 async def error_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Handle errors in the telegram bot with aggressive recovery and monitoring."""
@@ -178,13 +196,18 @@ async def error_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
     try:
         error_time = time.strftime("%Y-%m-%d %H:%M:%S")
         
-        # Log detailed error information
+        # Enhanced error logging
+        logger.error("━━━━━━ Error Details ━━━━━━")
         if update:
-            logger.error(f"[{error_time}] Update {update.update_id} caused error: {context.error}")
+            logger.error(f"Time: {error_time}")
+            logger.error(f"Update ID: {update.update_id}")
+            logger.error(f"Error: {context.error}")
             if update.effective_user:
-                logger.error(f"User info: ID={update.effective_user.id}, Username={update.effective_user.username}")
+                logger.error(f"User: ID={update.effective_user.id}, Username={update.effective_user.username}")
         else:
-            logger.error(f"[{error_time}] Error occurred without update: {context.error}")
+            logger.error(f"Time: {error_time}")
+            logger.error(f"Error: {context.error}")
+        logger.error("━━━━━━━━━━━━━━━━━━━━━━━")
         
         # Enhanced error classification and handling
         if isinstance(context.error, NetworkError):
@@ -321,8 +344,9 @@ async def main() -> None:
     consecutive_failures = 0
     max_consecutive_failures = 3
     
-    # Initialize watchdog
-    watchdog = WatchdogTimer(timeout=300)  # 5 minute timeout
+    # Initialize watchdog with shorter timeout and connection monitoring
+    watchdog = WatchdogTimer(timeout=120)  # 2 minute timeout for faster recovery
+    last_successful_connection = time.time()
     
     while True:
         try:
