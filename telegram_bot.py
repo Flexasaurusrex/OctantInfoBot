@@ -144,32 +144,45 @@ Just type your question and I'll help you out! 📚
     await update.message.reply_text(help_text)
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Handle incoming messages with enhanced reliability."""
+    """Handle incoming messages with enhanced reliability and verbose logging."""
     try:
+        # Log detailed message information
+        user_id = update.effective_user.id
+        username = update.effective_user.username
+        message_id = update.message.message_id
+        logger.info(f"Received message - ID: {message_id}, User ID: {user_id}, Username: {username}")
+        
         # Ping watchdog on message receipt
         if hasattr(context.application, 'watchdog'):
             context.application.watchdog.ping()
+            logger.debug("Watchdog pinged successfully")
+        else:
+            logger.warning("Watchdog not initialized")
         
         user_message = update.message.text
-        logger.info(f"Received message: {user_message}")
+        logger.info(f"Message content: {user_message}")
         
         # Get response with formatting
+        logger.debug("Requesting response from chat handler")
         response = chat_handler.get_response(user_message)
-        
-        # Log formatted response for verification
-        logger.info("Formatted response ready for sending")
+        logger.info(f"Got response from chat handler: {response[:100]}...")  # Log first 100 chars
         
         # Send response with HTML parsing
+        logger.debug("Attempting to send response")
         await update.message.reply_text(
             response,
             parse_mode='HTML',
             disable_web_page_preview=False  # Enable link previews
         )
         
-        logger.info("Response sent successfully")
+        logger.info(f"Response sent successfully to user {user_id}")
         
+    except AttributeError as ae:
+        logger.error(f"Attribute error in message handling: {str(ae)}")
+        logger.error(f"Update object content: {update}")
+        await update.message.reply_text("I encountered an issue processing your message format. Please try again.")
     except Exception as e:
-        logger.error(f"Error handling message: {str(e)}")
+        logger.error(f"Error handling message: {str(e)}", exc_info=True)  # Include full traceback
         await update.message.reply_text("I encountered an error processing your message. Please try again.")
 
 async def error_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -317,7 +330,7 @@ async def main() -> None:
             return False
 
     last_health_check = time.time()
-    health_check_interval = 60  # Check every minute
+    health_check_interval = 30  # Check every 30 seconds
     consecutive_failures = 0
     max_consecutive_failures = 3
     
@@ -480,13 +493,28 @@ async def main() -> None:
 if __name__ == '__main__':
     import asyncio
     
+    # Initialize chat handler with logging
+    try:
+        logger.info("Initializing chat handler...")
+        chat_handler = ChatHandler()
+        logger.info("Chat handler initialized successfully")
+    except Exception as e:
+        logger.error(f"Failed to initialize chat handler: {str(e)}", exc_info=True)
+        raise
+    
     # Create new event loop
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     
     try:
+        logger.info("Starting main loop...")
         loop.run_until_complete(main())
     except KeyboardInterrupt:
-        pass
+        logger.info("Received keyboard interrupt, shutting down...")
+    except Exception as e:
+        logger.error(f"Critical error in main loop: {str(e)}", exc_info=True)
+        raise
     finally:
+        logger.info("Closing event loop...")
         loop.close()
+        logger.info("Event loop closed")
