@@ -150,7 +150,10 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         user_id = update.effective_user.id
         username = update.effective_user.username
         message_id = update.message.message_id
-        logger.info(f"Received message - ID: {message_id}, User ID: {user_id}, Username: {username}")
+        logger.info(f"━━━━━━ Received Message ━━━━━━")
+        logger.info(f"Message ID: {message_id}")
+        logger.info(f"User ID: {user_id}")
+        logger.info(f"Username: {username}")
         
         # Ping watchdog on message receipt
         if hasattr(context.application, 'watchdog'):
@@ -164,8 +167,9 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         
         # Get response with formatting
         logger.debug("Requesting response from chat handler")
+        logger.info("Attempting to get response from chat handler...")
         response = chat_handler.get_response(user_message)
-        logger.info(f"Got response from chat handler: {response[:100]}...")  # Log first 100 chars
+        logger.info(f"Response received: {response[:100]}...")  # Log first 100 chars
         
         # Send response with HTML parsing
         logger.debug("Attempting to send response")
@@ -493,13 +497,23 @@ async def main() -> None:
 if __name__ == '__main__':
     import asyncio
     
-    # Initialize chat handler with logging
+    # Initialize chat handler with enhanced logging and error handling
     try:
-        logger.info("Initializing chat handler...")
+        logger.info("━━━━━━ Initializing Chat Handler ━━━━━━")
         chat_handler = ChatHandler()
+        telegram_trivia = TelegramTrivia()  # Initialize TelegramTrivia instance
+        logger.info("Chat handler configuration:")
+        logger.info(f"Model: {chat_handler.model}")
+        logger.info(f"Max history: {chat_handler.max_history}")
+        logger.info("TelegramTrivia initialized")
         logger.info("Chat handler initialized successfully")
+        logger.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
     except Exception as e:
-        logger.error(f"Failed to initialize chat handler: {str(e)}", exc_info=True)
+        logger.error("━━━━━━ Chat Handler Error ━━━━━━")
+        logger.error(f"Error type: {type(e).__name__}")
+        logger.error(f"Error message: {str(e)}")
+        logger.error("Stack trace:", exc_info=True)
+        logger.error("━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
         raise
     
     # Create new event loop
