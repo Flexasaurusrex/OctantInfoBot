@@ -149,11 +149,37 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         # Log detailed message information
         user_id = update.effective_user.id
         username = update.effective_user.username
-        message_id = update.message.message_id
+        message = update.message
+        message_id = message.message_id
+        
+        # Log the incoming message
         logger.info(f"━━━━━━ Received Message ━━━━━━")
         logger.info(f"Message ID: {message_id}")
         logger.info(f"User ID: {user_id}")
         logger.info(f"Username: {username}")
+        logger.info(f"Message text: {message.text}")
+        
+        # Check if message is a command
+        if message.text and message.text.startswith('/'):
+            logger.info("Processing command message")
+            pass  # Continue processing
+            
+        # Check if message is a reply to the bot
+        elif message.reply_to_message and message.reply_to_message.from_user.id == context.bot.id:
+            logger.info("Processing reply to bot")
+            pass  # Continue processing
+            
+        # Check if bot is mentioned
+        elif message.entities and any(
+            entity.type == "mention" and message.text[entity.offset:entity.offset + entity.length] == f"@{context.bot.username}"
+            for entity in message.entities
+        ):
+            logger.info("Processing mention of bot")
+            pass  # Continue processing
+            
+        else:
+            logger.info("Message does not require bot response")
+            return  # Don't process messages without mention/reply/command
         
         # Ping watchdog on message receipt
         if hasattr(context.application, 'watchdog'):
