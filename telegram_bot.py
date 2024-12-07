@@ -146,40 +146,60 @@ Just type your question and I'll help you out! 📚
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Handle incoming messages with enhanced reliability and verbose logging."""
     try:
+        message = update.message
+        if not message or not message.text:
+            return
+
         # Log detailed message information
         user_id = update.effective_user.id
         username = update.effective_user.username
-        message = update.message
         message_id = message.message_id
         
-        # Log the incoming message
         logger.info(f"━━━━━━ Received Message ━━━━━━")
         logger.info(f"Message ID: {message_id}")
         logger.info(f"User ID: {user_id}")
         logger.info(f"Username: {username}")
         logger.info(f"Message text: {message.text}")
-        
+
+        # Initialize should_respond flag
+        should_respond = False
+        response_type = "none"
+
         # Check if message is a command
-        if message.text and message.text.startswith('/'):
-            logger.info("Processing command message")
-            pass  # Continue processing
-            
+        if message.text.startswith('/'):
+            should_respond = True
+            response_type = "command"
+            logger.info("Message type: Command")
+
         # Check if message is a reply to the bot
-        elif message.reply_to_message and message.reply_to_message.from_user.id == context.bot.id:
-            logger.info("Processing reply to bot")
-            pass  # Continue processing
-            
+        elif (message.reply_to_message and 
+              message.reply_to_message.from_user and 
+              message.reply_to_message.from_user.id == context.bot.id):
+            should_respond = True
+            response_type = "reply"
+            logger.info("Message type: Reply to bot")
+
         # Check if bot is mentioned
-        elif message.entities and any(
-            entity.type == "mention" and message.text[entity.offset:entity.offset + entity.length] == f"@{context.bot.username}"
-            for entity in message.entities
-        ):
-            logger.info("Processing mention of bot")
-            pass  # Continue processing
+        elif message.entities is not None:  # Explicitly check for None
+            for entity in message.entities:
+                if entity.type == "mention":
+                    try:
+                        mention = message.text[entity.offset:entity.offset + entity.length]
+                        if mention.lower() == f"@{context.bot.username}".lower():
+                            should_respond = True
+                            response_type = "mention"
+                            logger.info("Message type: Bot mention")
+                            break
+                    except (IndexError, AttributeError) as e:
+                        logger.error(f"Error processing mention: {str(e)}")
+                        continue
+
+        # If none of the conditions are met, don't respond
+        if not should_respond:
+            logger.info("Message type: Not for bot - ignoring")
+            return
             
-        else:
-            logger.info("Message does not require bot response")
-            return  # Don't process messages without mention/reply/command
+        logger.info(f"Processing message type: {response_type}")
         
         # Ping watchdog on message receipt
         if hasattr(context.application, 'watchdog'):
