@@ -146,94 +146,117 @@ Just type your question and I'll help you out! 📚
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Handle incoming messages with enhanced reliability and verbose logging."""
     try:
+        # Basic message validation
         message = update.message
         if not message or not message.text:
+            logger.info("Skipping empty message")
             return
 
-        # Log detailed message information
+        # Get message details
         user_id = update.effective_user.id
         username = update.effective_user.username
-        message_id = message.message_id
+        chat_type = message.chat.type
         
-        logger.info(f"━━━━━━ Received Message ━━━━━━")
-        logger.info(f"Message ID: {message_id}")
-        logger.info(f"User ID: {user_id}")
-        logger.info(f"Username: {username}")
-        logger.info(f"Message text: {message.text}")
+        # Enhanced logging
+        logger.info("━━━━━━ Received Message ━━━━━━")
+        logger.info(f"User: {username} (ID: {user_id})")
+        logger.info(f"Chat Type: {chat_type}")
+        logger.info(f"Message: {message.text[:100]}...")
 
-        # Initialize should_respond flag
+        # Set default response behavior based on chat type
         should_respond = False
-        response_type = "none"
 
-        # Check if message is a command
-        if message.text.startswith('/'):
+        # Private chats: Always respond
+        if chat_type == "private":
+            logger.info("Private chat - responding to message")
             should_respond = True
-            response_type = "command"
-            logger.info("Message type: Command")
-
-        # Check if message is a reply to the bot
-        elif (message.reply_to_message and 
-              message.reply_to_message.from_user and 
-              message.reply_to_message.from_user.id == context.bot.id):
-            should_respond = True
-            response_type = "reply"
-            logger.info("Message type: Reply to bot")
-
-        # Check if bot is mentioned
-        elif message.entities is not None:  # Explicitly check for None
-            for entity in message.entities:
-                if entity.type == "mention":
-                    try:
-                        mention = message.text[entity.offset:entity.offset + entity.length]
-                        if mention.lower() == f"@{context.bot.username}".lower():
-                            should_respond = True
-                            response_type = "mention"
-                            logger.info("Message type: Bot mention")
-                            break
-                    except (IndexError, AttributeError) as e:
-                        logger.error(f"Error processing mention: {str(e)}")
-                        continue
-
-        # If none of the conditions are met, don't respond
-        if not should_respond:
-            logger.info("Message type: Not for bot - ignoring")
-            return
             
-        logger.info(f"Processing message type: {response_type}")
-        
-        # Ping watchdog on message receipt
-        if hasattr(context.application, 'watchdog'):
-            context.application.watchdog.ping()
-            logger.debug("Watchdog pinged successfully")
+        # Group chats: Check for commands, mentions, or replies
+        elif chat_type in ["group", "supergroup"]:
+            # Commands always get a response
+            if message.text.startswith('/'):
+                should_respond = True
+                logger.info("Group chat - command received")
+                
+            # Direct replies to bot get a response
+            elif (message.reply_to_message and 
+                  message.reply_to_message.from_user and 
+                  message.reply_to_message.from_user.id == context.bot.id):
+                should_respond = True
+                logger.info("Group chat - direct reply to bot")
+                
+            # Check for bot mentions
+            elif message.entities:
+                for entity in message.entities:
+                    if entity.type == "mention":
+                        mention = message.text[entity.offset:entity.offset + entity.length].lower()
+                        bot_username = context.bot.username.lower() if context.bot.username else None
+                        if bot_username and mention in [f"@{bot_username}", "@octantbot"]:
+                            should_respond = True
+                            logger.info(f"Group chat - bot mentioned: {mention}")
+                            break
+                    elif entity.type == "text_mention" and entity.user and entity.user.id == context.bot.id:
+                        should_respond = True
+                        logger.info("Group chat - bot text-mentioned")
+                        break
+            
+            if not should_respond:
+                logger.info("Group chat - message not for bot")
+                return
+                
         else:
-            logger.warning("Watchdog not initialized")
+            logger.info(f"Unsupported chat type: {chat_type}")
+            return
+
+        if should_respond:
+            # Ping watchdog to indicate activity
+            if hasattr(context.application, 'watchdog'):
+                context.application.watchdog.ping()
+            
+            # Process message and get response
+            logger.info("Getting response from chat handler")
+            try:
+                response = chat_handler.get_response(message.text)
+                
+                if not response:
+                    logger.warning("Empty response from chat handler")
+                    error_message = (
+                        "I apologize, but I couldn't generate a response. "
+                        "Please try rephrasing your message."
+                    )
+                    if chat_type == "private":
+                        error_message += "\nTry asking a more specific question about Octant!"
+                    await message.reply_text(error_message)
+                    return
+                    
+                # Send response with HTML parsing
+                await message.reply_text(
+                    response,
+                    parse_mode='HTML',
+                    disable_web_page_preview=False
+                )
+                logger.info("Response sent successfully")
+                
+            except Exception as e:
+                logger.error(f"Chat handler error: {str(e)}", exc_info=True)
+                error_message = (
+                    "I encountered an error while processing your message. "
+                    "Please try again with a simpler request."
+                )
+                if chat_type == "private":
+                    error_message += "\nIf the problem persists, try using simpler questions or commands."
+                await message.reply_text(error_message)
         
-        user_message = update.message.text
-        logger.info(f"Message content: {user_message}")
-        
-        # Get response with formatting
-        logger.debug("Requesting response from chat handler")
-        logger.info("Attempting to get response from chat handler...")
-        response = chat_handler.get_response(user_message)
-        logger.info(f"Response received: {response[:100]}...")  # Log first 100 chars
-        
-        # Send response with HTML parsing
-        logger.debug("Attempting to send response")
-        await update.message.reply_text(
-            response,
-            parse_mode='HTML',
-            disable_web_page_preview=False  # Enable link previews
-        )
-        
-        logger.info(f"Response sent successfully to user {user_id}")
-        
-    except AttributeError as ae:
-        logger.error(f"Attribute error in message handling: {str(ae)}")
-        logger.error(f"Update object content: {update}")
-        await update.message.reply_text("I encountered an issue processing your message format. Please try again.")
     except Exception as e:
-        logger.error(f"Error handling message: {str(e)}", exc_info=True)  # Include full traceback
-        await update.message.reply_text("I encountered an error processing your message. Please try again.")
+        logger.error(f"Message handling error: {str(e)}", exc_info=True)
+        try:
+            if message and hasattr(message, 'reply_text'):
+                await message.reply_text(
+                    "An unexpected error occurred. Please try again in a moment."
+                )
+        except Exception as reply_error:
+            logger.error(f"Failed to send error message: {str(reply_error)}")
+            logger.error("Complete error trace:", exc_info=True)
 
 async def error_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Handle errors in the telegram bot with aggressive recovery and monitoring."""
