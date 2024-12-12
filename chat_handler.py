@@ -3,6 +3,9 @@ import html
 import requests
 from collections import deque
 from trivia import Trivia
+import logging
+
+logger = logging.getLogger(__name__)
 
 class CommandHandler:
     def __init__(self, trivia_game):
@@ -245,8 +248,6 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
         """Validate and sanitize user input."""
         if not message or not message.strip():
             raise ValueError("Message cannot be empty")
-        if len(message) > 500:
-            raise ValueError("Message is too long (maximum 500 characters)")
         return html.escape(message.strip())
 
     def format_conversation_history(self):
@@ -257,10 +258,75 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
         last_entry = self.conversation_history[-1]
         return f"\nPrevious message: {last_entry['assistant']}\n"
 
+    def validate_response_length(self, response):
+        """Validate response length and split if necessary."""
+        max_length = 4096  # Telegram's max message length
+        if len(response) <= max_length:
+            return [response]
+        
+        # Try to find better split points at paragraph boundaries
+        paragraphs = response.split('\n\n')
+        
+        # If we only have one paragraph, fall back to sentence splitting
+        if len(paragraphs) <= 1:
+            current_chunk = ""
+            chunks = []
+            sentences = response.split('. ')
+            
+            for sentence in sentences:
+                potential_chunk = current_chunk + sentence + '. '
+                if len(potential_chunk) <= max_length:
+                    current_chunk = potential_chunk
+                else:
+                    if current_chunk:
+                        chunks.append(current_chunk.strip())
+                    current_chunk = sentence + '. '
+            
+            if current_chunk:
+                chunks.append(current_chunk.strip())
+            return chunks
+        
+        # Combine paragraphs into chunks
+        chunks = []
+        current_chunk = ""
+        
+        for paragraph in paragraphs:
+            if not paragraph.strip():
+                continue
+                
+            if len(current_chunk) + len(paragraph) + 4 <= max_length:  # +4 for \n\n
+                current_chunk += (paragraph + '\n\n')
+            else:
+                if current_chunk:
+                    chunks.append(current_chunk.strip())
+                if len(paragraph) > max_length:
+                    # If a single paragraph is too long, split it into sentences
+                    sentences = paragraph.split('. ')
+                    sub_chunk = ""
+                    for sentence in sentences:
+                        if len(sub_chunk) + len(sentence) + 2 <= max_length:
+                            sub_chunk += sentence + '. '
+                        else:
+                            if sub_chunk:
+                                chunks.append(sub_chunk.strip())
+                            sub_chunk = sentence + '. '
+                    if sub_chunk:
+                        chunks.append(sub_chunk.strip())
+                else:
+                    current_chunk = paragraph + '\n\n'
+        
+        if current_chunk:
+            chunks.append(current_chunk.strip())
+        
+        return chunks
+
     def get_response(self, user_message):
         try:
-            # Validate and sanitize input
-            user_message = self.validate_message(user_message)
+            # Basic validation - just check for empty messages
+            if not user_message or not user_message.strip():
+                return "I couldn't process an empty message. Please try asking something!"
+            
+            user_message = user_message.strip()
             
             # Check for commands
             if user_message.startswith('/'):
@@ -308,14 +374,14 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
             
             # Include minimal context in the prompt
             history = self.format_conversation_history()
-            prompt = f"{self.system_prompt}\n\n{history}Current user message: {user_message}\n\nRespond naturally:"
+            prompt = f"{self.system_prompt}\n\n{history}Current user message: {user_message}\n\nRespond naturally and informatively about Octant, Golem Foundation, and related topics:"
             
             data = {
                 "model": self.model,
                 "prompt": prompt,
-                "max_tokens": 1024,
+                "max_tokens": 2048,  # Increased for longer responses
                 "temperature": 0.7,
-                "top_p": 0.7,
+                "top_p": 0.9,  # Increased for more diverse responses
                 "top_k": 50,
                 "repetition_penalty": 1.1
             }
@@ -372,10 +438,13 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
                 # Clean up any remaining bot-link references
                 response_text = re.sub(r'">(?:https?://[^<]+?)</a>', lambda m: '">' + m.group(0)[2:-4] + '</a>', response_text)
                 
-                # Log formatted response for verification
-                print(f"Formatted response: {response_text}")
+                # Validate and split response if necessary
+                response_chunks = self.validate_response_length(response_text)
                 
-                # Update conversation history
+                # Log formatted response for verification
+                print(f"Formatted response ({len(response_chunks)} chunks): {response_text}")
+                
+                # Update conversation history with the complete response
                 self.conversation_history.append({
                     "user": user_message,
                     "assistant": response_text
@@ -385,7 +454,13 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
                 if len(self.conversation_history) > self.max_history:
                     self.conversation_history = self.conversation_history[-self.max_history:]
                 
-                return response_text
+                # Try to combine response chunks if possible
+                if len(response_chunks) > 1:
+                    # If all chunks combined are under 4000 characters, combine them
+                    total_length = sum(len(chunk) for chunk in response_chunks)
+                    if total_length <= 4000:
+                        return '\n\n'.join(response_chunks)
+                return response_chunks[0] if len(response_chunks) == 1 else response_chunks
             else:
                 print("Unexpected API response format:", result)
                 return "I apologize, but I couldn't generate a response at the moment. Please try again."
@@ -400,11 +475,18 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
             return "I'm sorry, but the request is taking longer than expected. Please try again in a moment."
             
         except requests.exceptions.RequestException as e:
-            print(f"API request error: {str(e)}")
-            return "I'm having trouble connecting to my knowledge base right now. Please try again in a few moments."
+            logger.error(f"API request error: {str(e)}")
+            return """I apologize for the temporary issue. I'm here to help you with:
+
+• Octant's ecosystem and features
+• GLM token utility and staking
+• Governance and funding mechanisms
+• Community participation
+
+Please try your question again or ask about any of these topics!"""
             
         except Exception as e:
-            print(f"Unexpected error: {str(e)}")
+            logger.error(f"Unexpected error: {str(e)}")
             return "I encountered an unexpected issue. Please try again, and if the problem persists, try rephrasing your question."
             
     def clear_conversation_history(self):

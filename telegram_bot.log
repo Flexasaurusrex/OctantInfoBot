@@ -5878,3 +5878,773 @@ telegram.error.BadRequest: Can't parse entities: unsupported start tag "https://
 2024-12-12 19:06:42,681 - telegram.ext.Application - INFO - [_application:631] - Application started
 2024-12-12 19:06:42,681 - __main__ - INFO - [telegram_bot:500] - Starting polling...
 2024-12-12 19:06:42,786 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/deleteWebhook "HTTP/1.1 200 OK"
+2024-12-12 19:06:53,100 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:07:03,207 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:07:13,318 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:07:23,424 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:07:33,537 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:07:43,643 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:07:47,284 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:07:47,717 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/sendMessage "HTTP/1.1 200 OK"
+2024-12-12 19:07:52,096 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:07:52,322 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/sendMessage "HTTP/1.1 200 OK"
+2024-12-12 19:07:55,723 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:07:55,724 - __main__ - INFO - [telegram_bot:161] - ━━━━━━ Received Message ━━━━━━
+2024-12-12 19:07:55,725 - __main__ - INFO - [telegram_bot:162] - User: rexflexas (ID: 7494798358)
+2024-12-12 19:07:55,725 - __main__ - INFO - [telegram_bot:163] - Chat Type: private
+2024-12-12 19:07:55,725 - __main__ - INFO - [telegram_bot:164] - Message: what is octant?...
+2024-12-12 19:07:55,725 - __main__ - INFO - [telegram_bot:170] - Private chat - processing message
+2024-12-12 19:07:55,725 - __main__ - INFO - [telegram_bot:237] - Getting response from chat handler
+2024-12-12 19:07:59,591 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/sendMessage "HTTP/1.1 200 OK"
+2024-12-12 19:07:59,592 - __main__ - INFO - [telegram_bot:254] - Response sent successfully
+2024-12-12 19:08:07,673 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:08:07,675 - __main__ - INFO - [telegram_bot:161] - ━━━━━━ Received Message ━━━━━━
+2024-12-12 19:08:07,675 - __main__ - INFO - [telegram_bot:162] - User: rexflexas (ID: 7494798358)
+2024-12-12 19:08:07,675 - __main__ - INFO - [telegram_bot:163] - Chat Type: private
+2024-12-12 19:08:07,675 - __main__ - INFO - [telegram_bot:164] - Message: amazing, what is golem?...
+2024-12-12 19:08:07,675 - __main__ - INFO - [telegram_bot:170] - Private chat - processing message
+2024-12-12 19:08:07,675 - __main__ - INFO - [telegram_bot:237] - Getting response from chat handler
+2024-12-12 19:08:19,386 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/sendMessage "HTTP/1.1 400 Bad Request"
+2024-12-12 19:08:19,387 - __main__ - ERROR - [telegram_bot:257] - Error in process_message: Message is too long
+Traceback (most recent call last):
+  File "/home/runner/workspace/telegram_bot.py", line 249, in process_message
+    await message.reply_text(
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_message.py", line 1771, in reply_text
+    return await self.get_bot().send_message(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/ext/_extbot.py", line 2965, in send_message
+    return await super().send_message(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_bot.py", line 1019, in send_message
+    return await self._send_message(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/ext/_extbot.py", line 610, in _send_message
+    result = await super()._send_message(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_bot.py", line 731, in _send_message
+    result = await self._post(
+             ^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_bot.py", line 619, in _post
+    return await self._do_post(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/ext/_extbot.py", line 354, in _do_post
+    return await super()._do_post(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_bot.py", line 648, in _do_post
+    result = await request.post(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/request/_baserequest.py", line 202, in post
+    result = await self._request_wrapper(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/request/_baserequest.py", line 383, in _request_wrapper
+    raise BadRequest(message)
+telegram.error.BadRequest: Message is too long
+2024-12-12 19:08:19,420 - __main__ - ERROR - [telegram_bot:212] - Error processing message: Message is too long
+Traceback (most recent call last):
+  File "/home/runner/workspace/telegram_bot.py", line 171, in handle_message
+    await process_message(update, context, message, chat_type)
+  File "/home/runner/workspace/telegram_bot.py", line 249, in process_message
+    await message.reply_text(
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_message.py", line 1771, in reply_text
+    return await self.get_bot().send_message(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/ext/_extbot.py", line 2965, in send_message
+    return await super().send_message(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_bot.py", line 1019, in send_message
+    return await self._send_message(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/ext/_extbot.py", line 610, in _send_message
+    result = await super()._send_message(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_bot.py", line 731, in _send_message
+    result = await self._post(
+             ^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_bot.py", line 619, in _post
+    return await self._do_post(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/ext/_extbot.py", line 354, in _do_post
+    return await super()._do_post(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_bot.py", line 648, in _do_post
+    result = await request.post(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/request/_baserequest.py", line 202, in post
+    result = await self._request_wrapper(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/request/_baserequest.py", line 383, in _request_wrapper
+    raise BadRequest(message)
+telegram.error.BadRequest: Message is too long
+2024-12-12 19:08:19,648 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/sendMessage "HTTP/1.1 200 OK"
+2024-12-12 19:08:26,307 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:08:26,308 - __main__ - INFO - [telegram_bot:161] - ━━━━━━ Received Message ━━━━━━
+2024-12-12 19:08:26,308 - __main__ - INFO - [telegram_bot:162] - User: rexflexas (ID: 7494798358)
+2024-12-12 19:08:26,308 - __main__ - INFO - [telegram_bot:163] - Chat Type: private
+2024-12-12 19:08:26,309 - __main__ - INFO - [telegram_bot:164] - Message: what is the golem foundation?...
+2024-12-12 19:08:26,309 - __main__ - INFO - [telegram_bot:170] - Private chat - processing message
+2024-12-12 19:08:26,309 - __main__ - INFO - [telegram_bot:237] - Getting response from chat handler
+2024-12-12 19:08:34,703 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/sendMessage "HTTP/1.1 400 Bad Request"
+2024-12-12 19:08:34,703 - __main__ - ERROR - [telegram_bot:257] - Error in process_message: Message is too long
+Traceback (most recent call last):
+  File "/home/runner/workspace/telegram_bot.py", line 249, in process_message
+    await message.reply_text(
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_message.py", line 1771, in reply_text
+    return await self.get_bot().send_message(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/ext/_extbot.py", line 2965, in send_message
+    return await super().send_message(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_bot.py", line 1019, in send_message
+    return await self._send_message(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/ext/_extbot.py", line 610, in _send_message
+    result = await super()._send_message(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_bot.py", line 731, in _send_message
+    result = await self._post(
+             ^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_bot.py", line 619, in _post
+    return await self._do_post(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/ext/_extbot.py", line 354, in _do_post
+    return await super()._do_post(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_bot.py", line 648, in _do_post
+    result = await request.post(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/request/_baserequest.py", line 202, in post
+    result = await self._request_wrapper(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/request/_baserequest.py", line 383, in _request_wrapper
+    raise BadRequest(message)
+telegram.error.BadRequest: Message is too long
+2024-12-12 19:08:34,704 - __main__ - ERROR - [telegram_bot:212] - Error processing message: Message is too long
+Traceback (most recent call last):
+  File "/home/runner/workspace/telegram_bot.py", line 171, in handle_message
+    await process_message(update, context, message, chat_type)
+  File "/home/runner/workspace/telegram_bot.py", line 249, in process_message
+    await message.reply_text(
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_message.py", line 1771, in reply_text
+    return await self.get_bot().send_message(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/ext/_extbot.py", line 2965, in send_message
+    return await super().send_message(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_bot.py", line 1019, in send_message
+    return await self._send_message(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/ext/_extbot.py", line 610, in _send_message
+    result = await super()._send_message(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_bot.py", line 731, in _send_message
+    result = await self._post(
+             ^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_bot.py", line 619, in _post
+    return await self._do_post(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/ext/_extbot.py", line 354, in _do_post
+    return await super()._do_post(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_bot.py", line 648, in _do_post
+    result = await request.post(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/request/_baserequest.py", line 202, in post
+    result = await self._request_wrapper(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/request/_baserequest.py", line 383, in _request_wrapper
+    raise BadRequest(message)
+telegram.error.BadRequest: Message is too long
+2024-12-12 19:08:34,923 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/sendMessage "HTTP/1.1 200 OK"
+2024-12-12 19:08:44,706 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:08:54,817 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:09:04,921 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:09:15,027 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:09:25,131 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:09:35,257 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:09:39,337 - __main__ - INFO - [telegram_bot:579] - ━━━━━━ Initializing Chat Handler ━━━━━━
+2024-12-12 19:09:39,342 - __main__ - INFO - [telegram_bot:582] - Chat handler configuration:
+2024-12-12 19:09:39,342 - __main__ - INFO - [telegram_bot:583] - Model: mistralai/Mixtral-8x7B-Instruct-v0.1
+2024-12-12 19:09:39,342 - __main__ - INFO - [telegram_bot:584] - Max history: 5
+2024-12-12 19:09:39,342 - __main__ - INFO - [telegram_bot:585] - TelegramTrivia initialized
+2024-12-12 19:09:39,343 - __main__ - INFO - [telegram_bot:586] - Chat handler initialized successfully
+2024-12-12 19:09:39,343 - __main__ - INFO - [telegram_bot:587] - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-12 19:09:39,344 - __main__ - INFO - [telegram_bot:601] - Starting main loop...
+2024-12-12 19:09:39,367 - __main__ - INFO - [telegram_bot:445] - Initializing Telegram bot...
+2024-12-12 19:09:39,542 - __main__ - INFO - [telegram_bot:487] - ━━━━━━ Bot Configuration ━━━━━━
+2024-12-12 19:09:39,551 - __main__ - INFO - [telegram_bot:488] - Start Time: 2024-12-12 19:09:39
+2024-12-12 19:09:39,551 - __main__ - INFO - [telegram_bot:489] - Retry Count: 0
+2024-12-12 19:09:39,551 - __main__ - INFO - [telegram_bot:490] - Bot Version: 1.0.1
+2024-12-12 19:09:39,552 - __main__ - INFO - [telegram_bot:491] - Connection Parameters:
+2024-12-12 19:09:39,552 - __main__ - INFO - [telegram_bot:492] - - Polling Timeout: 60s
+2024-12-12 19:09:39,552 - __main__ - INFO - [telegram_bot:493] - - Connection Retries: infinite
+2024-12-12 19:09:39,552 - __main__ - INFO - [telegram_bot:494] - - Update Mode: polling
+2024-12-12 19:09:39,552 - __main__ - INFO - [telegram_bot:495] - - Health Check: Active
+2024-12-12 19:09:39,553 - __main__ - INFO - [telegram_bot:496] - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-12 19:09:39,556 - __main__ - INFO - [telegram_bot:380] - ━━━━━━ System Health Check ━━━━━━
+2024-12-12 19:09:39,557 - __main__ - INFO - [telegram_bot:381] - Uptime: 0h 0m 0s
+2024-12-12 19:09:39,557 - __main__ - INFO - [telegram_bot:382] - Memory Usage: 51.01 MB (0.1%)
+2024-12-12 19:09:39,557 - __main__ - INFO - [telegram_bot:383] - CPU Usage: 0.0%
+2024-12-12 19:09:39,557 - __main__ - INFO - [telegram_bot:384] - Network I/O: ↑2.7MB ↓3.7MB
+2024-12-12 19:09:39,558 - __main__ - INFO - [telegram_bot:385] - Disk Usage: 21.7%
+2024-12-12 19:09:39,559 - __main__ - INFO - [telegram_bot:386] - Retry Count: 0
+2024-12-12 19:09:39,559 - __main__ - INFO - [telegram_bot:387] - Last Update Time: 2024-12-12 19:09:39
+2024-12-12 19:09:39,559 - __main__ - INFO - [telegram_bot:389] - Message Processing Rate: Monitoring
+2024-12-12 19:09:39,559 - __main__ - INFO - [telegram_bot:390] - Connection Status: Active
+2024-12-12 19:09:39,560 - __main__ - INFO - [telegram_bot:391] - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-12 19:09:39,895 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getMe "HTTP/1.1 200 OK"
+2024-12-12 19:09:39,896 - telegram.ext.Application - INFO - [_application:631] - Application started
+2024-12-12 19:09:39,896 - __main__ - INFO - [telegram_bot:509] - Starting polling...
+2024-12-12 19:09:40,002 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/deleteWebhook "HTTP/1.1 200 OK"
+2024-12-12 19:09:50,317 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:10:00,424 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:10:06,089 - __main__ - INFO - [telegram_bot:583] - ━━━━━━ Initializing Chat Handler ━━━━━━
+2024-12-12 19:10:06,089 - __main__ - INFO - [telegram_bot:586] - Chat handler configuration:
+2024-12-12 19:10:06,090 - __main__ - INFO - [telegram_bot:587] - Model: mistralai/Mixtral-8x7B-Instruct-v0.1
+2024-12-12 19:10:06,090 - __main__ - INFO - [telegram_bot:588] - Max history: 5
+2024-12-12 19:10:06,090 - __main__ - INFO - [telegram_bot:589] - TelegramTrivia initialized
+2024-12-12 19:10:06,090 - __main__ - INFO - [telegram_bot:590] - Chat handler initialized successfully
+2024-12-12 19:10:06,090 - __main__ - INFO - [telegram_bot:591] - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-12 19:10:06,090 - __main__ - INFO - [telegram_bot:605] - Starting main loop...
+2024-12-12 19:10:06,104 - __main__ - INFO - [telegram_bot:449] - Initializing Telegram bot...
+2024-12-12 19:10:06,278 - __main__ - INFO - [telegram_bot:491] - ━━━━━━ Bot Configuration ━━━━━━
+2024-12-12 19:10:06,282 - __main__ - INFO - [telegram_bot:492] - Start Time: 2024-12-12 19:10:06
+2024-12-12 19:10:06,282 - __main__ - INFO - [telegram_bot:493] - Retry Count: 0
+2024-12-12 19:10:06,282 - __main__ - INFO - [telegram_bot:494] - Bot Version: 1.0.1
+2024-12-12 19:10:06,283 - __main__ - INFO - [telegram_bot:495] - Connection Parameters:
+2024-12-12 19:10:06,283 - __main__ - INFO - [telegram_bot:496] - - Polling Timeout: 60s
+2024-12-12 19:10:06,283 - __main__ - INFO - [telegram_bot:497] - - Connection Retries: infinite
+2024-12-12 19:10:06,284 - __main__ - INFO - [telegram_bot:498] - - Update Mode: polling
+2024-12-12 19:10:06,284 - __main__ - INFO - [telegram_bot:499] - - Health Check: Active
+2024-12-12 19:10:06,284 - __main__ - INFO - [telegram_bot:500] - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-12 19:10:06,284 - __main__ - INFO - [telegram_bot:384] - ━━━━━━ System Health Check ━━━━━━
+2024-12-12 19:10:06,285 - __main__ - INFO - [telegram_bot:385] - Uptime: 0h 0m 0s
+2024-12-12 19:10:06,285 - __main__ - INFO - [telegram_bot:386] - Memory Usage: 51.14 MB (0.1%)
+2024-12-12 19:10:06,285 - __main__ - INFO - [telegram_bot:387] - CPU Usage: 0.0%
+2024-12-12 19:10:06,285 - __main__ - INFO - [telegram_bot:388] - Network I/O: ↑2.7MB ↓3.8MB
+2024-12-12 19:10:06,286 - __main__ - INFO - [telegram_bot:389] - Disk Usage: 21.7%
+2024-12-12 19:10:06,286 - __main__ - INFO - [telegram_bot:390] - Retry Count: 0
+2024-12-12 19:10:06,286 - __main__ - INFO - [telegram_bot:391] - Last Update Time: 2024-12-12 19:10:06
+2024-12-12 19:10:06,286 - __main__ - INFO - [telegram_bot:393] - Message Processing Rate: Monitoring
+2024-12-12 19:10:06,286 - __main__ - INFO - [telegram_bot:394] - Connection Status: Active
+2024-12-12 19:10:06,286 - __main__ - INFO - [telegram_bot:395] - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-12 19:10:06,611 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getMe "HTTP/1.1 200 OK"
+2024-12-12 19:10:06,611 - telegram.ext.Application - INFO - [_application:631] - Application started
+2024-12-12 19:10:06,612 - __main__ - INFO - [telegram_bot:513] - Starting polling...
+2024-12-12 19:10:06,717 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/deleteWebhook "HTTP/1.1 200 OK"
+2024-12-12 19:10:17,032 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:10:27,137 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:10:37,242 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:10:47,348 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:10:57,454 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:11:07,559 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:11:17,665 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:11:18,277 - __main__ - INFO - [telegram_bot:590] - ━━━━━━ Initializing Chat Handler ━━━━━━
+2024-12-12 19:11:18,277 - __main__ - INFO - [telegram_bot:593] - Chat handler configuration:
+2024-12-12 19:11:18,278 - __main__ - INFO - [telegram_bot:594] - Model: mistralai/Mixtral-8x7B-Instruct-v0.1
+2024-12-12 19:11:18,278 - __main__ - INFO - [telegram_bot:595] - Max history: 5
+2024-12-12 19:11:18,278 - __main__ - INFO - [telegram_bot:596] - TelegramTrivia initialized
+2024-12-12 19:11:18,278 - __main__ - INFO - [telegram_bot:597] - Chat handler initialized successfully
+2024-12-12 19:11:18,278 - __main__ - INFO - [telegram_bot:598] - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-12 19:11:18,278 - __main__ - INFO - [telegram_bot:612] - Starting main loop...
+2024-12-12 19:11:18,293 - __main__ - INFO - [telegram_bot:456] - Initializing Telegram bot...
+2024-12-12 19:11:18,484 - __main__ - INFO - [telegram_bot:498] - ━━━━━━ Bot Configuration ━━━━━━
+2024-12-12 19:11:18,484 - __main__ - INFO - [telegram_bot:499] - Start Time: 2024-12-12 19:11:18
+2024-12-12 19:11:18,485 - __main__ - INFO - [telegram_bot:500] - Retry Count: 0
+2024-12-12 19:11:18,485 - __main__ - INFO - [telegram_bot:501] - Bot Version: 1.0.1
+2024-12-12 19:11:18,485 - __main__ - INFO - [telegram_bot:502] - Connection Parameters:
+2024-12-12 19:11:18,485 - __main__ - INFO - [telegram_bot:503] - - Polling Timeout: 60s
+2024-12-12 19:11:18,485 - __main__ - INFO - [telegram_bot:504] - - Connection Retries: infinite
+2024-12-12 19:11:18,486 - __main__ - INFO - [telegram_bot:505] - - Update Mode: polling
+2024-12-12 19:11:18,486 - __main__ - INFO - [telegram_bot:506] - - Health Check: Active
+2024-12-12 19:11:18,486 - __main__ - INFO - [telegram_bot:507] - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-12 19:11:18,487 - __main__ - INFO - [telegram_bot:391] - ━━━━━━ System Health Check ━━━━━━
+2024-12-12 19:11:18,487 - __main__ - INFO - [telegram_bot:392] - Uptime: 0h 0m 0s
+2024-12-12 19:11:18,487 - __main__ - INFO - [telegram_bot:393] - Memory Usage: 50.75 MB (0.1%)
+2024-12-12 19:11:18,487 - __main__ - INFO - [telegram_bot:394] - CPU Usage: 0.0%
+2024-12-12 19:11:18,488 - __main__ - INFO - [telegram_bot:395] - Network I/O: ↑2.8MB ↓4.0MB
+2024-12-12 19:11:18,488 - __main__ - INFO - [telegram_bot:396] - Disk Usage: 21.7%
+2024-12-12 19:11:18,488 - __main__ - INFO - [telegram_bot:397] - Retry Count: 0
+2024-12-12 19:11:18,488 - __main__ - INFO - [telegram_bot:398] - Last Update Time: 2024-12-12 19:11:18
+2024-12-12 19:11:18,488 - __main__ - INFO - [telegram_bot:400] - Message Processing Rate: Monitoring
+2024-12-12 19:11:18,488 - __main__ - INFO - [telegram_bot:401] - Connection Status: Active
+2024-12-12 19:11:18,488 - __main__ - INFO - [telegram_bot:402] - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-12 19:11:18,810 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getMe "HTTP/1.1 200 OK"
+2024-12-12 19:11:18,811 - telegram.ext.Application - INFO - [_application:631] - Application started
+2024-12-12 19:11:18,811 - __main__ - INFO - [telegram_bot:520] - Starting polling...
+2024-12-12 19:11:18,917 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/deleteWebhook "HTTP/1.1 200 OK"
+2024-12-12 19:11:28,452 - __main__ - INFO - [telegram_bot:590] - ━━━━━━ Initializing Chat Handler ━━━━━━
+2024-12-12 19:11:28,457 - __main__ - INFO - [telegram_bot:593] - Chat handler configuration:
+2024-12-12 19:11:28,459 - __main__ - INFO - [telegram_bot:594] - Model: mistralai/Mixtral-8x7B-Instruct-v0.1
+2024-12-12 19:11:28,460 - __main__ - INFO - [telegram_bot:595] - Max history: 5
+2024-12-12 19:11:28,460 - __main__ - INFO - [telegram_bot:596] - TelegramTrivia initialized
+2024-12-12 19:11:28,460 - __main__ - INFO - [telegram_bot:597] - Chat handler initialized successfully
+2024-12-12 19:11:28,460 - __main__ - INFO - [telegram_bot:598] - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-12 19:11:28,461 - __main__ - INFO - [telegram_bot:612] - Starting main loop...
+2024-12-12 19:11:28,471 - __main__ - INFO - [telegram_bot:456] - Initializing Telegram bot...
+2024-12-12 19:11:28,568 - __main__ - INFO - [telegram_bot:498] - ━━━━━━ Bot Configuration ━━━━━━
+2024-12-12 19:11:28,569 - __main__ - INFO - [telegram_bot:499] - Start Time: 2024-12-12 19:11:28
+2024-12-12 19:11:28,569 - __main__ - INFO - [telegram_bot:500] - Retry Count: 0
+2024-12-12 19:11:28,569 - __main__ - INFO - [telegram_bot:501] - Bot Version: 1.0.1
+2024-12-12 19:11:28,569 - __main__ - INFO - [telegram_bot:502] - Connection Parameters:
+2024-12-12 19:11:28,569 - __main__ - INFO - [telegram_bot:503] - - Polling Timeout: 60s
+2024-12-12 19:11:28,569 - __main__ - INFO - [telegram_bot:504] - - Connection Retries: infinite
+2024-12-12 19:11:28,570 - __main__ - INFO - [telegram_bot:505] - - Update Mode: polling
+2024-12-12 19:11:28,570 - __main__ - INFO - [telegram_bot:506] - - Health Check: Active
+2024-12-12 19:11:28,570 - __main__ - INFO - [telegram_bot:507] - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-12 19:11:28,571 - __main__ - INFO - [telegram_bot:391] - ━━━━━━ System Health Check ━━━━━━
+2024-12-12 19:11:28,571 - __main__ - INFO - [telegram_bot:392] - Uptime: 0h 0m 0s
+2024-12-12 19:11:28,571 - __main__ - INFO - [telegram_bot:393] - Memory Usage: 50.75 MB (0.1%)
+2024-12-12 19:11:28,571 - __main__ - INFO - [telegram_bot:394] - CPU Usage: 0.0%
+2024-12-12 19:11:28,571 - __main__ - INFO - [telegram_bot:395] - Network I/O: ↑2.8MB ↓4.1MB
+2024-12-12 19:11:28,571 - __main__ - INFO - [telegram_bot:396] - Disk Usage: 21.7%
+2024-12-12 19:11:28,571 - __main__ - INFO - [telegram_bot:397] - Retry Count: 0
+2024-12-12 19:11:28,571 - __main__ - INFO - [telegram_bot:398] - Last Update Time: 2024-12-12 19:11:28
+2024-12-12 19:11:28,572 - __main__ - INFO - [telegram_bot:400] - Message Processing Rate: Monitoring
+2024-12-12 19:11:28,572 - __main__ - INFO - [telegram_bot:401] - Connection Status: Active
+2024-12-12 19:11:28,572 - __main__ - INFO - [telegram_bot:402] - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-12 19:11:28,889 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getMe "HTTP/1.1 200 OK"
+2024-12-12 19:11:28,890 - telegram.ext.Application - INFO - [_application:631] - Application started
+2024-12-12 19:11:28,890 - __main__ - INFO - [telegram_bot:520] - Starting polling...
+2024-12-12 19:11:28,994 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/deleteWebhook "HTTP/1.1 200 OK"
+2024-12-12 19:11:39,313 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:11:49,483 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:11:59,600 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:12:09,733 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:12:19,355 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:12:19,356 - __main__ - INFO - [telegram_bot:161] - ━━━━━━ Received Message ━━━━━━
+2024-12-12 19:12:19,356 - __main__ - INFO - [telegram_bot:162] - User: rexflexas (ID: 7494798358)
+2024-12-12 19:12:19,357 - __main__ - INFO - [telegram_bot:163] - Chat Type: private
+2024-12-12 19:12:19,357 - __main__ - INFO - [telegram_bot:164] - Message: hi octantbot!...
+2024-12-12 19:12:19,357 - __main__ - INFO - [telegram_bot:170] - Private chat - processing message
+2024-12-12 19:12:19,357 - __main__ - INFO - [telegram_bot:245] - Processing message: hi octantbot!
+2024-12-12 19:12:19,357 - __main__ - INFO - [telegram_bot:248] - Getting response from chat handler
+2024-12-12 19:12:24,072 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/sendMessage "HTTP/1.1 200 OK"
+2024-12-12 19:12:24,073 - __main__ - INFO - [telegram_bot:274] - Response sent successfully
+2024-12-12 19:12:33,833 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:12:36,030 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:12:36,031 - __main__ - INFO - [telegram_bot:161] - ━━━━━━ Received Message ━━━━━━
+2024-12-12 19:12:36,031 - __main__ - INFO - [telegram_bot:162] - User: rexflexas (ID: 7494798358)
+2024-12-12 19:12:36,031 - __main__ - INFO - [telegram_bot:163] - Chat Type: private
+2024-12-12 19:12:36,032 - __main__ - INFO - [telegram_bot:164] - Message: what else can you tell me about octant?...
+2024-12-12 19:12:36,032 - __main__ - INFO - [telegram_bot:170] - Private chat - processing message
+2024-12-12 19:12:36,032 - __main__ - INFO - [telegram_bot:245] - Processing message: what else can you tell me about octant?
+2024-12-12 19:12:36,032 - __main__ - INFO - [telegram_bot:248] - Getting response from chat handler
+2024-12-12 19:12:41,907 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/sendMessage "HTTP/1.1 200 OK"
+2024-12-12 19:12:41,908 - __main__ - INFO - [telegram_bot:274] - Response sent successfully
+2024-12-12 19:12:51,760 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:12:54,015 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:12:54,017 - __main__ - INFO - [telegram_bot:161] - ━━━━━━ Received Message ━━━━━━
+2024-12-12 19:12:54,017 - __main__ - INFO - [telegram_bot:162] - User: rexflexas (ID: 7494798358)
+2024-12-12 19:12:54,017 - __main__ - INFO - [telegram_bot:163] - Chat Type: private
+2024-12-12 19:12:54,017 - __main__ - INFO - [telegram_bot:164] - Message: tell me about ppf...
+2024-12-12 19:12:54,017 - __main__ - INFO - [telegram_bot:170] - Private chat - processing message
+2024-12-12 19:12:54,017 - __main__ - INFO - [telegram_bot:245] - Processing message: tell me about ppf
+2024-12-12 19:12:54,017 - __main__ - INFO - [telegram_bot:248] - Getting response from chat handler
+2024-12-12 19:13:06,183 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/sendMessage "HTTP/1.1 200 OK"
+2024-12-12 19:13:06,515 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/sendMessage "HTTP/1.1 200 OK"
+2024-12-12 19:13:06,616 - __main__ - INFO - [telegram_bot:274] - Response sent successfully
+2024-12-12 19:13:16,974 - __main__ - INFO - [telegram_bot:576] - ━━━━━━ Initializing Chat Handler ━━━━━━
+2024-12-12 19:13:16,977 - __main__ - INFO - [telegram_bot:579] - Chat handler configuration:
+2024-12-12 19:13:16,977 - __main__ - INFO - [telegram_bot:580] - Model: mistralai/Mixtral-8x7B-Instruct-v0.1
+2024-12-12 19:13:16,977 - __main__ - INFO - [telegram_bot:581] - Max history: 5
+2024-12-12 19:13:16,977 - __main__ - INFO - [telegram_bot:582] - TelegramTrivia initialized
+2024-12-12 19:13:16,977 - __main__ - INFO - [telegram_bot:583] - Chat handler initialized successfully
+2024-12-12 19:13:16,977 - __main__ - INFO - [telegram_bot:584] - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-12 19:13:16,980 - __main__ - INFO - [telegram_bot:598] - Starting main loop...
+2024-12-12 19:13:17,001 - __main__ - INFO - [telegram_bot:442] - Initializing Telegram bot...
+2024-12-12 19:13:17,228 - __main__ - INFO - [telegram_bot:484] - ━━━━━━ Bot Configuration ━━━━━━
+2024-12-12 19:13:17,230 - __main__ - INFO - [telegram_bot:485] - Start Time: 2024-12-12 19:13:17
+2024-12-12 19:13:17,230 - __main__ - INFO - [telegram_bot:486] - Retry Count: 0
+2024-12-12 19:13:17,230 - __main__ - INFO - [telegram_bot:487] - Bot Version: 1.0.1
+2024-12-12 19:13:17,230 - __main__ - INFO - [telegram_bot:488] - Connection Parameters:
+2024-12-12 19:13:17,230 - __main__ - INFO - [telegram_bot:489] - - Polling Timeout: 60s
+2024-12-12 19:13:17,230 - __main__ - INFO - [telegram_bot:490] - - Connection Retries: infinite
+2024-12-12 19:13:17,231 - __main__ - INFO - [telegram_bot:491] - - Update Mode: polling
+2024-12-12 19:13:17,231 - __main__ - INFO - [telegram_bot:492] - - Health Check: Active
+2024-12-12 19:13:17,231 - __main__ - INFO - [telegram_bot:493] - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-12 19:13:17,231 - __main__ - INFO - [telegram_bot:377] - ━━━━━━ System Health Check ━━━━━━
+2024-12-12 19:13:17,232 - __main__ - INFO - [telegram_bot:378] - Uptime: 0h 0m 0s
+2024-12-12 19:13:17,232 - __main__ - INFO - [telegram_bot:379] - Memory Usage: 50.91 MB (0.1%)
+2024-12-12 19:13:17,232 - __main__ - INFO - [telegram_bot:380] - CPU Usage: 0.0%
+2024-12-12 19:13:17,232 - __main__ - INFO - [telegram_bot:381] - Network I/O: ↑3.0MB ↓4.5MB
+2024-12-12 19:13:17,232 - __main__ - INFO - [telegram_bot:382] - Disk Usage: 21.7%
+2024-12-12 19:13:17,232 - __main__ - INFO - [telegram_bot:383] - Retry Count: 0
+2024-12-12 19:13:17,232 - __main__ - INFO - [telegram_bot:384] - Last Update Time: 2024-12-12 19:13:17
+2024-12-12 19:13:17,232 - __main__ - INFO - [telegram_bot:386] - Message Processing Rate: Monitoring
+2024-12-12 19:13:17,232 - __main__ - INFO - [telegram_bot:387] - Connection Status: Active
+2024-12-12 19:13:17,233 - __main__ - INFO - [telegram_bot:388] - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-12 19:13:17,588 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getMe "HTTP/1.1 200 OK"
+2024-12-12 19:13:17,590 - telegram.ext.Application - INFO - [_application:631] - Application started
+2024-12-12 19:13:17,590 - __main__ - INFO - [telegram_bot:506] - Starting polling...
+2024-12-12 19:13:17,697 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/deleteWebhook "HTTP/1.1 200 OK"
+2024-12-12 19:13:19,271 - __main__ - INFO - [telegram_bot:576] - ━━━━━━ Initializing Chat Handler ━━━━━━
+2024-12-12 19:13:19,271 - __main__ - INFO - [telegram_bot:579] - Chat handler configuration:
+2024-12-12 19:13:19,271 - __main__ - INFO - [telegram_bot:580] - Model: mistralai/Mixtral-8x7B-Instruct-v0.1
+2024-12-12 19:13:19,271 - __main__ - INFO - [telegram_bot:581] - Max history: 5
+2024-12-12 19:13:19,272 - __main__ - INFO - [telegram_bot:582] - TelegramTrivia initialized
+2024-12-12 19:13:19,272 - __main__ - INFO - [telegram_bot:583] - Chat handler initialized successfully
+2024-12-12 19:13:19,272 - __main__ - INFO - [telegram_bot:584] - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-12 19:13:19,272 - __main__ - INFO - [telegram_bot:598] - Starting main loop...
+2024-12-12 19:13:19,295 - __main__ - INFO - [telegram_bot:442] - Initializing Telegram bot...
+2024-12-12 19:13:19,453 - __main__ - INFO - [telegram_bot:484] - ━━━━━━ Bot Configuration ━━━━━━
+2024-12-12 19:13:19,454 - __main__ - INFO - [telegram_bot:485] - Start Time: 2024-12-12 19:13:19
+2024-12-12 19:13:19,457 - __main__ - INFO - [telegram_bot:486] - Retry Count: 0
+2024-12-12 19:13:19,457 - __main__ - INFO - [telegram_bot:487] - Bot Version: 1.0.1
+2024-12-12 19:13:19,457 - __main__ - INFO - [telegram_bot:488] - Connection Parameters:
+2024-12-12 19:13:19,457 - __main__ - INFO - [telegram_bot:489] - - Polling Timeout: 60s
+2024-12-12 19:13:19,458 - __main__ - INFO - [telegram_bot:490] - - Connection Retries: infinite
+2024-12-12 19:13:19,458 - __main__ - INFO - [telegram_bot:491] - - Update Mode: polling
+2024-12-12 19:13:19,458 - __main__ - INFO - [telegram_bot:492] - - Health Check: Active
+2024-12-12 19:13:19,458 - __main__ - INFO - [telegram_bot:493] - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-12 19:13:19,459 - __main__ - INFO - [telegram_bot:377] - ━━━━━━ System Health Check ━━━━━━
+2024-12-12 19:13:19,459 - __main__ - INFO - [telegram_bot:378] - Uptime: 0h 0m 0s
+2024-12-12 19:13:19,460 - __main__ - INFO - [telegram_bot:379] - Memory Usage: 50.76 MB (0.1%)
+2024-12-12 19:13:19,460 - __main__ - INFO - [telegram_bot:380] - CPU Usage: 0.0%
+2024-12-12 19:13:19,460 - __main__ - INFO - [telegram_bot:381] - Network I/O: ↑3.0MB ↓4.5MB
+2024-12-12 19:13:19,462 - __main__ - INFO - [telegram_bot:382] - Disk Usage: 21.7%
+2024-12-12 19:13:19,462 - __main__ - INFO - [telegram_bot:383] - Retry Count: 0
+2024-12-12 19:13:19,462 - __main__ - INFO - [telegram_bot:384] - Last Update Time: 2024-12-12 19:13:19
+2024-12-12 19:13:19,462 - __main__ - INFO - [telegram_bot:386] - Message Processing Rate: Monitoring
+2024-12-12 19:13:19,463 - __main__ - INFO - [telegram_bot:387] - Connection Status: Active
+2024-12-12 19:13:19,469 - __main__ - INFO - [telegram_bot:388] - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-12 19:13:19,808 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getMe "HTTP/1.1 200 OK"
+2024-12-12 19:13:19,810 - telegram.ext.Application - INFO - [_application:631] - Application started
+2024-12-12 19:13:19,812 - __main__ - INFO - [telegram_bot:506] - Starting polling...
+2024-12-12 19:13:19,934 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/deleteWebhook "HTTP/1.1 200 OK"
+2024-12-12 19:13:30,252 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:13:40,358 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:13:50,463 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:14:00,568 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:14:10,673 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:14:17,937 - __main__ - INFO - [telegram_bot:576] - ━━━━━━ Initializing Chat Handler ━━━━━━
+2024-12-12 19:14:17,938 - __main__ - INFO - [telegram_bot:579] - Chat handler configuration:
+2024-12-12 19:14:17,938 - __main__ - INFO - [telegram_bot:580] - Model: mistralai/Mixtral-8x7B-Instruct-v0.1
+2024-12-12 19:14:17,938 - __main__ - INFO - [telegram_bot:581] - Max history: 5
+2024-12-12 19:14:17,938 - __main__ - INFO - [telegram_bot:582] - TelegramTrivia initialized
+2024-12-12 19:14:17,938 - __main__ - INFO - [telegram_bot:583] - Chat handler initialized successfully
+2024-12-12 19:14:17,939 - __main__ - INFO - [telegram_bot:584] - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-12 19:14:17,939 - __main__ - INFO - [telegram_bot:598] - Starting main loop...
+2024-12-12 19:14:17,978 - __main__ - INFO - [telegram_bot:442] - Initializing Telegram bot...
+2024-12-12 19:14:18,383 - __main__ - INFO - [telegram_bot:484] - ━━━━━━ Bot Configuration ━━━━━━
+2024-12-12 19:14:18,388 - __main__ - INFO - [telegram_bot:485] - Start Time: 2024-12-12 19:14:18
+2024-12-12 19:14:18,400 - __main__ - INFO - [telegram_bot:486] - Retry Count: 0
+2024-12-12 19:14:18,400 - __main__ - INFO - [telegram_bot:487] - Bot Version: 1.0.1
+2024-12-12 19:14:18,401 - __main__ - INFO - [telegram_bot:488] - Connection Parameters:
+2024-12-12 19:14:18,401 - __main__ - INFO - [telegram_bot:489] - - Polling Timeout: 60s
+2024-12-12 19:14:18,401 - __main__ - INFO - [telegram_bot:490] - - Connection Retries: infinite
+2024-12-12 19:14:18,409 - __main__ - INFO - [telegram_bot:491] - - Update Mode: polling
+2024-12-12 19:14:18,412 - __main__ - INFO - [telegram_bot:492] - - Health Check: Active
+2024-12-12 19:14:18,412 - __main__ - INFO - [telegram_bot:493] - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-12 19:14:18,413 - __main__ - INFO - [telegram_bot:377] - ━━━━━━ System Health Check ━━━━━━
+2024-12-12 19:14:18,413 - __main__ - INFO - [telegram_bot:378] - Uptime: 0h 0m 0s
+2024-12-12 19:14:18,413 - __main__ - INFO - [telegram_bot:379] - Memory Usage: 50.62 MB (0.1%)
+2024-12-12 19:14:18,413 - __main__ - INFO - [telegram_bot:380] - CPU Usage: 0.0%
+2024-12-12 19:14:18,413 - __main__ - INFO - [telegram_bot:381] - Network I/O: ↑3.1MB ↓4.6MB
+2024-12-12 19:14:18,413 - __main__ - INFO - [telegram_bot:382] - Disk Usage: 21.7%
+2024-12-12 19:14:18,413 - __main__ - INFO - [telegram_bot:383] - Retry Count: 0
+2024-12-12 19:14:18,413 - __main__ - INFO - [telegram_bot:384] - Last Update Time: 2024-12-12 19:14:18
+2024-12-12 19:14:18,414 - __main__ - INFO - [telegram_bot:386] - Message Processing Rate: Monitoring
+2024-12-12 19:14:18,414 - __main__ - INFO - [telegram_bot:387] - Connection Status: Active
+2024-12-12 19:14:18,414 - __main__ - INFO - [telegram_bot:388] - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-12 19:14:18,778 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getMe "HTTP/1.1 200 OK"
+2024-12-12 19:14:18,779 - telegram.ext.Application - INFO - [_application:631] - Application started
+2024-12-12 19:14:18,779 - __main__ - INFO - [telegram_bot:506] - Starting polling...
+2024-12-12 19:14:18,885 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/deleteWebhook "HTTP/1.1 200 OK"
+2024-12-12 19:14:29,201 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:14:39,317 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:14:49,423 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:14:59,529 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:15:09,640 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:15:11,749 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:15:11,751 - __main__ - INFO - [telegram_bot:161] - ━━━━━━ Received Message ━━━━━━
+2024-12-12 19:15:11,751 - __main__ - INFO - [telegram_bot:162] - User: rexflexas (ID: 7494798358)
+2024-12-12 19:15:11,751 - __main__ - INFO - [telegram_bot:163] - Chat Type: private
+2024-12-12 19:15:11,751 - __main__ - INFO - [telegram_bot:164] - Message: why are you responding with so much information?...
+2024-12-12 19:15:11,751 - __main__ - INFO - [telegram_bot:170] - Private chat - processing message
+2024-12-12 19:15:11,751 - __main__ - INFO - [telegram_bot:231] - Processing message: why are you responding with so much information?
+2024-12-12 19:15:11,751 - __main__ - INFO - [telegram_bot:234] - Getting response from chat handler
+2024-12-12 19:15:16,361 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/sendMessage "HTTP/1.1 400 Bad Request"
+2024-12-12 19:15:16,361 - __main__ - ERROR - [telegram_bot:263] - Error in process_message: Can't parse entities: unsupported start tag "https://x.com/vpabundance" at byte offset 1660
+Traceback (most recent call last):
+  File "/home/runner/workspace/telegram_bot.py", line 255, in process_message
+    await message.reply_text(
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_message.py", line 1771, in reply_text
+    return await self.get_bot().send_message(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/ext/_extbot.py", line 2965, in send_message
+    return await super().send_message(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_bot.py", line 1019, in send_message
+    return await self._send_message(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/ext/_extbot.py", line 610, in _send_message
+    result = await super()._send_message(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_bot.py", line 731, in _send_message
+    result = await self._post(
+             ^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_bot.py", line 619, in _post
+    return await self._do_post(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/ext/_extbot.py", line 354, in _do_post
+    return await super()._do_post(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_bot.py", line 648, in _do_post
+    result = await request.post(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/request/_baserequest.py", line 202, in post
+    result = await self._request_wrapper(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/request/_baserequest.py", line 383, in _request_wrapper
+    raise BadRequest(message)
+telegram.error.BadRequest: Can't parse entities: unsupported start tag "https://x.com/vpabundance" at byte offset 1660
+2024-12-12 19:15:16,399 - __main__ - ERROR - [telegram_bot:202] - Error processing message: Can't parse entities: unsupported start tag "https://x.com/vpabundance" at byte offset 1660
+Traceback (most recent call last):
+  File "/home/runner/workspace/telegram_bot.py", line 171, in handle_message
+    await process_message(update, context, message, chat_type)
+  File "/home/runner/workspace/telegram_bot.py", line 255, in process_message
+    await message.reply_text(
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_message.py", line 1771, in reply_text
+    return await self.get_bot().send_message(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/ext/_extbot.py", line 2965, in send_message
+    return await super().send_message(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_bot.py", line 1019, in send_message
+    return await self._send_message(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/ext/_extbot.py", line 610, in _send_message
+    result = await super()._send_message(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_bot.py", line 731, in _send_message
+    result = await self._post(
+             ^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_bot.py", line 619, in _post
+    return await self._do_post(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/ext/_extbot.py", line 354, in _do_post
+    return await super()._do_post(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_bot.py", line 648, in _do_post
+    result = await request.post(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/request/_baserequest.py", line 202, in post
+    result = await self._request_wrapper(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/request/_baserequest.py", line 383, in _request_wrapper
+    raise BadRequest(message)
+telegram.error.BadRequest: Can't parse entities: unsupported start tag "https://x.com/vpabundance" at byte offset 1660
+2024-12-12 19:15:16,631 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/sendMessage "HTTP/1.1 200 OK"
+2024-12-12 19:15:16,632 - __main__ - ERROR - [telegram_bot:209] - Error details: Can't parse entities: unsupported start tag "https://x.com/vpabundance" at byte offset 1660
+2024-12-12 19:15:16,632 - __main__ - ERROR - [telegram_bot:210] - User message: why are you responding with so much information?
+2024-12-12 19:15:26,098 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:15:26,099 - __main__ - INFO - [telegram_bot:161] - ━━━━━━ Received Message ━━━━━━
+2024-12-12 19:15:26,100 - __main__ - INFO - [telegram_bot:162] - User: rexflexas (ID: 7494798358)
+2024-12-12 19:15:26,100 - __main__ - INFO - [telegram_bot:163] - Chat Type: private
+2024-12-12 19:15:26,100 - __main__ - INFO - [telegram_bot:164] - Message: what are glm tokens?...
+2024-12-12 19:15:26,100 - __main__ - INFO - [telegram_bot:170] - Private chat - processing message
+2024-12-12 19:15:26,100 - __main__ - INFO - [telegram_bot:231] - Processing message: what are glm tokens?
+2024-12-12 19:15:26,100 - __main__ - INFO - [telegram_bot:234] - Getting response from chat handler
+2024-12-12 19:15:29,511 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/sendMessage "HTTP/1.1 400 Bad Request"
+2024-12-12 19:15:29,512 - __main__ - ERROR - [telegram_bot:263] - Error in process_message: Can't parse entities: unsupported start tag "https://x.com/vpabundance" at byte offset 1232
+Traceback (most recent call last):
+  File "/home/runner/workspace/telegram_bot.py", line 255, in process_message
+    await message.reply_text(
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_message.py", line 1771, in reply_text
+    return await self.get_bot().send_message(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/ext/_extbot.py", line 2965, in send_message
+    return await super().send_message(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_bot.py", line 1019, in send_message
+    return await self._send_message(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/ext/_extbot.py", line 610, in _send_message
+    result = await super()._send_message(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_bot.py", line 731, in _send_message
+    result = await self._post(
+             ^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_bot.py", line 619, in _post
+    return await self._do_post(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/ext/_extbot.py", line 354, in _do_post
+    return await super()._do_post(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_bot.py", line 648, in _do_post
+    result = await request.post(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/request/_baserequest.py", line 202, in post
+    result = await self._request_wrapper(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/request/_baserequest.py", line 383, in _request_wrapper
+    raise BadRequest(message)
+telegram.error.BadRequest: Can't parse entities: unsupported start tag "https://x.com/vpabundance" at byte offset 1232
+2024-12-12 19:15:29,513 - __main__ - ERROR - [telegram_bot:202] - Error processing message: Can't parse entities: unsupported start tag "https://x.com/vpabundance" at byte offset 1232
+Traceback (most recent call last):
+  File "/home/runner/workspace/telegram_bot.py", line 171, in handle_message
+    await process_message(update, context, message, chat_type)
+  File "/home/runner/workspace/telegram_bot.py", line 255, in process_message
+    await message.reply_text(
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_message.py", line 1771, in reply_text
+    return await self.get_bot().send_message(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/ext/_extbot.py", line 2965, in send_message
+    return await super().send_message(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_bot.py", line 1019, in send_message
+    return await self._send_message(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/ext/_extbot.py", line 610, in _send_message
+    result = await super()._send_message(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_bot.py", line 731, in _send_message
+    result = await self._post(
+             ^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_bot.py", line 619, in _post
+    return await self._do_post(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/ext/_extbot.py", line 354, in _do_post
+    return await super()._do_post(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_bot.py", line 648, in _do_post
+    result = await request.post(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/request/_baserequest.py", line 202, in post
+    result = await self._request_wrapper(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/request/_baserequest.py", line 383, in _request_wrapper
+    raise BadRequest(message)
+telegram.error.BadRequest: Can't parse entities: unsupported start tag "https://x.com/vpabundance" at byte offset 1232
+2024-12-12 19:15:29,741 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/sendMessage "HTTP/1.1 200 OK"
+2024-12-12 19:15:29,742 - __main__ - ERROR - [telegram_bot:209] - Error details: Can't parse entities: unsupported start tag "https://x.com/vpabundance" at byte offset 1232
+2024-12-12 19:15:29,742 - __main__ - ERROR - [telegram_bot:210] - User message: what are glm tokens?
+2024-12-12 19:15:39,011 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:15:39,013 - __main__ - INFO - [telegram_bot:161] - ━━━━━━ Received Message ━━━━━━
+2024-12-12 19:15:39,013 - __main__ - INFO - [telegram_bot:162] - User: rexflexas (ID: 7494798358)
+2024-12-12 19:15:39,013 - __main__ - INFO - [telegram_bot:163] - Chat Type: private
+2024-12-12 19:15:39,013 - __main__ - INFO - [telegram_bot:164] - Message: tell me about the glm tokens...
+2024-12-12 19:15:39,014 - __main__ - INFO - [telegram_bot:170] - Private chat - processing message
+2024-12-12 19:15:39,014 - __main__ - INFO - [telegram_bot:231] - Processing message: tell me about the glm tokens
+2024-12-12 19:15:39,014 - __main__ - INFO - [telegram_bot:234] - Getting response from chat handler
+2024-12-12 19:15:53,074 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/sendMessage "HTTP/1.1 400 Bad Request"
+2024-12-12 19:15:53,075 - __main__ - ERROR - [telegram_bot:263] - Error in process_message: Can't parse entities: unsupported start tag "https://x.com/vpabundance" at byte offset 1050
+Traceback (most recent call last):
+  File "/home/runner/workspace/telegram_bot.py", line 248, in process_message
+    await message.reply_text(
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_message.py", line 1771, in reply_text
+    return await self.get_bot().send_message(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/ext/_extbot.py", line 2965, in send_message
+    return await super().send_message(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_bot.py", line 1019, in send_message
+    return await self._send_message(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/ext/_extbot.py", line 610, in _send_message
+    result = await super()._send_message(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_bot.py", line 731, in _send_message
+    result = await self._post(
+             ^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_bot.py", line 619, in _post
+    return await self._do_post(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/ext/_extbot.py", line 354, in _do_post
+    return await super()._do_post(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_bot.py", line 648, in _do_post
+    result = await request.post(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/request/_baserequest.py", line 202, in post
+    result = await self._request_wrapper(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/request/_baserequest.py", line 383, in _request_wrapper
+    raise BadRequest(message)
+telegram.error.BadRequest: Can't parse entities: unsupported start tag "https://x.com/vpabundance" at byte offset 1050
+2024-12-12 19:15:53,076 - __main__ - ERROR - [telegram_bot:202] - Error processing message: Can't parse entities: unsupported start tag "https://x.com/vpabundance" at byte offset 1050
+Traceback (most recent call last):
+  File "/home/runner/workspace/telegram_bot.py", line 171, in handle_message
+    await process_message(update, context, message, chat_type)
+  File "/home/runner/workspace/telegram_bot.py", line 248, in process_message
+    await message.reply_text(
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_message.py", line 1771, in reply_text
+    return await self.get_bot().send_message(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/ext/_extbot.py", line 2965, in send_message
+    return await super().send_message(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_bot.py", line 1019, in send_message
+    return await self._send_message(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/ext/_extbot.py", line 610, in _send_message
+    result = await super()._send_message(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_bot.py", line 731, in _send_message
+    result = await self._post(
+             ^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_bot.py", line 619, in _post
+    return await self._do_post(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/ext/_extbot.py", line 354, in _do_post
+    return await super()._do_post(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_bot.py", line 648, in _do_post
+    result = await request.post(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/request/_baserequest.py", line 202, in post
+    result = await self._request_wrapper(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/request/_baserequest.py", line 383, in _request_wrapper
+    raise BadRequest(message)
+telegram.error.BadRequest: Can't parse entities: unsupported start tag "https://x.com/vpabundance" at byte offset 1050
+2024-12-12 19:15:53,303 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/sendMessage "HTTP/1.1 200 OK"
+2024-12-12 19:15:53,305 - __main__ - ERROR - [telegram_bot:209] - Error details: Can't parse entities: unsupported start tag "https://x.com/vpabundance" at byte offset 1050
+2024-12-12 19:15:53,305 - __main__ - ERROR - [telegram_bot:210] - User message: tell me about the glm tokens
+2024-12-12 19:16:03,115 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:16:13,220 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:16:23,372 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:16:33,494 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:16:43,613 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:16:53,742 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:17:03,850 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:17:13,958 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:17:24,065 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:17:34,175 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:17:44,288 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:17:54,397 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:18:04,513 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:18:14,637 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:18:24,788 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:18:34,895 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:18:45,010 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:18:55,168 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:19:05,274 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:19:15,385 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:19:25,490 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:19:35,612 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:19:45,724 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:19:47,982 - __main__ - WARNING - [telegram_bot:38] - ━━━━━━ Watchdog Warning ━━━━━━
+Last Ping: 2024-12-12 19:15:39.014113
+Current Time: 2024-12-12 19:19:47.982275
+Time Since Last Ping: 248.97s
+Warning Threshold: 240.0s
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-12 19:19:55,840 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:20:05,948 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:20:16,059 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:20:17,982 - __main__ - WARNING - [telegram_bot:38] - ━━━━━━ Watchdog Warning ━━━━━━
+Last Ping: 2024-12-12 19:15:39.014113
+Current Time: 2024-12-12 19:20:17.982716
+Time Since Last Ping: 278.97s
+Warning Threshold: 240.0s
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-12 19:20:26,180 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:20:36,314 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:20:46,422 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-12 19:20:47,983 - __main__ - ERROR - [telegram_bot:30] - ━━━━━━ Watchdog Timeout ━━━━━━
+Last Ping: 2024-12-12 19:15:39.014113
+Current Time: 2024-12-12 19:20:47.983169
+Time Since Last Ping: 308.97s
+Timeout Threshold: 300s
+━━━━━━━━━━━━━━━━━━━━━━━━

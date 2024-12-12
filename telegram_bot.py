@@ -165,44 +165,34 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
 
         # Process messages based on chat type
         try:
-            # Private chat: Always respond
+            # Process all messages in private chats immediately
             if chat_type == "private":
                 logger.info("Private chat - processing message")
                 await process_message(update, context, message, chat_type)
                 return
 
-            # Group/Supergroup: Only respond to commands, mentions, or replies
+            # For group chats, only respond to commands, mentions, or replies
             if chat_type in ["group", "supergroup"]:
-                # Check if we should respond
-                if message.text.startswith('/'):
-                    logger.info("Group chat - command detected")
+                should_respond = (
+                    message.text.startswith('/') or  # Commands
+                    (message.reply_to_message and  # Direct replies
+                     message.reply_to_message.from_user and
+                     message.reply_to_message.from_user.id == context.bot.id) or
+                    any(  # Mentions
+                        (entity.type == "mention" and
+                         message.text[entity.offset:entity.offset + entity.length].lower() in
+                         [f"@{context.bot.username.lower()}", "@octantbot"]) or
+                        (entity.type == "text_mention" and
+                         entity.user and entity.user.id == context.bot.id)
+                        for entity in (message.entities or [])
+                    )
+                )
+                
+                if should_respond:
+                    logger.info(f"Group chat - responding to {message.text[:50]}...")
                     await process_message(update, context, message, chat_type)
-                    return
-
-                # Check for reply to bot's message
-                if message.reply_to_message and message.reply_to_message.from_user:
-                    if message.reply_to_message.from_user.id == context.bot.id:
-                        logger.info("Group chat - direct reply to bot")
-                        await process_message(update, context, message, chat_type)
-                        return
-
-                # Check for mentions
-                if message.entities:
-                    for entity in message.entities:
-                        if entity.type == "mention":
-                            mention = message.text[entity.offset:entity.offset + entity.length].lower()
-                            bot_username = context.bot.username.lower() if context.bot.username else None
-                            if bot_username and mention in [f"@{bot_username}", "@octantbot"]:
-                                logger.info(f"Group chat - bot mentioned: {mention}")
-                                await process_message(update, context, message, chat_type)
-                                return
-                        elif entity.type == "text_mention" and entity.user:
-                            if entity.user.id == context.bot.id:
-                                logger.info("Group chat - bot text-mentioned")
-                                await process_message(update, context, message, chat_type)
-                                return
-
-                logger.info("Group chat - message not for bot, ignoring")
+                else:
+                    logger.debug("Group chat - message not for bot, ignoring")
                 return
 
             logger.warning(f"Unsupported chat type: {chat_type}")
@@ -210,10 +200,14 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
 
         except Exception as e:
             logger.error(f"Error processing message: {str(e)}", exc_info=True)
-            error_message = "I encountered an error processing your message. Please try again."
+            error_message = "I apologize for the confusion. I'm here to help! Please feel free to ask your question again."
             if chat_type == "private":
-                error_message += "\nIf the problem persists, try simplifying your question."
+                error_message += "\nI can answer questions about Octant, the Golem Foundation, GLM tokens, and more!"
             await message.reply_text(error_message)
+            
+            # Log the actual error for debugging
+            logger.error(f"Error details: {str(e)}")
+            logger.error(f"User message: {message.text}")
 
     except Exception as e:
         logger.error(f"Unexpected error in message handler: {str(e)}", exc_info=True)
@@ -233,24 +227,36 @@ async def process_message(update: Update, context: ContextTypes.DEFAULT_TYPE, me
         if hasattr(context.application, 'watchdog'):
             context.application.watchdog.ping()
 
+        # Log the incoming message for debugging
+        logger.info(f"Processing message: {message.text}")
+
         # Get response from chat handler
         logger.info("Getting response from chat handler")
         response = chat_handler.get_response(message.text)
 
         if not response:
             logger.warning("Empty response from chat handler")
-            error_message = "I apologize, but I couldn't generate a response. Please try rephrasing your message."
+            error_message = "I apologize for the confusion. Let me try to help you better! Could you please rephrase your question?"
             if chat_type == "private":
-                error_message += "\nTry asking a more specific question about Octant!"
+                error_message += "\nI can answer questions about Octant, the Golem Foundation, GLM tokens, and much more!"
             await message.reply_text(error_message)
             return
 
-        # Send response
-        await message.reply_text(
-            response,
-            parse_mode='HTML',
-            disable_web_page_preview=False
-        )
+        # Handle response (single message or multiple chunks)
+        if isinstance(response, list):
+            for chunk in response:
+                await message.reply_text(
+                    chunk,
+                    parse_mode='HTML',
+                    disable_web_page_preview=False
+                )
+                await asyncio.sleep(0.1)  # Small delay between chunks
+        else:
+            await message.reply_text(
+                response,
+                parse_mode='HTML',
+                disable_web_page_preview=False
+            )
         logger.info("Response sent successfully")
 
     except Exception as e:
