@@ -156,107 +156,106 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
         user_id = update.effective_user.id
         username = update.effective_user.username
         chat_type = message.chat.type
-        
+
         # Enhanced logging
         logger.info("━━━━━━ Received Message ━━━━━━")
         logger.info(f"User: {username} (ID: {user_id})")
         logger.info(f"Chat Type: {chat_type}")
         logger.info(f"Message: {message.text[:100]}...")
 
-        # Set default response behavior based on chat type
-        should_respond = False
-
-        # Private chats: Always respond
-        if chat_type == "private":
-            logger.info("Private chat - responding to message")
-            should_respond = True
-            
-        # Group chats: Check for commands, mentions, or replies
-        elif chat_type in ["group", "supergroup"]:
-            # Commands always get a response
-            if message.text.startswith('/'):
-                should_respond = True
-                logger.info("Group chat - command received")
-                
-            # Direct replies to bot get a response
-            elif (message.reply_to_message and 
-                  message.reply_to_message.from_user and 
-                  message.reply_to_message.from_user.id == context.bot.id):
-                should_respond = True
-                logger.info("Group chat - direct reply to bot")
-                
-            # Check for bot mentions
-            elif message.entities:
-                for entity in message.entities:
-                    if entity.type == "mention":
-                        mention = message.text[entity.offset:entity.offset + entity.length].lower()
-                        bot_username = context.bot.username.lower() if context.bot.username else None
-                        if bot_username and mention in [f"@{bot_username}", "@octantbot"]:
-                            should_respond = True
-                            logger.info(f"Group chat - bot mentioned: {mention}")
-                            break
-                    elif entity.type == "text_mention" and entity.user and entity.user.id == context.bot.id:
-                        should_respond = True
-                        logger.info("Group chat - bot text-mentioned")
-                        break
-            
-            if not should_respond:
-                logger.info("Group chat - message not for bot")
+        # Process messages based on chat type
+        try:
+            # Private chat: Always respond
+            if chat_type == "private":
+                logger.info("Private chat - processing message")
+                await process_message(update, context, message, chat_type)
                 return
-                
-        else:
-            logger.info(f"Unsupported chat type: {chat_type}")
+
+            # Group/Supergroup: Only respond to commands, mentions, or replies
+            if chat_type in ["group", "supergroup"]:
+                # Check if we should respond
+                if message.text.startswith('/'):
+                    logger.info("Group chat - command detected")
+                    await process_message(update, context, message, chat_type)
+                    return
+
+                # Check for reply to bot's message
+                if message.reply_to_message and message.reply_to_message.from_user:
+                    if message.reply_to_message.from_user.id == context.bot.id:
+                        logger.info("Group chat - direct reply to bot")
+                        await process_message(update, context, message, chat_type)
+                        return
+
+                # Check for mentions
+                if message.entities:
+                    for entity in message.entities:
+                        if entity.type == "mention":
+                            mention = message.text[entity.offset:entity.offset + entity.length].lower()
+                            bot_username = context.bot.username.lower() if context.bot.username else None
+                            if bot_username and mention in [f"@{bot_username}", "@octantbot"]:
+                                logger.info(f"Group chat - bot mentioned: {mention}")
+                                await process_message(update, context, message, chat_type)
+                                return
+                        elif entity.type == "text_mention" and entity.user:
+                            if entity.user.id == context.bot.id:
+                                logger.info("Group chat - bot text-mentioned")
+                                await process_message(update, context, message, chat_type)
+                                return
+
+                logger.info("Group chat - message not for bot, ignoring")
+                return
+
+            logger.warning(f"Unsupported chat type: {chat_type}")
             return
 
-        if should_respond:
-            # Ping watchdog to indicate activity
-            if hasattr(context.application, 'watchdog'):
-                context.application.watchdog.ping()
-            
-            # Process message and get response
-            logger.info("Getting response from chat handler")
-            try:
-                response = chat_handler.get_response(message.text)
-                
-                if not response:
-                    logger.warning("Empty response from chat handler")
-                    error_message = (
-                        "I apologize, but I couldn't generate a response. "
-                        "Please try rephrasing your message."
-                    )
-                    if chat_type == "private":
-                        error_message += "\nTry asking a more specific question about Octant!"
-                    await message.reply_text(error_message)
-                    return
-                    
-                # Send response with HTML parsing
-                await message.reply_text(
-                    response,
-                    parse_mode='HTML',
-                    disable_web_page_preview=False
-                )
-                logger.info("Response sent successfully")
-                
-            except Exception as e:
-                logger.error(f"Chat handler error: {str(e)}", exc_info=True)
-                error_message = (
-                    "I encountered an error while processing your message. "
-                    "Please try again with a simpler request."
-                )
-                if chat_type == "private":
-                    error_message += "\nIf the problem persists, try using simpler questions or commands."
-                await message.reply_text(error_message)
-        
+        except Exception as e:
+            logger.error(f"Error processing message: {str(e)}", exc_info=True)
+            error_message = "I encountered an error processing your message. Please try again."
+            if chat_type == "private":
+                error_message += "\nIf the problem persists, try simplifying your question."
+            await message.reply_text(error_message)
+
     except Exception as e:
-        logger.error(f"Message handling error: {str(e)}", exc_info=True)
+        logger.error(f"Unexpected error in message handler: {str(e)}", exc_info=True)
         try:
-            if message and hasattr(message, 'reply_text'):
-                await message.reply_text(
+            if update and update.message:
+                await update.message.reply_text(
                     "An unexpected error occurred. Please try again in a moment."
                 )
         except Exception as reply_error:
             logger.error(f"Failed to send error message: {str(reply_error)}")
             logger.error("Complete error trace:", exc_info=True)
+
+async def process_message(update: Update, context: ContextTypes.DEFAULT_TYPE, message, chat_type):
+    """Process a message that should receive a response."""
+    try:
+        # Ping watchdog
+        if hasattr(context.application, 'watchdog'):
+            context.application.watchdog.ping()
+
+        # Get response from chat handler
+        logger.info("Getting response from chat handler")
+        response = chat_handler.get_response(message.text)
+
+        if not response:
+            logger.warning("Empty response from chat handler")
+            error_message = "I apologize, but I couldn't generate a response. Please try rephrasing your message."
+            if chat_type == "private":
+                error_message += "\nTry asking a more specific question about Octant!"
+            await message.reply_text(error_message)
+            return
+
+        # Send response
+        await message.reply_text(
+            response,
+            parse_mode='HTML',
+            disable_web_page_preview=False
+        )
+        logger.info("Response sent successfully")
+
+    except Exception as e:
+        logger.error(f"Error in process_message: {str(e)}", exc_info=True)
+        raise
 
 async def error_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Handle errors in the telegram bot with aggressive recovery and monitoring."""
