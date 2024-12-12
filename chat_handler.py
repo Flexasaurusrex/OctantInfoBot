@@ -23,33 +23,41 @@ class ChatHandler:
         self.model = "mistralai/Mixtral-8x7B-Instruct-v0.1"
         self.base_url = "https://api.together.xyz/inference"
         
-        # Session configuration with robust retry mechanism
+        # Configure session with more robust retry strategy
         retry_strategy = Retry(
-            total=3,
-            backoff_factor=0.5,
+            total=5,  # Increased total retries
+            backoff_factor=1,  # More conservative backoff
             status_forcelist=[429, 500, 502, 503, 504],
-            allowed_methods=["POST"]
+            allowed_methods=["POST"],
+            raise_on_status=True
         )
+        
+        # Configure session with longer timeouts
         self.session = requests.Session()
-        self.session.mount("https://", HTTPAdapter(max_retries=retry_strategy))
+        adapter = HTTPAdapter(max_retries=retry_strategy, pool_connections=10, pool_maxsize=10)
+        self.session.mount("https://", adapter)
+        self.session.headers.update({
+            "Authorization": f"Bearer {self.api_key}",
+            "Content-Type": "application/json"
+        })
         
         # Rate limiting configuration
         self.last_request_time = 0
-        self.min_request_interval = 1.0  # seconds
-
+        self.min_request_interval = 1.5  # Increased minimum interval between requests
+        
     def _enforce_rate_limit(self) -> None:
-        """Enforce rate limiting between API calls."""
+        """Enforce rate limiting between API calls with jitter."""
         current_time = time.time()
         time_since_last = current_time - self.last_request_time
         if time_since_last < self.min_request_interval:
-            sleep_time = self.min_request_interval - time_since_last
+            sleep_time = self.min_request_interval - time_since_last + (time_since_last * 0.1)  # Add jitter
             logger.debug(f"Rate limiting: waiting {sleep_time:.2f}s")
             time.sleep(sleep_time)
         self.last_request_time = time.time()
 
     def get_response(self, user_message: str) -> Tuple[bool, str]:
         """
-        Get response from API with improved error handling.
+        Get response from API with improved error handling and retry logic.
         Returns a tuple of (success: bool, message: str)
         """
         if not user_message.strip():
@@ -57,11 +65,6 @@ class ChatHandler:
             
         try:
             self._enforce_rate_limit()
-            
-            headers = {
-                "Authorization": f"Bearer {self.api_key}",
-                "Content-Type": "application/json"
-            }
             
             data = {
                 "model": self.model,
@@ -73,21 +76,31 @@ class ChatHandler:
             }
             
             logger.info(f"Sending request for message: {user_message[:50]}...")
-            response = self.session.post(
-                self.base_url,
-                headers=headers,
-                json=data,
-                timeout=30
-            )
             
-            if response.status_code != 200:
-                logger.error(f"API returned status code {response.status_code}")
-                return False, "I'm having trouble connecting to the service. Please try again."
+            # Using a longer timeout and catching specific exceptions
+            try:
+                response = self.session.post(
+                    self.base_url,
+                    json=data,
+                    timeout=45  # Increased timeout
+                )
+                response.raise_for_status()
+            except requests.exceptions.Timeout:
+                logger.error("API request timed out")
+                return False, "The service is taking longer than usual to respond. Please try again."
+            except requests.exceptions.RequestException as e:
+                logger.error(f"API request failed: {str(e)}")
+                return False, "I'm having trouble connecting to the service. Please try again shortly."
             
-            result = response.json()
+            try:
+                result = response.json()
+            except ValueError as e:
+                logger.error(f"Failed to parse API response: {str(e)}")
+                return False, "I received an invalid response from the service. Please try again."
+            
             if "output" not in result or "choices" not in result["output"]:
                 logger.error(f"Unexpected API response structure: {result}")
-                return False, "I received an unexpected response. Please try again."
+                return False, "I received an unexpected response format. Please try again."
             
             response_text = result["output"]["choices"][0]["text"].strip()
             if not response_text:
@@ -96,14 +109,6 @@ class ChatHandler:
             logger.info(f"Successfully generated response: {response_text[:50]}...")
             return True, response_text
             
-        except requests.Timeout:
-            logger.error("API request timed out")
-            return False, "The request took too long. Please try again in a moment."
-            
-        except requests.RequestException as e:
-            logger.error(f"API request failed: {str(e)}")
-            return False, "I'm having trouble connecting to the service. Please try again shortly."
-            
         except Exception as e:
-            logger.error(f"Unexpected error: {str(e)}", exc_info=True)
+            logger.error(f"Unexpected error in get_response: {str(e)}", exc_info=True)
             return False, "Something unexpected happened. Please try again."
