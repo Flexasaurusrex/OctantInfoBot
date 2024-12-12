@@ -1,165 +1,227 @@
 import os
 import logging
-from telegram import Update
-from telegram.ext import Application, CommandHandler, MessageHandler, CallbackQueryHandler, filters, ContextTypes
 import asyncio
-from telegram.error import NetworkError, TimedOut, RetryAfter
+import time
+from typing import Optional, Callable, Any
+from telegram import Update
+from telegram.ext import (
+    Application,
+    CommandHandler,
+    MessageHandler,
+    filters,
+    ContextTypes,
+)
+from telegram.error import NetworkError, TimedOut
 from chat_handler import ChatHandler
-from telegram_trivia import TelegramTrivia
 
 # Configure logging
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.INFO,
-    datefmt='%Y-%m-%d %H:%M:%S'
+    handlers=[
+        logging.FileHandler('telegram_bot.log'),
+        logging.StreamHandler()
+    ]
 )
 logger = logging.getLogger(__name__)
 
-# Initialize handlers
-chat_handler = ChatHandler()
-telegram_trivia = TelegramTrivia()
-
-# List of admin user IDs who can restart the bot
-ADMIN_USER_IDS = {5100739421, 5365683947, 1087968824}
-
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Send a message when the command /start is issued."""
-    welcome_message = """
-Welcome to the Octant Information Bot! 🤖
-
-I'm here to help you learn about Octant and answer any questions you have about the ecosystem. Here are some things you can do:
-
-/help - See all available commands
-/trivia - Start a fun trivia game about Octant
-
-Feel free to ask me anything about Octant! 🚀
-    """
-    await update.message.reply_text(welcome_message)
-
-async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Send a message when the command /help is issued."""
-    help_text = """
-Here are the available commands:
-
-/start - Start the bot
-/help - Show this help message
-/trivia - Start a trivia game
-
-You can also ask me any questions about:
-• Octant's ecosystem
-• GLM token utility
-• Governance process
-• Funding mechanisms
-• And more!
-
-Just type your question and I'll help you out! 📚
-    """
-    await update.message.reply_text(help_text)
-
-async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Handle incoming messages."""
-    if not update.message or not update.message.text:
-        return
-
-    try:
-        # Get response from chat handler
-        response = chat_handler.get_response(update.message.text)
+class TelegramBot:
+    def __init__(self):
+        self.chat_handler = ChatHandler()
+        self.application = None
+        self.health_check_interval = 60  # seconds
+        self.last_health_check = time.time()
+        self.message_queue = asyncio.Queue()
+        self.is_processing = False
         
-        if not response:
-            await update.message.reply_text(
-                "I couldn't understand that. Could you please rephrase your question?"
+    async def start(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+        """Handle /start command with simple welcome message."""
+        try:
+            user = update.effective_user
+            logger.info(f"Start command from user {user.id}")
+            welcome_message = (
+                "Welcome to the Octant Information Bot! 🤖\n\n"
+                "I'm here to help you learn about Octant and answer your questions.\n"
+                "Just ask me anything about Octant! 🚀"
             )
-            return
+            await update.message.reply_text(welcome_message)
+        except Exception as e:
+            logger.error(f"Error in start command: {str(e)}", exc_info=True)
+            await self._handle_error(update, "Sorry, there was an error starting the bot. Please try again.")
 
-        # Handle multi-part responses
-        if isinstance(response, list):
-            for chunk in response:
-                await update.message.reply_text(chunk)
-                await asyncio.sleep(0.1)  # Small delay between messages
-        else:
-            await update.message.reply_text(response)
-
-    except Exception as e:
-        logger.error(f"Error handling message: {str(e)}")
-        await update.message.reply_text(
-            "I encountered an issue. Please try again."
+    async def help_command(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+        """Handle /help command with simple help message."""
+        user = update.effective_user
+        logger.info(f"Help command from user {user.id}")
+        help_text = (
+            "📚 Available Commands:\n"
+            "• /start - Start the bot\n"
+            "• /help - Show this help message\n\n"
+            "💡 You can ask me about:\n"
+            "• Octant's ecosystem\n"
+            "• GLM token utility\n"
+            "• Governance process\n"
+            "• Funding mechanisms\n\n"
+            "Just type your question! 🤝"
         )
+        await update.message.reply_text(help_text)
 
-async def error_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Handle errors in the telegram bot."""
-    try:
-        error_time = time.strftime("%Y-%m-%d %H:%M:%S")
+    async def _handle_error(self, update: Update, message: str) -> None:
+        """Handle errors uniformly across the application."""
+        try:
+            if update and update.message:
+                await update.message.reply_text(message)
+        except Exception as e:
+            logger.error(f"Error sending error message: {str(e)}", exc_info=True)
+
+    async def process_message_queue(self) -> None:
+        """Process messages from the queue with rate limiting."""
+        while True:
+            try:
+                if not self.is_processing:
+                    self.is_processing = True
+                    update = await self.message_queue.get()
+                    
+                    if update and update.message and update.message.text:
+                        user = update.effective_user
+                        message_text = update.message.text
+                        logger.info(f"Processing message from user {user.id}: {message_text[:50]}...")
+                        
+                        try:
+                            response = self.chat_handler.get_response(message_text)
+                            if response:
+                                await update.message.reply_text(response)
+                            else:
+                                await self._handle_error(update, "I couldn't process your request. Please try again. 🔄")
+                        except Exception as e:
+                            logger.error(f"Error processing message: {str(e)}", exc_info=True)
+                            await self._handle_error(update, "I encountered an issue. Please try again in a moment. 🔧")
+                            
+                    self.message_queue.task_done()
+                    self.is_processing = False
+                    await asyncio.sleep(1)  # Rate limiting
+                else:
+                    await asyncio.sleep(0.1)
+            except Exception as e:
+                logger.error(f"Error in message queue processing: {str(e)}", exc_info=True)
+                self.is_processing = False
+                await asyncio.sleep(1)
+
+    async def handle_message(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+        """Add messages to queue for processing."""
+        if not update.message or not update.message.text:
+            return
         
-        if update:
-            logger.error(f"[{error_time}] Update {update.update_id} caused error: {context.error}")
-        else:
-            logger.error(f"[{error_time}] Error occurred without update: {context.error}")
+        try:
+            await self.message_queue.put(update)
+        except Exception as e:
+            logger.error(f"Error queueing message: {str(e)}", exc_info=True)
+            await self._handle_error(update, "Sorry, I'm having trouble processing messages right now. Please try again later.")
+
+    async def health_check(self) -> None:
+        """Enhanced health check system with connection monitoring."""
+        consecutive_failures = 0
+        max_failures = 3
         
-        if isinstance(context.error, (NetworkError, TimedOut, RetryAfter)):
-            retry_after = getattr(context.error, 'retry_after', 1)
-            logger.info(f"Network-related error, waiting {retry_after}s before retry...")
-            await asyncio.sleep(retry_after)
-        
-        # Provide user feedback if possible
-        if update and update.effective_message:
-            await update.effective_message.reply_text(
-                "I encountered a temporary issue. Please try again in a moment."
-            )
+        while True:
+            try:
+                current_time = time.time()
+                if current_time - self.last_health_check >= self.health_check_interval:
+                    # Check bot connection
+                    if self.application and self.application.updater.running:
+                        logger.info("Health check passed - Bot is running normally")
+                        consecutive_failures = 0
+                    else:
+                        logger.warning("Health check warning - Bot updater not running")
+                        consecutive_failures += 1
+                    
+                    # Check message processing
+                    queue_size = self.message_queue.qsize()
+                    if queue_size > 10:
+                        logger.warning(f"Health check warning - Message queue size: {queue_size}")
+                    
+                    # Monitor processing state
+                    if self.is_processing:
+                        processing_time = time.time() - self.last_health_check
+                        if processing_time > 30:  # 30 seconds threshold
+                            logger.warning("Health check warning - Message processing stuck")
+                            self.is_processing = False
+                    
+                    self.last_health_check = current_time
+                    
+                    # Recovery action if needed
+                    if consecutive_failures >= max_failures:
+                        logger.error("Health check critical - Attempting bot restart")
+                        await self.shutdown()
+                        await self.initialize()
+                        consecutive_failures = 0
+                
+                await asyncio.sleep(self.health_check_interval)
+            except Exception as e:
+                logger.error(f"Health check failed: {str(e)}", exc_info=True)
+                consecutive_failures += 1
+                await asyncio.sleep(5)  # Short delay before retry
+
+    async def initialize(self) -> None:
+        """Initialize the bot with enhanced error handling and monitoring."""
+        try:
+            # Verify environment
+            token = os.environ.get("TELEGRAM_BOT_TOKEN")
+            if not token:
+                raise ValueError("TELEGRAM_BOT_TOKEN environment variable is not set!")
+
+            # Build and configure application
+            self.application = Application.builder().token(token).build()
             
-    except Exception as e:
-        logger.error(f"Error in error handler: {str(e)}")
+            # Add handlers with error catching
+            handlers = [
+                CommandHandler("start", self.start),
+                CommandHandler("help", self.help_command),
+                MessageHandler(filters.TEXT & ~filters.COMMAND, self.handle_message)
+            ]
+            
+            for handler in handlers:
+                self.application.add_handler(handler)
+                logger.info(f"Added handler: {handler.__class__.__name__}")
 
-async def main() -> None:
-    """Start the bot."""
+            # Initialize core components
+            await self.application.initialize()
+            await self.application.start()
+            await self.application.updater.start_polling(drop_pending_updates=True)
+            
+            # Start background tasks
+            asyncio.create_task(self.health_check())
+            asyncio.create_task(self.process_message_queue())
+            
+            logger.info("Bot initialized and started successfully!")
+            
+        except Exception as e:
+            logger.error(f"Failed to initialize bot: {str(e)}", exc_info=True)
+            raise
+
+    async def shutdown(self) -> None:
+        """Graceful shutdown."""
+        if self.application:
+            try:
+                await self.application.stop()
+                await self.application.shutdown()
+                logger.info("Bot shutdown completed")
+            except Exception as e:
+                logger.error(f"Error during shutdown: {str(e)}")
+
+async def main():
+    """Main function with basic error handling."""
+    bot = TelegramBot()
     try:
-        # Get the token from environment variable
-        token = os.environ.get("TELEGRAM_BOT_TOKEN")
-        if not token:
-            logger.error("TELEGRAM_BOT_TOKEN environment variable is not set!")
-            return
-
-        # Create the Application with simplified configuration
-        application = (
-            Application.builder()
-            .token(token)
-            .connect_timeout(30)
-            .read_timeout(30)
-            .write_timeout(30)
-            .build()
-        )
-
-        # Add handlers
-        application.add_handler(CommandHandler("start", start))
-        application.add_handler(CommandHandler("help", help_command))
-        application.add_handler(CommandHandler("trivia", telegram_trivia.start_game))
-        application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
-        application.add_handler(CallbackQueryHandler(telegram_trivia.handle_answer, pattern="^trivia_"))
-        application.add_error_handler(error_handler)
-
-        # Start the bot
-        await application.initialize()
-        await application.start()
-        logger.info("Bot started successfully!")
-        
-        await application.updater.start_polling(
-            allowed_updates=Update.ALL_TYPES,
-            drop_pending_updates=True
-        )
-        
-        # Keep the bot running
+        await bot.initialize()
         while True:
             await asyncio.sleep(1)
-            
+    except KeyboardInterrupt:
+        logger.info("Bot stopped by user")
     except Exception as e:
-        logger.error(f"Bot startup error: {str(e)}")
-        raise
+        logger.error(f"Critical error: {str(e)}", exc_info=True)
     finally:
-        # Cleanup
-        if 'application' in locals():
-            await application.updater.stop()
-            await application.stop()
-            await application.shutdown()
-            logger.info("Bot stopped")
+        await bot.shutdown()
 
 if __name__ == '__main__':
     try:
@@ -168,4 +230,3 @@ if __name__ == '__main__':
         logger.info("Bot stopped by user")
     except Exception as e:
         logger.error(f"Bot stopped due to error: {str(e)}")
-        raise
