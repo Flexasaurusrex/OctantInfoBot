@@ -393,60 +393,143 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
                 import re
 
                 def format_urls(text):
-                    """Format URLs in text with improved handling of domain extensions."""
+                    """Format URLs in text with improved handling of domain extensions and HTML tags."""
+                    if not text:
+                        return text
+
                     # Handle James's social media links
                     james_social = [
                         "https://x.com/vpabundance",
                         "https://warpcast.com/vpabundance.eth",
                         "https://www.linkedin.com/in/vpabundance"
                     ]
-                    if all(url in text for url in james_social):
+                    if any(url in text for url in james_social):
                         return text
 
-                    # First, clean up any existing nested or malformed links
-                    while '<a href="<a href=' in text:
-                        text = re.sub(r'<a href="<a href="([^"]+)"[^>]+>[^<]+</a>"[^>]+>[^<]+</a>', 
-                                     r'<a href="\1" class="bot-link">\1</a>', text)
+                    # Map of special URLs to their display text
+                    url_display_map = {
+                        'x.com/OctantApp': '@OctantApp',
+                        'discord.gg/octant': 'discord.gg/octant',
+                        'warpcast.com/octant': 'warpcast.com/octant',
+                        'octant.build': 'octant.build',
+                        'docs.octant.app': 'docs.octant.app',
+                        'golem.foundation': 'golem.foundation'
+                    }
+
+                    # Protect complete existing link tags
+                    def protect_tags(match):
+                        tag = match.group(0)
+                        if re.match(r'<a\s+href="[^"]+"\s+class="bot-link">[^<]+</a>', tag):
+                            return f"__PROTECTED__{hash(tag)}__"
+                        return tag
+
+                    # First pass: protect existing complete link tags
+                    protected_text = re.sub(
+                        r'<a\s+href="[^"]+"\s+class="bot-link">[^<]+</a>',
+                        protect_tags,
+                        text
+                    )
                     
-                    # If the text still contains formatted links after cleanup, return it
-                    if '<a href=' in text:
-                        return text
+                    # Store protected tags for restoration
+                    protected_tags = {
+                        f"__PROTECTED__{hash(tag)}__": tag
+                        for tag in re.findall(r'<a\s+href="[^"]+"\s+class="bot-link">[^<]+</a>', text)
+                    }
 
-                    # Common domain extensions
+                    # Process URLs that aren't already in tags
                     domain_endings = r'(?:com|org|net|edu|gov|io|app|build|foundation|eth|gg)'
-                    
-                    # URL pattern - exclude URLs that are already in HTML tags
                     url_pattern = fr'(?<!href=")https?://(?:www\.)?[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*\.{domain_endings}(?:/[^\s<>"\']*)?'
                     
-                    def process_url(match):
+                    def format_match(match):
                         url = match.group(0).rstrip('.,;:!?)"')
-                        display = url.replace('https://', '').rstrip('/')
+                        # Skip if this is part of a protected tag
+                        if f"__PROTECTED__{hash(url)}__" in protected_tags:
+                            return url
+                            
+                        # Get display text based on URL
+                        display = None
+                        for key, value in url_display_map.items():
+                            if key in url.lower():
+                                display = value
+                                break
                         
-                        # Special cases for display text
-                        if 'x.com/OctantApp' in url:
-                            display = '@OctantApp'
-                        elif 'discord.gg/octant' in url:
-                            display = 'discord.gg/octant'
-                        elif 'warpcast.com/octant' in url:
-                            display = 'warpcast.com/octant'
+                        if not display:
+                            display = url.replace('https://', '').rstrip('/')
                         
                         return f'<a href="{url}" class="bot-link">{display}</a>'
 
-                    # Format unformatted URLs only
-                    formatted = re.sub(url_pattern, process_url, text)
+                    # Format unprotected URLs
+                    formatted = re.sub(url_pattern, format_match, protected_text)
                     
-                    # Clean up any remaining bot-link references without double-formatting
-                    formatted = re.sub(r'">https?://[^<]+?</a>', 
-                                     lambda m: '">' + m.group(0)[2:-4].replace('https://', '').rstrip('/') + '</a>', 
-                                     formatted)
+                    # Restore protected tags
+                    for placeholder, original in protected_tags.items():
+                        formatted = formatted.replace(placeholder, original)
+                    
+                    return formatted
+                    
+                    # Format unprotected URLs
+                    formatted = re.sub(url_pattern, process_url, protected_text)
+                    
+                    # Restore protected tags that weren't URLs
+                    for placeholder, original in protected_tags.items():
+                        if placeholder in formatted:
+                            formatted = formatted.replace(placeholder, original)
                     
                     return formatted
                 
                 # Format the response text
                 response_text = format_urls(response_text)
                 
-                # Clean up any remaining bot-link references
-                response_text = re.sub(r'">(?:https?://[^<]+?)</a>', lambda m: '">' + m.group(0)[2:-4] + '</a>', response_text)
+                # Enhanced cleanup to fix any remaining nested tags
+                def fix_nested_tags(text):
+                    """Fix any nested or malformed HTML link tags."""
+                    if not text:
+                        return text
+
+                    def clean_url_text(url):
+                        """Clean URL for display"""
+                        return url.replace('https://', '').rstrip('/')
+
+                    # List of patterns to fix common nesting issues
+                    patterns = [
+                        # Fix completely nested tags
+                        (r'<a href="<a href="([^"]+)"[^>]*>[^<]+</a>"[^>]*>[^<]+</a>',
+                         lambda m: f'<a href="{m.group(1)}" class="bot-link">{clean_url_text(m.group(1))}</a>'),
+                        
+                        # Fix nested href attributes
+                        (r'<a href="<a href="([^"]+)"',
+                         lambda m: f'<a href="{m.group(1)}"'),
+                         
+                        # Fix double-wrapped URLs
+                        (r'<a href="([^"]+)"[^>]*><a href="([^"]+)"[^>]*>([^<]+)</a></a>',
+                         lambda m: f'<a href="{m.group(1)}" class="bot-link">{m.group(3)}</a>'),
+                         
+                        # Remove duplicate tags for same URL
+                        (r'(<a href="([^"]+)"[^>]*>[^<]+</a>)\s*\1',
+                         lambda m: m.group(1)),
+                         
+                        # Fix malformed closing tags
+                        (r'<a href="([^"]+)"[^>]*>([^<]+)(?:</a>)+',
+                         lambda m: f'<a href="{m.group(1)}" class="bot-link">{m.group(2)}</a>')
+                    ]
+
+                    # Apply each pattern until no more changes
+                    prev_text = None
+                    while prev_text != text:
+                        prev_text = text
+                        for pattern, replacement in patterns:
+                            while re.search(pattern, text):
+                                text = re.sub(pattern, replacement, text)
+
+                    # Ensure all links have the bot-link class
+                    text = re.sub(r'<a href="([^"]+)"(?!\s+class="bot-link")',
+                                r'<a href="\1" class="bot-link"',
+                                text)
+
+                    return text
+                
+                # Apply the enhanced cleanup
+                response_text = fix_nested_tags(response_text)
                 
                 # Validate and split response if necessary
                 response_chunks = self.validate_response_length(response_text)
