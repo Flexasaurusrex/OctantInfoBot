@@ -178,36 +178,58 @@ class ChatHandler:
         self.is_playing_trivia = False
         self.command_handler = CommandHandler(self.trivia_game)
         
-        self.system_prompt = """You're a friendly, outgoing chat partner who loves engaging in natural conversations and also happens to be knowledgeable about Octant. Here's your personality:
+        self.system_prompt = """You are Octant's official AI assistant, focused on providing accurate information about Octant, GLM tokens, and the Golem Foundation. Here's your role:
 
-1. BE GENUINELY FRIENDLY & CASUAL:
-   - Engage naturally in ANY topic (weather, sports, movies, life, etc.)
-   - Show real enthusiasm and personality in every response
-   - Use emojis when it feels natural 😊
-   - Match the user's energy and tone
-   - Feel free to share brief opinions or experiences
+1. CORE KNOWLEDGE:
+   - Focus on Octant's ecosystem, public goods funding, and community initiatives
+   - Provide accurate information about GLM tokens and staking mechanisms
+   - Explain Octant's quadratic funding and reward distribution
+   - Share details about the Golem Foundation's role
 
-2. KEEP RESPONSES FOCUSED:
-   - Default to concise, 1-2 sentence responses
-   - Be casual and conversational
-   - Expand only when users specifically ask for more detail
-   - Let the conversation flow naturally
-
-3. WHEN DISCUSSING OCTANT:
-   - Only bring up Octant when directly asked or clearly relevant
-   - Start with simple explanations
-   - Give detailed info only when explicitly requested
-   - Share links only when asked
+2. RESPONSE STYLE:
+   - Keep responses concise and factual
+   - Be friendly but maintain focus on Octant-related topics
    - Use official sources: octant.build, docs.octant.app, golem.foundation
+   - Correct any misconceptions about Octant politely
 
-4. CONVERSATION FLOW:
-   - Chat like a real friend - be genuine and personal
-   - Never force Octant into unrelated conversations
-   - Stay on topic with what interests the user
-   - Avoid repeating yourself
-   - Transition topics naturally
+3. KEY TOPICS TO COVER:
+   - Octant's public goods funding model
+   - GLM token locking and rewards
+   - Community participation and governance
+   - Matched Rewards and Patron mode
+   - Funding periods and epochs
 
-Remember: You're a friendly chat buddy first, Octant expert second. Keep conversations natural and fun - save the technical details for when they're actually needed!"""
+4. IMPORTANT GUIDELINES:
+   - Always relate responses back to Octant's ecosystem
+   - Provide clear, accurate information
+   - If asked about non-Octant topics, politely redirect to Octant-related discussion
+   - Use official terminology consistently
+
+Remember: Your primary purpose is to help users understand and participate in the Octant ecosystem. Stay focused on Octant-related information and maintain accuracy in all responses."""
+
+    def validate_response_content(self, response):
+        """Validate that the response is Octant-focused and appropriate."""
+        # Keywords that should be present in most responses
+        octant_keywords = ['octant', 'glm', 'golem', 'public goods', 'funding', 'community', 'rewards']
+        
+        # Check if response contains any Octant-related keywords
+        has_relevant_content = any(keyword in response.lower() for keyword in octant_keywords)
+        
+        if not has_relevant_content:
+            logger.warning("Response lacks Octant-related content, returning default message")
+            return f"""I should focus on Octant-related topics. Let me explain about Octant:
+
+Octant is a platform for participatory public goods funding, backed by the Golem Foundation. It enables GLM token holders to participate in funding decisions and earn rewards while supporting valuable projects.
+
+Would you like to learn more about:
+• Octant's funding mechanism
+• GLM token staking
+• Reward distribution
+• Community participation
+
+Please ask about any of these topics!"""
+            
+        return response
 
     def validate_message(self, message):
         """Validate and sanitize user input."""
@@ -368,9 +390,41 @@ LinkedIn: https://www.linkedin.com/in/vpabundance"""
                 "Content-Type": "application/json"
             }
             
-            # Include minimal context in the prompt
+            # Enhanced context control and response validation
             history = self.format_conversation_history()
-            prompt = f"{self.system_prompt}\n\n{history}Current user message: {user_message}\n\nRespond naturally and informatively about Octant, Golem Foundation, and related topics:"
+            prompt = f"""You are the Octant AI Assistant, specifically designed to provide information about Octant, GLM tokens, and the Golem Foundation.
+
+CORE PRINCIPLES:
+1. EXPERTISE: You are an expert on:
+   - Octant's funding mechanisms and epochs
+   - GLM token staking and rewards
+   - The Golem Foundation's role
+   - Community participation and governance
+
+2. FOCUS:
+   - ONLY discuss Octant-related topics
+   - Politely redirect off-topic questions to Octant features
+   - Use official Octant terminology consistently
+   - Maintain factual accuracy about Octant's features
+
+3. RESPONSE GUIDELINES:
+   - If uncertain, refer to core Octant documentation
+   - For funding questions, cite specific mechanisms
+   - For technical questions, provide accurate details
+   - Always relate answers back to Octant's ecosystem
+
+4. KEY FACTS TO MAINTAIN:
+   - Octant is backed by 100,000 ETH
+   - Epochs last 90 days
+   - 100 GLM minimum for rewards
+   - 20% maximum project funding cap
+   - 25% to foundation operations
+
+CONTEXT:
+Previous interaction: {history}
+Current question: {user_message}
+
+Provide an accurate, Octant-focused response that adheres to these principles:"""
             
             data = {
                 "model": self.model,
@@ -400,6 +454,12 @@ LinkedIn: https://www.linkedin.com/in/vpabundance"""
                     formatted_text = self.format_urls(response_text)
                     logger.info("URLs formatted successfully")
                     
+                    # Validate response content
+                    validated_text = self.validate_response_content(response_text)
+                    
+                    # Format URLs in validated response
+                    formatted_text = self.format_urls(validated_text)
+                    
                     # Update conversation history
                     self.conversation_history.append({
                         "user": user_message,
@@ -407,7 +467,7 @@ LinkedIn: https://www.linkedin.com/in/vpabundance"""
                     })
                 except Exception as format_error:
                     logger.error(f"Error formatting URLs: {str(format_error)}")
-                    formatted_text = response_text  # Fall back to unformatted text
+                    formatted_text = self.validate_response_content(response_text)  # Fall back to validated but unformatted text
                 
                 # Keep only the last max_history entries
                 if len(self.conversation_history) > self.max_history:

@@ -62,71 +62,90 @@ def restart_services():
     try:
         logger.info("Restart request received")
         
-        # Notify all connected clients
+        # Initial notification
         socketio.emit('restart_status', {
-            'status': 'restarting',
-            'message': 'Preparing to restart services...'
+            'status': 'initializing',
+            'message': 'Initiating restart sequence (30 seconds)...',
+            'countdown': 30
         }, namespace='/')
         
         def cleanup_and_restart():
             try:
+                # Step 1: Prepare for restart
                 logger.info("Starting cleanup process...")
+                eventlet.sleep(5)  # Give time for initial message
                 
-                # Notify clients about imminent restart
                 socketio.emit('restart_status', {
-                    'status': 'restarting',
-                    'message': 'Cleaning up connections...'
+                    'status': 'preparing',
+                    'message': 'Preparing to close active connections...',
+                    'countdown': 25
                 }, namespace='/')
                 
-                # Give time for cleanup message to be sent
-                eventlet.sleep(1)
-                
-                # Get a copy of all active connections before cleanup
+                # Step 2: Close connections
                 active_sids = list(socketio.server.manager.rooms.get('/', set()))
+                total_connections = len(active_sids)
                 
-                # Close all active connections gracefully
-                for sid in active_sids:
+                for idx, sid in enumerate(active_sids, 1):
                     try:
                         socketio.server.disconnect(sid, namespace='/')
-                        logger.info(f"Successfully disconnected client {sid}")
-                        eventlet.sleep(0.1)  # Small delay between disconnects
+                        logger.info(f"Disconnected client {sid} ({idx}/{total_connections})")
+                        
+                        # Update status every few disconnections
+                        if idx % 5 == 0 or idx == total_connections:
+                            socketio.emit('restart_status', {
+                                'status': 'cleaning',
+                                'message': f'Closing connections ({idx}/{total_connections})...',
+                                'countdown': 20 - int((idx/total_connections) * 10) if total_connections > 0 else 20
+                            }, namespace='/')
+                            
+                        eventlet.sleep(0.1)
                     except Exception as e:
                         logger.warning(f"Error disconnecting client {sid}: {str(e)}")
                 
                 logger.info("All connections cleaned up")
-                eventlet.sleep(1)  # Give time for cleanup logs
                 
-                # Final notification before restart
+                # Step 3: Final preparations
+                socketio.emit('restart_status', {
+                    'status': 'finalizing',
+                    'message': 'Finalizing restart preparations...',
+                    'countdown': 10
+                }, namespace='/')
+                eventlet.sleep(5)
+                
+                # Step 4: Final notification
                 socketio.emit('restart_status', {
                     'status': 'restarting',
-                    'message': 'Services are now restarting...'
+                    'message': 'Services are restarting now...',
+                    'countdown': 5
                 }, namespace='/')
+                eventlet.sleep(3)
                 
-                # Give time for final message to be sent
-                eventlet.sleep(2)
-                
-                # Trigger Replit restart
+                # Trigger restart
                 logger.info("Initiating restart...")
                 os._exit(0)
                 
             except Exception as e:
-                logger.error(f"Error during cleanup: {str(e)}")
+                error_msg = f"Error during restart: {str(e)}"
+                logger.error(error_msg)
                 socketio.emit('restart_status', {
                     'status': 'error',
-                    'message': 'Error during restart process. Please try again.'
+                    'message': f'Restart failed: {error_msg}. Please try again.',
+                    'countdown': 0
                 }, namespace='/')
-        
+                
         # Schedule the cleanup and restart process
         eventlet.spawn(cleanup_and_restart)
-        return {"status": "success", "message": "Restart initiated"}
+        return {"status": "success", "message": "Restart sequence initiated"}
         
     except Exception as e:
-        logger.error(f"Error initiating restart: {str(e)}")
+        error_msg = f"Failed to initiate restart: {str(e)}"
+        logger.error(error_msg)
         socketio.emit('restart_status', {
             'status': 'error',
-            'message': 'Failed to initiate restart. Please try again.'
+            'message': error_msg,
+            'countdown': 0
         }, namespace='/')
-        return {"status": "error", "message": str(e)}, 500
+        return {"status": "error", "message": error_msg}, 500
 
 @socketio.on('connect')
 def handle_connect():
