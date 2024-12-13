@@ -402,7 +402,7 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
                 import re
 
                 def format_urls(text):
-                    """Format URLs in text, keeping social media links clean."""
+                    """Format URLs in text, keeping social media links clean and preventing double anchor tags."""
                     # Handle James's social media response first
                     social_urls = [
                         "https://x.com/vpabundance",
@@ -414,25 +414,43 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
                     if all(url in text for url in social_urls):
                         return text
 
-                    # Strip any nested anchor tags first
-                    text = re.sub(r'<a[^>]*?href="<a[^>]*?href="([^"]*)"[^>]*>[^<]*</a>"[^>]*>[^<]*</a>', r'<a href="\1">\1</a>', text)
-                    
-                    # Handle remaining URLs
-                    url_pattern = r'(?<!href=")https?://(?:www\.)?[^\s<>"\']+?(?=[.,;:!?)\s]|$)'
+                    # First, identify and store existing anchor tags
+                    existing_tags = {}
+                    placeholder_pattern = "PLACEHOLDER_{}_TAG"
+                    tag_count = 0
+
+                    # Store original anchor tags before processing
+                    def store_anchor_tag(match):
+                        nonlocal tag_count
+                        placeholder = placeholder_pattern.format(tag_count)
+                        tag_count += 1
+                        # Only store if it's not already a processed bot-link
+                        if 'class="bot-link"' not in match.group(0):
+                            existing_tags[placeholder] = match.group(0)
+                            return placeholder
+                        return match.group(0)
+
+                    # Replace existing anchor tags with placeholders
+                    text = re.sub(r'<a[^>]*?>.*?</a>', store_anchor_tag, text)
+
+                    # Find and format URLs not in placeholders
+                    url_pattern = r'https?://(?:www\.)?[^\s<>"\']+?(?=[.,;:!?)\s]|$)'
                     urls_to_format = []
                     
                     for match in re.finditer(url_pattern, text):
                         raw_url = match.group(0).rstrip('.,;:!?)"')
-                        urls_to_format.append((match.start(), match.end(), raw_url))
-                    
-                    # Process URLs in reverse order to maintain indices
+                        # Skip if URL is part of a placeholder
+                        if not any(placeholder in raw_url for placeholder in existing_tags.keys()):
+                            start, end = match.span()
+                            # Skip if URL is already part of an anchor tag
+                            if not any(placeholder in text[max(0, start-50):min(len(text), end+50)] 
+                                     for placeholder in existing_tags.keys()):
+                                urls_to_format.append((start, end, raw_url))
+
+                    # Process URLs in reverse order to maintain string indices
                     urls_to_format.reverse()
                     for start, end, raw_url in urls_to_format:
-                        # Skip if URL is already in an anchor tag
-                        if any(f'href="{raw_url}"' in text[max(0, start-50):min(len(text), end+50)]):
-                            continue
-                            
-                        # Determine display text
+                        # Format display text
                         display = raw_url
                         if raw_url.endswith('.build/'):
                             display = raw_url.replace('https://', '')
@@ -443,13 +461,20 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
                         elif 'warpcast.com/octant' in raw_url:
                             display = 'warpcast.com/octant'
                         
-                        # Format the link
+                        # Format links based on type
                         if any(domain in raw_url.lower() for domain in ['x.com', 'warpcast.com', 'linkedin.com']):
                             replacement = raw_url  # Keep social media links as plain URLs
                         else:
                             replacement = f'<a href="{raw_url}" class="bot-link">{display}</a>'
                         
                         text = text[:start] + replacement + text[end:]
+
+                    # Restore original anchor tags
+                    for placeholder, original_tag in existing_tags.items():
+                        text = text.replace(placeholder, original_tag)
+
+                    # Clean up any residual placeholders
+                    text = re.sub(r'PLACEHOLDER_\d+_TAG', '', text)
                     
                     return text
                 
