@@ -15,4 +15,6 @@ dependencies = [
     "eventlet>=0.38.0",
     "python-telegram-bot>=20.7",
     "psutil>=6.1.0",
+    "telegram>=0.0.1",
+    "discord-py>=2.4.0",
 ]
