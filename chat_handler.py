@@ -410,14 +410,9 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
                     if any(url in text for url in james_social):
                         return text
 
-                    # Protect existing HTML tags
-                    existing_tags = []
-                    def protect_html(match):
-                        tag = match.group(0)
-                        existing_tags.append(tag)
-                        return f"__PROTECTED_TAG_{len(existing_tags)-1}__"
-                    
-                    protected_text = re.sub(r'<a\s+href="[^"]*"[^>]*>.*?</a>', protect_html, text)
+                    # Remove all malformed and nested tags first
+                    text = re.sub(r'<a[^>]*<a[^>]*>[^<]*</a>[^>]*>[^<]*</a>', '', text)
+                    text = re.sub(r'<a href="[^"]*"[^>]*>[^<]*</a>', '', text)
 
                     # Map of special URLs and their display text
                     url_display_map = {
@@ -429,39 +424,25 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
                         'golem.foundation': ('golem.foundation', 'https://golem.foundation')
                     }
 
-                    # Process special platform mentions first
+                    # Process special URLs first
                     for key, (display, url) in url_display_map.items():
-                        protected_text = protected_text.replace(display, f'<a href="{url}" class="bot-link">{display}</a>')
+                        if key in text.lower():
+                            text = text.replace(key, f'<a href="{url}" class="bot-link">{display}</a>')
 
                     # Process remaining URLs
                     domain_endings = r'(?:com|org|net|edu|gov|io|app|build|foundation|eth|gg)'
-                    url_pattern = fr'(?<!href=")(?:https?://)?(?:www\.)?[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*\.{domain_endings}(?:/[^\s<>"\']*)?'
+                    url_pattern = fr'(?<!href=")(?<!>)(?<![\w/])((?:https?://)?(?:www\.)?[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*\.{domain_endings}(?:/[^\s<>"\']*)?)'
                     
                     def format_match(match):
-                        url = match.group(0).rstrip('.,;:!?)"')
+                        url = match.group(1).rstrip('.,;:!?)"')
                         if not url.startswith('http'):
                             url = f'https://{url}'
                         display = url.replace('https://', '').replace('http://', '').rstrip('/')
                         return f'<a href="{url}" class="bot-link">{display}</a>'
 
                     # Format remaining URLs
-                    formatted = re.sub(url_pattern, format_match, protected_text)
-                    
-                    # Restore protected tags
-                    for i, tag in enumerate(existing_tags):
-                        formatted = formatted.replace(f"__PROTECTED_TAG_{i}__", tag)
-                    
-                    return formatted
-                    
-                    # Format unprotected URLs
-                    formatted = re.sub(url_pattern, process_url, protected_text)
-                    
-                    # Restore protected tags that weren't URLs
-                    for placeholder, original in protected_tags.items():
-                        if placeholder in formatted:
-                            formatted = formatted.replace(placeholder, original)
-                    
-                    return formatted
+                    text = re.sub(url_pattern, format_match, text, flags=re.IGNORECASE)
+                    return text
                 
                 # Format the response text
                 response_text = format_urls(response_text)
