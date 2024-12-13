@@ -239,3 +239,105 @@ class DiscordTrivia:
         finally:
             if channel_id in self.current_games:
                 del self.current_games[channel_id]
+
+    async def handle_answer(self, interaction: discord.Interaction, answer: str):
+        """Handle button interaction answers with enhanced error handling."""
+        try:
+            if not interaction.channel_id:
+                logger.error("Channel ID missing from interaction")
+                await interaction.response.send_message(
+                    "Error: Unable to process answer. Please try again.",
+                    ephemeral=True
+                )
+                return
+
+            channel_id = interaction.channel_id
+            game = self.current_games.get(channel_id)
+            
+            if not game:
+                logger.warning(f"No active game found for channel {channel_id}")
+                await interaction.response.send_message(
+                    "No active game found! Start a new game with /trivia",
+                    ephemeral=True
+                )
+                return
+
+            # Validate game state
+            if game['questions_asked'] <= 0 or game['questions_asked'] > len(self.questions):
+                logger.error(f"Invalid game state: questions_asked={game['questions_asked']}")
+                await interaction.response.send_message(
+                    "Error: Game state is invalid. Please start a new game.",
+                    ephemeral=True
+                )
+                return
+
+            # Check if question has already been answered
+            try:
+                view = interaction.message.view
+                if view and hasattr(view, 'answered') and view.answered:
+                    logger.info(f"Question already answered in channel {channel_id}")
+                    await interaction.response.send_message(
+                        "This question has already been answered!",
+                        ephemeral=True
+                    )
+                    return
+            except AttributeError as e:
+                logger.debug(f"View not available: {str(e)}")
+
+            # Get current question
+            current_question = self.questions[game['questions_asked'] - 1]
+            is_correct = answer == current_question['correct']
+            
+            # Update game state
+            if is_correct:
+                game['score'] += 1
+                response_embed = discord.Embed(
+                    title="✅ Correct!",
+                    description=current_question['explanation'],
+                    color=discord.Color.green()
+                )
+            else:
+                response_embed = discord.Embed(
+                    title="❌ Incorrect!",
+                    description=f"The correct answer was: {current_question['correct']}\n\n{current_question['explanation']}",
+                    color=discord.Color.red()
+                )
+                
+            # Calculate and add score
+            score = game['score']
+            questions_asked = game['questions_asked']
+            score_percentage = (score/questions_asked*100) if questions_asked > 0 else 0
+            response_embed.add_field(
+                name="Score",
+                value=f"{score}/{questions_asked} ({score_percentage:.1f}%)",
+                inline=False
+            )
+            
+            # Add footer with game progress
+            total_questions = len(self.questions)
+            response_embed.set_footer(text=f"Question {questions_asked} of {total_questions}")
+            
+            try:
+                await interaction.response.send_message(embed=response_embed)
+                await self.send_next_question(interaction)
+            except discord.errors.InteractionResponded:
+                logger.warning("Interaction already responded to")
+            except discord.errors.NotFound:
+                logger.error("Interaction not found - message may have been deleted")
+            except discord.errors.HTTPException as http_err:
+                logger.error(f"HTTP error sending response: {str(http_err)}")
+                await interaction.followup.send(
+                    "Error sending response. The game will continue with the next question.",
+                    ephemeral=True
+                )
+            
+        except Exception as e:
+            logger.error(f"Error handling trivia answer: {str(e)}", exc_info=True)
+            try:
+                error_message = "Sorry, there was an error processing your answer. Please try again."
+                if not interaction.response.is_done():
+                    await interaction.response.send_message(error_message, ephemeral=True)
+                else:
+                    await interaction.followup.send(error_message, ephemeral=True)
+            except Exception as followup_error:
+                logger.error(f"Failed to send error message: {str(followup_error)}")

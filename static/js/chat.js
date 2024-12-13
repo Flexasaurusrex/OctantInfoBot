@@ -21,10 +21,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 reconnectionDelay: INITIAL_RETRY_DELAY,
                 reconnectionDelayMax: 5000,
                 timeout: 20000,
-                transports: ['websocket'],
-                upgrade: false,
+                transports: ['websocket', 'polling'],  // Fallback to polling if websocket fails
+                upgrade: true,  // Allow transport upgrade
                 autoConnect: true,
-                forceNew: true
+                forceNew: true,
+                reconnectionDelayMax: 10000,  // Increased max delay
+                randomizationFactor: 0.5,  // Add randomization to prevent thundering herd
+                pingTimeout: 30000,  // Increased ping timeout
+                pingInterval: 10000  // More frequent ping checks
             });
 
             initializeSocketEvents();
@@ -39,17 +43,42 @@ document.addEventListener('DOMContentLoaded', () => {
         reconnectAttempts++;
         if (reconnectAttempts <= MAX_RECONNECT_ATTEMPTS) {
             console.log(`Attempting to reconnect (${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})...`);
+            
+            // Calculate delay with jitter to prevent reconnection storms
+            const baseDelay = INITIAL_RETRY_DELAY * Math.pow(2, reconnectAttempts - 1);
+            const jitter = baseDelay * 0.2 * Math.random(); // Add up to 20% random jitter
+            const delay = Math.min(baseDelay + jitter, 10000); // Cap at 10 seconds
+            
+            // Clear any existing connection
+            if (socket) {
+                socket.removeAllListeners();
+                socket.close();
+            }
+            
             setTimeout(() => {
-                if (createSocket()) {
-                    console.log('Socket recreated successfully');
-                } else {
-                    console.error('Failed to recreate socket');
+                try {
+                    if (createSocket()) {
+                        console.log('Socket recreated successfully');
+                        // Reset reconnect attempts on successful connection
+                        socket.on('connect', () => {
+                            reconnectAttempts = 0;
+                            console.log('Connection restored');
+                        });
+                    } else {
+                        console.error('Failed to recreate socket');
+                        handleReconnection();
+                    }
+                } catch (error) {
+                    console.error('Error during socket recreation:', error);
                     handleReconnection();
                 }
-            }, INITIAL_RETRY_DELAY * Math.pow(2, reconnectAttempts - 1));
+            }, delay);
         } else {
             console.error('Max reconnection attempts reached');
-            appendMessage('Connection lost. Please refresh the page to reconnect.', true);
+            appendMessage('Connection lost. The page will refresh automatically in 5 seconds...', true);
+            setTimeout(() => {
+                window.location.reload();
+            }, 5000);
         }
     }
 

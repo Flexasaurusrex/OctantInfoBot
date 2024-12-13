@@ -16,18 +16,26 @@ logger = logging.getLogger(__name__)
 class OctantDiscordBot(commands.Bot):
     def __init__(self):
         try:
-            # Initialize connection state tracking
+            # Enhanced connection state tracking
             self.connection_state = {
                 'connected': False,
                 'reconnect_count': 0,
                 'last_heartbeat': None,
-                'last_error': None
+                'last_error': None,
+                'heartbeat_interval': 0,
+                'latency': 0.0,
+                'session_id': None,
+                'last_reconnect_time': None,
+                'connection_errors': []
             }
             
-            # Set up intents
+            # Set up intents with enhanced permissions
             intents = discord.Intents.default()
             intents.message_content = True
             intents.members = True
+            intents.guilds = True
+            intents.guild_messages = True
+            intents.guild_reactions = True
             
             # Initialize the bot with required intents
             super().__init__(
@@ -58,42 +66,160 @@ Guilds connected: {len(self.guilds)}
             logger.error(f"Error in on_ready: {str(e)}", exc_info=True)
 
     async def on_connect(self):
-        """Handle successful connection"""
+        """Handle successful connection with enhanced state tracking"""
         try:
-            self.connection_state['connected'] = True
-            self.connection_state['last_heartbeat'] = discord.utils.utcnow()
-            logger.info("━━━━━━ Bot Connected ━━━━━━")
-            logger.info(f"Connected as: {self.user.name}")
-            logger.info(f"Bot ID: {self.user.id}")
-            logger.info("━━━━━━━━━━━━━━━━━━━━━━━━")
+            current_time = discord.utils.utcnow()
+            self.connection_state.update({
+                'connected': True,
+                'last_heartbeat': current_time,
+                'last_reconnect_time': current_time if self.connection_state['reconnect_count'] > 0 else None,
+                'session_id': self.ws.session_id if hasattr(self, 'ws') else None,
+                'latency': self.latency
+            })
+            
+            logger.info("""━━━━━━ Bot Connected ━━━━━━
+Connection Details:
+- Name: {0}
+- ID: {1}
+- Latency: {2:.2f}ms
+- Session ID: {3}
+- Reconnect Count: {4}
+━━━━━━━━━━━━━━━━━━━━━━━━""".format(
+                self.user.name,
+                self.user.id,
+                self.latency * 1000,
+                self.connection_state['session_id'],
+                self.connection_state['reconnect_count']
+            ))
             
         except Exception as e:
             logger.error(f"Error in on_connect: {str(e)}", exc_info=True)
+            self.connection_state['connection_errors'].append({
+                'time': discord.utils.utcnow(),
+                'error': str(e),
+                'type': 'connect'
+            })
 
     async def on_disconnect(self):
-        """Handle disconnection"""
+        """Handle disconnection with enhanced reconnection logic and state recovery"""
         try:
             self.connection_state['connected'] = False
-            logger.warning("Bot disconnected - Attempting to reconnect...")
             self.connection_state['reconnect_count'] += 1
+            current_time = discord.utils.utcnow()
             
+            # Calculate time since last reconnect with enhanced tracking
+            last_reconnect = self.connection_state['last_reconnect_time']
+            time_since_reconnect = (current_time - last_reconnect).total_seconds() if last_reconnect else float('inf')
+            
+            # Progressive reconnection strategy with state preservation
+            max_reconnect_attempts = 5
+            backoff_factor = min(2 ** (self.connection_state['reconnect_count'] - 1), 300)  # Max 5 minutes
+            
+            # Enhanced state tracking
+            self.connection_state.update({
+                'last_disconnect_time': current_time,
+                'disconnect_reason': getattr(self.ws, 'close_code', None),
+                'last_sequence': getattr(self.ws, 'sequence', None),
+                'resume_gateway_url': getattr(self.ws, 'resume_gateway_url', None)
+            })
+            
+            logger.warning("""━━━━━━ Bot Disconnected ━━━━━━
+Reconnection Status:
+- Attempt: {0}/{1}
+- Time Since Last Reconnect: {2:.1f}s
+- Last Session ID: {3}
+- Next Retry Delay: {4}s
+- Last Known Latency: {5:.2f}ms
+━━━━━━━━━━━━━━━━━━━━━━━━""".format(
+                self.connection_state['reconnect_count'],
+                max_reconnect_attempts,
+                time_since_reconnect,
+                self.connection_state['session_id'],
+                backoff_factor,
+                self.latency * 1000 if self.latency else 0
+            ))
+            
+            # Check if we should attempt reconnection
+            if self.connection_state['reconnect_count'] <= max_reconnect_attempts:
+                try:
+                    # Clear any existing error states
+                    self.clear()
+                    
+                    # Wait before reconnecting with exponential backoff
+                    await asyncio.sleep(backoff_factor)
+                    
+                    # Attempt to reconnect
+                    await self.connect(reconnect=True)
+                    
+                except Exception as reconnect_error:
+                    logger.error(f"Failed to reconnect: {str(reconnect_error)}", exc_info=True)
+                    self.connection_state['connection_errors'].append({
+                        'time': discord.utils.utcnow(),
+                        'error': str(reconnect_error),
+                        'type': 'reconnect_attempt'
+                    })
+            else:
+                logger.critical("Maximum reconnection attempts reached. Manual intervention required.")
+                # You might want to implement additional recovery mechanisms here
+                
         except Exception as e:
             logger.error(f"Error in on_disconnect: {str(e)}", exc_info=True)
+            self.connection_state['connection_errors'].append({
+                'time': discord.utils.utcnow(),
+                'error': str(e),
+                'type': 'disconnect'
+            })
+            
+            # Attempt to clean up and recover
+            try:
+                await self.close()
+            except:
+                pass
 
     async def on_error(self, event, *args, **kwargs):
-        """Handle errors in event handlers"""
+        """Handle errors in event handlers with enhanced recovery"""
         try:
             error = args[0] if args else "Unknown error"
             self.connection_state['last_error'] = str(error)
+            
+            # Enhanced error classification
+            if isinstance(error, discord.errors.HTTPException):
+                if error.status == 429:  # Rate limit error
+                    retry_after = error.retry_after
+                    logger.warning(f"Rate limit hit, waiting {retry_after} seconds")
+                    await asyncio.sleep(retry_after)
+                    return
+                
+            if isinstance(error, (discord.errors.GatewayNotFound, discord.errors.ConnectionClosed)):
+                logger.error("Gateway connection error - attempting recovery")
+                await self.close()
+                await self.connect(reconnect=True)
+                return
+                
             logger.error(f"""━━━━━━ Event Error ━━━━━━
 Event: {event}
+Error Type: {type(error).__name__}
 Error: {str(error)}
 Args: {args}
 Reconnect Count: {self.connection_state['reconnect_count']}
+Session ID: {self.connection_state.get('session_id')}
+Last Known State: {self.connection_state.get('connected', False)}
 ━━━━━━━━━━━━━━━━━━━━━━━━""")
             
+            # Implement progressive backoff for general errors
+            backoff = min(300, (2 ** self.connection_state['reconnect_count']))
+            logger.info(f"Implementing backoff of {backoff} seconds")
+            await asyncio.sleep(backoff)
+            
         except Exception as e:
-            logger.error(f"Error in error handler: {str(e)}", exc_info=True)
+            logger.error(f"Critical error in error handler: {str(e)}", exc_info=True)
+            # Attempt to recover from critical errors
+            try:
+                await self.close()
+                await asyncio.sleep(5)
+                await self.connect(reconnect=True)
+            except:
+                logger.critical("Failed to recover from critical error")
 
     def _setup_handlers(self):
         """Set up event handlers with proper error handling"""
