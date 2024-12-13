@@ -170,8 +170,20 @@ class DiscordTrivia:
                 )
 
             async def callback(self, interaction: discord.Interaction):
-                answer = self.custom_id.split("_")[1]
-                await self.view.trivia_game.handle_answer(interaction, answer)
+                try:
+                    answer = self.custom_id.split("_")[1]
+                    logger.info(f"User {interaction.user} selected answer: {answer}")
+                    
+                    # Disable all buttons immediately after selection
+                    for child in self.view.children:
+                        child.disabled = True
+                    await interaction.message.edit(view=self.view)
+                    
+                    # Handle the answer
+                    await self.view.trivia_game.handle_answer(interaction, answer)
+                except Exception as e:
+                    logger.error(f"Error in button callback: {str(e)}", exc_info=True)
+                    await interaction.response.send_message("An error occurred. Please try again.", ephemeral=True)
 
         return AnswerView(self, options)
 
@@ -227,20 +239,31 @@ class DiscordTrivia:
             game = self.current_games.get(channel_id)
             
             if not game or not game['current_question']:
+                logger.warning(f"No active game found for channel {channel_id}")
                 await interaction.response.send_message(
                     "No active game found. Start a new game with /trivia",
                     ephemeral=True
                 )
                 return
-                
+
+            logger.info(f"Processing answer for game in channel {channel_id}")
+            logger.info(f"Current game state: {game}")
+            
             question = game['current_question']
             is_correct = answer == question['correct']
             
+            logger.info(f"Processing answer for channel {channel_id}: Current question {game['questions_asked'] + 1}/{len(self.questions)}")
+            logger.info(f"Answer was {is_correct}: {answer} (correct: {question['correct']})")
+            
             if is_correct:
                 game['score'] += 1
+                logger.info(f"Correct answer by {interaction.user}! New score: {game['score']}")
+            else:
+                logger.info(f"Incorrect answer by {interaction.user}. Score remains: {game['score']}")
             
             # Update game state
             game['questions_asked'] += 1
+            logger.info(f"Updated questions asked to: {game['questions_asked']}")
 
             # Disable the buttons in the current message
             view = discord.ui.View()
@@ -297,18 +320,24 @@ class DiscordTrivia:
                 del self.current_games[channel_id]
             else:
                 # Setup and send next question
-                next_question = self.questions[game['questions_asked']]
-                game['current_question'] = next_question
-                
-                next_message = (
-                    f"🎯 Question {game['questions_asked'] + 1}/{len(self.questions)}\n"
-                    f"━━━━━━━━━━━━━━━━━━━━━━━\n\n"
-                    f"📝 {next_question['question']}\n\n"
-                    f"Select your answer from the options below:"
-                )
-                
-                next_view = await self.create_answer_view(next_question['options'])
-                await interaction.followup.send(next_message, view=next_view)
+                try:
+                    next_question = self.questions[game['questions_asked']]
+                    game['current_question'] = next_question
+                    logger.info(f"Setting up next question {game['questions_asked'] + 1}")
+                    
+                    next_message = (
+                        f"🎯 Question {game['questions_asked'] + 1}/{len(self.questions)}\n"
+                        f"━━━━━━━━━━━━━━━━━━━━━━━\n\n"
+                        f"📝 {next_question['question']}\n\n"
+                        f"Select your answer from the options below:"
+                    )
+                    
+                    next_view = await self.create_answer_view(next_question['options'])
+                    await interaction.followup.send(next_message, view=next_view)
+                    logger.info(f"Successfully sent next question to channel {interaction.channel_id}")
+                except Exception as e:
+                    logger.error(f"Error sending next question: {str(e)}", exc_info=True)
+                    await interaction.followup.send("Error loading next question. Please start a new game.", ephemeral=True)
                 
         except Exception as e:
             logger.error(f"Error in handle_answer: {str(e)}", exc_info=True)

@@ -67,26 +67,50 @@ class OctantDiscordBot(commands.Bot):
                 and message.reference.resolved.author.id == self.user.id
             )
             
-            # Check if the bot is mentioned
+            # Check for bot mention or direct reply
             is_mentioned = self.user.mentioned_in(message)
             
-            # Check for "start trivia" message with mention
-            if message.content.lower() == f"<@{self.user.id}> start trivia" or message.content.lower() == f"<@!{self.user.id}> start trivia":
-                await self.trivia.start_game(await self.get_context(message))
+            # Check if the message is a command first
+            if message.content.startswith(self.command_prefix):
+                logger.info(f"Processing command: {message.content}")
+                await self.process_commands(message)
                 return
-                
-            # Only respond if the bot is mentioned or it's a reply to the bot
+
+            # Respond to mentions or direct replies
             if is_mentioned or is_reply_to_bot:
-                # Remove the mention from the message content
-                clean_content = message.clean_content.replace(f"@{self.user.display_name}", "").strip()
+                logger.info("━━━━━━ Bot Interaction ━━━━━━")
+                logger.info(f"Message Type: {'Reply' if is_reply_to_bot else 'Mention'}")
+                logger.info(f"Message: {message.content}")
+                logger.info(f"Author: {message.author.name} (ID: {message.author.id})")
+                logger.info(f"Channel: {message.channel.name} (ID: {message.channel.id})")
+                logger.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
                 
-                response = self.chat_handler.get_response(clean_content)
-                # Split long messages if needed
-                if isinstance(response, list):
-                    for chunk in response:
-                        await message.reply(chunk)
-                else:
-                    await message.reply(response)
+                # Clean the message content
+                clean_content = message.clean_content
+                
+                # Remove bot mention if present
+                if is_mentioned:
+                    # Handle both <@!id> and regular @mentions
+                    mention = f"<@{self.user.id}>"
+                    mention_nick = f"<@!{self.user.id}>"
+                    clean_content = clean_content.replace(mention, "").replace(mention_nick, "")
+                    clean_content = clean_content.replace(f"@{self.user.display_name}", "").strip()
+                
+                logger.info(f"Processing cleaned message: {clean_content}")
+                
+                try:
+                    response = self.chat_handler.get_response(clean_content)
+                    # Split long messages if needed
+                    if isinstance(response, list):
+                        for chunk in response:
+                            if chunk.strip():
+                                await message.reply(chunk)
+                    else:
+                        if response.strip():
+                            await message.reply(response)
+                except Exception as e:
+                    logger.error(f"Error getting response: {str(e)}")
+                    await message.reply("I encountered an error processing your message. Please try again.")
                     
         except Exception as e:
             logger.error(f"Error processing message: {str(e)}")
@@ -108,6 +132,9 @@ async def main():
     @bot.command(name='trivia')
     async def trivia_command(ctx):
         """Start a trivia game"""
+        logger.info("━━━━━━ Trivia Command (via /trivia) ━━━━━━")
+        logger.info(f"Initiating trivia game for user: {ctx.author.name}")
+        logger.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
         await bot.trivia.start_game(ctx)
 
     @bot.command(name='help')
