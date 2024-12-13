@@ -4,6 +4,7 @@ import requests
 from collections import deque
 from trivia import Trivia
 import logging
+import re
 
 logger = logging.getLogger(__name__)
 
@@ -402,35 +403,55 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
 
                 def format_urls(text):
                     """Format URLs in text, keeping social media links clean."""
-                    # Remove any HTML class attributes
-                    text = re.sub(r'class="[^"]*"', '', text)
-                    
-                    # Handle James's social media response
+                    # Handle James's social media response first
                     social_urls = [
                         "https://x.com/vpabundance",
                         "https://warpcast.com/vpabundance.eth",
                         "https://www.linkedin.com/in/vpabundance"
                     ]
                     
-                    # If it's a social media response, return as is
+                    # If it's a social media response, return the plain URLs
                     if all(url in text for url in social_urls):
                         return text
+
+                    # Strip any nested anchor tags first
+                    text = re.sub(r'<a[^>]*?href="<a[^>]*?href="([^"]*)"[^>]*>[^<]*</a>"[^>]*>[^<]*</a>', r'<a href="\1">\1</a>', text)
                     
-                    # Process other URLs
-                    def clean_url(match):
-                        url = match.group(0).rstrip('.,;:!?)"')
-                        url = url.strip('"').strip()
-                        
-                        # Keep social media links as plain URLs
-                        if any(domain in url.lower() for domain in ['x.com', 'warpcast.com', 'linkedin.com']):
-                            return url
-                        
-                        # Format other URLs as HTML links
-                        return f'<a href="{url}">{url}</a>'
+                    # Handle remaining URLs
+                    url_pattern = r'(?<!href=")https?://(?:www\.)?[^\s<>"\']+?(?=[.,;:!?)\s]|$)'
+                    urls_to_format = []
                     
-                    # Find and replace URLs
-                    url_pattern = r'https?://(?:www\.)?[^\s<>"\']+?(?=[.,;:!?)\s]|$)'
-                    return re.sub(url_pattern, clean_url, text)
+                    for match in re.finditer(url_pattern, text):
+                        raw_url = match.group(0).rstrip('.,;:!?)"')
+                        urls_to_format.append((match.start(), match.end(), raw_url))
+                    
+                    # Process URLs in reverse order to maintain indices
+                    urls_to_format.reverse()
+                    for start, end, raw_url in urls_to_format:
+                        # Skip if URL is already in an anchor tag
+                        if any(f'href="{raw_url}"' in text[max(0, start-50):min(len(text), end+50)]):
+                            continue
+                            
+                        # Determine display text
+                        display = raw_url
+                        if raw_url.endswith('.build/'):
+                            display = raw_url.replace('https://', '')
+                        elif '/OctantApp' in raw_url:
+                            display = '@OctantApp'
+                        elif 'discord.gg' in raw_url:
+                            display = 'discord.gg/octant'
+                        elif 'warpcast.com/octant' in raw_url:
+                            display = 'warpcast.com/octant'
+                        
+                        # Format the link
+                        if any(domain in raw_url.lower() for domain in ['x.com', 'warpcast.com', 'linkedin.com']):
+                            replacement = raw_url  # Keep social media links as plain URLs
+                        else:
+                            replacement = f'<a href="{raw_url}" class="bot-link">{display}</a>'
+                        
+                        text = text[:start] + replacement + text[end:]
+                    
+                    return text
                 
                 # Format the response text
                 response_text = format_urls(response_text)
