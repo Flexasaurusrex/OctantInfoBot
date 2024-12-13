@@ -20,7 +20,15 @@ class OctantDiscordBot(commands.Bot):
             intents.members = True          # Requires Server Members Intent
             intents.presences = True        # Requires Presence Intent
             logger.info("Setting up bot with privileged intents...")
-            super().__init__(command_prefix='/', intents=intents)
+            super().__init__(
+                command_prefix='/',
+                intents=intents,
+                description="Octant Information Bot with trivia games and ecosystem knowledge"
+            )
+            
+            # Remove default help command to use our custom one
+            self.remove_command('help')
+            
         except Exception as e:
             logger.error(f"Failed to initialize bot with intents: {str(e)}")
             logger.error("Please ensure all required intents are enabled in the Discord Developer Portal:")
@@ -42,6 +50,27 @@ class OctantDiscordBot(commands.Bot):
     async def setup_hook(self):
         """Setup hook for the bot."""
         logger.info("Bot is setting up...")
+        
+        # Register application commands
+        trivia_command = discord.app_commands.Command(
+            name="trivia",
+            description="Start a fun trivia game about Octant ecosystem",
+            callback=self.trivia.start_game
+        )
+        
+        help_command = discord.app_commands.Command(
+            name="help",
+            description="Show help information about available commands",
+            callback=self.help_command
+        )
+        
+        # Add commands to the command tree
+        self.tree.add_command(trivia_command)
+        self.tree.add_command(help_command)
+        
+        # Sync commands with Discord
+        await self.tree.sync()
+        logger.info("Application commands registered and synced")
         
     async def on_ready(self):
         """Called when the bot is ready."""
@@ -112,14 +141,13 @@ async def main():
     # Create bot instance
     bot = OctantDiscordBot()
     
-    # Add commands
-    @bot.command(name='trivia')
-    async def trivia_command(ctx):
+    @bot.tree.command(name="trivia", description="Start a fun trivia game about Octant ecosystem")
+    async def trivia(interaction: discord.Interaction):
         """Start a trivia game"""
-        await bot.trivia.start_game(ctx)
+        await bot.trivia.start_game(interaction)
 
-    @bot.command(name='help')
-    async def help_command(ctx):
+    @bot.tree.command(name="help", description="Show help information about available commands")
+    async def help(interaction: discord.Interaction):
         """Show help message"""
         help_text = """
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
