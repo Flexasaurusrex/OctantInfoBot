@@ -5,6 +5,14 @@ import html
 import logging
 import asyncio
 from typing import Dict, Optional
+async def get_context_from_interaction(interaction: discord.Interaction) -> Optional[commands.Context]:
+    """Helper function to get context from interaction."""
+    try:
+        return await interaction.client.get_application_context(interaction)
+    except Exception as e:
+        logger.error(f"Error getting context from interaction: {str(e)}", exc_info=True)
+        return None
+
 
 # Configure logging
 logging.basicConfig(
@@ -156,204 +164,239 @@ class DiscordTrivia:
         """Create Discord UI View with buttons for options."""
         class AnswerView(discord.ui.View):
             def __init__(self, trivia_game, options):
-                super().__init__(timeout=None)
+                super().__init__(timeout=300)  # 5 minute timeout
                 self.trivia_game = trivia_game
+                self.answered = False
+                self.timed_out = False
                 for key, value in options.items():
-                    self.add_item(AnswerButton(key, value))
+                    button = discord.ui.Button(
+                        style=discord.ButtonStyle.primary,
+                        label=f"{key}. {value}",
+                        custom_id=f"trivia_{key}",
+                        row=0 if key in ['A', 'B'] else 1
+                    )
+                    button.callback = self.create_button_callback(key)
+                    self.add_item(button)
 
-        class AnswerButton(discord.ui.Button):
-            def __init__(self, key: str, value: str):
-                super().__init__(
-                    label=f"{key}. {value}",
-                    custom_id=f"trivia_{key}",
-                    style=discord.ButtonStyle.secondary
-                )
+            def create_button_callback(self, answer_key):
+                async def button_callback(interaction: discord.Interaction):
+                    try:
+                        if self.answered:
+                            await interaction.response.send_message("This question has already been answered!", ephemeral=True)
+                            return
+                            
+                        if self.timed_out:
+                            await interaction.response.send_message("This question has expired! Start a new game with /trivia", ephemeral=True)
+                            return
 
-            async def callback(self, interaction: discord.Interaction):
+                        self.answered = True
+                        await interaction.response.defer()
+                        
+                        logger.info(f"User {interaction.user} selected answer: {answer_key}")
+                        
+                        # Disable all buttons and update their styles
+                        for child in self.children:
+                            child.disabled = True
+                            if isinstance(child, discord.ui.Button):
+                                button_key = child.custom_id.split("_")[1]
+                                if button_key == self.trivia_game.current_games[interaction.channel_id]['current_question']['correct']:
+                                    child.style = discord.ButtonStyle.success
+                                elif button_key == answer_key:
+                                    child.style = discord.ButtonStyle.danger
+                                    
+                        await interaction.message.edit(view=self)
+                        
+                        # Process the answer
+                        await self.trivia_game.handle_answer(interaction, answer_key)
+                        
+                    except Exception as e:
+                        logger.error(f"Error in button callback: {str(e)}", exc_info=True)
+                        try:
+                            await interaction.followup.send("An error occurred. Please try again with /trivia", ephemeral=True)
+                        except:
+                            pass
+                
+                return button_callback
+
+            async def on_timeout(self):
                 try:
-                    answer = self.custom_id.split("_")[1]
-                    logger.info(f"User {interaction.user} selected answer: {answer}")
-                    
-                    # Disable all buttons immediately after selection
-                    for child in self.view.children:
+                    self.timed_out = True
+                    for child in self.children:
                         child.disabled = True
-                    await interaction.message.edit(view=self.view)
+                    await self.message.edit(view=self)
+                    await self.message.reply("⏰ Time's up! This question has expired. Use /trivia to start a new game!")
                     
-                    # Handle the answer
-                    await self.view.trivia_game.handle_answer(interaction, answer)
+                    # Clean up game state
+                    if hasattr(self, 'message') and self.message.channel.id in self.trivia_game.current_games:
+                        del self.trivia_game.current_games[self.message.channel.id]
                 except Exception as e:
-                    logger.error(f"Error in button callback: {str(e)}", exc_info=True)
-                    await interaction.response.send_message("An error occurred. Please try again.", ephemeral=True)
+                    logger.error(f"Error in timeout handling: {str(e)}", exc_info=True)
+
+            async def on_timeout(self):
+                for child in self.children:
+                    child.disabled = True
+                await self.message.edit(view=self)
+                await self.message.reply("Time's up! The question has expired. Start a new game with /trivia")
 
         return AnswerView(self, options)
 
     async def start_game(self, ctx: commands.Context):
         """Start a new trivia game in a channel."""
-        channel_id = ctx.channel.id
-        self.current_games[channel_id] = {
-            'score': 0,
-            'questions_asked': 0,
-            'current_question': None
-        }
-        
-        await self.send_next_question(ctx)
+        try:
+            channel_id = ctx.channel.id
+            logger.info(f"Starting new game in channel {channel_id}")
+            
+            # Check if there's already an active game
+            if channel_id in self.current_games:
+                logger.info(f"Found existing game in channel {channel_id}")
+                await ctx.send("There's already an active game in this channel! Please finish it or type `/trivia` to start a new one.")
+                return
+                
+            # Initialize new game state
+            self.current_games[channel_id] = {
+                'score': 0,
+                'questions_asked': 0,
+                'current_question': None,
+                'start_time': discord.utils.utcnow()
+            }
+            logger.info(f"Initialized new game state for channel {channel_id}")
+            
+            welcome_message = (
+                "🎮 **Welcome to Octant Trivia!** 🎮\n\n"
+                "Test your knowledge about Octant, GLM tokens, and the ecosystem!\n\n"
+                "**Rules:**\n"
+                "• Answer each question using the buttons below\n"
+                "• You have 5 minutes per question\n"
+                "• Learn interesting facts along the way!\n\n"
+                "Good luck! Here's your first question..."
+            )
+            
+            await ctx.send(welcome_message)
+            logger.info(f"Sent welcome message to channel {channel_id}")
+            
+            await asyncio.sleep(2)  # Brief pause before first question
+            await self.send_next_question(ctx)
+            
+        except Exception as e:
+            logger.error(f"Error starting game in channel {ctx.channel.id}: {str(e)}", exc_info=True)
+            await ctx.send("❌ An error occurred while starting the game. Please try again with `/trivia`.")
 
     async def send_next_question(self, ctx: commands.Context):
         """Send the next question to the channel."""
-        channel_id = ctx.channel.id
-        game = self.current_games.get(channel_id)
-        
-        if not game:
-            await ctx.send("Please start a new game with /trivia")
-            return
+        try:
+            channel_id = ctx.channel.id
+            game = self.current_games.get(channel_id)
             
-        if game['questions_asked'] >= len(self.questions):
-            # Game finished
-            score = game['score']
-            percentage = (score / len(self.questions)) * 100
-            await ctx.send(
-                f"🎮 Game Over!\n\n"
-                f"🏆 Final Score: {score}/{len(self.questions)} ({percentage:.1f}%)\n\n"
-                f"Want to play again? Use /trivia!"
+            if not game:
+                await ctx.send("Please start a new game with /trivia")
+                return
+                
+            if game['questions_asked'] >= len(self.questions):
+                # Game finished
+                score = game['score']
+                percentage = (score / len(self.questions)) * 100
+                await ctx.send(
+                    f"🎮 **Game Over!**\n\n"
+                    f"🏆 **Final Score:** {score}/{len(self.questions)} ({percentage:.1f}%)\n\n"
+                    f"Want to play again? Use /trivia!"
+                )
+                del self.current_games[channel_id]
+                return
+                
+            question = self.questions[game['questions_asked']]
+            game['current_question'] = question
+            
+            message = (
+                f"🎯 **Question {game['questions_asked'] + 1}/{len(self.questions)}**\n"
+                f"━━━━━━━━━━━━━━━━━━━━━━━\n\n"
+                f"📝 {question['question']}\n\n"
+                f"Select your answer from the options below:"
             )
-            del self.current_games[channel_id]
-            return
             
-        question = self.questions[game['questions_asked']]
-        game['current_question'] = question
-        
-        message = (
-            f"🎯 Question {game['questions_asked'] + 1}/{len(self.questions)}\n"
-            f"━━━━━━━━━━━━━━━━━━━━━━━\n\n"
-            f"📝 {question['question']}\n\n"
-            f"Select your answer from the options below:"
-        )
-        
-        view = await self.create_answer_view(question['options'])
-        await ctx.send(message, view=view)
+            view = await self.create_answer_view(question['options'])
+            await ctx.send(message, view=view)
+            
+        except Exception as e:
+            logger.error(f"Error in send_next_question: {str(e)}", exc_info=True)
+            await ctx.send("An error occurred while sending the next question. Please try starting a new game with /trivia")
+            if channel_id in self.current_games:
+                del self.current_games[channel_id]
 
     async def handle_answer(self, interaction: discord.Interaction, answer: str):
         """Handle user's answer selection."""
         try:
-            channel_id = interaction.channel_id
+            channel_id = interaction.channel.id
             game = self.current_games.get(channel_id)
             
             if not game or not game['current_question']:
                 logger.warning(f"No active game found for channel {channel_id}")
-                await interaction.response.send_message(
+                await interaction.followup.send(
                     "No active game found. Start a new game with /trivia",
                     ephemeral=True
                 )
                 return
 
             logger.info(f"Processing answer for game in channel {channel_id}")
-            logger.info(f"Current game state: {game}")
             
             question = game['current_question']
             is_correct = answer == question['correct']
             
-            logger.info(f"Processing answer for channel {channel_id}: Current question {game['questions_asked'] + 1}/{len(self.questions)}")
-            logger.info(f"Answer was {is_correct}: {answer} (correct: {question['correct']})")
-            
             if is_correct:
                 game['score'] += 1
                 logger.info(f"Correct answer by {interaction.user}! New score: {game['score']}")
-            else:
-                logger.info(f"Incorrect answer by {interaction.user}. Score remains: {game['score']}")
             
             # Update game state
             game['questions_asked'] += 1
             logger.info(f"Updated questions asked to: {game['questions_asked']}")
-
-            # Disable the buttons in the current message
-            view = discord.ui.View()
-            for key, value in question['options'].items():
-                button = discord.ui.Button(
-                    label=f"{key}. {value}",
-                    custom_id=f"trivia_{key}",
-                    style=discord.ButtonStyle.secondary,
-                    disabled=True
-                )
-                view.add_item(button)
             
-            try:
-                await interaction.message.edit(view=view)
-            except Exception as button_error:
-                logger.error(f"Error disabling buttons: {str(button_error)}", exc_info=True)
-
-            # Send result message
+            # Format result message
             if is_correct:
                 result_message = (
-                    f"✨ Correct! Brilliant answer! ✨\n\n"
-                    f"📚 Learn More:\n{question['explanation']}\n\n"
-                    f"🎯 Score: {game['score']}/{game['questions_asked']} "
-                    f"({(game['score']/game['questions_asked']*100):.1f}%)"
+                    f"✨ **Correct!** Excellent work! ✨\n\n"
+                    f"📚 **Learn More:**\n{question['explanation']}\n\n"
+                    f"🎯 **Score:** {game['score']}/{game['questions_asked']}"
                 )
             else:
                 correct_option = question['options'][question['correct']]
                 result_message = (
-                    f"❌ Not quite right!\n\n"
+                    f"❌ **Not quite!**\n\n"
                     f"The correct answer was:\n"
-                    f"✅ {question['correct']}: {correct_option}\n\n"
-                    f"📚 Learn More:\n{question['explanation']}\n\n"
-                    f"🎯 Score: {game['score']}/{game['questions_asked']} "
-                    f"({(game['score']/game['questions_asked']*100):.1f}%)"
+                    f"✅ **{question['correct']}:** {correct_option}\n\n"
+                    f"📚 **Learn More:**\n{question['explanation']}\n\n"
+                    f"🎯 **Score:** {game['score']}/{game['questions_asked']}"
                 )
             
-            try:
-                # Send initial response with result
-                await interaction.response.send_message(result_message)
+            # Send result and check game status
+            await interaction.followup.send(result_message)
+            await asyncio.sleep(2)  # Brief pause
+            
+            if game['questions_asked'] >= len(self.questions):
+                percentage = (game['score'] / len(self.questions)) * 100
+                final_message = (
+                    f"🎮 **Game Over!**\n\n"
+                    f"🏆 **Final Score:** {game['score']}/{len(self.questions)} ({percentage:.1f}%)\n\n"
+                )
                 
-                # Handle game completion or next question
-                if game['questions_asked'] >= len(self.questions):
-                    # Game is finished
-                    final_score = game['score']
-                    total_questions = len(self.questions)
-                    percentage = (final_score / total_questions) * 100
-                    final_message = (
-                        f"🎮 Game Over!\n\n"
-                        f"🏆 Final Score: {final_score}/{total_questions} ({percentage:.1f}%)\n\n"
-                        f"Want to play again? Use /trivia!"
-                    )
-                    await interaction.followup.send(final_message)
-                    del self.current_games[channel_id]
+                if percentage >= 80:
+                    final_message += "🌟 Outstanding performance! You really know your stuff!"
+                elif percentage >= 60:
+                    final_message += "👏 Well done! You've got a good grasp of the concepts!"
                 else:
-                    # Create a new context for the next question
-                    try:
-                        channel = interaction.channel
-                        ctx = await interaction.client.get_application_context(interaction)
-                        if ctx is None:
-                            # Fallback to creating a minimal context
-                            ctx = commands.Context(
-                                bot=interaction.client,
-                                channel=channel,
-                                author=interaction.user
-                            )
-                        logger.info(f"Created new context for next question in channel {channel_id}")
-                        await self.send_next_question(ctx)
-                    except Exception as ctx_error:
-                        logger.error(f"Error creating context for next question: {str(ctx_error)}", exc_info=True)
-                        await interaction.followup.send("Error getting next question. Please start a new game with /trivia")
-                    
-            except discord.errors.InteractionResponded:
-                logger.warning("Interaction was already responded to, using followup instead")
-                try:
-                    await interaction.followup.send(result_message)
-                except Exception as e:
-                    logger.error(f"Error sending followup message: {str(e)}", exc_info=True)
-            except Exception as e:
-                logger.error(f"Error handling answer: {str(e)}", exc_info=True)
-                error_message = "An error occurred while processing your answer. Please try again."
-                if not interaction.response.is_done():
-                    await interaction.response.send_message(error_message, ephemeral=True)
-                else:
-                    await interaction.followup.send(error_message, ephemeral=True)
+                    final_message += "Keep learning! Every game is a chance to improve! 📚"
+                
+                final_message += "\n\nWant to play again? Use /trivia!"
+                await interaction.followup.send(final_message)
+                del self.current_games[channel_id]
+            else:
+                # Send next question
+                context = await get_context_from_interaction(interaction)
+                if context:
+                    await asyncio.sleep(1)
+                    await self.send_next_question(context)
                 
         except Exception as e:
             logger.error(f"Error in handle_answer: {str(e)}", exc_info=True)
-            error_message = "An error occurred while processing your answer. Please try again."
-            
-            if not interaction.response.is_done():
-                await interaction.response.send_message(error_message, ephemeral=True)
-            else:
-                await interaction.followup.send(error_message, ephemeral=True)
+            await interaction.followup.send(
+                "An error occurred while processing your answer. Please try again with /trivia",
+                ephemeral=True
+            )
