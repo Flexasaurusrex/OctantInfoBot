@@ -13,7 +13,7 @@ class CommandHandler:
         self.trivia_game = trivia_game
         self.commands = {
             '/help': self.help_command,
-            '/stats': self.stats_command,
+            
             '/learn': self.learn_command,
             '/funding': self.funding_command,
             '/governance': self.governance_command,
@@ -22,25 +22,26 @@ class CommandHandler:
         }
 
     def handle_command(self, command):
-        command = command.lower().split()[0]  # Get the first word of the command
-        if command in self.commands:
-            return self.commands[command]()
-        return None
+        """Handle command with error handling and logging."""
+        try:
+            command = command.lower().split()[0]  # Get the first word of the command
+            if command in self.commands:
+                logger.info(f"Executing command: {command}")
+                return self.commands[command]()
+            logger.warning(f"Unknown command received: {command}")
+            return None
+        except Exception as e:
+            logger.error(f"Error handling command {command}: {str(e)}")
+            return "Sorry, there was an error processing your command. Please try again."
 
     def help_command(self):
         return """
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📚 Available Commands
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-🎮 Game Commands:
+📚 Core Commands:
+• /start - Start the bot
+• /help - Show this help message
 • /trivia - Start a trivia game
-• start trivia - Also starts trivia game
-• end trivia - End current trivia game
 
 📋 Information Commands:
-• /help - Show this help message
-• /stats - View your chat statistics
 • /learn - Access learning modules
 
 📌 Topic-Specific Commands:
@@ -51,20 +52,7 @@ class CommandHandler:
 Type any command to get started!
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"""
 
-    def stats_command(self):
-        return """
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📊 Chat Statistics
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Coming soon! This feature will show:
-• Messages exchanged
-• Topics discussed
-• Trivia performance
-• Learning progress
-
-Stay tuned for updates!
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"""
+    
 
     def learn_command(self):
         return """
@@ -199,15 +187,15 @@ https://www.linkedin.com/in/vpabundance
 For Octant-specific information:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🌐 Official Websites
-• Main Website: <a href="https://octant.build/" class="bot-link">https://octant.build/</a>
-• Documentation: <a href="https://docs.octant.app/" class="bot-link">https://docs.octant.app/</a>
-• Golem Foundation: <a href="https://golem.foundation/" class="bot-link">https://golem.foundation/</a>
+• Main Website: https://octant.build
+• Documentation: https://docs.octant.app
+• Golem Foundation: https://golem.foundation
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📱 Community Platforms
-• Twitter/X: <a href="https://x.com/OctantApp" class="bot-link">@OctantApp</a>
-• Warpcast: <a href="https://warpcast.com/octant" class="bot-link">warpcast.com/octant</a>
-• Discord: <a href="https://discord.gg/octant" class="bot-link">discord.gg/octant</a>
+• Twitter/X: https://x.com/OctantApp
+• Warpcast: https://warpcast.com/octant
+• Discord: https://discord.gg/octant
 
 Core Facts About Octant (or as I like to call it, "The Greatest Show in Blockchain"):
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -414,14 +402,14 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
                     if all(url in text for url in social_urls):
                         return text
 
-                    # Pre-defined URLs and their display format
+                    # Pre-defined URLs and their full URLs to avoid splitting
                     url_mappings = {
-                        'octant.build': {'url': 'https://octant.build/', 'display': 'octant.build'},
-                        'docs.octant.app': {'url': 'https://docs.octant.app/', 'display': 'docs.octant.app'},
-                        'golem.foundation': {'url': 'https://golem.foundation/', 'display': 'golem.foundation'},
-                        'x.com/OctantApp': {'url': 'https://x.com/OctantApp', 'display': '@OctantApp'},
-                        'warpcast.com/octant': {'url': 'https://warpcast.com/octant', 'display': 'warpcast.com/octant'},
-                        'discord.gg/octant': {'url': 'https://discord.gg/octant', 'display': 'discord.gg/octant'}
+                        'https://octant.build': {'url': 'https://octant.build', 'display': 'octant.build'},
+                        'https://docs.octant.app': {'url': 'https://docs.octant.app', 'display': 'docs.octant.app'},
+                        'https://golem.foundation': {'url': 'https://golem.foundation', 'display': 'golem.foundation'},
+                        'https://x.com/OctantApp': {'url': 'https://x.com/OctantApp', 'display': '@OctantApp'},
+                        'https://warpcast.com/octant': {'url': 'https://warpcast.com/octant', 'display': 'warpcast.com/octant'},
+                        'https://discord.gg/octant': {'url': 'https://discord.gg/octant', 'display': 'discord.gg/octant'}
                     }
 
                     # First, protect existing properly formatted anchor tags

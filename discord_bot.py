@@ -154,7 +154,6 @@ async def main():
 
 📋 Information Commands:
 • /help - Show this help message
-• /stats - View your chat statistics
 • /learn - Access learning modules
 
 📌 Topic-Specific Commands:
@@ -165,6 +164,30 @@ async def main():
 Type any command to get started!
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"""
         await ctx.send(help_text)
+
+    @bot.command(name='learn')
+    async def learn_command(ctx):
+        """Access learning modules"""
+        response = bot.chat_handler.command_handler.learn_command()
+        await ctx.send(response)
+
+    @bot.command(name='funding')
+    async def funding_command(ctx):
+        """Learn about Octant's funding"""
+        response = bot.chat_handler.command_handler.funding_command()
+        await ctx.send(response)
+
+    @bot.command(name='governance')
+    async def governance_command(ctx):
+        """Understand governance"""
+        response = bot.chat_handler.command_handler.governance_command()
+        await ctx.send(response)
+
+    @bot.command(name='rewards')
+    async def rewards_command(ctx):
+        """Explore reward system"""
+        response = bot.chat_handler.command_handler.rewards_command()
+        await ctx.send(response)
         
     # Run the bot
     discord_token = os.environ.get('DISCORD_BOT_TOKEN')
