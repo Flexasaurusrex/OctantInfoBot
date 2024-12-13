@@ -56,45 +56,60 @@ class OctantDiscordBot(commands.Bot):
             
         try:
             # Process commands first (these start with /)
-            if message.content.startswith(self.command_prefix):
-                await self.process_commands(message)
+            if message.content.startswith('/'):
+                ctx = await self.get_context(message)
+                try:
+                    await self.process_commands(message)
+                except Exception as e:
+                    logger.error(f"Error processing command: {str(e)}")
+                    if message.content.startswith('/help'):
+                        await help_command(ctx)
+                    elif message.content.startswith('/trivia'):
+                        await self.trivia.start_game(ctx)
                 return
 
-            # Check if the message is a direct reply to the bot
+            # Check if the message is a direct reply to the bot or mentions the bot
             is_reply_to_bot = (
                 message.reference 
                 and message.reference.resolved 
                 and message.reference.resolved.author.id == self.user.id
             )
-            
-            # Check if the bot is mentioned
             is_mentioned = self.user.mentioned_in(message)
             
-            # Check for "start trivia" message with mention
-            if message.content.lower() == f"<@{self.user.id}> start trivia" or message.content.lower() == f"<@!{self.user.id}> start trivia":
-                await self.trivia.start_game(await self.get_context(message))
-                return
+            if is_mentioned or is_reply_to_bot:
+                # Remove bot mention from the message
+                clean_content = message.clean_content
+                if is_mentioned:
+                    # Remove both the full mention format and the display name
+                    clean_content = clean_content.replace(f"<@{self.user.id}>", "").strip()
+                    clean_content = clean_content.replace(f"@{self.user.display_name}", "").strip()
                 
-            # Only respond if the bot is explicitly mentioned (not just replied to)
-            if is_mentioned:
-                # Remove the mention from the message content
-                clean_content = message.clean_content.replace(f"@{self.user.display_name}", "").strip()
+                # Check for specific commands when mentioned
+                if clean_content.lower() == "start trivia":
+                    await self.trivia.start_game(await self.get_context(message))
+                    return
                 
-                response = self.chat_handler.get_response(clean_content)
-                
+                # Get response for other messages
                 try:
-                    # Split long messages if needed
+                    response = self.chat_handler.get_response(clean_content)
                     if isinstance(response, list):
                         for chunk in response:
-                            await message.reply(chunk)
-                    else:
+                            if chunk and chunk.strip():
+                                await message.reply(chunk.strip())
+                    elif response:
                         await message.reply(response)
+                    else:
+                        await message.reply("I'm not sure how to respond to that. Try asking me something else!")
                 except discord.errors.HTTPException as e:
                     if e.code == 429:  # Rate limited
+                        logger.warning(f"Rate limited, waiting {e.retry_after}s")
                         await asyncio.sleep(e.retry_after)
                         await message.reply(response)
                     else:
                         raise
+                except Exception as e:
+                    logger.error(f"Error getting response: {str(e)}")
+                    await message.reply("I encountered an error processing your message. Please try again.")
                     
         except Exception as e:
             logger.error(f"Error processing message: {str(e)}")
