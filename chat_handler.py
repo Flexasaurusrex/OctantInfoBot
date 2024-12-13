@@ -482,7 +482,7 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
                 
                 # Enhanced cleanup to fix any remaining nested tags
                 def fix_nested_tags(text):
-                    """Fix any nested or malformed HTML link tags."""
+                    """Fix any nested or malformed HTML link tags with improved safety."""
                     if not text:
                         return text
 
@@ -490,42 +490,42 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
                         """Clean URL for display"""
                         return url.replace('https://', '').rstrip('/')
 
-                    # List of patterns to fix common nesting issues
+                    def safe_sub(pattern, repl, text, max_iterations=5):
+                        """Safely apply substitution with iteration limit"""
+                        for _ in range(max_iterations):
+                            new_text = re.sub(pattern, repl, text)
+                            if new_text == text:  # No changes made
+                                break
+                            text = new_text
+                        return text
+
+                    # Simpler, more reliable patterns
                     patterns = [
+                        # Fix nested href attributes (most common issue)
+                        (r'<a href="([^"]*<a href="[^"]*"[^>]*>[^<]*</a>[^"]*)"',
+                         lambda m: '<a href="' + m.group(1).split('"')[0] + '"'),
+
                         # Fix completely nested tags
-                        (r'<a href="<a href="([^"]+)"[^>]*>[^<]+</a>"[^>]*>[^<]+</a>',
-                         lambda m: f'<a href="{m.group(1)}" class="bot-link">{clean_url_text(m.group(1))}</a>'),
-                        
-                        # Fix nested href attributes
-                        (r'<a href="<a href="([^"]+)"',
-                         lambda m: f'<a href="{m.group(1)}"'),
-                         
-                        # Fix double-wrapped URLs
-                        (r'<a href="([^"]+)"[^>]*><a href="([^"]+)"[^>]*>([^<]+)</a></a>',
-                         lambda m: f'<a href="{m.group(1)}" class="bot-link">{m.group(3)}</a>'),
-                         
-                        # Remove duplicate tags for same URL
-                        (r'(<a href="([^"]+)"[^>]*>[^<]+</a>)\s*\1',
-                         lambda m: m.group(1)),
-                         
-                        # Fix malformed closing tags
-                        (r'<a href="([^"]+)"[^>]*>([^<]+)(?:</a>)+',
-                         lambda m: f'<a href="{m.group(1)}" class="bot-link">{m.group(2)}</a>')
+                        (r'<a href="([^"]+)"[^>]*><a href="[^"]+"[^>]*>([^<]+)</a></a>',
+                         lambda m: f'<a href="{m.group(1)}" class="bot-link">{m.group(2)}</a>'),
+
+                        # Remove duplicate adjacent tags
+                        (r'(<a href="[^"]+"[^>]*>[^<]+</a>)\s*\1',
+                         r'\1'),
+
+                        # Fix tags with multiple closing tags
+                        (r'<a href="([^"]+)"[^>]*>([^<]+)</a></a>',
+                         r'<a href="\1" class="bot-link">\2</a>'),
+
+                        # Ensure proper link class
+                        (r'<a href="([^"]+)"(?!\s+class="bot-link")',
+                         r'<a href="\1" class="bot-link"')
                     ]
 
-                    # Apply each pattern until no more changes
-                    prev_text = None
-                    while prev_text != text:
-                        prev_text = text
-                        for pattern, replacement in patterns:
-                            while re.search(pattern, text):
-                                text = re.sub(pattern, replacement, text)
-
-                    # Ensure all links have the bot-link class
-                    text = re.sub(r'<a href="([^"]+)"(?!\s+class="bot-link")',
-                                r'<a href="\1" class="bot-link"',
-                                text)
-
+                    # Apply patterns safely
+                    for pattern, replacement in patterns:
+                        text = safe_sub(pattern, replacement, text)
+        
                     return text
                 
                 # Apply the enhanced cleanup
