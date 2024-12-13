@@ -6,6 +6,48 @@ from telegram_trivia import TelegramTrivia
 import time
 import threading
 from datetime import datetime, timedelta
+
+class WatchdogTimer:
+    def __init__(self, timeout=600):  # 10 minutes default timeout
+        self.timeout = timeout
+        self.last_ping = datetime.now()
+        self.lock = threading.Lock()
+        self.running = True
+        self.warn_threshold = timeout * 0.8  # Warn at 80% of timeout
+        self.start_monitor()
+
+    def ping(self):
+        with self.lock:
+            self.last_ping = datetime.now()
+
+    def start_monitor(self):
+        def monitor():
+            while self.running:
+                with self.lock:
+                    current_time = datetime.now()
+                    time_since_ping = (current_time - self.last_ping).total_seconds()
+                    if time_since_ping > self.timeout:
+                        logger.error(f"""━━━━━━ Watchdog Timeout ━━━━━━
+Last Ping: {self.last_ping}
+Current Time: {current_time}
+Time Since Last Ping: {time_since_ping:.2f}s
+Timeout Threshold: {self.timeout}s
+━━━━━━━━━━━━━━━━━━━━━━━━""")
+                        os._exit(1)  # Force restart
+                    elif time_since_ping > self.warn_threshold:
+                        logger.warning(f"""━━━━━━ Watchdog Warning ━━━━━━
+Last Ping: {self.last_ping}
+Current Time: {current_time}
+Time Since Last Ping: {time_since_ping:.2f}s
+Warning Threshold: {self.warn_threshold}s
+━━━━━━━━━━━━━━━━━━━━━━━━""")
+                time.sleep(30)  # Check every 30 seconds
+        
+        thread = threading.Thread(target=monitor, daemon=True)
+        thread.start()
+
+    def stop(self):
+        self.running = False
 import asyncio
 from telegram.error import NetworkError, TimedOut, RetryAfter
 from chat_handler import ChatHandler
@@ -53,62 +95,18 @@ telegram_trivia = TelegramTrivia()
 ADMIN_USER_IDS = {5100739421, 5365683947, 1087968824}  # Updated admin list with all admin IDs
 
 async def restart_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Handle the /restart command (admin only)"""
+    """Restart the bot."""
+    user_id = update.effective_user.id
+    await update.message.reply_text("Restarting the bot... Please wait.")
+    logger.info(f"Restart command issued by user {user_id}")
+    
     try:
-        # Check if user is admin (you can implement your own admin check)
-        admin_ids = [12345678]  # Replace with actual admin IDs
-        if update.effective_user.id not in admin_ids:
-            await update.message.reply_text("Sorry, only administrators can use this command.")
-            return
-
-        await update.message.reply_text("Restarting the bot...")
+        # Set restart flag
         context.application._restart_requested = True
-
+        logger.info("Initiating graceful shutdown...")
     except Exception as e:
-        logger.error(f"Error in restart command: {str(e)}")
-        await update.message.reply_text("Failed to restart the bot. Please try again later.")
-
-class WatchdogTimer:
-    def __init__(self, timeout=600):  # 10 minutes default timeout
-        self.timeout = timeout
-        self.last_ping = datetime.now()
-        self.lock = threading.Lock()
-        self.running = True
-        self.warn_threshold = timeout * 0.8  # Warn at 80% of timeout
-        self.start_monitor()
-
-    def ping(self):
-        with self.lock:
-            self.last_ping = datetime.now()
-
-    def start_monitor(self):
-        def monitor():
-            while self.running:
-                with self.lock:
-                    current_time = datetime.now()
-                    time_since_ping = (current_time - self.last_ping).total_seconds()
-                    if time_since_ping > self.timeout:
-                        logger.error(f"""━━━━━━ Watchdog Timeout ━━━━━━
-Last Ping: {self.last_ping}
-Current Time: {current_time}
-Time Since Last Ping: {time_since_ping:.2f}s
-Timeout Threshold: {self.timeout}s
-━━━━━━━━━━━━━━━━━━━━━━━━""")
-                        os._exit(1)  # Force restart
-                    elif time_since_ping > self.warn_threshold:
-                        logger.warning(f"""━━━━━━ Watchdog Warning ━━━━━━
-Last Ping: {self.last_ping}
-Current Time: {current_time}
-Time Since Last Ping: {time_since_ping:.2f}s
-Warning Threshold: {self.warn_threshold}s
-━━━━━━━━━━━━━━━━━━━━━━━━""")
-                time.sleep(30)  # Check every 30 seconds
-        
-        thread = threading.Thread(target=monitor, daemon=True)
-        thread.start()
-
-    def stop(self):
-        self.running = False
+        logger.error(f"Error during restart command: {str(e)}")
+        await update.message.reply_text("Error occurred during restart. Please try again later.")
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Send a message when the command /start is issued."""
@@ -129,19 +127,10 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     help_text = """
 Here are the available commands:
 
-📚 Core Commands:
-• /start - Start the bot
-• /help - Show this help message
-• /trivia - Start a trivia game
-• /restart - Restart the bot (admin only)
-
-📋 Information Commands:
-• /learn - Access learning modules
-
-📌 Topic-Specific Commands:
-• /funding - Learn about Octant's funding
-• /governance - Understand governance
-• /rewards - Explore reward system
+/start - Start the bot
+/help - Show this help message
+/trivia - Start a trivia game
+/restart - Restart the bot (admin only)
 
 You can also ask me any questions about:
 • Octant's ecosystem
@@ -153,27 +142,6 @@ You can also ask me any questions about:
 Just type your question and I'll help you out! 📚
     """
     await update.message.reply_text(help_text)
-
-async def handle_info_command(update: Update, context: ContextTypes.DEFAULT_TYPE, command: str) -> None:
-    """Handle information commands (/learn, /funding, /governance, /rewards)."""
-    try:
-        response = None
-        if command == "learn":
-            response = chat_handler.command_handler.learn_command()
-        elif command == "funding":
-            response = chat_handler.command_handler.funding_command()
-        elif command == "governance":
-            response = chat_handler.command_handler.governance_command()
-        elif command == "rewards":
-            response = chat_handler.command_handler.rewards_command()
-            
-        if response:
-            await update.message.reply_text(response)
-        else:
-            await update.message.reply_text("Sorry, I couldn't process that command. Please try again.")
-    except Exception as e:
-        logger.error(f"Error handling {command} command: {str(e)}")
-        await update.message.reply_text("I encountered an error processing your command. Please try again.")
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Handle incoming messages with simplified logic."""
@@ -456,21 +424,12 @@ async def main() -> None:
             application._restart_requested = False
 
             # Add handlers with enhanced monitoring
-            # Core commands
             application.add_handler(CommandHandler("start", start))
             application.add_handler(CommandHandler("help", help_command))
             application.add_handler(CommandHandler("restart", restart_command))
-            application.add_handler(CommandHandler("trivia", telegram_trivia.start_game))
-            
-            # Information commands
-            application.add_handler(CommandHandler("learn", lambda update, context: handle_info_command(update, context, "learn")))
-            application.add_handler(CommandHandler("funding", lambda update, context: handle_info_command(update, context, "funding")))
-            application.add_handler(CommandHandler("governance", lambda update, context: handle_info_command(update, context, "governance")))
-            application.add_handler(CommandHandler("rewards", lambda update, context: handle_info_command(update, context, "rewards")))
-            
-            # General message handler and trivia callback
             application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
             application.add_handler(CallbackQueryHandler(telegram_trivia.handle_answer, pattern="^trivia_"))
+            application.add_handler(CommandHandler("trivia", telegram_trivia.start_game))
             application.add_error_handler(error_handler)
             
             # Store watchdog instance in application
