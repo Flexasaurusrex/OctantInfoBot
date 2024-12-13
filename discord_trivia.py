@@ -183,11 +183,7 @@ class DiscordTrivia:
         channel_id = ctx.channel.id
         game = self.current_games.get(channel_id)
         
-        logger.info(f"Sending next question for channel {channel_id}")
-        logger.info(f"Game state: {game}")
-        
         if not game:
-            logger.warning(f"No active game found for channel {channel_id}")
             await ctx.send("No active game found. Start a new game with /trivia")
             return
 
@@ -234,13 +230,11 @@ class DiscordTrivia:
             question = game['current_question']
             is_correct = answer == question['correct']
             
-            # Only process the answer if it hasn't been answered yet
-            if game['questions_asked'] < len(self.questions):
-                if is_correct:
-                    game['score'] += 1
-                
-                # Update game state
-                game['questions_asked'] += 1
+            if is_correct:
+                game['score'] += 1
+            
+            # Update game state
+            game['questions_asked'] += 1
 
             # Create updated view with correct/incorrect indicators
             view = discord.ui.View(timeout=None)
