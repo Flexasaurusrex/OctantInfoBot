@@ -394,10 +394,6 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
 
                 def format_urls(text):
                     """Format URLs in text with improved handling of domain extensions."""
-                    # If text already contains formatted links, return as is
-                    if '<a href=' in text and 'class="bot-link"' in text:
-                        return text
-
                     # Handle James's social media links
                     james_social = [
                         "https://x.com/vpabundance",
@@ -407,33 +403,44 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
                     if all(url in text for url in james_social):
                         return text
 
+                    # First, clean up any existing nested or malformed links
+                    while '<a href="<a href=' in text:
+                        text = re.sub(r'<a href="<a href="([^"]+)"[^>]+>[^<]+</a>"[^>]+>[^<]+</a>', 
+                                     r'<a href="\1" class="bot-link">\1</a>', text)
+                    
+                    # If the text still contains formatted links after cleanup, return it
+                    if '<a href=' in text:
+                        return text
+
                     # Common domain extensions
                     domain_endings = r'(?:com|org|net|edu|gov|io|app|build|foundation|eth|gg)'
                     
-                    # URL pattern
-                    url_pattern = fr'https?://(?:www\.)?[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*\.{domain_endings}(?:/[^\s<>"\']*)?'
+                    # URL pattern - exclude URLs that are already in HTML tags
+                    url_pattern = fr'(?<!href=")https?://(?:www\.)?[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*\.{domain_endings}(?:/[^\s<>"\']*)?'
                     
                     def process_url(match):
                         url = match.group(0).rstrip('.,;:!?)"')
+                        display = url.replace('https://', '').rstrip('/')
                         
-                        # Format display text
-                        if url.endswith('.build/'):
-                            display = url.replace('https://', '').rstrip('/')
-                        elif 'x.com/OctantApp' in url:
+                        # Special cases for display text
+                        if 'x.com/OctantApp' in url:
                             display = '@OctantApp'
                         elif 'discord.gg/octant' in url:
                             display = 'discord.gg/octant'
                         elif 'warpcast.com/octant' in url:
                             display = 'warpcast.com/octant'
-                        else:
-                            display = url.replace('https://', '').rstrip('/')
-
-                        # Return formatted link
+                        
                         return f'<a href="{url}" class="bot-link">{display}</a>'
 
-                    # Format URLs
-                    text = re.sub(url_pattern, process_url, text)
-                    return text
+                    # Format unformatted URLs only
+                    formatted = re.sub(url_pattern, process_url, text)
+                    
+                    # Clean up any remaining bot-link references without double-formatting
+                    formatted = re.sub(r'">https?://[^<]+?</a>', 
+                                     lambda m: '">' + m.group(0)[2:-4].replace('https://', '').rstrip('/') + '</a>', 
+                                     formatted)
+                    
+                    return formatted
                 
                 # Format the response text
                 response_text = format_urls(response_text)
