@@ -78,7 +78,8 @@ class OctantDiscordBot(commands.Bot):
             # Register the trivia command
             @self.tree.command(
                 name="trivia",
-                description="Start a fun trivia game about Octant ecosystem"
+                description="Start a fun trivia game about Octant ecosystem",
+                guild=None  # This ensures the command is registered globally
             )
             async def trivia(interaction: discord.Interaction):
                 await interaction.response.defer()
@@ -105,12 +106,28 @@ Type any command to get started!
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"""
                 await interaction.response.send_message(help_text)
 
-            # Sync commands globally
+            # Sync commands globally with detailed logging
             logger.info("Attempting to sync application commands globally...")
             try:
+                # First, clear any existing commands to ensure clean sync
+                self.tree.clear_commands(guild=None)
+                logger.info("Cleared existing commands")
+                
+                # Register commands
                 await self.tree.sync()
                 self.synced = True
-                logger.info("Successfully synced all commands globally")
+                
+                # Get all commands to verify registration
+                commands = await self.tree.fetch_commands()
+                logger.info(f"Successfully synced {len(commands)} commands globally")
+                
+                # Log each registered command for verification
+                for cmd in commands:
+                    logger.info(f"Registered command: /{cmd.name} - {cmd.description}")
+                    
+            except discord.errors.Forbidden as e:
+                logger.error(f"Permission error syncing commands: {str(e)}")
+                raise
             except Exception as e:
                 logger.error(f"Failed to sync commands: {str(e)}")
                 raise
