@@ -55,23 +55,38 @@ class OctantDiscordBot(commands.Bot):
             return
             
         try:
-            # Check for "start trivia" message
-            if message.content.lower() == "start trivia":
+            # Process commands first (these start with /)
+            if message.content.startswith(self.command_prefix):
+                await self.process_commands(message)
+                return
+
+            # Check if the message is a direct reply to the bot
+            is_reply_to_bot = (
+                message.reference 
+                and message.reference.resolved 
+                and message.reference.resolved.author.id == self.user.id
+            )
+            
+            # Check if the bot is mentioned
+            is_mentioned = self.user.mentioned_in(message)
+            
+            # Check for "start trivia" message with mention
+            if message.content.lower() == f"<@{self.user.id}> start trivia" or message.content.lower() == f"<@!{self.user.id}> start trivia":
                 await self.trivia.start_game(await self.get_context(message))
                 return
                 
-            # Process commands first
-            await self.process_commands(message)
-            
-            # If it's not a command, process as regular message
-            if not message.content.startswith(self.command_prefix):
-                response = self.chat_handler.get_response(message.content)
+            # Only respond if the bot is mentioned or it's a reply to the bot
+            if is_mentioned or is_reply_to_bot:
+                # Remove the mention from the message content
+                clean_content = message.clean_content.replace(f"@{self.user.display_name}", "").strip()
+                
+                response = self.chat_handler.get_response(clean_content)
                 # Split long messages if needed
                 if isinstance(response, list):
                     for chunk in response:
-                        await message.channel.send(chunk)
+                        await message.reply(chunk)
                 else:
-                    await message.channel.send(response)
+                    await message.reply(response)
                     
         except Exception as e:
             logger.error(f"Error processing message: {str(e)}")

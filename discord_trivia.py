@@ -3,6 +3,7 @@ from discord.ext import commands
 import random
 import html
 import logging
+import asyncio
 from typing import Dict, Optional
 
 # Configure logging
@@ -240,8 +241,24 @@ class DiscordTrivia:
             
             # Update game state
             game['questions_asked'] += 1
+
+            # Disable the buttons in the current message
+            view = discord.ui.View()
+            for key, value in question['options'].items():
+                button = discord.ui.Button(
+                    label=f"{key}. {value}",
+                    custom_id=f"trivia_{key}",
+                    style=discord.ButtonStyle.secondary,
+                    disabled=True
+                )
+                view.add_item(button)
             
-            # Show result
+            try:
+                await interaction.message.edit(view=view)
+            except Exception as button_error:
+                logger.error(f"Error disabling buttons: {str(button_error)}", exc_info=True)
+
+            # Send result message
             if is_correct:
                 result_message = (
                     f"✨ Correct! Brilliant answer! ✨\n\n"
@@ -260,32 +277,44 @@ class DiscordTrivia:
                     f"({(game['score']/game['questions_asked']*100):.1f}%)"
                 )
             
-            try:
-                # Disable the buttons in the view
-                view = discord.ui.View.from_message(interaction.message)
-                for item in view.children:
-                    item.disabled = True
-                await interaction.response.edit_message(view=view)
-            except Exception as button_error:
-                logger.error(f"Error disabling buttons: {str(button_error)}")
-                # If we can't disable buttons, just send the result
-                await interaction.response.defer()
+            await interaction.response.send_message(result_message)
             
-            # Send the result message
-            await interaction.followup.send(result_message)
+            # Small delay before sending next question
+            await asyncio.sleep(1)
             
-            # Send next question if available
-            if game['questions_asked'] < len(self.questions):
-                ctx = await commands.Context.from_interaction(interaction)
-                await self.send_next_question(ctx)
+            # Handle game completion or next question
+            if game['questions_asked'] >= len(self.questions):
+                # Game is finished
+                final_score = game['score']
+                total_questions = len(self.questions)
+                percentage = (final_score / total_questions) * 100
+                final_message = (
+                    f"🎮 Game Over!\n\n"
+                    f"🏆 Final Score: {final_score}/{total_questions} ({percentage:.1f}%)\n\n"
+                    f"Want to play again? Use /trivia!"
+                )
+                await interaction.followup.send(final_message)
+                del self.current_games[channel_id]
+            else:
+                # Setup and send next question
+                next_question = self.questions[game['questions_asked']]
+                game['current_question'] = next_question
+                
+                next_message = (
+                    f"🎯 Question {game['questions_asked'] + 1}/{len(self.questions)}\n"
+                    f"━━━━━━━━━━━━━━━━━━━━━━━\n\n"
+                    f"📝 {next_question['question']}\n\n"
+                    f"Select your answer from the options below:"
+                )
+                
+                next_view = await self.create_answer_view(next_question['options'])
+                await interaction.followup.send(next_message, view=next_view)
                 
         except Exception as e:
-            logger.error(f"Error in handle_answer: {str(e)}")
-            try:
-                if not interaction.response.is_done():
-                    await interaction.response.send_message(
-                        "An error occurred while processing your answer. Please try again.",
-                        ephemeral=True
-                    )
-            except Exception as response_error:
-                logger.error(f"Error sending error message: {str(response_error)}")
+            logger.error(f"Error in handle_answer: {str(e)}", exc_info=True)
+            error_message = "An error occurred while processing your answer. Please try again."
+            
+            if not interaction.response.is_done():
+                await interaction.response.send_message(error_message, ephemeral=True)
+            else:
+                await interaction.followup.send(error_message, ephemeral=True)

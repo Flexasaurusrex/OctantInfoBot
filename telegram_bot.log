@@ -8337,3 +8337,211 @@ Timeout Threshold: 300s
 2024-12-13 02:54:33,419 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/deleteWebhook "HTTP/1.1 200 OK"
 2024-12-13 02:54:43,731 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
 2024-12-13 02:54:53,838 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 02:55:03,943 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 02:55:14,050 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 02:55:24,156 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 02:55:34,261 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 02:55:44,367 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 02:55:54,473 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 02:56:04,577 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 02:56:14,684 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 02:56:24,790 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 02:56:29,289 - __main__ - INFO - [telegram_bot:528] - ━━━━━━ Initializing Chat Handler ━━━━━━
+2024-12-13 02:56:29,289 - __main__ - INFO - [telegram_bot:531] - Chat handler configuration:
+2024-12-13 02:56:29,289 - __main__ - INFO - [telegram_bot:532] - Model: mistralai/Mixtral-8x7B-Instruct-v0.1
+2024-12-13 02:56:29,290 - __main__ - INFO - [telegram_bot:533] - Max history: 5
+2024-12-13 02:56:29,290 - __main__ - INFO - [telegram_bot:534] - TelegramTrivia initialized
+2024-12-13 02:56:29,290 - __main__ - INFO - [telegram_bot:535] - Chat handler initialized successfully
+2024-12-13 02:56:29,290 - __main__ - INFO - [telegram_bot:536] - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-13 02:56:29,290 - __main__ - INFO - [telegram_bot:550] - Starting main loop...
+2024-12-13 02:56:29,301 - __main__ - INFO - [telegram_bot:397] - Initializing Telegram bot...
+2024-12-13 02:56:29,387 - __main__ - INFO - [telegram_bot:439] - ━━━━━━ Bot Configuration ━━━━━━
+2024-12-13 02:56:29,387 - __main__ - INFO - [telegram_bot:440] - Start Time: 2024-12-13 02:56:29
+2024-12-13 02:56:29,387 - __main__ - INFO - [telegram_bot:441] - Retry Count: 0
+2024-12-13 02:56:29,388 - __main__ - INFO - [telegram_bot:442] - Bot Version: 1.0.1
+2024-12-13 02:56:29,388 - __main__ - INFO - [telegram_bot:443] - Connection Parameters:
+2024-12-13 02:56:29,388 - __main__ - INFO - [telegram_bot:444] - - Polling Timeout: 60s
+2024-12-13 02:56:29,388 - __main__ - INFO - [telegram_bot:445] - - Connection Retries: infinite
+2024-12-13 02:56:29,388 - __main__ - INFO - [telegram_bot:446] - - Update Mode: polling
+2024-12-13 02:56:29,388 - __main__ - INFO - [telegram_bot:447] - - Health Check: Active
+2024-12-13 02:56:29,388 - __main__ - INFO - [telegram_bot:448] - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-13 02:56:29,389 - __main__ - INFO - [telegram_bot:332] - ━━━━━━ System Health Check ━━━━━━
+2024-12-13 02:56:29,389 - __main__ - INFO - [telegram_bot:333] - Uptime: 0h 0m 0s
+2024-12-13 02:56:29,389 - __main__ - INFO - [telegram_bot:334] - Memory Usage: 51.19 MB (0.1%)
+2024-12-13 02:56:29,389 - __main__ - INFO - [telegram_bot:335] - CPU Usage: 0.0%
+2024-12-13 02:56:29,389 - __main__ - INFO - [telegram_bot:336] - Network I/O: ↑1.9MB ↓4.0MB
+2024-12-13 02:56:29,389 - __main__ - INFO - [telegram_bot:337] - Disk Usage: 20.8%
+2024-12-13 02:56:29,390 - __main__ - INFO - [telegram_bot:338] - Retry Count: 0
+2024-12-13 02:56:29,390 - __main__ - INFO - [telegram_bot:339] - Last Update Time: 2024-12-13 02:56:29
+2024-12-13 02:56:29,390 - __main__ - INFO - [telegram_bot:341] - Message Processing Rate: Monitoring
+2024-12-13 02:56:29,390 - __main__ - INFO - [telegram_bot:342] - Connection Status: Active
+2024-12-13 02:56:29,390 - __main__ - INFO - [telegram_bot:343] - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-13 02:56:29,709 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getMe "HTTP/1.1 200 OK"
+2024-12-13 02:56:29,710 - telegram.ext.Application - INFO - [_application:631] - Application started
+2024-12-13 02:56:29,710 - __main__ - INFO - [telegram_bot:460] - Starting polling...
+2024-12-13 02:56:29,814 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/deleteWebhook "HTTP/1.1 200 OK"
+2024-12-13 02:56:40,126 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 02:56:50,231 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 02:57:00,336 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 02:57:10,441 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 02:57:20,547 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 02:57:30,653 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 02:57:40,759 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 02:57:50,865 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 02:58:00,969 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 02:58:11,075 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 02:58:21,181 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 02:58:31,285 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 02:58:41,399 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 02:58:51,504 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 02:59:01,608 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 02:59:11,714 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 02:59:21,820 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 02:59:31,924 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 02:59:42,029 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 02:59:52,133 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 03:00:02,237 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 03:00:12,342 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 03:00:22,446 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 03:00:29,302 - __main__ - WARNING - [telegram_bot:38] - ━━━━━━ Watchdog Warning ━━━━━━
+Last Ping: 2024-12-13 02:56:29.301781
+Current Time: 2024-12-13 03:00:29.302538
+Time Since Last Ping: 240.00s
+Warning Threshold: 240.0s
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-13 03:00:32,551 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 03:00:42,656 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 03:00:52,760 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 03:00:59,303 - __main__ - WARNING - [telegram_bot:38] - ━━━━━━ Watchdog Warning ━━━━━━
+Last Ping: 2024-12-13 02:56:29.301781
+Current Time: 2024-12-13 03:00:59.302947
+Time Since Last Ping: 270.00s
+Warning Threshold: 240.0s
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-13 03:01:02,864 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 03:01:12,970 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 03:01:23,073 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 03:01:29,303 - __main__ - ERROR - [telegram_bot:30] - ━━━━━━ Watchdog Timeout ━━━━━━
+Last Ping: 2024-12-13 02:56:29.301781
+Current Time: 2024-12-13 03:01:29.303313
+Time Since Last Ping: 300.00s
+Timeout Threshold: 300s
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-13 03:03:38,360 - __main__ - INFO - [telegram_bot:528] - ━━━━━━ Initializing Chat Handler ━━━━━━
+2024-12-13 03:03:38,360 - __main__ - INFO - [telegram_bot:531] - Chat handler configuration:
+2024-12-13 03:03:38,360 - __main__ - INFO - [telegram_bot:532] - Model: mistralai/Mixtral-8x7B-Instruct-v0.1
+2024-12-13 03:03:38,360 - __main__ - INFO - [telegram_bot:533] - Max history: 5
+2024-12-13 03:03:38,360 - __main__ - INFO - [telegram_bot:534] - TelegramTrivia initialized
+2024-12-13 03:03:38,361 - __main__ - INFO - [telegram_bot:535] - Chat handler initialized successfully
+2024-12-13 03:03:38,361 - __main__ - INFO - [telegram_bot:536] - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-13 03:03:38,361 - __main__ - INFO - [telegram_bot:550] - Starting main loop...
+2024-12-13 03:03:38,372 - __main__ - INFO - [telegram_bot:397] - Initializing Telegram bot...
+2024-12-13 03:03:38,452 - __main__ - INFO - [telegram_bot:439] - ━━━━━━ Bot Configuration ━━━━━━
+2024-12-13 03:03:38,453 - __main__ - INFO - [telegram_bot:440] - Start Time: 2024-12-13 03:03:38
+2024-12-13 03:03:38,453 - __main__ - INFO - [telegram_bot:441] - Retry Count: 0
+2024-12-13 03:03:38,453 - __main__ - INFO - [telegram_bot:442] - Bot Version: 1.0.1
+2024-12-13 03:03:38,453 - __main__ - INFO - [telegram_bot:443] - Connection Parameters:
+2024-12-13 03:03:38,453 - __main__ - INFO - [telegram_bot:444] - - Polling Timeout: 60s
+2024-12-13 03:03:38,453 - __main__ - INFO - [telegram_bot:445] - - Connection Retries: infinite
+2024-12-13 03:03:38,453 - __main__ - INFO - [telegram_bot:446] - - Update Mode: polling
+2024-12-13 03:03:38,453 - __main__ - INFO - [telegram_bot:447] - - Health Check: Active
+2024-12-13 03:03:38,454 - __main__ - INFO - [telegram_bot:448] - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-13 03:03:38,454 - __main__ - INFO - [telegram_bot:332] - ━━━━━━ System Health Check ━━━━━━
+2024-12-13 03:03:38,454 - __main__ - INFO - [telegram_bot:333] - Uptime: 0h 0m 0s
+2024-12-13 03:03:38,454 - __main__ - INFO - [telegram_bot:334] - Memory Usage: 51.15 MB (0.1%)
+2024-12-13 03:03:38,455 - __main__ - INFO - [telegram_bot:335] - CPU Usage: 0.0%
+2024-12-13 03:03:38,455 - __main__ - INFO - [telegram_bot:336] - Network I/O: ↑2.5MB ↓5.4MB
+2024-12-13 03:03:38,455 - __main__ - INFO - [telegram_bot:337] - Disk Usage: 20.8%
+2024-12-13 03:03:38,455 - __main__ - INFO - [telegram_bot:338] - Retry Count: 0
+2024-12-13 03:03:38,455 - __main__ - INFO - [telegram_bot:339] - Last Update Time: 2024-12-13 03:03:38
+2024-12-13 03:03:38,455 - __main__ - INFO - [telegram_bot:341] - Message Processing Rate: Monitoring
+2024-12-13 03:03:38,455 - __main__ - INFO - [telegram_bot:342] - Connection Status: Active
+2024-12-13 03:03:38,455 - __main__ - INFO - [telegram_bot:343] - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-13 03:03:38,773 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getMe "HTTP/1.1 200 OK"
+2024-12-13 03:03:38,774 - telegram.ext.Application - INFO - [_application:631] - Application started
+2024-12-13 03:03:38,775 - __main__ - INFO - [telegram_bot:460] - Starting polling...
+2024-12-13 03:03:38,880 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/deleteWebhook "HTTP/1.1 200 OK"
+2024-12-13 03:03:49,195 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 03:03:59,323 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 03:04:09,427 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 03:04:19,545 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 03:04:29,652 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 03:04:39,761 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 03:04:49,871 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 03:04:52,470 - __main__ - INFO - [telegram_bot:528] - ━━━━━━ Initializing Chat Handler ━━━━━━
+2024-12-13 03:04:52,471 - __main__ - INFO - [telegram_bot:531] - Chat handler configuration:
+2024-12-13 03:04:52,471 - __main__ - INFO - [telegram_bot:532] - Model: mistralai/Mixtral-8x7B-Instruct-v0.1
+2024-12-13 03:04:52,471 - __main__ - INFO - [telegram_bot:533] - Max history: 5
+2024-12-13 03:04:52,471 - __main__ - INFO - [telegram_bot:534] - TelegramTrivia initialized
+2024-12-13 03:04:52,471 - __main__ - INFO - [telegram_bot:535] - Chat handler initialized successfully
+2024-12-13 03:04:52,471 - __main__ - INFO - [telegram_bot:536] - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-13 03:04:52,472 - __main__ - INFO - [telegram_bot:550] - Starting main loop...
+2024-12-13 03:04:52,486 - __main__ - INFO - [telegram_bot:397] - Initializing Telegram bot...
+2024-12-13 03:04:52,599 - __main__ - INFO - [telegram_bot:439] - ━━━━━━ Bot Configuration ━━━━━━
+2024-12-13 03:04:52,599 - __main__ - INFO - [telegram_bot:440] - Start Time: 2024-12-13 03:04:52
+2024-12-13 03:04:52,599 - __main__ - INFO - [telegram_bot:441] - Retry Count: 0
+2024-12-13 03:04:52,599 - __main__ - INFO - [telegram_bot:442] - Bot Version: 1.0.1
+2024-12-13 03:04:52,599 - __main__ - INFO - [telegram_bot:443] - Connection Parameters:
+2024-12-13 03:04:52,599 - __main__ - INFO - [telegram_bot:444] - - Polling Timeout: 60s
+2024-12-13 03:04:52,600 - __main__ - INFO - [telegram_bot:445] - - Connection Retries: infinite
+2024-12-13 03:04:52,600 - __main__ - INFO - [telegram_bot:446] - - Update Mode: polling
+2024-12-13 03:04:52,600 - __main__ - INFO - [telegram_bot:447] - - Health Check: Active
+2024-12-13 03:04:52,600 - __main__ - INFO - [telegram_bot:448] - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-13 03:04:52,601 - __main__ - INFO - [telegram_bot:332] - ━━━━━━ System Health Check ━━━━━━
+2024-12-13 03:04:52,601 - __main__ - INFO - [telegram_bot:333] - Uptime: 0h 0m 0s
+2024-12-13 03:04:52,601 - __main__ - INFO - [telegram_bot:334] - Memory Usage: 51.04 MB (0.1%)
+2024-12-13 03:04:52,601 - __main__ - INFO - [telegram_bot:335] - CPU Usage: 0.0%
+2024-12-13 03:04:52,601 - __main__ - INFO - [telegram_bot:336] - Network I/O: ↑2.6MB ↓5.7MB
+2024-12-13 03:04:52,601 - __main__ - INFO - [telegram_bot:337] - Disk Usage: 20.8%
+2024-12-13 03:04:52,601 - __main__ - INFO - [telegram_bot:338] - Retry Count: 0
+2024-12-13 03:04:52,601 - __main__ - INFO - [telegram_bot:339] - Last Update Time: 2024-12-13 03:04:52
+2024-12-13 03:04:52,602 - __main__ - INFO - [telegram_bot:341] - Message Processing Rate: Monitoring
+2024-12-13 03:04:52,602 - __main__ - INFO - [telegram_bot:342] - Connection Status: Active
+2024-12-13 03:04:52,602 - __main__ - INFO - [telegram_bot:343] - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-13 03:04:52,929 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getMe "HTTP/1.1 200 OK"
+2024-12-13 03:04:52,930 - telegram.ext.Application - INFO - [_application:631] - Application started
+2024-12-13 03:04:52,930 - __main__ - INFO - [telegram_bot:460] - Starting polling...
+2024-12-13 03:04:53,034 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/deleteWebhook "HTTP/1.1 200 OK"
+2024-12-13 03:05:03,348 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 03:05:13,454 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 03:05:23,575 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 03:05:33,699 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 03:05:43,804 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 03:05:53,909 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 03:06:04,014 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 03:06:14,120 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 03:06:24,228 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 03:06:27,785 - __main__ - INFO - [telegram_bot:528] - ━━━━━━ Initializing Chat Handler ━━━━━━
+2024-12-13 03:06:27,786 - __main__ - INFO - [telegram_bot:531] - Chat handler configuration:
+2024-12-13 03:06:27,786 - __main__ - INFO - [telegram_bot:532] - Model: mistralai/Mixtral-8x7B-Instruct-v0.1
+2024-12-13 03:06:27,786 - __main__ - INFO - [telegram_bot:533] - Max history: 5
+2024-12-13 03:06:27,786 - __main__ - INFO - [telegram_bot:534] - TelegramTrivia initialized
+2024-12-13 03:06:27,787 - __main__ - INFO - [telegram_bot:535] - Chat handler initialized successfully
+2024-12-13 03:06:27,787 - __main__ - INFO - [telegram_bot:536] - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-13 03:06:27,787 - __main__ - INFO - [telegram_bot:550] - Starting main loop...
+2024-12-13 03:06:27,801 - __main__ - INFO - [telegram_bot:397] - Initializing Telegram bot...
+2024-12-13 03:06:27,909 - __main__ - INFO - [telegram_bot:439] - ━━━━━━ Bot Configuration ━━━━━━
+2024-12-13 03:06:27,910 - __main__ - INFO - [telegram_bot:440] - Start Time: 2024-12-13 03:06:27
+2024-12-13 03:06:27,910 - __main__ - INFO - [telegram_bot:441] - Retry Count: 0
+2024-12-13 03:06:27,910 - __main__ - INFO - [telegram_bot:442] - Bot Version: 1.0.1
+2024-12-13 03:06:27,910 - __main__ - INFO - [telegram_bot:443] - Connection Parameters:
+2024-12-13 03:06:27,910 - __main__ - INFO - [telegram_bot:444] - - Polling Timeout: 60s
+2024-12-13 03:06:27,910 - __main__ - INFO - [telegram_bot:445] - - Connection Retries: infinite
+2024-12-13 03:06:27,910 - __main__ - INFO - [telegram_bot:446] - - Update Mode: polling
+2024-12-13 03:06:27,910 - __main__ - INFO - [telegram_bot:447] - - Health Check: Active
+2024-12-13 03:06:27,910 - __main__ - INFO - [telegram_bot:448] - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-13 03:06:27,911 - __main__ - INFO - [telegram_bot:332] - ━━━━━━ System Health Check ━━━━━━
+2024-12-13 03:06:27,911 - __main__ - INFO - [telegram_bot:333] - Uptime: 0h 0m 0s
+2024-12-13 03:06:27,911 - __main__ - INFO - [telegram_bot:334] - Memory Usage: 50.82 MB (0.1%)
+2024-12-13 03:06:27,911 - __main__ - INFO - [telegram_bot:335] - CPU Usage: 0.0%
+2024-12-13 03:06:27,911 - __main__ - INFO - [telegram_bot:336] - Network I/O: ↑3.4MB ↓6.8MB
+2024-12-13 03:06:27,911 - __main__ - INFO - [telegram_bot:337] - Disk Usage: 20.8%
+2024-12-13 03:06:27,912 - __main__ - INFO - [telegram_bot:338] - Retry Count: 0
+2024-12-13 03:06:27,912 - __main__ - INFO - [telegram_bot:339] - Last Update Time: 2024-12-13 03:06:27
+2024-12-13 03:06:27,912 - __main__ - INFO - [telegram_bot:341] - Message Processing Rate: Monitoring
+2024-12-13 03:06:27,912 - __main__ - INFO - [telegram_bot:342] - Connection Status: Active
+2024-12-13 03:06:27,912 - __main__ - INFO - [telegram_bot:343] - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-13 03:06:28,229 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getMe "HTTP/1.1 200 OK"
+2024-12-13 03:06:28,230 - telegram.ext.Application - INFO - [_application:631] - Application started
+2024-12-13 03:06:28,231 - __main__ - INFO - [telegram_bot:460] - Starting polling...
+2024-12-13 03:06:28,335 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/deleteWebhook "HTTP/1.1 200 OK"
