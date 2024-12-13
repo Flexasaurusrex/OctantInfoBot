@@ -320,11 +320,12 @@ async def main():
 📋 Information Commands:
 • /help - Show this help message
 
-💬 How to Chat With Me:
-• Reply to my messages to keep our conversation going!
-• Each reply maintains the chat context
+💬 How to Chat:
+• Reply to any of my messages to continue our conversation
+• Each reply builds on our ongoing chat
+• That's it! Just keep replying to chat with me
 
-Type any command to get started!
+Type /trivia to start playing or reply to chat!
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"""
             await ctx.send(help_text)
             logger.info("Help message sent successfully")
