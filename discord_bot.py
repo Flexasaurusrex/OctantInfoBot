@@ -221,14 +221,66 @@ Is DM: {isinstance(message.channel, discord.DMChannel)}
                     
                 # Process message if not empty
                 if content.strip():
-                    response = self.chat_handler.get_response(content)
-                    if isinstance(response, list):
-                        for chunk in response:
-                            if chunk.strip():
-                                await message.reply(chunk, mention_author=True)
-                    else:
-                        if response.strip():
-                            await message.reply(response, mention_author=True)
+                    try:
+                        response = self.chat_handler.get_response(content)
+                        if not response:
+                            await message.reply("I couldn't generate a response. Please try again.", mention_author=True)
+                            return
+                            
+                        # Enhanced response handling with better chunking
+                        async def send_chunk(chunk_text, is_last=False):
+                            """Helper function to send a chunk of text"""
+                            try:
+                                if chunk_text.strip():
+                                    await message.reply(chunk_text.strip(), mention_author=True)
+                                    if not is_last:
+                                        await asyncio.sleep(0.5)  # Rate limiting prevention
+                            except discord.errors.HTTPException as he:
+                                logger.error(f"Discord HTTP error while sending chunk: {str(he)}")
+                                return False
+                            except Exception as e:
+                                logger.error(f"Error sending chunk: {str(e)}")
+                                return False
+                            return True
+
+                        try:
+                            # Convert response to list if it's a string
+                            responses = response if isinstance(response, list) else [response]
+                            
+                            for resp in responses:
+                                if not resp or not resp.strip():
+                                    continue
+                                    
+                                # Enhanced chunking logic that respects word boundaries
+                                current_chunk = ""
+                                words = resp.split()
+                                chunks_sent = 0
+                                
+                                for i, word in enumerate(words):
+                                    # Check if adding the next word would exceed limit
+                                    if len(current_chunk) + len(word) + 1 > 1900:
+                                        # Send current chunk if it's not empty
+                                        if current_chunk.strip():
+                                            success = await send_chunk(current_chunk)
+                                            if success:
+                                                chunks_sent += 1
+                                            if chunks_sent >= 5:  # Limit number of chunks
+                                                await message.reply("Message was too long. I've sent the first part.", mention_author=True)
+                                                break
+                                        current_chunk = word
+                                    else:
+                                        # Add word to current chunk
+                                        current_chunk = f"{current_chunk} {word}" if current_chunk else word
+                                
+                                # Send the last chunk if there's anything left
+                                if current_chunk.strip() and chunks_sent < 5:
+                                    await send_chunk(current_chunk, is_last=True)
+                        except Exception as chunk_error:
+                            logger.error(f"Error in chunk processing: {str(chunk_error)}")
+                            await message.reply("I encountered an error while sending the response. Please try a shorter query.", mention_author=True)
+                    except Exception as resp_error:
+                        logger.error(f"Error getting response: {str(resp_error)}")
+                        await message.reply("I encountered an error processing your message. Please try again with a simpler query.", mention_author=True)
                 else:
                     # If no content after cleaning, provide a helpful response
                     await message.reply("Hi! How can I help you today?", mention_author=True)
@@ -299,18 +351,23 @@ Type any command to get started!
             if not message.author.bot:  # Ignore bot messages
                 await bot._on_message(message)
         
-    # Run the bot
-    discord_token = os.environ.get('DISCORD_BOT_TOKEN')
-    if not discord_token:
-        logger.error("DISCORD_BOT_TOKEN not found in environment variables")
-        raise ValueError("DISCORD_BOT_TOKEN environment variable is required")
-        
-    try:
-        await bot.start(discord_token)
-    except discord.LoginFailure:
-        logger.error("Failed to login to Discord. Please check your token.")
+        # Get Discord token
+        discord_token = os.environ.get('DISCORD_BOT_TOKEN')
+        if not discord_token:
+            logger.error("DISCORD_BOT_TOKEN not found in environment variables")
+            raise ValueError("DISCORD_BOT_TOKEN environment variable is required")
+            
+        # Start the bot
+        try:
+            await bot.start(discord_token)
+        except discord.LoginFailure:
+            logger.error("Failed to login to Discord. Please check your token.")
+        except Exception as e:
+            logger.error(f"An error occurred: {str(e)}")
+            
     except Exception as e:
-        logger.error(f"An error occurred: {str(e)}")
+        logger.error(f"Critical error in main: {str(e)}")
+        raise
         
 if __name__ == "__main__":
     import asyncio
