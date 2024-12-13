@@ -307,10 +307,52 @@ async def main():
         @bot.command(name='trivia')
         async def trivia_command(ctx):
             """Start a trivia game"""
-            logger.info("━━━━━━ Trivia Command (via /trivia) ━━━━━━")
-            logger.info(f"Initiating trivia game for user: {ctx.author.name}")
-            logger.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-            await bot.trivia.start_game(ctx)
+            try:
+                logger.info("━━━━━━ Trivia Command (via /trivia) ━━━━━━")
+                logger.info(f"Initiating trivia game for user: {ctx.author.name}")
+                logger.info(f"Channel: {ctx.channel.name}")
+                logger.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+                
+                # Check if there's already an active game in this channel
+                if ctx.channel.id in bot.trivia.current_games:
+                    await ctx.send("There's already an active trivia game in this channel! "
+                                "Please wait for it to finish or type 'end trivia' to end it.")
+                    return
+                
+                # Check user permissions
+                if not ctx.channel.permissions_for(ctx.guild.me).send_messages:
+                    await ctx.send("I don't have permission to send messages in this channel. "
+                                "Please contact a server administrator.")
+                    return
+                
+                if not ctx.channel.permissions_for(ctx.guild.me).embed_links:
+                    await ctx.send("I need the 'Embed Links' permission to run the trivia game. "
+                                "Please contact a server administrator.")
+                    return
+                
+                # Start the game
+                try:
+                    if ctx.interaction:
+                        await bot.trivia.start_game(ctx.interaction)
+                    else:
+                        # Create a temporary interaction from the context
+                        temp_interaction = discord.Interaction._from_message(ctx.message)
+                        temp_interaction._cs_channel = ctx.channel
+                        temp_interaction._cs_guild = ctx.guild
+                        await bot.trivia.start_game(temp_interaction)
+                except discord.errors.Forbidden as e:
+                    logger.error(f"Permission error starting game: {str(e)}")
+                    await ctx.send("I don't have the required permissions to start the game. "
+                                "Please ensure I have 'Send Messages' and 'Embed Links' permissions.")
+                except Exception as e:
+                    logger.error(f"Error in game startup: {str(e)}")
+                    raise
+                    
+            except Exception as e:
+                logger.error(f"Critical error in trivia command: {str(e)}")
+                await ctx.send("An error occurred while starting the trivia game. Please try again later.")
+                # Log detailed error information
+                logger.exception("Detailed trivia command error:")
 
         @bot.command(name='help')
         async def help_command(ctx):
