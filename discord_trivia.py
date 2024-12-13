@@ -45,27 +45,39 @@ class TriviaView(discord.ui.View):
             self.add_item(button)
 
     async def handle_answer(self, interaction: discord.Interaction, answer: str):
-        if self.answered:
-            await interaction.response.send_message(
-                "This question has already been answered!",
-                ephemeral=True
-            )
-            return
+        try:
+            if self.answered:
+                await interaction.response.send_message(
+                    "This question has already been answered!",
+                    ephemeral=True
+                )
+                return
 
-        self.answered = True
-        is_correct = answer == self.question['correct']
-        
-        # Update button styles to show correct/incorrect answers
-        for child in self.children:
-            if isinstance(child, TriviaButton):
-                child.disabled = True
-                if child.option_key == self.question['correct']:
-                    child.style = discord.ButtonStyle.success
-                elif child.option_key == answer and not is_correct:
-                    child.style = discord.ButtonStyle.danger
+            self.answered = True
+            is_correct = answer == self.question['correct']
+            
+            # Update button styles to show correct/incorrect answers
+            for child in self.children:
+                if isinstance(child, TriviaButton):
+                    child.disabled = True
+                    if child.option_key == self.question['correct']:
+                        child.style = discord.ButtonStyle.success
+                    elif child.option_key == answer and not is_correct:
+                        child.style = discord.ButtonStyle.danger
 
-        await interaction.response.edit_message(view=self)
-        await self.trivia_game.handle_answer(interaction, answer)
+            try:
+                await interaction.response.edit_message(view=self)
+            except discord.errors.InteractionResponded:
+                await interaction.message.edit(view=self)
+
+            await self.trivia_game.handle_answer(interaction, answer)
+
+        except Exception as e:
+            logger.error(f"Error in TriviaView handle_answer: {str(e)}")
+            try:
+                await interaction.response.send_message("An error occurred processing your answer. Please try again.", ephemeral=True)
+            except discord.errors.InteractionResponded:
+                await interaction.followup.send("An error occurred processing your answer. Please try again.", ephemeral=True)
 
 class DiscordTrivia:
     def __init__(self):
@@ -112,7 +124,7 @@ class DiscordTrivia:
         
         # Check for existing game
         if channel_id in self.current_games:
-            await ctx.send("There's already an active game in this channel!")
+            await ctx.send("❗ There's already an active trivia game in this channel!")
             return
 
         # Initialize new game
@@ -122,21 +134,23 @@ class DiscordTrivia:
             'current_question': None
         }
 
-        # Create welcome embed
-        welcome_embed = discord.Embed(
-            title="🎮 Welcome to Octant Trivia!",
-            description="Test your knowledge about Octant's ecosystem!",
-            color=discord.Color.blue()
-        )
-        welcome_embed.add_field(
-            name="How to Play",
-            value="• Click the buttons to answer questions\n• Each correct answer earns you points\n• Learn about Octant as you play!",
-            inline=False
+        # Create welcome message
+        welcome_msg = (
+            "🎮 **Octant Trivia Time!**\n\n"
+            "Test your knowledge about Octant!\n"
+            "• Click the buttons to answer\n"
+            "• Learn as you play\n\n"
+            "*Get ready...*"
         )
         
-        await ctx.send(embed=welcome_embed)
-        await asyncio.sleep(2)  # Brief pause for readability
-        await self.send_next_question(ctx)
+        try:
+            await ctx.send(welcome_msg)
+            await asyncio.sleep(2)  # Brief pause for readability
+            await self.send_next_question(ctx)
+        except Exception as e:
+            logger.error(f"Error starting game: {str(e)}")
+            del self.current_games[channel_id]  # Cleanup on error
+            await ctx.send("❌ There was an error starting the game. Please try again.")
 
     async def send_next_question(self, ctx: commands.Context):
         """Send the next question to the channel."""
@@ -144,7 +158,7 @@ class DiscordTrivia:
         game = self.current_games.get(channel_id)
 
         if not game:
-            await ctx.send("No active game found. Use `/trivia` to start!")
+            await ctx.send("❗ No active game found! Start a new game with `/trivia`")
             return
 
         if game['questions_asked'] >= len(self.questions):
@@ -152,32 +166,14 @@ class DiscordTrivia:
             score = game['score']
             percentage = (score / len(self.questions)) * 100
             
-            final_embed = discord.Embed(
-                title="🎮 Game Complete!",
-                description=f"Final Score: {score}/{len(self.questions)} ({percentage:.1f}%)",
-                color=discord.Color.gold()
+            final_msg = (
+                "🎮 **Game Complete!**\n\n"
+                f"📊 Final Score: {score}/{len(self.questions)} ({percentage:.1f}%)\n\n"
+                f"{('🌟 Expert Level!' if percentage >= 80 else '👏 Well Done!' if percentage >= 60 else '📚 Keep Learning!')}\n\n"
+                "Want to play again? Use /trivia"
             )
             
-            if percentage >= 80:
-                final_embed.add_field(
-                    name="🌟 Outstanding!",
-                    value="You're an Octant expert!",
-                    inline=False
-                )
-            elif percentage >= 60:
-                final_embed.add_field(
-                    name="👏 Well Done!",
-                    value="Good knowledge of Octant!",
-                    inline=False
-                )
-            else:
-                final_embed.add_field(
-                    name="📚 Keep Learning!",
-                    value="Every game helps you learn more!",
-                    inline=False
-                )
-                
-            await ctx.send(embed=final_embed)
+            await ctx.send(final_msg)
             del self.current_games[channel_id]
             return
 
@@ -185,16 +181,25 @@ class DiscordTrivia:
         question = self.questions[game['questions_asked']]
         game['current_question'] = question
 
-        # Create question embed
-        question_embed = discord.Embed(
-            title=f"Question {game['questions_asked'] + 1}/{len(self.questions)}",
-            description=question['question'],
-            color=discord.Color.blue()
+        # Format question message
+        question_msg = (
+            f"❓ **Question {game['questions_asked'] + 1}/{len(self.questions)}**\n\n"
+            f"{question['question']}\n"
         )
+        
+        # Add score only for questions after the first one, with better formatting
+        if game['questions_asked'] > 0:
+            score_percentage = (game['score'] / game['questions_asked']) * 100
+            question_msg += f"\n📊 Score so far: {game['score']}/{game['questions_asked']} ({score_percentage:.1f}%)"
 
-        # Create view with buttons
-        view = TriviaView(self, question)
-        await ctx.send(embed=question_embed, view=view)
+        try:
+            # Create view with buttons and send
+            view = TriviaView(self, question)
+            await ctx.send(question_msg, view=view)
+        except Exception as e:
+            logger.error(f"Error sending question: {str(e)}")
+            await ctx.send("❌ There was an error displaying the question. Please try again.")
+            del self.current_games[channel_id]  # Cleanup on error
 
     async def handle_answer(self, interaction: discord.Interaction, answer: str):
         """Handle user's answer selection."""
@@ -202,7 +207,10 @@ class DiscordTrivia:
         game = self.current_games.get(channel_id)
 
         if not game or not game['current_question']:
-            await interaction.followup.send("No active game found!")
+            await interaction.response.send_message(
+                "❗ No active game found! Start a new game with `/trivia`",
+                ephemeral=True
+            )
             return
 
         question = game['current_question']
@@ -214,30 +222,35 @@ class DiscordTrivia:
         # Update game state
         game['questions_asked'] += 1
 
-        # Create result embed
-        result_embed = discord.Embed(
-            title="✅ Correct!" if is_correct else "❌ Incorrect!",
-            color=discord.Color.green() if is_correct else discord.Color.red()
-        )
+        try:
+            # Format result message
+            score_percentage = (game['score'] / game['questions_asked']) * 100
+            if is_correct:
+                result_msg = (
+                    "✅ **Correct!**\n\n"
+                    f"📚 {question['explanation']}\n\n"
+                    f"🎯 Current Score: {game['score']}/{game['questions_asked']} ({score_percentage:.1f}%)"
+                )
+            else:
+                result_msg = (
+                    "❌ **Incorrect**\n\n"
+                    f"✅ Correct answer: {question['correct']} - {question['options'][question['correct']]}\n\n"
+                    f"📚 {question['explanation']}\n\n"
+                    f"🎯 Current Score: {game['score']}/{game['questions_asked']} ({score_percentage:.1f}%)"
+                )
 
-        # Add explanation
-        result_embed.add_field(
-            name="Explanation",
-            value=question['explanation'],
-            inline=False
-        )
+            # Send result and queue next question
+            await interaction.response.send_message(result_msg)
+            
+            if game['questions_asked'] < len(self.questions):
+                await asyncio.sleep(3)
+                ctx = await interaction.client.get_context(interaction.message)
+                await self.send_next_question(ctx)
 
-        # Add score
-        result_embed.add_field(
-            name="Score",
-            value=f"{game['score']}/{game['questions_asked']} ({(game['score']/game['questions_asked']*100):.1f}%)",
-            inline=False
-        )
-
-        await interaction.followup.send(embed=result_embed)
-        
-        # Send next question after a short delay
-        if game['questions_asked'] < len(self.questions):
-            await asyncio.sleep(3)  # Brief pause between questions
-            context = await interaction.client.get_context(interaction.message)
-            await self.send_next_question(context)
+        except Exception as e:
+            logger.error(f"Error handling answer: {str(e)}")
+            await interaction.response.send_message(
+                "❌ There was an error processing your answer. Please try again.",
+                ephemeral=True
+            )
+            del self.current_games[channel_id]  # Cleanup on error

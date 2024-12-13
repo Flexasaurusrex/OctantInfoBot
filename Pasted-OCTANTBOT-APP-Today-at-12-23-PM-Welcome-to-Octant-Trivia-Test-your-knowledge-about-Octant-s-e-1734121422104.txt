@@ -1,0 +1,80 @@
+OCTANTBOT
+APP
+ — Today at 12:23 PM
+🎮 Welcome to Octant Trivia!
+Test your knowledge about Octant's ecosystem!
+How to Play
+• Click the buttons to answer questions
+• Each correct answer earns you points
+• Learn about Octant as you play!
+Question 1/3
+What is the minimum effective GLM balance required for user rewards?
+OCTANTBOT
+APP
+ — Today at 12:23 PM
+<div class="trivia-container">
+    <div class="trivia-score" style="font-size: 1.4rem">🎮 Welcome to Octant Trivia! 🎮</div>
+
+    <div style="margin: 1.5rem 0; text-align: center;">
+        Test your knowledge about Octant's ecosystem, funding mechanisms,
+        and community initiatives!
+    </div>
+
+    <div style="background-color: var(--message-bg); padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+        <strong>📋 Game Rules:</strong>
+        <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
+            <li>Answer each question using A, B, C, or D</li>
+            <li>Type 'end trivia' at any time to finish</li>
+            <li>Each correct answer earns you points</li>
+            <li>Learn interesting facts about Octant!</li>
+        </ul>
+    </div>
+
+    <div style="text-align: center; margin: 1rem 0;">
+        Get ready for some exciting questions...
+    </div>
+</div>
+
+<div class="trivia-container">
+    <div class="trivia-score">Question 1/16</div>
+
+    <div class="trivia-question">
+        What type of staking mechanism does Octant use for GLM tokens?
+    </div>
+
+    <div class="trivia-options">
+        <div class="trivia-option" data-option="A">
+            <strong>A)</strong> Liquid staking
+        </div>
+        <div class="trivia-option" data-option="B">
+            <strong>B)</strong> Locked staking
+        </div>
+        <div class="trivia-option" data-option="C">
+            <strong>C)</strong> Flexible staking
+        </div>
+        <div class="trivia-option" data-option="D">
+            <strong>D)</strong> Delegated staking
+        </div>
+    </div>
+
+    <div style="text-align: center; font-size: 0.9rem;">
+        Type A, B, C, or D to answer!
+    </div>
+</div>
+OCTANTBOT
+APP
+ — Today at 12:23 PM
+No active game found!
+OCTANTBOT
+APP
+ — Today at 12:23 PM
+✅ Correct!
+Explanation
+While you can lock as little as 1 GLM, a minimum effective balance of 100 GLM is required to qualify for user rewards.
+Score
+1/1 (100.0%)
+OCTANTBOT
+APP
+ — Today at 12:23 PM
+Question 2/3
+How long is an Octant epoch?
