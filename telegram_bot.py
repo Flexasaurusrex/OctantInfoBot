@@ -8,7 +8,7 @@ import threading
 from datetime import datetime, timedelta
 
 class WatchdogTimer:
-    def __init__(self, timeout=600):  # 10 minutes default timeout
+    def __init__(self, timeout=120):  # 2 minutes default timeout
         self.timeout = timeout
         self.last_ping = datetime.now()
         self.lock = threading.Lock()
@@ -413,7 +413,7 @@ async def main() -> None:
     max_consecutive_failures = 3
     
     # Initialize watchdog
-    watchdog = WatchdogTimer(timeout=300)  # 5 minute timeout
+    watchdog = WatchdogTimer(timeout=60)  # 1 minute timeout
     
     while True:
         try:
