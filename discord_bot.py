@@ -2,6 +2,7 @@ import os
 import discord
 from discord.ext import commands
 from chat_handler import ChatHandler
+from discord_trivia import DiscordTrivia
 import logging
 
 # Configure logging
@@ -30,8 +31,9 @@ class OctantDiscordBot(commands.Bot):
         
         try:
             self.chat_handler = ChatHandler()
+            self.trivia = DiscordTrivia()
         except ValueError as e:
-            logger.error(f"Failed to initialize ChatHandler: {str(e)}")
+            logger.error(f"Failed to initialize ChatHandler or DiscordTrivia: {str(e)}")
             raise
             
         # Remove default help command
@@ -53,6 +55,11 @@ class OctantDiscordBot(commands.Bot):
             return
             
         try:
+            # Check for "start trivia" message
+            if message.content.lower() == "start trivia":
+                await self.trivia.start_game(await self.get_context(message))
+                return
+                
             # Process commands first
             await self.process_commands(message)
             
@@ -70,11 +77,24 @@ class OctantDiscordBot(commands.Bot):
             logger.error(f"Error processing message: {str(e)}")
             await message.channel.send("I encountered an error processing your message. Please try again.")
 
+    async def on_interaction(self, interaction: discord.Interaction):
+        """Handle button interactions."""
+        if interaction.type == discord.InteractionType.component:
+            custom_id = interaction.data.get("custom_id", "")
+            if custom_id.startswith("trivia_"):
+                answer = custom_id.split("_")[1]
+                await self.trivia.handle_answer(interaction, answer)
+
 async def main():
     # Create bot instance
     bot = OctantDiscordBot()
     
     # Add commands
+    @bot.command(name='trivia')
+    async def trivia_command(ctx):
+        """Start a trivia game"""
+        await bot.trivia.start_game(ctx)
+
     @bot.command(name='help')
     async def help_command(ctx):
         """Show help message"""
