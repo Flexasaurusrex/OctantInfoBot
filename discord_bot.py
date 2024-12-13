@@ -39,6 +39,49 @@ class OctantDiscordBot(commands.Bot):
         # Remove default help command
         self.remove_command('help')
         
+    def is_bot_mentioned(self, message):
+        """Simple and reliable mention detection."""
+        try:
+            # Basic mention checks
+            if self.user.mentioned_in(message):
+                logger.info(f"Direct mention detected in message: {message.content}")
+                return True
+
+            # Case insensitive text content check
+            message_lower = message.content.lower()
+            bot_name_lower = self.user.name.lower()
+
+            # Simple mention patterns that must be matched exactly
+            mention_patterns = [
+                f'<@{self.user.id}>',  # Standard mention
+                f'<@!{self.user.id}>', # Nickname mention
+                f'@{bot_name_lower}',   # Name with @
+                '@octantbot',          # Common format
+                'octantbot'            # Name only
+            ]
+
+            # Log the mention check attempt
+            logger.info("━━━━━━ Checking Message for Mentions ━━━━━━")
+            logger.info(f"Message: {message.content}")
+            logger.info(f"From: {message.author.name}")
+            logger.info(f"Channel: {message.channel.name}")
+
+            # Check each pattern
+            for pattern in mention_patterns:
+                pattern_lower = pattern.lower()
+                if pattern_lower in message_lower:
+                    logger.info(f"Mention matched pattern: {pattern}")
+                    return True
+
+            logger.info("No mention patterns matched")
+            logger.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+            return False
+
+        except Exception as e:
+            logger.error(f"Error in mention detection: {str(e)}")
+            logger.exception("Full traceback:")
+            return False
+        
     async def setup_hook(self):
         """Setup hook for the bot."""
         logger.info("Bot is setting up...")
@@ -68,35 +111,15 @@ class OctantDiscordBot(commands.Bot):
                 and message.reference.resolved.author.id == self.user.id
             )
             
-            # Check for mentions using Discord's built-in system
-            is_mentioned = self.user.mentioned_in(message)
+            # Check for mentions using enhanced detection
+            is_mentioned = self.is_bot_mentioned(message)
             
-            # Additional mention pattern check for redundancy
-            if not is_mentioned:
-                mention_patterns = [
-                    f'<@{self.user.id}>',  # Standard mention
-                    f'<@!{self.user.id}>'  # Nickname mention
-                ]
-                is_mentioned = any(pattern in message.content for pattern in mention_patterns)
-            
-            # Log mention status for debugging
-            if is_mentioned or is_reply_to_bot:
-                logger.info("━━━━━━ Message Detection ━━━━━━")
-                logger.info(f"Message Content: {message.content}")
-                logger.info(f"Author: {message.author.name}")
-                logger.info(f"Channel: {message.channel.name}")
-                logger.info(f"Is Mention: {is_mentioned}")
-                logger.info(f"Is Reply: {is_reply_to_bot}")
-                logger.info("━━━━━━━━━━━━━━━━━━━━━━━━")
-
             # Only respond to mentions or replies
             if not (is_mentioned or is_reply_to_bot):
                 return
                 
-            logger.info(f"Processing message - Is mentioned: {is_mentioned}, Is reply: {is_reply_to_bot}")
-
             logger.info("━━━━━━ Bot Interaction ━━━━━━")
-            logger.info(f"Interaction Type: {'Reply' if is_reply_to_bot else 'Mention' if is_mentioned else 'Unknown'}")
+            logger.info(f"Interaction Type: {'Reply' if is_reply_to_bot else 'Mention'}")
             logger.info(f"Raw Message: {message.content}")
             logger.info(f"Author: {message.author.name} (ID: {message.author.id})")
             logger.info(f"Channel: {message.channel.name} (ID: {message.channel.id})")
@@ -120,14 +143,6 @@ class OctantDiscordBot(commands.Bot):
                 for pattern in mention_patterns:
                     content = content.replace(pattern, '').strip()
                     
-                # Log the cleaning process
-                logger.info("━━━━━━ Message Processing ━━━━━━")
-                logger.info(f"Original: {message.content}")
-                logger.info(f"Cleaned: {content}")
-                logger.info(f"Is Mention: {is_mentioned}")
-                logger.info(f"Is Reply: {is_reply_to_bot}")
-                logger.info("━━━━━━━━━━━━━━━━━━━━━━━━")
-                    
                 # Process message if not empty
                 if content.strip():
                     response = self.chat_handler.get_response(content)
@@ -143,11 +158,11 @@ class OctantDiscordBot(commands.Bot):
                     await message.reply("Hi! How can I help you today?", mention_author=True)
                         
             except Exception as e:
-                logger.error(f"Error processing message: {str(e)}")
+                logger.error(f"Error processing message content: {str(e)}")
                 await message.reply("I encountered an error processing your message. Please try again.", mention_author=True)
             
         except Exception as e:
-            logger.error(f"Error processing message: {str(e)}")
+            logger.error(f"Error in message handler: {str(e)}")
             await message.channel.send("I encountered an error processing your message. Please try again.")
 
     async def on_interaction(self, interaction: discord.Interaction):
