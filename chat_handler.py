@@ -254,89 +254,39 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
         return f"\nPrevious message: {last_entry['assistant']}\n"
 
     def format_urls(self, text):
-        """Format URLs in text using Discord's native markdown."""
-        if not text:
-            return text
+        """Format URLs in a simple, consistent way."""
+        # Check if the message is asking about links/websites/contact
+        keywords = ['link', 'links', 'website', 'connect', 'social', 'james', 'kiernan', 'vpabundance', 'contact']
+        
+        if any(keyword in text.lower() for keyword in keywords):
+            return """Sure thing! Here are some essential links related to Octant, the Golem Foundation, and more:
 
-        try:
-            # Define common URLs with their display names
-            WEBSITE_LINKS = {
-                'octant.build': ('Octant', 'https://octant.build'),
-                'docs.octant.app': ('Documentation', 'https://docs.octant.app'),
-                'golem.foundation': ('Golem Foundation', 'https://golem.foundation'),
-                'x.com/OctantApp': ('@OctantApp', 'https://x.com/OctantApp'),
-                'warpcast.com/octant': ('Warpcast', 'https://warpcast.com/octant'),
-                'discord.gg/octant': ('Discord', 'https://discord.gg/octant')
-            }
+🌐 Octant:
+Main website: https://octant.build/
+Documentation: https://docs.octant.app/
 
-            # James's social media links to be preserved as raw URLs
-            JAMES_URLS = [
-                'https://x.com/vpabundance',
-                'https://warpcast.com/vpabundance.eth',
-                'https://www.linkedin.com/in/vpabundance'
-            ]
+🌐 Golem Foundation:
+Main website: https://golem.foundation/
 
-            # Process text line by line
-            lines = []
-            for line in text.split('\n'):
-                if not line.strip():
-                    lines.append(line)
-                    continue
+📱 Connect with us:
+Twitter/X: https://x.com/OctantApp
+Warpcast: https://warpcast.com/octant
+Discord: https://discord.gg/octant
 
-                # Convert any HTML formatting to plain text
-                line = line.replace('&lt;', '<').replace('&gt;', '>').replace('&amp;', '&')
-                line = re.sub(r'<a\s+href="([^"]+)"[^>]*>([^<]+)</a>', r'\2', line)
+Learn more about James Kiernan, VPOFABUNDANCE, here:
+X: https://x.com/vpabundance
+Warpcast: https://warpcast.com/vpabundance.eth
+LinkedIn: https://www.linkedin.com/in/vpabundance
 
-                # Preserve James's URLs as raw links
-                for url in JAMES_URLS:
-                    # Match URL variations (with/without protocol and www)
-                    pattern = f'(?:https?://)?(?:www\\.)?{re.escape(url.split("://")[-1])}'
-                    line = re.sub(pattern, url, line, flags=re.IGNORECASE)
-
-                # Format website links with markdown
-                for domain, (display_name, full_url) in WEBSITE_LINKS.items():
-                    # Create pattern that matches both with and without protocol
-                    pattern = f'(?:https?://)?{re.escape(domain)}'
-                    
-                    # Find and replace all occurrences with proper word boundaries
-                    pos = 0
-                    while True:
-                        match = re.search(pattern, line[pos:], re.IGNORECASE)
-                        if not match:
-                            break
-                            
-                        start = pos + match.start()
-                        end = pos + match.end()
-                        
-                        # Check word boundaries
-                        before_ok = start == 0 or not line[start - 1].isalnum()
-                        after_ok = end >= len(line) or not line[end].isalnum()
-                        
-                        if before_ok and after_ok:
-                            # Replace with Discord markdown
-                            markdown = f'[{display_name}]({full_url})'
-                            line = line[:start] + markdown + line[end:]
-                            pos = start + len(markdown)
-                        else:
-                            pos = end
-
-                lines.append(line)
-
-            # Join processed lines
-            formatted_text = '\n'.join(lines)
+I hope this helps! Let me know if there's anything else you need. 😊"""
             
-            # Final cleanup of any remaining HTML-like formatting
-            formatted_text = re.sub(r'<[^>]+>', '', formatted_text)
-            formatted_text = formatted_text.replace('&quot;', '"')
+        # For James-specific queries
+        if any(name in text.lower() for name in ['james', 'kiernan', 'vpabundance']):
+            return """X: https://x.com/vpabundance
+Warpcast: https://warpcast.com/vpabundance.eth
+LinkedIn: https://www.linkedin.com/in/vpabundance"""
             
-            logger.info("URL formatting completed successfully")
-            return formatted_text
-
-        except Exception as e:
-            logger.error(f"Error in format_urls: {str(e)}")
-            logger.exception("Full traceback:")
-            # Return original text if anything goes wrong
-            return text
+        return text
 
     def validate_response_length(self, response):
         """Validate response length and split if necessary."""
