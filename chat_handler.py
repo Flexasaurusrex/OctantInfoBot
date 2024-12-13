@@ -244,7 +244,7 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
         """Validate and sanitize user input."""
         if not message or not message.strip():
             raise ValueError("Message cannot be empty")
-        return html.escape(message.strip())
+        return message.strip()
 
     def format_conversation_history(self):
         """Format the conversation history for the prompt."""
@@ -399,12 +399,9 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
                 logger.info("Formatting URLs in response")
                 
                 def format_urls(text):
-                    """Format URLs with strict rules to prevent nested tags and malformed links."""
+                    """Format URLs using Discord's markdown format: [text](url)"""
                     if not text:
                         return text
-
-                    # First, escape HTML to prevent XSS
-                    processed_text = html.escape(text)
                     
                     # Define canonical URLs with their variations and display names
                     URL_MAPPINGS = {
@@ -418,7 +415,7 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
                         'warpcast.com/octant': ('https://warpcast.com/octant', 'Warpcast'),
                         'discord.gg/octant': ('https://discord.gg/octant', 'Discord'),
                         
-                        # James's social media (exact matches only)
+                        # James's social media links - keep URL as display name
                         'x.com/vpabundance': ('https://x.com/vpabundance', 'https://x.com/vpabundance'),
                         'warpcast.com/vpabundance.eth': ('https://warpcast.com/vpabundance.eth', 'https://warpcast.com/vpabundance.eth'),
                         'linkedin.com/in/vpabundance': ('https://www.linkedin.com/in/vpabundance', 'https://www.linkedin.com/in/vpabundance')
@@ -431,7 +428,7 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
                     # Process text character by character
                     result = []
                     i = 0
-                    while i < len(processed_text):
+                    while i < len(text):
                         found_match = False
                         
                         # Look for URL matches at current position
@@ -447,19 +444,19 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
                             
                             for variant in variants:
                                 # Check if variant matches at current position
-                                if processed_text[i:].lower().startswith(variant.lower()):
+                                if text[i:].lower().startswith(variant.lower()):
                                     # Verify URL boundaries
-                                    before_ok = i == 0 or is_boundary_char(processed_text[i-1])
+                                    before_ok = i == 0 or is_boundary_char(text[i-1])
                                     after_pos = i + len(variant)
-                                    after_ok = after_pos >= len(processed_text) or is_boundary_char(processed_text[after_pos])
+                                    after_ok = after_pos >= len(text) or is_boundary_char(text[after_pos])
                                     
                                     if before_ok and after_ok:
                                         # Special handling for James's social media links
                                         if domain in ['x.com/vpabundance', 'warpcast.com/vpabundance.eth', 'linkedin.com/in/vpabundance']:
                                             result.append(canonical_url)
                                         else:
-                                            # Add formatted link for regular URLs
-                                            result.append(f'<a href="{canonical_url}" class="bot-link">{display_name}</a>')
+                                            # Add formatted link using Discord markdown
+                                            result.append(f'[{display_name}]({canonical_url})')
                                         i += len(variant)
                                         found_match = True
                                         break
@@ -469,7 +466,7 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
                         
                         if not found_match:
                             # No URL match found, keep current character
-                            result.append(processed_text[i])
+                            result.append(text[i])
                             i += 1
                     
                     # Return the final processed text
