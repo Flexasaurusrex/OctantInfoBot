@@ -14,52 +14,46 @@ logger = logging.getLogger(__name__)
 
 class OctantDiscordBot(commands.Bot):
     def __init__(self):
+        # Configure intents
         intents = discord.Intents.default()
         intents.message_content = True
         intents.messages = True
         intents.guilds = True
+        
         super().__init__(command_prefix='/', intents=intents)
         
-        # Initialize handlers
-        self.chat_handler = ChatHandler()
-        self.trivia = DiscordTrivia()
-        logger.info("Bot initialized with all handlers")
-        
-        # Remove default help command to use our custom help
-        self.remove_command('help')
+        try:
+            # Initialize chat handler with verification
+            logger.info("Initializing ChatHandler...")
+            self.chat_handler = ChatHandler()
+            
+            # Test chat handler with a simple query
+            logger.info("Testing ChatHandler...")
+            test_response = self.chat_handler.get_response("What is Octant?")
+            
+            # Verify the response is valid
+            if not test_response:
+                logger.error("ChatHandler test failed - empty response")
+                raise ValueError("ChatHandler test failed - empty response")
+                
+            logger.info(f"ChatHandler test response received:\n{test_response[:100]}...")
+            logger.info("ChatHandler initialized and verified")
+            
+            # Initialize trivia handler
+            logger.info("Initializing DiscordTrivia...")
+            self.trivia = DiscordTrivia()
+            logger.info("DiscordTrivia initialized successfully")
+            
+            logger.info("Bot initialized successfully with all handlers")
+            
+        except Exception as e:
+            logger.error(f"Critical initialization error: {str(e)}", exc_info=True)
+            raise ValueError(f"Failed to initialize bot: {str(e)}")
 
     async def setup_hook(self):
         """Set up the bot's internal cache and add commands."""
         logger.info("Bot is setting up...")
         
-        # Add commands
-        @self.command(name='help')
-        async def help_command(ctx):
-            """Show help message"""
-            help_text = """
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📚 Available Commands
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-🎮 Game Commands:
-• /trivia - Start a trivia game
-• start trivia - Also starts trivia game
-• end trivia - End current trivia game
-
-📋 Information Commands:
-• /help - Show this help message
-• /stats - View your chat statistics
-• /learn - Access learning modules
-
-📌 Topic-Specific Commands:
-• /funding - Learn about Octant's funding
-• /governance - Understand governance
-• /rewards - Explore reward system
-
-Type any command to get started!
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"""
-            await ctx.send(help_text)
-            
         @self.command(name='trivia')
         async def trivia_command(ctx):
             """Start a trivia game"""
@@ -72,71 +66,60 @@ Type any command to get started!
 
     async def on_message(self, message):
         """Handle incoming messages."""
-        # Debug logging for message processing
-        logger.info(f"Received message: {message.content}")
-        logger.info(f"Author: {message.author}")
-        logger.info(f"Channel: {message.channel}")
-
-        # Ignore messages from the bot itself
+        # Ignore own messages
         if message.author == self.user:
             return
 
-        try:
-            # Get context for command processing
-            ctx = await self.get_context(message)
+        logger.info(f"Received message from {message.author}: {message.content}")
 
-            # Process commands (like /help, /trivia)
-            if message.content.startswith('/'):
-                await self.process_commands(message)
-                return
-
-            # Check for bot mentions and replies
-            is_mentioned = self.user.mentioned_in(message)
-            is_reply_to_bot = (
-                message.reference and 
-                message.reference.resolved and 
-                message.reference.resolved.author.id == self.user.id
-            )
-
-            # Handle mentions and replies
-            if is_mentioned or is_reply_to_bot:
-                # Clean message content
+        # Process commands first (for /help, /trivia etc)
+        await self.process_commands(message)
+        
+        # Check if bot is mentioned or message is in DM
+        should_respond = (
+            self.user.mentioned_in(message) or 
+            isinstance(message.channel, discord.DMChannel)
+        )
+        
+        if should_respond:
+            logger.info(f"Bot should respond to message from {message.author}")
+            
+            try:
+                # Clean the message content
                 content = message.content.strip()
-                # Remove both the mention formats
-                content = content.replace(f"<@{self.user.id}>", "").strip()
-                content = content.replace(f"<@!{self.user.id}>", "").strip()
-                logger.info(f"Processing cleaned content: {content}")
-
-                # Handle "start trivia" command
-                if content.lower() == "start trivia":
-                    await self.trivia.start_game(ctx)
-                    return
-
-                # Get chat response for other messages
-                try:
-                    if content:
-                        logger.info(f"Getting chat response for: {content}")
-                        response = self.chat_handler.get_response(content)
-                        logger.info(f"Chat response received: {response}")
-                        
-                        if response:
-                            if isinstance(response, list):
-                                for chunk in response:
-                                    if chunk and chunk.strip():
-                                        await message.reply(chunk.strip())
-                            else:
-                                await message.reply(response)
-                        else:
-                            await message.reply("I'm here to help you learn about Octant! What would you like to know?")
-                    else:
-                        await message.reply("How can I help you learn about Octant?")
-                except Exception as chat_error:
-                    logger.error(f"Chat handler error: {str(chat_error)}", exc_info=True)
-                    await message.reply("I encountered an error processing your request. Please try again.")
-
-        except Exception as e:
-            logger.error(f"Error in message handler: {str(e)}", exc_info=True)
-            await message.channel.send("I encountered an error. Please try again.")
+                # Remove bot mentions
+                content = content.replace(f'<@{self.user.id}>', '').replace(f'<@!{self.user.id}>', '')
+                content = content.strip()
+                
+                # Use default prompt if empty
+                if not content:
+                    content = "What is Octant?"
+                    logger.info("Using default prompt: What is Octant?")
+                
+                logger.info(f"Getting response for: {content}")
+                
+                # Get response from chat handler
+                response = self.chat_handler.get_response(content)
+                logger.info("Got response from chat handler")
+                
+                # Handle empty or invalid response
+                if not response:
+                    response = "I'm here to help you learn about Octant! What would you like to know?"
+                    logger.warning("Using default response due to empty chat handler response")
+                
+                # Send response, handling chunks if needed
+                if isinstance(response, list):
+                    for chunk in response:
+                        if chunk and chunk.strip():
+                            await message.reply(chunk.strip())
+                            logger.info("Sent response chunk")
+                else:
+                    await message.reply(response)
+                    logger.info("Sent full response")
+                
+            except Exception as e:
+                logger.error(f"Error handling message: {str(e)}", exc_info=True)
+                await message.reply("I apologize, but I encountered an error. Please try asking your question again.")
 
     async def on_interaction(self, interaction: discord.Interaction):
         """Handle button interactions for trivia."""
