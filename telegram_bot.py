@@ -125,22 +125,20 @@ Feel free to ask me anything about Octant! 🚀
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Send a message when the command /help is issued."""
     help_text = """
-Here are the available commands:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📚 Available Commands
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-/start - Start the bot
-/help - Show this help message
-/trivia - Start a trivia game
-/restart - Restart the bot (admin only)
+🎮 Game Commands:
+• /trivia - Start a trivia game
+• start trivia - Also starts trivia game
+• end trivia - End current trivia game
 
-You can also ask me any questions about:
-• Octant's ecosystem
-• GLM token utility
-• Governance process
-• Funding mechanisms
-• And more!
+📋 Information Commands:
+• /help - Show this help message
 
-Just type your question and I'll help you out! 📚
-    """
+Type any command to get started!
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"""
     await update.message.reply_text(help_text)
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:

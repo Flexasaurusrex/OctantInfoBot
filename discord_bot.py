@@ -154,13 +154,6 @@ async def main():
 
 📋 Information Commands:
 • /help - Show this help message
-• /stats - View your chat statistics
-• /learn - Access learning modules
-
-📌 Topic-Specific Commands:
-• /funding - Learn about Octant's funding
-• /governance - Understand governance
-• /rewards - Explore reward system
 
 Type any command to get started!
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"""
