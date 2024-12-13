@@ -357,8 +357,29 @@ h1 {
     animation: pulse 1.5s infinite;
 }
 
+.error-message {
+    background-color: rgba(255, 0, 0, 0.1) !important;
+    border-left: 4px solid #ff0000 !important;
+    margin: 10px 0 !important;
+    padding: 15px !important;
+    font-weight: 500;
+}
+
+.message.bot-message {
+    transition: all 0.3s ease;
+}
+
 @keyframes pulse {
     0% { transform: scale(1); }
     50% { transform: scale(1.05); }
     100% { transform: scale(1); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.message {
+    animation: fadeIn 0.3s ease-out;
 }

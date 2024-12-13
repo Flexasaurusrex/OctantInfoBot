@@ -355,14 +355,19 @@ function restartServices() {
         restartBtn.disabled = true;
         
         let countdown = 5;
+        const messages = [];
         
         function updateCountdown() {
             if (countdown > 0) {
-                appendMessage(`Services will restart in ${countdown} seconds...`, true);
+                const msg = `Services will restart in ${countdown} seconds...`;
+                appendMessage(msg, true);
+                messages.push(msg);
                 countdown--;
-                setTimeout(updateCountdown, 1000);
+                setTimeout(updateCountdown, 1500); // Longer delay between countdown messages
             } else {
-                appendMessage('Initiating restart now...', true);
+                const initMsg = '🔄 Initiating restart process...';
+                appendMessage(initMsg, true);
+                messages.push(initMsg);
                 
                 fetch('/restart', {
                     method: 'POST',
@@ -371,16 +376,44 @@ function restartServices() {
                     }
                 }).then(response => {
                     if (!response.ok) throw new Error('Restart request failed');
-                    appendMessage('Restarting services... The page will refresh automatically.', true);
                     
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 3000);
+                    const steps = [
+                        '📡 Cleaning up connections...',
+                        '🔄 Preparing services for restart...',
+                        '⚡ Restarting services...',
+                        '🔄 Page will refresh in 5 seconds...'
+                    ];
+                    
+                    let stepIndex = 0;
+                    function showStep() {
+                        if (stepIndex < steps.length) {
+                            appendMessage(steps[stepIndex], true);
+                            messages.push(steps[stepIndex]);
+                            stepIndex++;
+                            setTimeout(showStep, 2000); // 2 seconds between status messages
+                        } else {
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 5000);
+                        }
+                    }
+                    showStep();
+                    
                 }).catch(error => {
                     console.error('Error initiating restart:', error);
                     restartBtn.classList.remove('restarting');
                     restartBtn.disabled = false;
-                    appendMessage('Failed to restart services. Please try again.', true);
+                    const errorMsg = '❌ Failed to restart services: ' + error.message;
+                    appendMessage(errorMsg, true);
+                    // Keep error message visible for longer
+                    setTimeout(() => {
+                        messages.forEach(msg => {
+                            const messageDiv = document.createElement('div');
+                            messageDiv.className = 'message bot-message error-message';
+                            messageDiv.innerHTML = msg;
+                            messagesContainer.appendChild(messageDiv);
+                        });
+                    }, 1000);
                 });
             }
         }

@@ -81,14 +81,20 @@ def restart_services():
                 # Give time for cleanup message to be sent
                 eventlet.sleep(1)
                 
+                # Get a copy of all active connections before cleanup
+                active_sids = list(socketio.server.manager.rooms.get('/', set()))
+                
                 # Close all active connections gracefully
-                for sid in socketio.server.manager.rooms.get('/', set()):
+                for sid in active_sids:
                     try:
                         socketio.server.disconnect(sid, namespace='/')
+                        logger.info(f"Successfully disconnected client {sid}")
+                        eventlet.sleep(0.1)  # Small delay between disconnects
                     except Exception as e:
                         logger.warning(f"Error disconnecting client {sid}: {str(e)}")
                 
                 logger.info("All connections cleaned up")
+                eventlet.sleep(1)  # Give time for cleanup logs
                 
                 # Final notification before restart
                 socketio.emit('restart_status', {
