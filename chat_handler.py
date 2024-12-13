@@ -400,71 +400,67 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
                     """Format URLs with a strict, controlled approach."""
                     if not text:
                         return text
-
-                    # Strip all HTML tags first
+                    
+                    # First, remove all existing HTML tags to prevent nesting
                     text = re.sub(r'<[^>]+>', '', text)
                     
-                    # Remove any protocol prefixes and brackets
-                    text = re.sub(r'https?://', '', text)
-                    text = re.sub(r'<[^>]*>', '', text)
+                    # Define official URLs with strict mapping
+                    OFFICIAL_URLS = [
+                        ('Octant', 'https://octant.build'),
+                        ('Documentation', 'https://docs.octant.app'),
+                        ('Golem Foundation', 'https://golem.foundation'),
+                        ('Twitter/X', 'https://x.com/OctantApp'),
+                        ('Warpcast', 'https://warpcast.com/octant'),
+                        ('Discord', 'https://discord.gg/octant')
+                    ]
                     
-                    # Define exact URL mappings with proper formatting
-                    url_mappings = {
-                        'octant.build': '<a href="https://octant.build" class="bot-link">octant.build</a>',
-                        'docs.octant.app': '<a href="https://docs.octant.app" class="bot-link">docs.octant.app</a>',
-                        'golem.foundation': '<a href="https://golem.foundation" class="bot-link">golem.foundation</a>',
-                        '@OctantApp': '<a href="https://x.com/OctantApp" class="bot-link">@OctantApp</a>',
-                        'x.com/OctantApp': '<a href="https://x.com/OctantApp" class="bot-link">@OctantApp</a>',
-                        'warpcast.com/octant': '<a href="https://warpcast.com/octant" class="bot-link">warpcast.com/octant</a>',
-                        'discord.gg/octant': '<a href="https://discord.gg/octant" class="bot-link">discord.gg/octant</a>'
-                    }
+                    def create_safe_link(display, url):
+                        """Create a safe HTML link with validation."""
+                        safe_url = html.escape(url.strip())
+                        safe_display = html.escape(display.strip())
+                        return f'<a href="{safe_url}" class="bot-link">{safe_display}</a>'
                     
-                    # Process text word by word to avoid partial matches
-                    words = text.split()
-                    processed_words = []
-                    
-                    for word in words:
-                        clean_word = word.strip('.,!?()[]{}').lower()
-                        if clean_word in url_mappings:
-                            processed_words.append(url_mappings[clean_word])
-                        else:
-                            processed_words.append(word)
-                    
-                    return ' '.join(processed_words)
+                    # Process each official URL pair
+                    for display, url in OFFICIAL_URLS:
+                        # Define exact patterns to match
+                        patterns = [
+                            url,                     # Full URL
+                            url.rstrip('/'),         # Without trailing slash
+                            url + '/',               # With trailing slash
+                            url[8:],                 # Without https://
+                            f'<{url}>',              # URL in brackets
+                            display,                 # Display name
+                            f'<{display}>'           # Display name in brackets
+                        ]
+                        
+                        # Create one safe link for this URL pair
+                        safe_link = create_safe_link(display, url)
+                        
+                        # Replace each pattern exactly once
+                        for pattern in patterns:
+                            text = text.replace(pattern, safe_link)
+        
+                        # Final cleanup: Remove any nested tags that might have slipped through
+                        while '<a href="<a' in text or '</a></a>' in text:
+                            text = re.sub(r'<a href="<a[^>]+>[^<]+</a>"', '', text)
+                            text = text.replace('</a></a>', '</a>')
+        
+                        # Ensure proper spacing around links
+                        text = re.sub(r'\s+', ' ', text)
+                        return text.strip()
                 
-                # Format the response text
+                # Format URLs with strict validation
                 response_text = format_urls(response_text)
                 
-                # Enhanced cleanup to fix any remaining nested tags
-                def fix_nested_tags(text):
-                    """Enhanced cleanup for nested or malformed tags."""
-                    if not text:
-                        return text
-                        
-                    # Remove multi-level nested tags
-                    while re.search(r'<a[^>]*><a[^>]*>', text):
-                        text = re.sub(r'<a[^>]*><a[^>]*>(.*?)</a></a>', r'\1', text)
-                    
-                    # Remove any stray closing tags
-                    text = re.sub(r'(?<!<a[^>]*>.*)</a>', '', text)
-                    
-                    # Remove any stray opening tags
-                    text = re.sub(r'<a[^>]*>(?!.*</a>)', '', text)
-                    
-                    # Ensure proper spacing around links
-                    text = re.sub(r'\s*(<a[^>]*>)\s*', r' \1', text)
-                    text = re.sub(r'\s*(</a>)\s*', r'\1 ', text)
-                    
-                    # Clean up multiple spaces
-                    text = re.sub(r'\s+', ' ', text)
-                    
-                    return text.strip()
+                # Additional safety check for any remaining nested tags
+                if '<a href="<a' in response_text or '</a></a>' in response_text:
+                    logger.warning("Detected nested tags after formatting, applying additional cleanup")
+                    response_text = re.sub(r'<a href="<a[^>]+>[^<]+</a>"', '', response_text)
+                    response_text = response_text.replace('</a></a>', '</a>')
                 
-                # Apply the enhanced cleanup
-                response_text = fix_nested_tags(response_text)
-                
-                # Validate and split response if necessary
-                response_chunks = self.validate_response_length(response_text)
+                # Normalize spacing around links
+                text = re.sub(r'\s+', ' ', text)
+                text = text.strip()
                 
                 # Log formatted response for verification
                 print(f"Formatted response ({len(response_chunks)} chunks): {response_text}")
