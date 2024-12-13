@@ -7442,3 +7442,5 @@ telegram.error.Conflict: Conflict: terminated by other getUpdates request; make 
 2024-12-13 01:33:20,082 - telegram.ext.Application - INFO - [_application:620] - Application started
 2024-12-13 01:33:20,086 - __main__ - INFO - [telegram_bot:459] - Starting polling...
 2024-12-13 01:33:20,198 - httpx - INFO - [_client:1729] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/deleteWebhook "HTTP/1.1 200 OK"
+2024-12-13 01:33:30,535 - httpx - INFO - [_client:1729] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 01:33:40,640 - httpx - INFO - [_client:1729] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
