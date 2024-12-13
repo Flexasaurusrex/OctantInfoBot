@@ -184,23 +184,20 @@ async def process_message(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
             await message.reply_text("I couldn't understand your message. Please try again.")
             return
 
-        # Split long responses into chunks of 4000 characters max
+        # Handle the response as plain text first
         if isinstance(response, str):
+            # Split into chunks of 4000 characters (Telegram's limit)
             chunks = [response[i:i+4000] for i in range(0, len(response), 4000)]
             for chunk in chunks:
                 if chunk.strip():
-                    await message.reply_text(chunk.strip(), parse_mode='HTML')
+                    await message.reply_text(chunk.strip())
         elif isinstance(response, list):
             for chunk in response:
-                if chunk.strip():
-                    await message.reply_text(chunk.strip(), parse_mode='HTML')
-
+                if chunk and chunk.strip():
+                    await message.reply_text(chunk.strip())
     except Exception as e:
         logger.error(f"Error processing message: {str(e)}", exc_info=True)
-        await message.reply_text(
-            "I'm having trouble processing your message. Please try again.",
-            parse_mode='HTML'
-        )
+        await message.reply_text("I encountered an error. Please try again in a moment.")
 
 async def error_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Handle errors in the telegram bot with aggressive recovery and monitoring."""
@@ -287,6 +284,10 @@ async def main() -> None:
     start_time = time.time()
     retry_count = 0
     base_delay = 5
+    max_delay = 300  # Maximum retry delay of 5 minutes
+    max_retries = 10  # Maximum number of retries before resetting
+    stats_interval = 300  # Log stats every 5 minutes
+    last_stats_time = time.time()
     
     # Get or create event loop
     try:
