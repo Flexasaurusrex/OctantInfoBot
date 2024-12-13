@@ -28,8 +28,7 @@ class CommandHandler:
         return None
 
     def help_command(self):
-        return """
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        return """━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📚 Available Commands
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -38,6 +37,10 @@ class CommandHandler:
 
 📋 Information Commands:
 • /help - Show this help message
+
+💬 How to Chat With Me:
+• Reply to my messages to keep our conversation going!
+• Each reply maintains the chat context
 
 Type any command to get started!
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"""

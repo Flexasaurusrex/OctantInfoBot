@@ -171,13 +171,7 @@ Is DM: {isinstance(message.channel, discord.DMChannel)}
                 await self.process_commands(message)
                 return
 
-            # Log the mention check attempt
-            logger.info("Checking message conditions:")
-            logger.info(f"1. Is DM: {isinstance(message.channel, discord.DMChannel)}")
-            logger.info(f"2. Has mention: {self.user.mentioned_in(message)}")
-            logger.info(f"3. Is reply to bot: {bool(message.reference and message.reference.resolved and message.reference.resolved.author.id == self.user.id)}")
-
-            # Check for replies to bot messages
+            # Check if message is a reply to bot
             is_reply_to_bot = bool(
                 message.reference 
                 and message.reference.resolved 
@@ -185,13 +179,9 @@ Is DM: {isinstance(message.channel, discord.DMChannel)}
             )
             logger.info(f"Is reply to bot: {is_reply_to_bot}")
             
-            # Check for mentions using enhanced detection
-            is_mentioned = self.is_bot_mentioned(message)
-            logger.info(f"Is mentioned: {is_mentioned}")
-            
-            # Only respond to mentions or replies
-            if not (is_mentioned or is_reply_to_bot):
-                logger.info("Message is not a mention or reply, ignoring")
+            # Only process replies to bot messages
+            if not is_reply_to_bot:
+                logger.info("Message is not a reply to bot, ignoring")
                 return
                 
             logger.info("━━━━━━ Bot Interaction ━━━━━━")
@@ -320,8 +310,7 @@ async def main():
         async def help_command(ctx):
             """Show help message"""
             logger.info(f"Help command requested by {ctx.author.name}")
-            help_text = """
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+            help_text = """━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📚 Available Commands
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -330,6 +319,10 @@ async def main():
 
 📋 Information Commands:
 • /help - Show this help message
+
+💬 How to Chat With Me:
+• Reply to my messages to keep our conversation going!
+• Each reply maintains the chat context
 
 Type any command to get started!
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"""
