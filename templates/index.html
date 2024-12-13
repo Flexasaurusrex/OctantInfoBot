@@ -6,47 +6,80 @@
     <title>Octant Information Bot</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
 </head>
 <body>
-    <button class="theme-toggle" onclick="toggleTheme()">
-        <svg class="light-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-            <path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM12 21.75a.75.75 0 01-.75-.75v-2.25a.75.75 0 011.5 0V21a.75.75 0 01-.75.75zM3 12a.75.75 0 01.75-.75h2.25a.75.75 0 010 1.5H3.75A.75.75 0 013 12zM21 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5h2.25A.75.75 0 0121 12z"/>
-        </svg>
-        <span>Theme</span>
-    </button>
-
-    <button class="restart-button" onclick="restartServices()">
-        <svg class="restart-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-            <path d="M12 4.5c-4.14 0-7.5 3.36-7.5 7.5s3.36 7.5 7.5 7.5c3.53 0 6.48-2.44 7.28-5.72.14-.58-.22-1.16-.8-1.3-.58-.14-1.16.22-1.3.8-.6 2.5-2.83 4.22-5.18 4.22-3.03 0-5.5-2.47-5.5-5.5s2.47-5.5 5.5-5.5c1.45 0 2.84.57 3.89 1.59l-1.89 1.89c-.65.65-.2 1.77.72 1.77h4c.55 0 1-.45 1-1v-4c0-.92-1.12-1.37-1.77-.72l-1.49 1.49C13.64 5.05 12.38 4.5 11 4.5z"/>
-        </svg>
-        <span>Restart Services</span>
-    </button>
-
-    <header class="header">
-        <div class="container text-center">
-            <div class="header-content">
-                <div class="d-flex align-items-center justify-content-center">
-                    <img src="{{ url_for('static', filename='images/octant-logo.png') }}" alt="Octant Logo" class="header-logo">
-                    <h1 class="ms-3 mb-0">Octant Information Bot</h1>
-                </div>
-                <p class="mt-3 description">THIS IS THE DEFINITIVE GUIDE AND YOUR FRIENDLY HELPER TO THE OCTANT ECOSYSTEM</p>
-            </div>
-        </div>
-    </header>
-
-    <main class="container">
-        <div class="chat-container">
-            <div id="messages" class="messages-container">
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <img src="{{ url_for('static', filename='images/octant-logo.png') }}" alt="Octant Logo" class="sidebar-logo">
             </div>
             
-            <div class="input-container">
-                <input type="text" id="message-input" class="form-control" 
-                       placeholder="Type your message here..." autocomplete="off">
-                <button id="send-button" class="btn">Send</button>
-            </div>
+            <nav class="sidebar-nav">
+                <button class="sidebar-button" onclick="toggleTheme()">
+                    <svg class="light-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM12 21.75a.75.75 0 01-.75-.75v-2.25a.75.75 0 011.5 0V21a.75.75 0 01-.75.75zM3 12a.75.75 0 01.75-.75h2.25a.75.75 0 010 1.5H3.75A.75.75 0 013 12zM21 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5h2.25A.75.75 0 0121 12z"/>
+                    </svg>
+                    <span>Theme</span>
+                </button>
+
+                <button class="sidebar-button" onclick="restartServices()">
+                    <svg class="restart-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M12 4.5c-4.14 0-7.5 3.36-7.5 7.5s3.36 7.5 7.5 7.5c3.53 0 6.48-2.44 7.28-5.72.14-.58-.22-1.16-.8-1.3-.58-.14-1.16.22-1.3.8-.6 2.5-2.83 4.22-5.18 4.22-3.03 0-5.5-2.47-5.5-5.5s2.47-5.5 5.5-5.5c1.45 0 2.84.57 3.89 1.59l-1.89 1.89c-.65.65-.2 1.77.72 1.77h4c.55 0 1-.45 1-1v-4c0-.92-1.12-1.37-1.77-.72l-1.49 1.49C13.64 5.05 12.38 4.5 11 4.5z"/>
+                    </svg>
+                    <span>Restart Services</span>
+                </button>
+
+                <div class="sidebar-section">
+                    <h3>Analytics</h3>
+                    <div class="analytics-summary">
+                        <div class="stat-card">
+                            <span class="stat-label">Messages Today</span>
+                            <span class="stat-value" id="messages-today">0</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">Response Time</span>
+                            <span class="stat-value" id="avg-response-time">0ms</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-label">Active Users</span>
+                            <span class="stat-value" id="active-users">0</span>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="activity-chart"></canvas>
+                    </div>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <header class="header">
+                <div class="container text-center">
+                    <div class="header-content">
+                        <h1 class="mb-0">Octant Information Bot</h1>
+                        <p class="mt-3 description">THE DEFINITIVE GUIDE TO THE OCTANT ECOSYSTEM</p>
+                    </div>
+                </div>
+            </header>
+
+            <main class="container">
+                <div class="chat-container">
+                    <div id="messages" class="messages-container">
+                    </div>
+                    
+                    <div class="input-container">
+                        <input type="text" id="message-input" class="form-control" 
+                               placeholder="Type your message here..." autocomplete="off">
+                        <button id="send-button" class="btn">Send</button>
+                    </div>
+                </div>
+            </main>
         </div>
-    </main>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
