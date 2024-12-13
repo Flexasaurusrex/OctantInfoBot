@@ -402,80 +402,72 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
                 import re
 
                 def format_urls(text):
-                    """Format URLs in text, keeping social media links clean and preventing double anchor tags."""
-                    # Handle James's social media response first
-                    social_urls = [
+                    """Format URLs in text with improved handling of domain extensions and nested tags."""
+                    # Handle James's social media links
+                    james_social = [
                         "https://x.com/vpabundance",
                         "https://warpcast.com/vpabundance.eth",
                         "https://www.linkedin.com/in/vpabundance"
                     ]
+                    if all(url in text for url in james_social):
+                        return text  # Return unmodified for James's social links
+
+                    # Common domain extensions to prevent splitting
+                    domain_endings = r'(?:com|org|net|edu|gov|io|app|build|foundation|eth|gg)'
                     
-                    # If it's a social media response, return the plain URLs
-                    if all(url in text for url in social_urls):
-                        return text
-
-                    # First, identify and store existing anchor tags
-                    existing_tags = {}
-                    placeholder_pattern = "PLACEHOLDER_{}_TAG"
-                    tag_count = 0
-
-                    # Store original anchor tags before processing
-                    def store_anchor_tag(match):
-                        nonlocal tag_count
-                        placeholder = placeholder_pattern.format(tag_count)
-                        tag_count += 1
-                        # Only store if it's not already a processed bot-link
-                        if 'class="bot-link"' not in match.group(0):
-                            existing_tags[placeholder] = match.group(0)
-                            return placeholder
-                        return match.group(0)
-
-                    # Replace existing anchor tags with placeholders
-                    text = re.sub(r'<a[^>]*?>.*?</a>', store_anchor_tag, text)
-
-                    # Find and format URLs not in placeholders
-                    url_pattern = r'https?://(?:www\.)?[^\s<>"\']+?(?=[.,;:!?)\s]|$)'
-                    urls_to_format = []
+                    # More precise URL pattern that preserves domain extensions
+                    url_pattern = fr'https?://(?:www\.)?[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*\.{domain_endings}(?:/[^\s<>"\']*)?'
                     
-                    for match in re.finditer(url_pattern, text):
-                        raw_url = match.group(0).rstrip('.,;:!?)"')
-                        # Skip if URL is part of a placeholder
-                        if not any(placeholder in raw_url for placeholder in existing_tags.keys()):
-                            start, end = match.span()
-                            # Skip if URL is already part of an anchor tag
-                            if not any(placeholder in text[max(0, start-50):min(len(text), end+50)] 
-                                     for placeholder in existing_tags.keys()):
-                                urls_to_format.append((start, end, raw_url))
-
-                    # Process URLs in reverse order to maintain string indices
-                    urls_to_format.reverse()
-                    for start, end, raw_url in urls_to_format:
-                        # Format display text
-                        display = raw_url
-                        if raw_url.endswith('.build/'):
-                            display = raw_url.replace('https://', '')
-                        elif '/OctantApp' in raw_url:
+                    def process_url(match):
+                        """Process individual URL matches with proper formatting."""
+                        url = match.group(0).rstrip('.,;:!?)"')
+                        
+                        # Special formatting for known URLs
+                        if url.endswith('.build/'):
+                            display = url.replace('https://', '').rstrip('/')
+                        elif 'x.com/OctantApp' in url:
                             display = '@OctantApp'
-                        elif 'discord.gg' in raw_url:
+                        elif 'discord.gg/octant' in url:
                             display = 'discord.gg/octant'
-                        elif 'warpcast.com/octant' in raw_url:
+                        elif 'warpcast.com/octant' in url:
                             display = 'warpcast.com/octant'
-                        
-                        # Format links based on type
-                        if any(domain in raw_url.lower() for domain in ['x.com', 'warpcast.com', 'linkedin.com']):
-                            replacement = raw_url  # Keep social media links as plain URLs
                         else:
-                            replacement = f'<a href="{raw_url}" class="bot-link">{display}</a>'
+                            display = url.replace('https://', '').rstrip('/')
+
+                        # Handle social media links differently
+                        if any(domain in url.lower() for domain in ['x.com/', 'warpcast.com/', 'linkedin.com/']):
+                            return url  # Keep as plain URL
                         
-                        text = text[:start] + replacement + text[end:]
+                        return f'<a href="{url}" class="bot-link">{display}</a>'
 
-                    # Restore original anchor tags
-                    for placeholder, original_tag in existing_tags.items():
-                        text = text.replace(placeholder, original_tag)
+                    # Store and protect existing properly formatted links
+                    protected_tags = {}
+                    tag_counter = 0
 
-                    # Clean up any residual placeholders
-                    text = re.sub(r'PLACEHOLDER_\d+_TAG', '', text)
-                    
+                    def protect_tags(match):
+                        nonlocal tag_counter
+                        if 'class="bot-link"' in match.group(0):
+                            return match.group(0)  # Keep already formatted bot-links
+                        key = f'__PROTECTED_TAG_{tag_counter}__'
+                        protected_tags[key] = match.group(0)
+                        tag_counter += 1
+                        return key
+
+                    # Protect existing anchor tags
+                    text = re.sub(r'<a[^>]*?>.*?</a>', protect_tags, text)
+
+                    # Format remaining URLs
+                    text = re.sub(url_pattern, process_url, text)
+
+                    # Restore protected tags
+                    for key, value in protected_tags.items():
+                        text = text.replace(key, value)
+
+                    # Clean up formatting
+                    text = text.replace('</a>.build/', '.build/</a>')
+                    text = text.replace('</a>.app/', '.app/</a>')
+                    text = text.replace('</a>.foundation/', '.foundation/</a>')
+
                     return text
                 
                 # Format the response text
