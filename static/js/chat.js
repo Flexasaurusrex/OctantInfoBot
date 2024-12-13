@@ -44,38 +44,50 @@ document.addEventListener('DOMContentLoaded', () => {
         if (reconnectAttempts <= MAX_RECONNECT_ATTEMPTS) {
             console.log(`Attempting to reconnect (${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})...`);
             
-            // Calculate delay with jitter to prevent reconnection storms
+            // Enhanced exponential backoff with jitter
             const baseDelay = INITIAL_RETRY_DELAY * Math.pow(2, reconnectAttempts - 1);
-            const jitter = baseDelay * 0.2 * Math.random(); // Add up to 20% random jitter
-            const delay = Math.min(baseDelay + jitter, 10000); // Cap at 10 seconds
+            const maxJitter = Math.min(baseDelay * 0.25, 2000); // Up to 25% jitter, max 2s
+            const jitter = Math.random() * maxJitter;
+            const delay = Math.min(baseDelay + jitter, 15000); // Cap at 15 seconds
             
-            // Clear any existing connection
+            updateConnectionStatus('reconnecting');
+            appendMessage(`Attempting to reconnect in ${(delay/1000).toFixed(1)} seconds...`, true);
+            
+            // Graceful cleanup of existing connection
             if (socket) {
-                socket.removeAllListeners();
-                socket.close();
+                try {
+                    socket.removeAllListeners();
+                    socket.close();
+                } catch (e) {
+                    console.warn('Error during socket cleanup:', e);
+                }
             }
             
             setTimeout(() => {
                 try {
                     if (createSocket()) {
                         console.log('Socket recreated successfully');
-                        // Reset reconnect attempts on successful connection
                         socket.on('connect', () => {
                             reconnectAttempts = 0;
                             console.log('Connection restored');
+                            updateConnectionStatus('connected');
+                            appendMessage('Connection restored! You can continue chatting.', true);
                         });
                     } else {
                         console.error('Failed to recreate socket');
+                        updateConnectionStatus('disconnected');
                         handleReconnection();
                     }
                 } catch (error) {
                     console.error('Error during socket recreation:', error);
+                    updateConnectionStatus('disconnected');
                     handleReconnection();
                 }
             }, delay);
         } else {
             console.error('Max reconnection attempts reached');
-            appendMessage('Connection lost. The page will refresh automatically in 5 seconds...', true);
+            updateConnectionStatus('disconnected');
+            appendMessage('Unable to restore connection after multiple attempts. The page will refresh in 5 seconds...', true);
             setTimeout(() => {
                 window.location.reload();
             }, 5000);
