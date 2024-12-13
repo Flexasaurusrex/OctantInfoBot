@@ -61,7 +61,7 @@ def index():
 def restart_services():
     try:
         logger.info("Restart request received")
-        socketio.emit('restart_status', {'status': 'restarting', 'message': 'Restarting services...'}, broadcast=True)
+        socketio.emit('restart_status', {'status': 'restarting', 'message': 'Restarting services...'})
         # Give clients time to receive the message before restart
         eventlet.sleep(1)
         os._exit(0)  # This will trigger the replit system to restart all services
