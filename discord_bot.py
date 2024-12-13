@@ -104,65 +104,51 @@ class OctantDiscordBot(commands.Bot):
                 await self.process_commands(message)
                 return
 
-            # Check for replies to bot messages
-            is_reply_to_bot = bool(
+            # Check for bot mention and direct replies
+            is_mentioned = self.is_bot_mentioned(message)
+            is_reply_to_bot = (
                 message.reference 
                 and message.reference.resolved 
                 and message.reference.resolved.author.id == self.user.id
             )
-            
-            # Check for mentions using enhanced detection
-            is_mentioned = self.is_bot_mentioned(message)
-            
-            # Only respond to mentions or replies
-            if not (is_mentioned or is_reply_to_bot):
-                return
+
+            # Respond to mentions or direct replies
+            if is_mentioned or is_reply_to_bot:
+                logger.info("━━━━━━ Bot Interaction ━━━━━━")
+                logger.info(f"Message Type: {'Reply' if is_reply_to_bot else 'Mention'}")
+                logger.info(f"Message: {message.content}")
+                logger.info(f"Author: {message.author.name} (ID: {message.author.id})")
+                logger.info(f"Channel: {message.channel.name} (ID: {message.channel.id})")
+                logger.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
                 
-            logger.info("━━━━━━ Bot Interaction ━━━━━━")
-            logger.info(f"Interaction Type: {'Reply' if is_reply_to_bot else 'Mention'}")
-            logger.info(f"Raw Message: {message.content}")
-            logger.info(f"Author: {message.author.name} (ID: {message.author.id})")
-            logger.info(f"Channel: {message.channel.name} (ID: {message.channel.id})")
-            logger.info(f"Is Mentioned: {is_mentioned}")
-            logger.info(f"Is Reply: {is_reply_to_bot}")
-            logger.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+                # Clean the message content
+                clean_content = message.clean_content
                 
-            # Enhanced message content extraction and cleaning
-            try:
-                # Get the message content
-                content = message.content.strip()
-                    
-                # Remove all possible mention patterns
-                mention_patterns = [
-                    f'<@{self.user.id}>',        # Standard mention
-                    f'<@!{self.user.id}>',       # Nickname mention
-                    f'@{self.user.display_name}', # Display name mention
-                    self.user.name,              # Bot name
-                ]
-                    
-                for pattern in mention_patterns:
-                    content = content.replace(pattern, '').strip()
-                    
-                # Process message if not empty
-                if content.strip():
-                    response = self.chat_handler.get_response(content)
+                # Remove bot mention if present
+                if is_mentioned:
+                    mention = f"<@{self.user.id}>"
+                    mention_nick = f"<@!{self.user.id}>"
+                    clean_content = clean_content.replace(mention, "").replace(mention_nick, "")
+                    clean_content = clean_content.replace(f"@{self.user.display_name}", "").strip()
+                
+                logger.info(f"Processing cleaned message: {clean_content}")
+                
+                try:
+                    response = self.chat_handler.get_response(clean_content)
+                    # Split long messages if needed
                     if isinstance(response, list):
                         for chunk in response:
                             if chunk.strip():
-                                await message.reply(chunk, mention_author=True)
+                                await message.reply(chunk)
                     else:
                         if response.strip():
-                            await message.reply(response, mention_author=True)
-                else:
-                    # If no content after cleaning, provide a helpful response
-                    await message.reply("Hi! How can I help you today?", mention_author=True)
-                        
-            except Exception as e:
-                logger.error(f"Error processing message content: {str(e)}")
-                await message.reply("I encountered an error processing your message. Please try again.", mention_author=True)
-            
+                            await message.reply(response)
+                except Exception as e:
+                    logger.error(f"Error getting response: {str(e)}")
+                    await message.reply("I encountered an error processing your message. Please try again.")
+                    
         except Exception as e:
-            logger.error(f"Error in message handler: {str(e)}")
+            logger.error(f"Error processing message: {str(e)}")
             await message.channel.send("I encountered an error processing your message. Please try again.")
 
     async def on_interaction(self, interaction: discord.Interaction):
