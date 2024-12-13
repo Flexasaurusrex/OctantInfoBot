@@ -217,14 +217,20 @@ Is DM: {isinstance(message.channel, discord.DMChannel)}
                             await message.reply("I couldn't generate a response. Please try again.", mention_author=True)
                             return
                             
-                        # Enhanced response handling with better chunking
+                        # Send only one focused response
                         async def send_chunk(chunk_text, is_last=False):
                             """Helper function to send a chunk of text"""
                             try:
                                 if chunk_text.strip():
-                                    await message.reply(chunk_text.strip(), mention_author=True)
-                                    if not is_last:
-                                        await asyncio.sleep(0.5)  # Rate limiting prevention
+                                    # Filter out self-introductions and generic responses
+                                    if not any(chunk_text.lower().startswith(intro) for intro in [
+                                        "i am", "hello", "hi", "hey", "greetings", "as an ai",
+                                        "i'm a", "i'm an", "i can", "i will", "let me"
+                                    ]):
+                                        # Only send substantive responses
+                                        await message.reply(chunk_text.strip(), mention_author=True)
+                                        if not is_last:
+                                            await asyncio.sleep(0.5)  # Rate limiting prevention
                             except discord.errors.HTTPException as he:
                                 logger.error(f"Discord HTTP error while sending chunk: {str(he)}")
                                 return False
