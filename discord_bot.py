@@ -4,6 +4,7 @@ from discord.ext import commands
 from chat_handler import ChatHandler
 from discord_trivia import DiscordTrivia
 import logging
+import asyncio
 
 # Configure logging
 logging.basicConfig(
@@ -14,120 +15,80 @@ logger = logging.getLogger(__name__)
 
 class OctantDiscordBot(commands.Bot):
     def __init__(self):
+        logger.info("Setting up bot with privileged intents...")
         try:
             intents = discord.Intents.default()
-            intents.message_content = True  # Requires Message Content Intent
-            intents.members = True          # Requires Server Members Intent
-            intents.presences = True        # Requires Presence Intent
-            logger.info("Setting up bot with privileged intents...")
+            intents.message_content = True
+            intents.members = True
+            intents.presences = True
+            
             super().__init__(
                 command_prefix='/',
                 intents=intents,
-                description="Octant Information Bot with trivia games and ecosystem knowledge"
+                description="Octant Information Bot with trivia games and ecosystem knowledge",
+                application_id=os.getenv('DISCORD_APPLICATION_ID')
             )
             
-            # Remove default help command to use our custom one
-            self.remove_command('help')
-            
-        except Exception as e:
-            logger.error(f"Failed to initialize bot with intents: {str(e)}")
-            logger.error("Please ensure all required intents are enabled in the Discord Developer Portal:")
-            logger.error("1. PRESENCE INTENT")
-            logger.error("2. SERVER MEMBERS INTENT")
-            logger.error("3. MESSAGE CONTENT INTENT")
-            raise
-        
-        try:
             self.chat_handler = ChatHandler()
             self.trivia = DiscordTrivia()
-        except ValueError as e:
-            logger.error(f"Failed to initialize ChatHandler or DiscordTrivia: {str(e)}")
-            raise
             
-        # Remove default help command
-        self.remove_command('help')
-        
+        except Exception as e:
+            logger.error(f"Failed to initialize bot: {str(e)}")
+            raise
+
     async def setup_hook(self):
-        """Setup hook for the bot."""
+        """Set up the bot's application commands."""
         logger.info("Bot is setting up...")
-        
-        # Register application commands
-        trivia_command = discord.app_commands.Command(
-            name="trivia",
-            description="Start a fun trivia game about Octant ecosystem",
-            callback=self.trivia.start_game
-        )
-        
-        help_command = discord.app_commands.Command(
-            name="help",
-            description="Show help information about available commands",
-            callback=self.help_command
-        )
-        
-        # Add commands to the command tree
-        self.tree.add_command(trivia_command)
-        self.tree.add_command(help_command)
-        
-        # Sync commands with Discord
-        await self.tree.sync()
-        logger.info("Application commands registered and synced")
-        
+        try:
+            # Remove any existing commands first
+            await self.tree.sync()
+            commands = await self.tree.fetch_commands()
+            for command in commands:
+                await self.tree.remove_command(command.name)
+            
+            # Register the trivia command
+            @self.tree.command(
+                name="trivia",
+                description="Start a fun trivia game about Octant ecosystem"
+            )
+            async def trivia(interaction: discord.Interaction):
+                await interaction.response.defer()
+                await self.trivia.start_game(await self.get_context(interaction))
+
+            # Register the help command
+            @self.tree.command(
+                name="help",
+                description="Show help information about available commands"
+            )
+            async def help_cmd(interaction: discord.Interaction):
+                help_text = """
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📚 Available Commands
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎮 Game Commands:
+• /trivia - Start a trivia game about Octant
+
+📋 Information Commands:
+• /help - Show this help message
+
+Type any command to get started!
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"""
+                await interaction.response.send_message(help_text)
+
+            # Sync commands globally
+            logger.info("Syncing application commands...")
+            await self.tree.sync()
+            logger.info("Application commands synced successfully")
+
+        except Exception as e:
+            logger.error(f"Error in setup_hook: {str(e)}", exc_info=True)
+            raise
+
     async def on_ready(self):
         """Called when the bot is ready."""
         logger.info(f'Logged in as {self.user.name} (ID: {self.user.id})')
         logger.info('------')
-        
-    async def on_message(self, message):
-        """Handle incoming messages."""
-        # Ignore messages from the bot itself
-        if message.author == self.user:
-            return
-            
-        try:
-            # Process commands first (these start with /)
-            if message.content.startswith(self.command_prefix):
-                await self.process_commands(message)
-                return
-
-            # Check if the message is a direct reply to the bot
-            is_reply_to_bot = (
-                message.reference 
-                and message.reference.resolved 
-                and message.reference.resolved.author.id == self.user.id
-            )
-            
-            # Check if the bot is mentioned
-            is_mentioned = self.user.mentioned_in(message)
-            
-            # Check for "start trivia" message with mention
-            if message.content.lower() == f"<@{self.user.id}> start trivia" or message.content.lower() == f"<@!{self.user.id}> start trivia":
-                await self.trivia.start_game(await self.get_context(message))
-                return
-                
-            # Only respond if the bot is explicitly mentioned (not just replied to)
-            if is_mentioned:
-                # Remove the mention from the message content
-                clean_content = message.clean_content.replace(f"@{self.user.display_name}", "").strip()
-                
-                response = self.chat_handler.get_response(clean_content)
-                
-                try:
-                    # Split long messages if needed
-                    if isinstance(response, list):
-                        for chunk in response:
-                            await message.reply(chunk)
-                    else:
-                        await message.reply(response)
-                except discord.errors.HTTPException as e:
-                    if e.code == 429:  # Rate limited
-                        await asyncio.sleep(e.retry_after)
-                        await message.reply(response)
-                    else:
-                        raise
-                    
-        except Exception as e:
-            logger.error(f"Error processing message: {str(e)}")
-            await message.channel.send("I encountered an error processing your message. Please try again.")
 
     async def on_interaction(self, interaction: discord.Interaction):
         """Handle button interactions."""
@@ -138,54 +99,20 @@ class OctantDiscordBot(commands.Bot):
                 await self.trivia.handle_answer(interaction, answer)
 
 async def main():
-    # Create bot instance
-    bot = OctantDiscordBot()
-    
-    @bot.tree.command(name="trivia", description="Start a fun trivia game about Octant ecosystem")
-    async def trivia(interaction: discord.Interaction):
-        """Start a trivia game"""
-        await bot.trivia.start_game(interaction)
-
-    @bot.tree.command(name="help", description="Show help information about available commands")
-    async def help(interaction: discord.Interaction):
-        """Show help message"""
-        help_text = """
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📚 Available Commands
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-🎮 Game Commands:
-• /trivia - Start a trivia game
-• start trivia - Also starts trivia game
-• end trivia - End current trivia game
-
-📋 Information Commands:
-• /help - Show this help message
-• /stats - View your chat statistics
-• /learn - Access learning modules
-
-📌 Topic-Specific Commands:
-• /funding - Learn about Octant's funding
-• /governance - Understand governance
-• /rewards - Explore reward system
-
-Type any command to get started!
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"""
-        await ctx.send(help_text)
-        
-    # Run the bot
+    # Get required environment variables
     discord_token = os.environ.get('DISCORD_BOT_TOKEN')
     if not discord_token:
         logger.error("DISCORD_BOT_TOKEN not found in environment variables")
         raise ValueError("DISCORD_BOT_TOKEN environment variable is required")
-        
+
+    # Create and run bot
     try:
+        bot = OctantDiscordBot()
         await bot.start(discord_token)
     except discord.LoginFailure:
         logger.error("Failed to login to Discord. Please check your token.")
     except Exception as e:
-        logger.error(f"An error occurred: {str(e)}")
-        
+        logger.error(f"An error occurred: {str(e)}", exc_info=True)
+
 if __name__ == "__main__":
-    import asyncio
     asyncio.run(main())
