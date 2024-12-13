@@ -12,42 +12,60 @@ class TriviaButton(ui.Button):
         self.option = option
 
     async def callback(self, interaction: discord.Interaction):
-        view = self.view
-        if not isinstance(view, TriviaView):
-            return
+        try:
+            # Verify interaction hasn't been responded to
+            if interaction.response.is_done():
+                return
 
-        if view.answered:
-            await interaction.response.send_message("This question has already been answered!", ephemeral=True)
-            return
+            view = self.view
+            if not isinstance(view, TriviaView):
+                logger.error("Invalid view type in TriviaButton callback")
+                await interaction.response.send_message("An error occurred. Please try again.", ephemeral=True)
+                return
 
-        view.answered = True
-        is_correct = self.option == view.correct_answer
+            if view.answered:
+                await interaction.response.send_message("This question has already been answered!", ephemeral=True)
+                return
 
-        if is_correct:
-            view.game.score += 1
-            response_embed = discord.Embed(
-                title="✅ Correct!",
-                description=view.explanation,
-                color=discord.Color.green()
+            view.answered = True
+            is_correct = self.option == view.correct_answer
+            logger.info(f"Trivia answer received - Correct: {is_correct}, Option: {self.option}")
+
+            if is_correct:
+                view.game.score += 1
+                response_embed = discord.Embed(
+                    title="✅ Correct!",
+                    description=view.explanation,
+                    color=discord.Color.green()
+                )
+            else:
+                correct_option = next(btn.label for btn in view.children if btn.option == view.correct_answer)
+                response_embed = discord.Embed(
+                    title="❌ Incorrect!",
+                    description=f"The correct answer was: {correct_option}\n\n{view.explanation}",
+                    color=discord.Color.red()
+                )
+
+            score = view.game.score
+            questions_asked = view.game.questions_asked + 1
+            response_embed.add_field(
+                name="Score",
+                value=f"{score}/{questions_asked} ({(score/questions_asked*100):.1f}%)",
+                inline=False
             )
-        else:
-            correct_option = next(btn.label for btn in view.children if btn.option == view.correct_answer)
-            response_embed = discord.Embed(
-                title="❌ Incorrect!",
-                description=f"The correct answer was: {correct_option}\n\n{view.explanation}",
-                color=discord.Color.red()
-            )
 
-        score = view.game.score
-        questions_asked = view.game.questions_asked + 1
-        response_embed.add_field(
-            name="Score",
-            value=f"{score}/{questions_asked} ({(score/questions_asked*100):.1f}%)",
-            inline=False
-        )
+            await interaction.response.send_message(embed=response_embed)
+            await view.game.send_next_question(interaction)
 
-        await interaction.response.send_message(embed=response_embed)
-        await view.game.send_next_question(interaction)
+        except Exception as e:
+            logger.error(f"Error in trivia button callback: {str(e)}", exc_info=True)
+            try:
+                await interaction.response.send_message(
+                    "Sorry, there was an error processing your answer. Please try again.",
+                    ephemeral=True
+                )
+            except:
+                pass  # Interaction might have already been responded to
 
 class TriviaView(ui.View):
     def __init__(self, game, question: dict):
@@ -56,22 +74,23 @@ class TriviaView(ui.View):
         self.answered = False
         self.correct_answer = question['correct']
         self.explanation = question['explanation']
-        self.message = None #Added to store the message for timeout handling
+        self.message = None  # Added to store the message for timeout handling
 
         for option, text in question['options'].items():
             self.add_item(TriviaButton(option, text))
 
     async def on_timeout(self):
-        if not self.answered:
-            timeout_embed = discord.Embed(
-                title="⏰ Time's Up!",
-                description=f"The correct answer was: {self.correct_answer}\n\n{self.explanation}",
-                color=discord.Color.orange()
-            )
-            
-            if self.message:
+        try:
+            if not self.answered and self.message:
+                timeout_embed = discord.Embed(
+                    title="⏰ Time's Up!",
+                    description=f"The correct answer was: {self.correct_answer}\n\n{self.explanation}",
+                    color=discord.Color.orange()
+                )
                 await self.message.reply(embed=timeout_embed)
                 await self.game.end_game(self.message)
+        except Exception as e:
+            logger.error(f"Error in trivia timeout handling: {str(e)}", exc_info=True)
 
 class DiscordTrivia:
     def __init__(self):
@@ -114,41 +133,56 @@ class DiscordTrivia:
 
     async def start_game(self, interaction: discord.Interaction):
         """Start a new trivia game."""
-        channel_id = interaction.channel_id
-        self.current_games[channel_id] = {
-            'score': 0,
-            'questions_asked': 0,
-            'start_time': discord.utils.utcnow()
-        }
-        
-        await self.send_next_question(interaction)
+        try:
+            channel_id = interaction.channel_id
+            self.current_games[channel_id] = {
+                'score': 0,
+                'questions_asked': 0,
+                'start_time': discord.utils.utcnow()
+            }
+            await self.send_next_question(interaction)
+        except Exception as e:
+            logger.error(f"Error starting trivia game: {str(e)}", exc_info=True)
+            await interaction.response.send_message(
+                "Sorry, there was an error starting the trivia game. Please try again.",
+                ephemeral=True
+            )
 
     async def send_next_question(self, interaction: discord.Interaction):
         """Send the next question to the channel."""
-        channel_id = interaction.channel_id
-        game = self.current_games.get(channel_id)
-        
-        if not game:
-            await interaction.followup.send("No active game found! Start a new game with /trivia")
-            return
-            
-        if game['questions_asked'] >= len(self.questions):
-            await self.end_game(interaction)
-            return
-            
-        question = self.questions[game['questions_asked']]
-        game['questions_asked'] += 1
-        
-        embed = discord.Embed(
-            title=f"Question {game['questions_asked']}/{len(self.questions)}",
-            description=question['question'],
-            color=discord.Color.blue()
-        )
-        
-        view = TriviaView(self, question)
-        message = await interaction.followup.send(embed=embed, view=view)
-        view.message = message #Store the message for timeout handling
+        try:
+            channel_id = interaction.channel_id
+            game = self.current_games.get(channel_id)
 
+            if not game:
+                await interaction.followup.send("No active game found! Start a new game with /trivia")
+                return
+
+            if game['questions_asked'] >= len(self.questions):
+                await self.end_game(interaction)
+                return
+
+            question = self.questions[game['questions_asked']]
+            game['questions_asked'] += 1
+
+            embed = discord.Embed(
+                title=f"Question {game['questions_asked']}/{len(self.questions)}",
+                description=question['question'],
+                color=discord.Color.blue()
+            )
+
+            view = TriviaView(self, question)
+            message = await interaction.followup.send(embed=embed, view=view)
+            view.message = message  # Store the message for timeout handling
+
+        except Exception as e:
+            logger.error(f"Error sending next question: {str(e)}", exc_info=True)
+            await interaction.followup.send(
+                "Sorry, there was an error sending the next question. The game has been ended.",
+                ephemeral=True
+            )
+            if channel_id in self.current_games:
+                del self.current_games[channel_id]
 
     async def end_game(self, interaction: discord.Interaction):
         """Handle game completion and cleanup."""
@@ -201,7 +235,7 @@ class DiscordTrivia:
                 await ctx.send(embed=final_embed)
 
         except Exception as e:
-            logger.error(f"Error in end_game: {str(e)}")
+            logger.error(f"Error in end_game: {str(e)}", exc_info=True)
         finally:
             if channel_id in self.current_games:
                 del self.current_games[channel_id]

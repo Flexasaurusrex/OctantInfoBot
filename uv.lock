@@ -849,7 +849,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "discord-py", specifier = ">=2.4.0" },
+    { name = "discord-py", specifier = ">=2.3.2" },
     { name = "email-validator", specifier = ">=2.2.0" },
     { name = "eventlet", specifier = ">=0.38.0" },
     { name = "flask", specifier = ">=3.1.0" },
