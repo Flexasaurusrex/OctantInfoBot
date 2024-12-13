@@ -392,96 +392,92 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
             
             result = response.json()
             if "output" in result and result["output"]["choices"]:
+                # Get the raw response text
                 response_text = result["output"]["choices"][0]["text"].strip()
-                # Convert URLs to clickable links
-                import re
-
+                
+                # Format URLs in the response
+                logger.info("Formatting URLs in response")
+                
                 def format_urls(text):
-                    """Format URLs with a strict, controlled approach."""
+                    """Format URLs with strict rules to prevent nested tags and malformed links."""
                     if not text:
                         return text
-                    
-                    # First, remove all existing HTML tags to prevent nesting
-                    text = re.sub(r'<[^>]+>', '', text)
-                    
-                    # Define official URLs with strict mapping
-                    OFFICIAL_URLS = [
-                        ('Octant', 'https://octant.build'),
-                        ('Documentation', 'https://docs.octant.app'),
-                        ('Golem Foundation', 'https://golem.foundation'),
-                        ('Twitter/X', 'https://x.com/OctantApp'),
-                        ('Warpcast', 'https://warpcast.com/octant'),
-                        ('Discord', 'https://discord.gg/octant')
-                    ]
-                    
-                    def create_safe_link(display, url):
-                        """Create a safe HTML link with validation."""
-                        safe_url = html.escape(url.strip())
-                        safe_display = html.escape(display.strip())
-                        return f'<a href="{safe_url}" class="bot-link">{safe_display}</a>'
-                    
-                    # Process each official URL pair
-                    for display, url in OFFICIAL_URLS:
-                        # Define exact patterns to match
-                        patterns = [
-                            url,                     # Full URL
-                            url.rstrip('/'),         # Without trailing slash
-                            url + '/',               # With trailing slash
-                            url[8:],                 # Without https://
-                            f'<{url}>',              # URL in brackets
-                            display,                 # Display name
-                            f'<{display}>'           # Display name in brackets
-                        ]
+
+                    # Define exact official URLs and their display names
+                    OFFICIAL_URLS = {
+                        'https://octant.build': 'Octant',
+                        'https://docs.octant.app': 'Documentation',
+                        'https://golem.foundation': 'Golem Foundation',
+                        'https://x.com/OctantApp': '@OctantApp',
+                        'https://warpcast.com/octant': 'Warpcast',
+                        'https://discord.gg/octant': 'Discord'
+                    }
+
+                    # First, escape any HTML in the text to prevent XSS
+                    escaped_text = html.escape(text)
+
+                    # Replace each exact URL with its formatted version
+                    for url, display in OFFICIAL_URLS.items():
+                        # Create a formatted link with proper escaping
+                        formatted_link = f'<a href="{url}" class="bot-link">{display}</a>'
+                        # Replace the exact URL with the formatted link
+                        escaped_text = escaped_text.replace(url, formatted_link)
+
+                        # Also handle www. version
+                        www_url = url.replace('https://', 'https://www.')
+                        escaped_text = escaped_text.replace(www_url, formatted_link)
+
+                        # Handle non-https version
+                        http_url = url.replace('https://', 'http://')
+                        escaped_text = escaped_text.replace(http_url, formatted_link)
+
+                        # Handle domain-only version (without protocol)
+                        domain = url.replace('https://', '')
+                        escaped_text = escaped_text.replace(f" {domain}", f" {formatted_link}")
+                        escaped_text = escaped_text.replace(f"\n{domain}", f"\n{formatted_link}")
                         
-                        # Create one safe link for this URL pair
-                        safe_link = create_safe_link(display, url)
-                        
-                        # Replace each pattern exactly once
-                        for pattern in patterns:
-                            text = text.replace(pattern, safe_link)
-        
-                        # Final cleanup: Remove any nested tags that might have slipped through
-                        while '<a href="<a' in text or '</a></a>' in text:
-                            text = re.sub(r'<a href="<a[^>]+>[^<]+</a>"', '', text)
-                            text = text.replace('</a></a>', '</a>')
-        
-                        # Ensure proper spacing around links
-                        text = re.sub(r'\s+', ' ', text)
-                        return text.strip()
-                
-                # Format URLs with strict validation
-                response_text = format_urls(response_text)
-                
-                # Additional safety check for any remaining nested tags
-                if '<a href="<a' in response_text or '</a></a>' in response_text:
-                    logger.warning("Detected nested tags after formatting, applying additional cleanup")
-                    response_text = re.sub(r'<a href="<a[^>]+>[^<]+</a>"', '', response_text)
-                    response_text = response_text.replace('</a></a>', '</a>')
-                
-                # Normalize spacing around links
-                text = re.sub(r'\s+', ' ', text)
-                text = text.strip()
-                
-                # Log formatted response for verification
-                print(f"Formatted response ({len(response_chunks)} chunks): {response_text}")
-                
-                # Update conversation history with the complete response
-                self.conversation_history.append({
-                    "user": user_message,
-                    "assistant": response_text
-                })
+                    return escaped_text.strip()
+
+                try:
+                    # Format URLs with the improved function
+                    formatted_text = format_urls(response_text)
+                    logger.info("URLs formatted successfully")
+                    
+                    # Update conversation history with formatted text
+                    self.conversation_history.append({
+                        "user": user_message,
+                        "assistant": formatted_text
+                    })
+                except Exception as format_error:
+                    logger.error(f"Error formatting URLs: {str(format_error)}")
+                    formatted_text = response_text  # Fall back to unformatted text
                 
                 # Keep only the last max_history entries
                 if len(self.conversation_history) > self.max_history:
                     self.conversation_history = self.conversation_history[-self.max_history:]
                 
-                # Try to combine response chunks if possible
-                if len(response_chunks) > 1:
-                    # If all chunks combined are under 4000 characters, combine them
-                    total_length = sum(len(chunk) for chunk in response_chunks)
-                    if total_length <= 4000:
-                        return '\n\n'.join(response_chunks)
-                return response_chunks[0] if len(response_chunks) == 1 else response_chunks
+                # Handle long responses
+                if len(formatted_text) > 2000:
+                    chunks = []
+                    paragraphs = formatted_text.split('\n\n')
+                    current_chunk = ""
+                    
+                    for paragraph in paragraphs:
+                        # If adding this paragraph would exceed limit
+                        if len(current_chunk) + len(paragraph) + 2 > 2000:
+                            if current_chunk:
+                                chunks.append(current_chunk.strip())
+                            current_chunk = paragraph
+                        else:
+                            current_chunk = current_chunk + '\n\n' + paragraph if current_chunk else paragraph
+                    
+                    # Add the last chunk if there is one
+                    if current_chunk:
+                        chunks.append(current_chunk.strip())
+                    
+                    return chunks
+                
+                return formatted_text
             else:
                 print("Unexpected API response format:", result)
                 return "I apologize, but I couldn't generate a response at the moment. Please try again."
