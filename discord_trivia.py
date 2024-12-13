@@ -300,44 +300,54 @@ class DiscordTrivia:
                     f"({(game['score']/game['questions_asked']*100):.1f}%)"
                 )
             
-            await interaction.response.send_message(result_message)
-            
-            # Small delay before sending next question
-            await asyncio.sleep(1)
-            
-            # Handle game completion or next question
-            if game['questions_asked'] >= len(self.questions):
-                # Game is finished
-                final_score = game['score']
-                total_questions = len(self.questions)
-                percentage = (final_score / total_questions) * 100
-                final_message = (
-                    f"🎮 Game Over!\n\n"
-                    f"🏆 Final Score: {final_score}/{total_questions} ({percentage:.1f}%)\n\n"
-                    f"Want to play again? Use /trivia!"
-                )
-                await interaction.followup.send(final_message)
-                del self.current_games[channel_id]
-            else:
-                # Setup and send next question
-                try:
-                    next_question = self.questions[game['questions_asked']]
-                    game['current_question'] = next_question
-                    logger.info(f"Setting up next question {game['questions_asked'] + 1}")
-                    
-                    next_message = (
-                        f"🎯 Question {game['questions_asked'] + 1}/{len(self.questions)}\n"
-                        f"━━━━━━━━━━━━━━━━━━━━━━━\n\n"
-                        f"📝 {next_question['question']}\n\n"
-                        f"Select your answer from the options below:"
+            try:
+                # Send initial response with result
+                await interaction.response.send_message(result_message)
+                
+                # Handle game completion or next question
+                if game['questions_asked'] >= len(self.questions):
+                    # Game is finished
+                    final_score = game['score']
+                    total_questions = len(self.questions)
+                    percentage = (final_score / total_questions) * 100
+                    final_message = (
+                        f"🎮 Game Over!\n\n"
+                        f"🏆 Final Score: {final_score}/{total_questions} ({percentage:.1f}%)\n\n"
+                        f"Want to play again? Use /trivia!"
                     )
+                    await interaction.followup.send(final_message)
+                    del self.current_games[channel_id]
+                else:
+                    # Create a new context for the next question
+                    try:
+                        channel = interaction.channel
+                        ctx = await interaction.client.get_application_context(interaction)
+                        if ctx is None:
+                            # Fallback to creating a minimal context
+                            ctx = commands.Context(
+                                bot=interaction.client,
+                                channel=channel,
+                                author=interaction.user
+                            )
+                        logger.info(f"Created new context for next question in channel {channel_id}")
+                        await self.send_next_question(ctx)
+                    except Exception as ctx_error:
+                        logger.error(f"Error creating context for next question: {str(ctx_error)}", exc_info=True)
+                        await interaction.followup.send("Error getting next question. Please start a new game with /trivia")
                     
-                    next_view = await self.create_answer_view(next_question['options'])
-                    await interaction.followup.send(next_message, view=next_view)
-                    logger.info(f"Successfully sent next question to channel {interaction.channel_id}")
+            except discord.errors.InteractionResponded:
+                logger.warning("Interaction was already responded to, using followup instead")
+                try:
+                    await interaction.followup.send(result_message)
                 except Exception as e:
-                    logger.error(f"Error sending next question: {str(e)}", exc_info=True)
-                    await interaction.followup.send("Error loading next question. Please start a new game.", ephemeral=True)
+                    logger.error(f"Error sending followup message: {str(e)}", exc_info=True)
+            except Exception as e:
+                logger.error(f"Error handling answer: {str(e)}", exc_info=True)
+                error_message = "An error occurred while processing your answer. Please try again."
+                if not interaction.response.is_done():
+                    await interaction.response.send_message(error_message, ephemeral=True)
+                else:
+                    await interaction.followup.send(error_message, ephemeral=True)
                 
         except Exception as e:
             logger.error(f"Error in handle_answer: {str(e)}", exc_info=True)

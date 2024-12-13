@@ -57,7 +57,6 @@ class OctantDiscordBot(commands.Bot):
         try:
             # Process commands first (these start with /)
             if message.content.startswith(self.command_prefix):
-                logger.info(f"Processing command: {message.content}")
                 await self.process_commands(message)
                 return
 
@@ -71,33 +70,34 @@ class OctantDiscordBot(commands.Bot):
             # Check for bot mention
             is_mentioned = self.user.mentioned_in(message)
             
-            # Only respond to direct mentions or replies
-            if not (is_mentioned or is_reply_to_bot):
+            # Check if the message is a command first
+            if message.content.startswith(self.command_prefix):
+                logger.info(f"Processing command: {message.content}")
+                await self.process_commands(message)
                 return
 
-            logger.info("━━━━━━ Bot Interaction ━━━━━━")
-            logger.info(f"Message Type: {'Reply' if is_reply_to_bot else 'Mention'}")
-            logger.info(f"Message: {message.content}")
-            logger.info(f"Author: {message.author.name} (ID: {message.author.id})")
-            logger.info(f"Channel: {message.channel.name} (ID: {message.channel.id})")
-            logger.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+            # Respond to mentions or direct replies
+            if is_mentioned or is_reply_to_bot:
+                logger.info("━━━━━━ Bot Interaction ━━━━━━")
+                logger.info(f"Message Type: {'Reply' if is_reply_to_bot else 'Mention'}")
+                logger.info(f"Message: {message.content}")
+                logger.info(f"Author: {message.author.name} (ID: {message.author.id})")
+                logger.info(f"Channel: {message.channel.name} (ID: {message.channel.id})")
+                logger.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
                 
-            # Clean the message content
-            clean_content = message.clean_content
+                # Clean the message content
+                clean_content = message.clean_content
                 
-            # Remove bot mention and display name if present
-            if is_mentioned:
-                # Remove both <@id> and <@!id> mentions
-                mention = f"<@{self.user.id}>"
-                mention_nick = f"<@!{self.user.id}>"
-                clean_content = clean_content.replace(mention, "").replace(mention_nick, "")
-                # Remove display name mention
-                clean_content = clean_content.replace(f"@{self.user.display_name}", "").strip()
+                # Remove bot mention if present
+                if is_mentioned:
+                    # Handle both <@!id> and regular @mentions
+                    mention = f"<@{self.user.id}>"
+                    mention_nick = f"<@!{self.user.id}>"
+                    clean_content = clean_content.replace(mention, "").replace(mention_nick, "")
+                    clean_content = clean_content.replace(f"@{self.user.display_name}", "").strip()
                 
-            logger.info(f"Processing cleaned message: {clean_content}")
+                logger.info(f"Processing cleaned message: {clean_content}")
                 
-            # Only process if there's actual content after cleaning
-            if clean_content.strip():
                 try:
                     response = self.chat_handler.get_response(clean_content)
                     # Split long messages if needed
@@ -111,8 +111,6 @@ class OctantDiscordBot(commands.Bot):
                 except Exception as e:
                     logger.error(f"Error getting response: {str(e)}")
                     await message.reply("I encountered an error processing your message. Please try again.")
-            else:
-                logger.info("Skipping empty message after cleaning")
                     
         except Exception as e:
             logger.error(f"Error processing message: {str(e)}")
