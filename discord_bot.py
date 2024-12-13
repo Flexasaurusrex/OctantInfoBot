@@ -64,15 +64,27 @@ class OctantDiscordBot(commands.Bot):
                 logger.info("Message is from bot, ignoring")
                 return
                 
+            is_reply_to_bot = bool(
+                message.reference 
+                and message.reference.resolved 
+                and message.reference.resolved.author.id == self.user.id
+            )
+
+            # Only process if it's a reply to the bot
+            if not is_reply_to_bot:
+                logger.info("Message is not a reply to bot, ignoring")
+                return
+
             # Process the message
             response = self.chat_handler.get_response(message.content)
             if response:
                 logger.info("Sending response to user")
                 if isinstance(response, list):
                     for chunk in response:
-                        await message.reply(chunk)
+                        if chunk and chunk.strip():
+                            await message.reply(chunk.strip(), mention_author=True)
                 else:
-                    await message.reply(response)
+                    await message.reply(response.strip(), mention_author=True)
                 logger.info("Response sent successfully")
                 
         except Exception as e:

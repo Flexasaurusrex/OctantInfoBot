@@ -8,12 +8,37 @@ document.addEventListener('DOMContentLoaded', () => {
     
     socket = io({
         reconnection: true,
-        reconnectionAttempts: 5,
+        reconnectionAttempts: Infinity,
         reconnectionDelay: 1000,
         reconnectionDelayMax: 5000,
-        timeout: 10000,
+        timeout: 20000,
         transports: ['websocket'],
-        upgrade: false
+        upgrade: false,
+        autoConnect: true,
+        reconnectionDelayMax: 10000
+    });
+
+    // Handle initial connection error
+    socket.on('connect_failed', (error) => {
+        console.log('Initial connection failed:', error);
+        appendMessage('Failed to establish connection. Please refresh the page.', true);
+    });
+
+    // Handle disconnect
+    socket.on('disconnect', (reason) => {
+        console.log('Disconnected:', reason);
+        appendMessage('Connection lost. Attempting to reconnect...', true);
+    });
+
+    // Handle reconnect failed
+    socket.on('reconnect_failed', () => {
+        console.log('Reconnection failed');
+        appendMessage('Failed to reconnect. Please refresh the page.', true);
+    });
+
+    // Handle reconnect attempt
+    socket.on('reconnect_attempt', (attemptNumber) => {
+        console.log('Attempting to reconnect:', attemptNumber);
     });
     const messageInput = document.getElementById('message-input');
     const sendButton = document.getElementById('send-button');
