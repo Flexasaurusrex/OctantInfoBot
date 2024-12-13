@@ -22,7 +22,8 @@ class OctantDiscordBot(commands.Bot):
         super().__init__(
             command_prefix='/',
             intents=intents,
-            help_command=None
+            help_command=None,
+            case_insensitive=True
         )
         
         self.chat_handler = ChatHandler()

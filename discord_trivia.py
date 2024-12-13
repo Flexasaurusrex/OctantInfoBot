@@ -67,11 +67,12 @@ class TriviaButton(Button):
 
 class TriviaView(View):
     def __init__(self, trivia_game, question: dict):
-        super().__init__(timeout=30.0)
+        super().__init__(timeout=120.0)  # Increased timeout to 2 minutes
         self.trivia_game = trivia_game
         self.answered = False
         self.correct_answer = question['correct']
         self.explanation = question['explanation']
+        self.message = None  # Store message reference
         
         # Add buttons for each option
         for option, text in question['options'].items():
