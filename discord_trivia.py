@@ -1,29 +1,74 @@
 import discord
 from discord.ext import commands
 import random
-import html
 import logging
 import asyncio
 from typing import Dict, Optional
-async def get_context_from_interaction(interaction: discord.Interaction) -> Optional[commands.Context]:
-    """Helper function to get context from interaction."""
-    try:
-        return await interaction.client.get_application_context(interaction)
-    except Exception as e:
-        logger.error(f"Error getting context from interaction: {str(e)}", exc_info=True)
-        return None
 
-
-# Configure logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
 
+class TriviaButton(discord.ui.Button):
+    def __init__(self, option_key: str, option_value: str):
+        # Use Discord's button styles
+        style_map = {
+            'A': discord.ButtonStyle.primary,
+            'B': discord.ButtonStyle.primary,
+            'C': discord.ButtonStyle.primary,
+            'D': discord.ButtonStyle.primary
+        }
+        super().__init__(
+            style=style_map.get(option_key, discord.ButtonStyle.primary),
+            label=f"{option_key}. {option_value}",
+            custom_id=f"trivia_{option_key}"
+        )
+        self.option_key = option_key
+
+    async def callback(self, interaction: discord.Interaction):
+        view = self.view
+        if isinstance(view, TriviaView):
+            await view.handle_answer(interaction, self.option_key)
+
+class TriviaView(discord.ui.View):
+    def __init__(self, trivia_game, question_data: dict):
+        super().__init__(timeout=300)  # 5 minute timeout
+        self.trivia_game = trivia_game
+        self.question = question_data
+        self.answered = False
+
+        # Add buttons for each option
+        for key, value in question_data['options'].items():
+            button = TriviaButton(key, value)
+            self.add_item(button)
+
+    async def handle_answer(self, interaction: discord.Interaction, answer: str):
+        if self.answered:
+            await interaction.response.send_message(
+                "This question has already been answered!",
+                ephemeral=True
+            )
+            return
+
+        self.answered = True
+        is_correct = answer == self.question['correct']
+        
+        # Update button styles to show correct/incorrect answers
+        for child in self.children:
+            if isinstance(child, TriviaButton):
+                child.disabled = True
+                if child.option_key == self.question['correct']:
+                    child.style = discord.ButtonStyle.success
+                elif child.option_key == answer and not is_correct:
+                    child.style = discord.ButtonStyle.danger
+
+        await interaction.response.edit_message(view=self)
+        await self.trivia_game.handle_answer(interaction, answer)
+
 class DiscordTrivia:
     def __init__(self):
-        """Initialize the trivia game with questions."""
         self.questions = [
             {
                 "question": "What is the minimum effective GLM balance required for user rewards?",
@@ -48,355 +93,151 @@ class DiscordTrivia:
                 "explanation": "Each Octant epoch lasts 90 days, followed by a two-week allocation window where users can claim rewards or donate to projects."
             },
             {
-                "question": "What percentage of Octant's rewards goes to foundation operations?",
+                "question": "What is the maximum funding cap for a single project from the Matched Rewards pool?",
                 "options": {
-                    "A": "15%",
-                    "B": "20%",
-                    "C": "25%",
-                    "D": "30%"
+                    "A": "10%",
+                    "B": "15%",
+                    "C": "20%",
+                    "D": "25%"
                 },
                 "correct": "C",
-                "explanation": "25% of Octant's rewards are allocated to foundation operations to maintain and develop the platform, while 70% goes to user and matched rewards, and 5% to community initiatives."
-            },
-            {
-                "question": "What is the purpose of Patron mode in Octant?",
-                "options": {
-                    "A": "To increase personal rewards",
-                    "B": "To boost project funding",
-                    "C": "To skip voting periods",
-                    "D": "To reduce fees"
-                },
-                "correct": "B",
-                "explanation": "Patron mode allows users to boost project funding by allocating their rewards directly to the matched rewards pool, enhancing the support for community projects."
-            },
-            {
-                "question": "How much ETH backs Octant's operations?",
-                "options": {
-                    "A": "50,000 ETH",
-                    "B": "75,000 ETH",
-                    "C": "100,000 ETH",
-                    "D": "125,000 ETH"
-                },
-                "correct": "C",
-                "explanation": "Octant is backed by 100,000 ETH from the Golem Foundation, providing a substantial foundation for its public goods funding initiatives."
-            },
-            {
-                "question": "What happens after each 90-day epoch in Octant?",
-                "options": {
-                    "A": "Immediate reward distribution",
-                    "B": "Two-week allocation window",
-                    "C": "One-month voting period",
-                    "D": "System maintenance"
-                },
-                "correct": "B",
-                "explanation": "After each 90-day epoch, there's a two-week allocation window where users can claim their rewards or choose to donate them to projects."
-            },
-            {
-                "question": "What percentage of rewards goes to community initiatives?",
-                "options": {
-                    "A": "5%",
-                    "B": "10%",
-                    "C": "15%",
-                    "D": "20%"
-                },
-                "correct": "A",
-                "explanation": "5% of rewards are allocated to community initiatives, fostering growth and innovation within the Octant ecosystem."
-            },
-            {
-                "question": "What type of staking mechanism does Octant use for GLM tokens?",
-                "options": {
-                    "A": "Liquid staking",
-                    "B": "Locked staking",
-                    "C": "Flexible staking",
-                    "D": "Delegated staking"
-                },
-                "correct": "B",
-                "explanation": "Octant uses a locked staking mechanism where GLM tokens must be locked to participate in the ecosystem and earn rewards."
-            },
-            {
-                "question": "Which organization oversees Octant's development?",
-                "options": {
-                    "A": "Ethereum Foundation",
-                    "B": "Golem Foundation",
-                    "C": "Octant DAO",
-                    "D": "Decentralized Council"
-                },
-                "correct": "B",
-                "explanation": "The Golem Foundation oversees Octant's development, backed by their commitment of 100,000 ETH to support public goods funding."
-            },
-            {
-                "question": "What is the primary goal of Octant's funding model?",
-                "options": {
-                    "A": "Maximum profit generation",
-                    "B": "Token price stability",
-                    "C": "Public goods funding",
-                    "D": "Network security"
-                },
-                "correct": "C",
-                "explanation": "Octant's primary goal is to support public goods funding through its innovative quadratic funding mechanism and community-driven allocation."
-            },
-            {
-                "question": "How are project funding decisions made in Octant?",
-                "options": {
-                    "A": "Foundation decides alone",
-                    "B": "Community voting only",
-                    "C": "Quadratic funding + community",
-                    "D": "Random selection"
-                },
-                "correct": "C",
-                "explanation": "Project funding in Octant is determined through a combination of quadratic funding mechanics and community participation, ensuring fair and democratic resource allocation."
-            },
-            {
-                "question": "What happens to GLM tokens during the locking period?",
-                "options": {
-                    "A": "They're burned",
-                    "B": "They're traded freely",
-                    "C": "They're locked and illiquid",
-                    "D": "They're converted to ETH"
-                },
-                "correct": "C",
-                "explanation": "During the locking period, GLM tokens become illiquid and cannot be transferred or traded, ensuring committed participation in the ecosystem."
+                "explanation": "A maximum funding cap of 20% ensures balanced distribution. Users can still donate to projects at the cap, but these won't receive additional matching."
             }
         ]
         self.current_games = {}  # Store game state per channel
 
-    async def create_answer_view(self, options: Dict[str, str]) -> discord.ui.View:
-        """Create Discord UI View with buttons for options."""
-        class AnswerView(discord.ui.View):
-            def __init__(self, trivia_game, options):
-                super().__init__(timeout=300)  # 5 minute timeout
-                self.trivia_game = trivia_game
-                self.answered = False
-                self.timed_out = False
-                for key, value in options.items():
-                    button = discord.ui.Button(
-                        style=discord.ButtonStyle.primary,
-                        label=f"{key}. {value}",
-                        custom_id=f"trivia_{key}",
-                        row=0 if key in ['A', 'B'] else 1
-                    )
-                    button.callback = self.create_button_callback(key)
-                    self.add_item(button)
-
-            def create_button_callback(self, answer_key):
-                async def button_callback(interaction: discord.Interaction):
-                    try:
-                        if self.answered:
-                            await interaction.response.send_message("This question has already been answered!", ephemeral=True)
-                            return
-                            
-                        if self.timed_out:
-                            await interaction.response.send_message("This question has expired! Start a new game with /trivia", ephemeral=True)
-                            return
-
-                        self.answered = True
-                        await interaction.response.defer()
-                        
-                        logger.info(f"User {interaction.user} selected answer: {answer_key}")
-                        
-                        # Disable all buttons and update their styles
-                        for child in self.children:
-                            child.disabled = True
-                            if isinstance(child, discord.ui.Button):
-                                button_key = child.custom_id.split("_")[1]
-                                if button_key == self.trivia_game.current_games[interaction.channel_id]['current_question']['correct']:
-                                    child.style = discord.ButtonStyle.success
-                                elif button_key == answer_key:
-                                    child.style = discord.ButtonStyle.danger
-                                    
-                        await interaction.message.edit(view=self)
-                        
-                        # Process the answer
-                        await self.trivia_game.handle_answer(interaction, answer_key)
-                        
-                    except Exception as e:
-                        logger.error(f"Error in button callback: {str(e)}", exc_info=True)
-                        try:
-                            await interaction.followup.send("An error occurred. Please try again with /trivia", ephemeral=True)
-                        except:
-                            pass
-                
-                return button_callback
-
-            async def on_timeout(self):
-                try:
-                    self.timed_out = True
-                    for child in self.children:
-                        child.disabled = True
-                    await self.message.edit(view=self)
-                    await self.message.reply("⏰ Time's up! This question has expired. Use /trivia to start a new game!")
-                    
-                    # Clean up game state
-                    if hasattr(self, 'message') and self.message.channel.id in self.trivia_game.current_games:
-                        del self.trivia_game.current_games[self.message.channel.id]
-                except Exception as e:
-                    logger.error(f"Error in timeout handling: {str(e)}", exc_info=True)
-
-            async def on_timeout(self):
-                for child in self.children:
-                    child.disabled = True
-                await self.message.edit(view=self)
-                await self.message.reply("Time's up! The question has expired. Start a new game with /trivia")
-
-        return AnswerView(self, options)
-
     async def start_game(self, ctx: commands.Context):
         """Start a new trivia game in a channel."""
-        try:
-            channel_id = ctx.channel.id
-            logger.info(f"Starting new game in channel {channel_id}")
-            
-            # Check if there's already an active game
-            if channel_id in self.current_games:
-                logger.info(f"Found existing game in channel {channel_id}")
-                await ctx.send("There's already an active game in this channel! Please finish it or type `/trivia` to start a new one.")
-                return
-                
-            # Initialize new game state
-            self.current_games[channel_id] = {
-                'score': 0,
-                'questions_asked': 0,
-                'current_question': None,
-                'start_time': discord.utils.utcnow()
-            }
-            logger.info(f"Initialized new game state for channel {channel_id}")
-            
-            welcome_message = (
-                "🎮 **Welcome to Octant Trivia!** 🎮\n\n"
-                "Test your knowledge about Octant, GLM tokens, and the ecosystem!\n\n"
-                "**Rules:**\n"
-                "• Answer each question using the buttons below\n"
-                "• You have 5 minutes per question\n"
-                "• Learn interesting facts along the way!\n\n"
-                "Good luck! Here's your first question..."
-            )
-            
-            await ctx.send(welcome_message)
-            logger.info(f"Sent welcome message to channel {channel_id}")
-            
-            await asyncio.sleep(2)  # Brief pause before first question
-            await self.send_next_question(ctx)
-            
-        except Exception as e:
-            logger.error(f"Error starting game in channel {ctx.channel.id}: {str(e)}", exc_info=True)
-            await ctx.send("❌ An error occurred while starting the game. Please try again with `/trivia`.")
+        channel_id = ctx.channel.id
+        
+        # Check for existing game
+        if channel_id in self.current_games:
+            await ctx.send("There's already an active game in this channel!")
+            return
+
+        # Initialize new game
+        self.current_games[channel_id] = {
+            'score': 0,
+            'questions_asked': 0,
+            'current_question': None
+        }
+
+        # Create welcome embed
+        welcome_embed = discord.Embed(
+            title="🎮 Welcome to Octant Trivia!",
+            description="Test your knowledge about Octant's ecosystem!",
+            color=discord.Color.blue()
+        )
+        welcome_embed.add_field(
+            name="How to Play",
+            value="• Click the buttons to answer questions\n• Each correct answer earns you points\n• Learn about Octant as you play!",
+            inline=False
+        )
+        
+        await ctx.send(embed=welcome_embed)
+        await asyncio.sleep(2)  # Brief pause for readability
+        await self.send_next_question(ctx)
 
     async def send_next_question(self, ctx: commands.Context):
         """Send the next question to the channel."""
-        try:
-            channel_id = ctx.channel.id
-            game = self.current_games.get(channel_id)
+        channel_id = ctx.channel.id
+        game = self.current_games.get(channel_id)
+
+        if not game:
+            await ctx.send("No active game found. Use `/trivia` to start!")
+            return
+
+        if game['questions_asked'] >= len(self.questions):
+            # Game finished
+            score = game['score']
+            percentage = (score / len(self.questions)) * 100
             
-            if not game:
-                await ctx.send("Please start a new game with /trivia")
-                return
-                
-            if game['questions_asked'] >= len(self.questions):
-                # Game finished
-                score = game['score']
-                percentage = (score / len(self.questions)) * 100
-                await ctx.send(
-                    f"🎮 **Game Over!**\n\n"
-                    f"🏆 **Final Score:** {score}/{len(self.questions)} ({percentage:.1f}%)\n\n"
-                    f"Want to play again? Use /trivia!"
-                )
-                del self.current_games[channel_id]
-                return
-                
-            question = self.questions[game['questions_asked']]
-            game['current_question'] = question
-            
-            message = (
-                f"🎯 **Question {game['questions_asked'] + 1}/{len(self.questions)}**\n"
-                f"━━━━━━━━━━━━━━━━━━━━━━━\n\n"
-                f"📝 {question['question']}\n\n"
-                f"Select your answer from the options below:"
+            final_embed = discord.Embed(
+                title="🎮 Game Complete!",
+                description=f"Final Score: {score}/{len(self.questions)} ({percentage:.1f}%)",
+                color=discord.Color.gold()
             )
             
-            view = await self.create_answer_view(question['options'])
-            await ctx.send(message, view=view)
-            
-        except Exception as e:
-            logger.error(f"Error in send_next_question: {str(e)}", exc_info=True)
-            await ctx.send("An error occurred while sending the next question. Please try starting a new game with /trivia")
-            if channel_id in self.current_games:
-                del self.current_games[channel_id]
+            if percentage >= 80:
+                final_embed.add_field(
+                    name="🌟 Outstanding!",
+                    value="You're an Octant expert!",
+                    inline=False
+                )
+            elif percentage >= 60:
+                final_embed.add_field(
+                    name="👏 Well Done!",
+                    value="Good knowledge of Octant!",
+                    inline=False
+                )
+            else:
+                final_embed.add_field(
+                    name="📚 Keep Learning!",
+                    value="Every game helps you learn more!",
+                    inline=False
+                )
+                
+            await ctx.send(embed=final_embed)
+            del self.current_games[channel_id]
+            return
+
+        # Get next question
+        question = self.questions[game['questions_asked']]
+        game['current_question'] = question
+
+        # Create question embed
+        question_embed = discord.Embed(
+            title=f"Question {game['questions_asked'] + 1}/{len(self.questions)}",
+            description=question['question'],
+            color=discord.Color.blue()
+        )
+
+        # Create view with buttons
+        view = TriviaView(self, question)
+        await ctx.send(embed=question_embed, view=view)
 
     async def handle_answer(self, interaction: discord.Interaction, answer: str):
         """Handle user's answer selection."""
-        try:
-            channel_id = interaction.channel.id
-            game = self.current_games.get(channel_id)
-            
-            if not game or not game['current_question']:
-                logger.warning(f"No active game found for channel {channel_id}")
-                await interaction.followup.send(
-                    "No active game found. Start a new game with /trivia",
-                    ephemeral=True
-                )
-                return
+        channel_id = interaction.channel.id
+        game = self.current_games.get(channel_id)
 
-            logger.info(f"Processing answer for game in channel {channel_id}")
-            
-            question = game['current_question']
-            is_correct = answer == question['correct']
-            
-            if is_correct:
-                game['score'] += 1
-                logger.info(f"Correct answer by {interaction.user}! New score: {game['score']}")
-            
-            # Update game state
-            game['questions_asked'] += 1
-            logger.info(f"Updated questions asked to: {game['questions_asked']}")
-            
-            # Format result message
-            if is_correct:
-                result_message = (
-                    f"✨ **Correct!** Excellent work! ✨\n\n"
-                    f"📚 **Learn More:**\n{question['explanation']}\n\n"
-                    f"🎯 **Score:** {game['score']}/{game['questions_asked']}"
-                )
-            else:
-                correct_option = question['options'][question['correct']]
-                result_message = (
-                    f"❌ **Not quite!**\n\n"
-                    f"The correct answer was:\n"
-                    f"✅ **{question['correct']}:** {correct_option}\n\n"
-                    f"📚 **Learn More:**\n{question['explanation']}\n\n"
-                    f"🎯 **Score:** {game['score']}/{game['questions_asked']}"
-                )
-            
-            # Send result and check game status
-            await interaction.followup.send(result_message)
-            await asyncio.sleep(2)  # Brief pause
-            
-            if game['questions_asked'] >= len(self.questions):
-                percentage = (game['score'] / len(self.questions)) * 100
-                final_message = (
-                    f"🎮 **Game Over!**\n\n"
-                    f"🏆 **Final Score:** {game['score']}/{len(self.questions)} ({percentage:.1f}%)\n\n"
-                )
-                
-                if percentage >= 80:
-                    final_message += "🌟 Outstanding performance! You really know your stuff!"
-                elif percentage >= 60:
-                    final_message += "👏 Well done! You've got a good grasp of the concepts!"
-                else:
-                    final_message += "Keep learning! Every game is a chance to improve! 📚"
-                
-                final_message += "\n\nWant to play again? Use /trivia!"
-                await interaction.followup.send(final_message)
-                del self.current_games[channel_id]
-            else:
-                # Send next question
-                context = await get_context_from_interaction(interaction)
-                if context:
-                    await asyncio.sleep(1)
-                    await self.send_next_question(context)
-                
-        except Exception as e:
-            logger.error(f"Error in handle_answer: {str(e)}", exc_info=True)
-            await interaction.followup.send(
-                "An error occurred while processing your answer. Please try again with /trivia",
-                ephemeral=True
-            )
+        if not game or not game['current_question']:
+            await interaction.followup.send("No active game found!")
+            return
+
+        question = game['current_question']
+        is_correct = answer == question['correct']
+        
+        if is_correct:
+            game['score'] += 1
+
+        # Update game state
+        game['questions_asked'] += 1
+
+        # Create result embed
+        result_embed = discord.Embed(
+            title="✅ Correct!" if is_correct else "❌ Incorrect!",
+            color=discord.Color.green() if is_correct else discord.Color.red()
+        )
+
+        # Add explanation
+        result_embed.add_field(
+            name="Explanation",
+            value=question['explanation'],
+            inline=False
+        )
+
+        # Add score
+        result_embed.add_field(
+            name="Score",
+            value=f"{game['score']}/{game['questions_asked']} ({(game['score']/game['questions_asked']*100):.1f}%)",
+            inline=False
+        )
+
+        await interaction.followup.send(embed=result_embed)
+        
+        # Send next question after a short delay
+        if game['questions_asked'] < len(self.questions):
+            await asyncio.sleep(3)  # Brief pause between questions
+            context = await interaction.client.get_context(interaction.message)
+            await self.send_next_question(context)
