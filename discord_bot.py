@@ -13,24 +13,51 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+def generate_bot_invite_link(client_id: str) -> str:
+    """Generate the bot invite link with necessary permissions."""
+    permissions = discord.Permissions(
+        send_messages=True,
+        read_messages=True,
+        read_message_history=True,
+        add_reactions=True,
+        attach_files=True,
+        embed_links=True,
+        use_external_emojis=True,
+        use_external_stickers=True,
+        view_channel=True,
+        send_messages_in_threads=True,
+        create_public_threads=True,
+        mention_everyone=True
+    )
+    return discord.utils.oauth_url(
+        client_id,
+        permissions=permissions,
+        scopes=["bot", "applications.commands"]
+    )
 class OctantDiscordBot(commands.Bot):
     def __init__(self):
         logger.info("Setting up bot with privileged intents...")
         try:
-            intents = discord.Intents.default()
-            intents.message_content = True
-            intents.members = True
-            intents.presences = True
+            # Set up all required intents
+            intents = discord.Intents.all()
+            
+            application_id = os.getenv('DISCORD_APPLICATION_ID')
+            logger.info(f"Initializing bot with application ID: {application_id}")
             
             super().__init__(
                 command_prefix='/',
                 intents=intents,
                 description="Octant Information Bot with trivia games and ecosystem knowledge",
-                application_id=os.getenv('DISCORD_APPLICATION_ID')
+                application_id=application_id,
+                activity=discord.Activity(
+                    type=discord.ActivityType.listening,
+                    name="/help | /trivia"
+                )
             )
             
             self.chat_handler = ChatHandler()
             self.trivia = DiscordTrivia()
+            self.synced = False  # Track if commands have been synced
             
         except Exception as e:
             logger.error(f"Failed to initialize bot: {str(e)}")
@@ -40,12 +67,14 @@ class OctantDiscordBot(commands.Bot):
         """Set up the bot's application commands."""
         logger.info("Bot is setting up...")
         try:
-            # Remove any existing commands first
-            await self.tree.sync()
-            commands = await self.tree.fetch_commands()
-            for command in commands:
-                await self.tree.remove_command(command.name)
-            
+            # Log the invite link with all necessary scopes
+            app_id = os.getenv('DISCORD_APPLICATION_ID')
+            if app_id:
+                invite_link = generate_bot_invite_link(app_id)
+                logger.info(f"Bot invite link: {invite_link}")
+            else:
+                logger.warning("No application ID found, cannot generate invite link")
+
             # Register the trivia command
             @self.tree.command(
                 name="trivia",
@@ -77,9 +106,14 @@ Type any command to get started!
                 await interaction.response.send_message(help_text)
 
             # Sync commands globally
-            logger.info("Syncing application commands...")
-            await self.tree.sync()
-            logger.info("Application commands synced successfully")
+            logger.info("Attempting to sync application commands globally...")
+            try:
+                await self.tree.sync()
+                self.synced = True
+                logger.info("Successfully synced all commands globally")
+            except Exception as e:
+                logger.error(f"Failed to sync commands: {str(e)}")
+                raise
 
         except Exception as e:
             logger.error(f"Error in setup_hook: {str(e)}", exc_info=True)
@@ -88,6 +122,27 @@ Type any command to get started!
     async def on_ready(self):
         """Called when the bot is ready."""
         logger.info(f'Logged in as {self.user.name} (ID: {self.user.id})')
+        
+        # Set bot's presence
+        await self.change_presence(
+            activity=discord.Activity(
+                type=discord.ActivityType.listening,
+                name="/help | /trivia"
+            ),
+            status=discord.Status.online
+        )
+        
+        # Sync commands globally if not already synced
+        if not self.synced:
+            logger.info("Attempting to sync application commands globally...")
+            try:
+                synced = await self.tree.sync()
+                self.synced = True
+                logger.info(f"Successfully synced {len(synced)} commands globally")
+            except Exception as e:
+                logger.error(f"Failed to sync commands: {str(e)}")
+        
+        logger.info('Bot is fully ready!')
         logger.info('------')
 
     async def on_interaction(self, interaction: discord.Interaction):

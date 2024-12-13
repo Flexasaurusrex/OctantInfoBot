@@ -8781,3 +8781,37 @@ Timeout Threshold: 300s
 2024-12-13 03:17:51,569 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
 2024-12-13 03:18:01,674 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
 2024-12-13 03:18:11,781 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 03:18:21,906 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 03:18:32,011 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 03:18:42,116 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 03:18:52,221 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 03:19:02,328 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 03:19:12,438 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 03:19:22,580 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 03:19:32,692 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 03:19:42,804 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 03:19:52,921 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 03:20:03,032 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 03:20:13,182 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 03:20:23,291 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 03:20:33,398 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 03:20:43,505 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 03:20:53,613 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 03:21:03,732 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 03:21:13,840 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 03:21:20,407 - __main__ - WARNING - [telegram_bot:38] - ━━━━━━ Watchdog Warning ━━━━━━
+Last Ping: 2024-12-13 03:17:20.407168
+Current Time: 2024-12-13 03:21:20.407909
+Time Since Last Ping: 240.00s
+Warning Threshold: 240.0s
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-13 03:21:23,955 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 03:21:34,072 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 03:21:44,240 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-13 03:21:50,408 - __main__ - WARNING - [telegram_bot:38] - ━━━━━━ Watchdog Warning ━━━━━━
+Last Ping: 2024-12-13 03:17:20.407168
+Current Time: 2024-12-13 03:21:50.408327
+Time Since Last Ping: 270.00s
+Warning Threshold: 240.0s
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-13 03:21:54,349 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
