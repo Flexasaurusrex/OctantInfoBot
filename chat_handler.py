@@ -1,5 +1,4 @@
 import os
-import html
 import requests
 from collections import deque
 from trivia import Trivia
@@ -194,15 +193,15 @@ https://www.linkedin.com/in/vpabundance
 For Octant-specific information:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🌐 Official Websites
-• Main Website: <a href="https://octant.build/" class="bot-link">https://octant.build/</a>
-• Documentation: <a href="https://docs.octant.app/" class="bot-link">https://docs.octant.app/</a>
-• Golem Foundation: <a href="https://golem.foundation/" class="bot-link">https://golem.foundation/</a>
+• Main Website: [Octant](https://octant.build/)
+• Documentation: [Documentation](https://docs.octant.app/)
+• Golem Foundation: [Golem Foundation](https://golem.foundation/)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📱 Community Platforms
-• Twitter/X: <a href="https://x.com/OctantApp" class="bot-link">@OctantApp</a>
-• Warpcast: <a href="https://warpcast.com/octant" class="bot-link">warpcast.com/octant</a>
-• Discord: <a href="https://discord.gg/octant" class="bot-link">discord.gg/octant</a>
+• Twitter/X: [@OctantApp](https://x.com/OctantApp)
+• Warpcast: [Warpcast](https://warpcast.com/octant)
+• Discord: [Discord](https://discord.gg/octant)
 
 Core Facts About Octant (or as I like to call it, "The Greatest Show in Blockchain"):
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -254,12 +253,97 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
         last_entry = self.conversation_history[-1]
         return f"\nPrevious message: {last_entry['assistant']}\n"
 
+    def format_urls(self, text):
+        """Format URLs in text using Discord's native markdown."""
+        if not text:
+            return text
+
+        try:
+            # Define common URLs with their display names
+            WEBSITE_LINKS = {
+                'octant.build': ('Octant', 'https://octant.build'),
+                'docs.octant.app': ('Documentation', 'https://docs.octant.app'),
+                'golem.foundation': ('Golem Foundation', 'https://golem.foundation'),
+                'x.com/OctantApp': ('@OctantApp', 'https://x.com/OctantApp'),
+                'warpcast.com/octant': ('Warpcast', 'https://warpcast.com/octant'),
+                'discord.gg/octant': ('Discord', 'https://discord.gg/octant')
+            }
+
+            # James's social media links to be preserved as raw URLs
+            JAMES_URLS = [
+                'https://x.com/vpabundance',
+                'https://warpcast.com/vpabundance.eth',
+                'https://www.linkedin.com/in/vpabundance'
+            ]
+
+            # Process text line by line
+            lines = []
+            for line in text.split('\n'):
+                if not line.strip():
+                    lines.append(line)
+                    continue
+
+                # Convert any HTML formatting to plain text
+                line = line.replace('&lt;', '<').replace('&gt;', '>').replace('&amp;', '&')
+                line = re.sub(r'<a\s+href="([^"]+)"[^>]*>([^<]+)</a>', r'\2', line)
+
+                # Preserve James's URLs as raw links
+                for url in JAMES_URLS:
+                    # Match URL variations (with/without protocol and www)
+                    pattern = f'(?:https?://)?(?:www\\.)?{re.escape(url.split("://")[-1])}'
+                    line = re.sub(pattern, url, line, flags=re.IGNORECASE)
+
+                # Format website links with markdown
+                for domain, (display_name, full_url) in WEBSITE_LINKS.items():
+                    # Create pattern that matches both with and without protocol
+                    pattern = f'(?:https?://)?{re.escape(domain)}'
+                    
+                    # Find and replace all occurrences with proper word boundaries
+                    pos = 0
+                    while True:
+                        match = re.search(pattern, line[pos:], re.IGNORECASE)
+                        if not match:
+                            break
+                            
+                        start = pos + match.start()
+                        end = pos + match.end()
+                        
+                        # Check word boundaries
+                        before_ok = start == 0 or not line[start - 1].isalnum()
+                        after_ok = end >= len(line) or not line[end].isalnum()
+                        
+                        if before_ok and after_ok:
+                            # Replace with Discord markdown
+                            markdown = f'[{display_name}]({full_url})'
+                            line = line[:start] + markdown + line[end:]
+                            pos = start + len(markdown)
+                        else:
+                            pos = end
+
+                lines.append(line)
+
+            # Join processed lines
+            formatted_text = '\n'.join(lines)
+            
+            # Final cleanup of any remaining HTML-like formatting
+            formatted_text = re.sub(r'<[^>]+>', '', formatted_text)
+            formatted_text = formatted_text.replace('&quot;', '"')
+            
+            logger.info("URL formatting completed successfully")
+            return formatted_text
+
+        except Exception as e:
+            logger.error(f"Error in format_urls: {str(e)}")
+            logger.exception("Full traceback:")
+            # Return original text if anything goes wrong
+            return text
+
     def validate_response_length(self, response):
         """Validate response length and split if necessary."""
-        max_length = 4096  # Telegram's max message length
+        max_length = 2000  # Discord's max message length
         if len(response) <= max_length:
             return [response]
-        
+
         # Try to find better split points at paragraph boundaries
         paragraphs = response.split('\n\n')
         
@@ -358,10 +442,6 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
                     # Only exit trivia mode if explicitly requested or after game completion
                     if lower_message != "end trivia":
                         return "You're currently in a trivia game! Please answer with A, B, C, or D, or type 'end trivia' to quit."
-                    headers = {
-                        "Authorization": f"Bearer {self.api_key}",
-                        "Content-Type": "application/json"
-                    }
             
             headers = {
                 "Authorization": f"Bearer {self.api_key}",
@@ -375,9 +455,9 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
             data = {
                 "model": self.model,
                 "prompt": prompt,
-                "max_tokens": 2048,  # Increased for longer responses
+                "max_tokens": 2048,
                 "temperature": 0.7,
-                "top_p": 0.9,  # Increased for more diverse responses
+                "top_p": 0.9,
                 "top_k": 50,
                 "repetition_penalty": 1.1
             }
@@ -395,89 +475,12 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
                 # Get the raw response text
                 response_text = result["output"]["choices"][0]["text"].strip()
                 
-                # Format URLs in the response
-                logger.info("Formatting URLs in response")
-                
-                def format_urls(text):
-                    """Format URLs using Discord's markdown format: [text](url)"""
-                    if not text:
-                        return text
-                    
-                    # Define canonical URLs with their variations and display names
-                    URL_MAPPINGS = {
-                        # Main websites
-                        'octant.build': ('https://octant.build', 'Octant'),
-                        'docs.octant.app': ('https://docs.octant.app', 'Documentation'),
-                        'golem.foundation': ('https://golem.foundation', 'Golem Foundation'),
-                        
-                        # Social and community
-                        'x.com/OctantApp': ('https://x.com/OctantApp', '@OctantApp'),
-                        'warpcast.com/octant': ('https://warpcast.com/octant', 'Warpcast'),
-                        'discord.gg/octant': ('https://discord.gg/octant', 'Discord'),
-                        
-                        # James's social media links - keep URL as display name
-                        'x.com/vpabundance': ('https://x.com/vpabundance', 'https://x.com/vpabundance'),
-                        'warpcast.com/vpabundance.eth': ('https://warpcast.com/vpabundance.eth', 'https://warpcast.com/vpabundance.eth'),
-                        'linkedin.com/in/vpabundance': ('https://www.linkedin.com/in/vpabundance', 'https://www.linkedin.com/in/vpabundance')
-                    }
-
-                    # Helper function to check URL boundaries
-                    def is_boundary_char(char):
-                        return char in ' \n\t()[]<>"\'.,:;!?'
-
-                    # Process text character by character
-                    result = []
-                    i = 0
-                    while i < len(text):
-                        found_match = False
-                        
-                        # Look for URL matches at current position
-                        for domain, (canonical_url, display_name) in URL_MAPPINGS.items():
-                            # Generate URL variants to check
-                            variants = [
-                                f'https://{domain}',
-                                f'http://{domain}',
-                                f'https://www.{domain}',
-                                f'http://www.{domain}',
-                                domain
-                            ]
-                            
-                            for variant in variants:
-                                # Check if variant matches at current position
-                                if text[i:].lower().startswith(variant.lower()):
-                                    # Verify URL boundaries
-                                    before_ok = i == 0 or is_boundary_char(text[i-1])
-                                    after_pos = i + len(variant)
-                                    after_ok = after_pos >= len(text) or is_boundary_char(text[after_pos])
-                                    
-                                    if before_ok and after_ok:
-                                        # Special handling for James's social media links
-                                        if domain in ['x.com/vpabundance', 'warpcast.com/vpabundance.eth', 'linkedin.com/in/vpabundance']:
-                                            result.append(canonical_url)
-                                        else:
-                                            # Add formatted link using Discord markdown
-                                            result.append(f'[{display_name}]({canonical_url})')
-                                        i += len(variant)
-                                        found_match = True
-                                        break
-                            
-                            if found_match:
-                                break
-                        
-                        if not found_match:
-                            # No URL match found, keep current character
-                            result.append(text[i])
-                            i += 1
-                    
-                    # Return the final processed text
-                    return ''.join(result).strip()
-
                 try:
                     # Format URLs with the improved function
-                    formatted_text = format_urls(response_text)
+                    formatted_text = self.format_urls(response_text)
                     logger.info("URLs formatted successfully")
                     
-                    # Update conversation history with formatted text
+                    # Update conversation history
                     self.conversation_history.append({
                         "user": user_message,
                         "assistant": formatted_text
@@ -491,38 +494,21 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
                     self.conversation_history = self.conversation_history[-self.max_history:]
                 
                 # Handle long responses
-                if len(formatted_text) > 2000:
-                    chunks = []
-                    paragraphs = formatted_text.split('\n\n')
-                    current_chunk = ""
-                    
-                    for paragraph in paragraphs:
-                        # If adding this paragraph would exceed limit
-                        if len(current_chunk) + len(paragraph) + 2 > 2000:
-                            if current_chunk:
-                                chunks.append(current_chunk.strip())
-                            current_chunk = paragraph
-                        else:
-                            current_chunk = current_chunk + '\n\n' + paragraph if current_chunk else paragraph
-                    
-                    # Add the last chunk if there is one
-                    if current_chunk:
-                        chunks.append(current_chunk.strip())
-                    
-                    return chunks
+                if len(formatted_text) > 2000:  # Discord's limit
+                    return self.validate_response_length(formatted_text)
                 
                 return formatted_text
             else:
-                print("Unexpected API response format:", result)
+                logger.error("Unexpected API response format:", result)
                 return "I apologize, but I couldn't generate a response at the moment. Please try again."
                 
         except ValueError as e:
             error_message = str(e)
-            print(f"Validation error: {error_message}")
+            logger.error(f"Validation error: {error_message}")
             return f"I couldn't process your message: {error_message}"
             
         except requests.exceptions.Timeout:
-            print("API request timed out")
+            logger.error("API request timed out")
             return "I'm sorry, but the request is taking longer than expected. Please try again in a moment."
             
         except requests.exceptions.RequestException as e:
