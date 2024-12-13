@@ -56,6 +56,20 @@ def log_request_info():
 def index():
     return render_template('index.html')
 
+@app.route('/restart', methods=['POST'])
+@limiter.limit("5 per minute")
+def restart_services():
+    try:
+        logger.info("Restart request received")
+        socketio.emit('restart_status', {'status': 'restarting', 'message': 'Restarting services...'}, broadcast=True)
+        # Give clients time to receive the message before restart
+        eventlet.sleep(1)
+        os._exit(0)  # This will trigger the replit system to restart all services
+        return {"status": "success", "message": "Restart initiated"}
+    except Exception as e:
+        logger.error(f"Error during restart: {str(e)}")
+        return {"status": "error", "message": str(e)}, 500
+
 @socketio.on('connect')
 def handle_connect():
     logger.info(f"Client connected: {request.sid}")

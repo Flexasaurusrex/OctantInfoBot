@@ -304,4 +304,39 @@ document.addEventListener('DOMContentLoaded', () => {
             handleReconnection();
         }
     });
+
+    // Add restart functionality
+    socket.on('restart_status', (data) => {
+        const restartBtn = document.querySelector('.restart-button');
+        if (data.status === 'restarting') {
+            restartBtn.classList.add('restarting');
+            restartBtn.disabled = true;
+            appendMessage('Restarting services... The page will refresh in 5 seconds.', true);
+            setTimeout(() => {
+                window.location.reload();
+            }, 5000);
+        }
+    });
 });
+
+function restartServices() {
+    const restartBtn = document.querySelector('.restart-button');
+    if (restartBtn.classList.contains('restarting')) return;
+
+    if (confirm('Are you sure you want to restart all services? This will briefly interrupt the chat.')) {
+        restartBtn.classList.add('restarting');
+        restartBtn.disabled = true;
+        
+        fetch('/restart', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).catch(error => {
+            console.error('Error initiating restart:', error);
+            restartBtn.classList.remove('restarting');
+            restartBtn.disabled = false;
+            appendMessage('Failed to restart services. Please try again.', true);
+        });
+    }
+}
