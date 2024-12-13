@@ -116,15 +116,17 @@ document.addEventListener('DOMContentLoaded', () => {
             statusDiv.textContent = currentStatus.text;
             statusDiv.style.cssText = `
                 position: fixed;
-                top: 10px;
+                top: 60px;
                 right: 10px;
                 padding: 8px 16px;
                 background-color: ${currentStatus.color};
                 color: white;
-                border-radius: 4px;
+                border-radius: 20px;
                 font-weight: bold;
                 z-index: 1000;
                 transition: all 0.3s ease;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+                font-size: 14px;
             `;
         }
 
