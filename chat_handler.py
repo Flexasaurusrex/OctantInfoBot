@@ -35,8 +35,6 @@ class CommandHandler:
 
 🎮 Game Commands:
 • /trivia - Start a trivia game
-• start trivia - Also starts trivia game
-• end trivia - End current trivia game
 
 📋 Information Commands:
 • /help - Show this help message
@@ -395,7 +393,11 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
                 import re
 
                 def format_urls(text):
-                    """Format URLs in text with improved handling of domain extensions and nested tags."""
+                    """Format URLs in text with improved handling of domain extensions."""
+                    # If text already contains formatted links, return as is
+                    if '<a href=' in text and 'class="bot-link"' in text:
+                        return text
+
                     # Handle James's social media links
                     james_social = [
                         "https://x.com/vpabundance",
@@ -403,19 +405,18 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
                         "https://www.linkedin.com/in/vpabundance"
                     ]
                     if all(url in text for url in james_social):
-                        return text  # Return unmodified for James's social links
+                        return text
 
-                    # Common domain extensions to prevent splitting
+                    # Common domain extensions
                     domain_endings = r'(?:com|org|net|edu|gov|io|app|build|foundation|eth|gg)'
                     
-                    # More precise URL pattern that preserves domain extensions
+                    # URL pattern
                     url_pattern = fr'https?://(?:www\.)?[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*\.{domain_endings}(?:/[^\s<>"\']*)?'
                     
                     def process_url(match):
-                        """Process individual URL matches with proper formatting."""
                         url = match.group(0).rstrip('.,;:!?)"')
                         
-                        # Special formatting for known URLs
+                        # Format display text
                         if url.endswith('.build/'):
                             display = url.replace('https://', '').rstrip('/')
                         elif 'x.com/OctantApp' in url:
@@ -427,40 +428,11 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
                         else:
                             display = url.replace('https://', '').rstrip('/')
 
-                        # Handle social media links differently
-                        if any(domain in url.lower() for domain in ['x.com/', 'warpcast.com/', 'linkedin.com/']):
-                            return url  # Keep as plain URL
-                        
+                        # Return formatted link
                         return f'<a href="{url}" class="bot-link">{display}</a>'
 
-                    # Store and protect existing properly formatted links
-                    protected_tags = {}
-                    tag_counter = 0
-
-                    def protect_tags(match):
-                        nonlocal tag_counter
-                        if 'class="bot-link"' in match.group(0):
-                            return match.group(0)  # Keep already formatted bot-links
-                        key = f'__PROTECTED_TAG_{tag_counter}__'
-                        protected_tags[key] = match.group(0)
-                        tag_counter += 1
-                        return key
-
-                    # Protect existing anchor tags
-                    text = re.sub(r'<a[^>]*?>.*?</a>', protect_tags, text)
-
-                    # Format remaining URLs
+                    # Format URLs
                     text = re.sub(url_pattern, process_url, text)
-
-                    # Restore protected tags
-                    for key, value in protected_tags.items():
-                        text = text.replace(key, value)
-
-                    # Clean up formatting
-                    text = text.replace('</a>.build/', '.build/</a>')
-                    text = text.replace('</a>.app/', '.app/</a>')
-                    text = text.replace('</a>.foundation/', '.foundation/</a>')
-
                     return text
                 
                 # Format the response text

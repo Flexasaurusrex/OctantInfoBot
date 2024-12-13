@@ -61,59 +61,91 @@ class OctantDiscordBot(commands.Bot):
                 await self.process_commands(message)
                 return
 
-            # Check if the message is a direct reply to the bot
-            is_reply_to_bot = (
+            # Check for replies to bot messages
+            is_reply_to_bot = bool(
                 message.reference 
                 and message.reference.resolved 
                 and message.reference.resolved.author.id == self.user.id
             )
             
-            # Check for bot mention
+            # Check for mentions using Discord's built-in system
             is_mentioned = self.user.mentioned_in(message)
             
-            # Only respond to direct mentions or replies
+            # Additional mention pattern check for redundancy
+            if not is_mentioned:
+                mention_patterns = [
+                    f'<@{self.user.id}>',  # Standard mention
+                    f'<@!{self.user.id}>'  # Nickname mention
+                ]
+                is_mentioned = any(pattern in message.content for pattern in mention_patterns)
+            
+            # Log mention status for debugging
+            if is_mentioned or is_reply_to_bot:
+                logger.info("━━━━━━ Message Detection ━━━━━━")
+                logger.info(f"Message Content: {message.content}")
+                logger.info(f"Author: {message.author.name}")
+                logger.info(f"Channel: {message.channel.name}")
+                logger.info(f"Is Mention: {is_mentioned}")
+                logger.info(f"Is Reply: {is_reply_to_bot}")
+                logger.info("━━━━━━━━━━━━━━━━━━━━━━━━")
+
+            # Only respond to mentions or replies
             if not (is_mentioned or is_reply_to_bot):
                 return
+                
+            logger.info(f"Processing message - Is mentioned: {is_mentioned}, Is reply: {is_reply_to_bot}")
 
             logger.info("━━━━━━ Bot Interaction ━━━━━━")
-            logger.info(f"Message Type: {'Reply' if is_reply_to_bot else 'Mention'}")
-            logger.info(f"Message: {message.content}")
+            logger.info(f"Interaction Type: {'Reply' if is_reply_to_bot else 'Mention' if is_mentioned else 'Unknown'}")
+            logger.info(f"Raw Message: {message.content}")
             logger.info(f"Author: {message.author.name} (ID: {message.author.id})")
             logger.info(f"Channel: {message.channel.name} (ID: {message.channel.id})")
+            logger.info(f"Is Mentioned: {is_mentioned}")
+            logger.info(f"Is Reply: {is_reply_to_bot}")
             logger.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
                 
-            # Clean the message content
-            clean_content = message.clean_content
-                
-            # Remove bot mention and display name if present
-            if is_mentioned:
-                # Remove both <@id> and <@!id> mentions
-                mention = f"<@{self.user.id}>"
-                mention_nick = f"<@!{self.user.id}>"
-                clean_content = clean_content.replace(mention, "").replace(mention_nick, "")
-                # Remove display name mention
-                clean_content = clean_content.replace(f"@{self.user.display_name}", "").strip()
-                
-            logger.info(f"Processing cleaned message: {clean_content}")
-                
-            # Only process if there's actual content after cleaning
-            if clean_content.strip():
-                try:
-                    response = self.chat_handler.get_response(clean_content)
-                    # Split long messages if needed
+            # Enhanced message content extraction and cleaning
+            try:
+                # Get the message content
+                content = message.content.strip()
+                    
+                # Remove all possible mention patterns
+                mention_patterns = [
+                    f'<@{self.user.id}>',        # Standard mention
+                    f'<@!{self.user.id}>',       # Nickname mention
+                    f'@{self.user.display_name}', # Display name mention
+                    self.user.name,              # Bot name
+                ]
+                    
+                for pattern in mention_patterns:
+                    content = content.replace(pattern, '').strip()
+                    
+                # Log the cleaning process
+                logger.info("━━━━━━ Message Processing ━━━━━━")
+                logger.info(f"Original: {message.content}")
+                logger.info(f"Cleaned: {content}")
+                logger.info(f"Is Mention: {is_mentioned}")
+                logger.info(f"Is Reply: {is_reply_to_bot}")
+                logger.info("━━━━━━━━━━━━━━━━━━━━━━━━")
+                    
+                # Process message if not empty
+                if content.strip():
+                    response = self.chat_handler.get_response(content)
                     if isinstance(response, list):
                         for chunk in response:
                             if chunk.strip():
-                                await message.reply(chunk)
+                                await message.reply(chunk, mention_author=True)
                     else:
                         if response.strip():
-                            await message.reply(response)
-                except Exception as e:
-                    logger.error(f"Error getting response: {str(e)}")
-                    await message.reply("I encountered an error processing your message. Please try again.")
-            else:
-                logger.info("Skipping empty message after cleaning")
-                    
+                            await message.reply(response, mention_author=True)
+                else:
+                    # If no content after cleaning, provide a helpful response
+                    await message.reply("Hi! How can I help you today?", mention_author=True)
+                        
+            except Exception as e:
+                logger.error(f"Error processing message: {str(e)}")
+                await message.reply("I encountered an error processing your message. Please try again.", mention_author=True)
+            
         except Exception as e:
             logger.error(f"Error processing message: {str(e)}")
             await message.channel.send("I encountered an error processing your message. Please try again.")
@@ -149,8 +181,6 @@ async def main():
 
 🎮 Game Commands:
 • /trivia - Start a trivia game
-• start trivia - Also starts trivia game
-• end trivia - End current trivia game
 
 📋 Information Commands:
 • /help - Show this help message
