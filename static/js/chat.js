@@ -91,12 +91,42 @@ document.addEventListener('DOMContentLoaded', () => {
         socket.on('connect', () => {
             console.log('Connected to server');
             reconnectAttempts = 0;
+            updateConnectionStatus('connected');
             const errorDiv = document.querySelector('.connection-error');
             if (errorDiv) {
                 errorDiv.remove();
             }
-            appendMessage('Connection established', true);
         });
+
+        function updateConnectionStatus(status) {
+            let statusDiv = document.getElementById('connection-status');
+            if (!statusDiv) {
+                statusDiv = document.createElement('div');
+                statusDiv.id = 'connection-status';
+                document.body.insertBefore(statusDiv, document.body.firstChild);
+            }
+            
+            const statusMap = {
+                'connected': { text: '🟢 Connected', color: '#4CAF50' },
+                'disconnected': { text: '🔴 Disconnected', color: '#f44336' },
+                'reconnecting': { text: '🟡 Reconnecting...', color: '#ff9800' }
+            };
+            
+            const currentStatus = statusMap[status] || statusMap.disconnected;
+            statusDiv.textContent = currentStatus.text;
+            statusDiv.style.cssText = `
+                position: fixed;
+                top: 10px;
+                right: 10px;
+                padding: 8px 16px;
+                background-color: ${currentStatus.color};
+                color: white;
+                border-radius: 4px;
+                font-weight: bold;
+                z-index: 1000;
+                transition: all 0.3s ease;
+            `;
+        }
 
         socket.on('connect_error', (error) => {
             console.warn('Connection error:', error);
@@ -112,6 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         socket.on('disconnect', (reason) => {
             console.warn('Disconnected:', reason);
+            updateConnectionStatus('disconnected');
             if (reason === 'io server disconnect') {
                 socket.connect();
             } else {
@@ -119,13 +150,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        socket.on('reconnect_failed', () => {
-            console.error('Reconnection failed');
-            appendMessage('Unable to connect to server. Please refresh the page.', true);
-        });
-
         socket.on('reconnect_attempt', (attemptNumber) => {
             console.log(`Reconnection attempt ${attemptNumber}/${MAX_RECONNECT_ATTEMPTS}`);
+            updateConnectionStatus('reconnecting');
             appendMessage(`Attempting to reconnect (${attemptNumber}/${MAX_RECONNECT_ATTEMPTS})...`, true);
         });
 
