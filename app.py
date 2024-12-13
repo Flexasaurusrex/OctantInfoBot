@@ -61,25 +61,64 @@ def index():
 def restart_services():
     try:
         logger.info("Restart request received")
+        
         # Notify all connected clients
-        socketio.emit('restart_status', {'status': 'restarting', 'message': 'Restarting services...'}, namespace='/')
+        socketio.emit('restart_status', {
+            'status': 'restarting',
+            'message': 'Preparing to restart services...'
+        }, namespace='/')
         
-        # Give clients time to receive the message and update UI
-        eventlet.sleep(2)
+        def cleanup_and_restart():
+            try:
+                logger.info("Starting cleanup process...")
+                
+                # Notify clients about imminent restart
+                socketio.emit('restart_status', {
+                    'status': 'restarting',
+                    'message': 'Cleaning up connections...'
+                }, namespace='/')
+                
+                # Give time for cleanup message to be sent
+                eventlet.sleep(1)
+                
+                # Close all active connections gracefully
+                for sid in socketio.server.manager.rooms.get('/', set()):
+                    try:
+                        socketio.server.disconnect(sid, namespace='/')
+                    except Exception as e:
+                        logger.warning(f"Error disconnecting client {sid}: {str(e)}")
+                
+                logger.info("All connections cleaned up")
+                
+                # Final notification before restart
+                socketio.emit('restart_status', {
+                    'status': 'restarting',
+                    'message': 'Services are now restarting...'
+                }, namespace='/')
+                
+                # Give time for final message to be sent
+                eventlet.sleep(2)
+                
+                # Trigger Replit restart
+                logger.info("Initiating restart...")
+                os._exit(0)
+                
+            except Exception as e:
+                logger.error(f"Error during cleanup: {str(e)}")
+                socketio.emit('restart_status', {
+                    'status': 'error',
+                    'message': 'Error during restart process. Please try again.'
+                }, namespace='/')
         
-        def delayed_restart():
-            logger.info("Initiating delayed restart...")
-            eventlet.sleep(3)  # Additional delay for client-side handling
-            os._exit(0)  # Trigger Replit restart
-        
-        # Schedule the restart
-        eventlet.spawn(delayed_restart)
+        # Schedule the cleanup and restart process
+        eventlet.spawn(cleanup_and_restart)
         return {"status": "success", "message": "Restart initiated"}
+        
     except Exception as e:
-        logger.error(f"Error during restart: {str(e)}")
+        logger.error(f"Error initiating restart: {str(e)}")
         socketio.emit('restart_status', {
             'status': 'error',
-            'message': 'Failed to restart services. Please try again.'
+            'message': 'Failed to initiate restart. Please try again.'
         }, namespace='/')
         return {"status": "error", "message": str(e)}, 500
 

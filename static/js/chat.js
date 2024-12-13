@@ -319,64 +319,92 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+// Global appendMessage function for restart functionality
+function appendMessage(message, isBot = false) {
+    const messagesContainer = document.getElementById('messages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${isBot ? 'bot-message' : 'user-message'}`;
+    
+    if (isBot) {
+        const botAvatar = document.createElement('img');
+        botAvatar.src = '/static/images/2.png';
+        botAvatar.className = 'bot-avatar';
+        messageDiv.appendChild(botAvatar);
+    }
+
+    const messageContent = document.createElement('span');
+    messageContent.innerHTML = message;
+    messageDiv.appendChild(messageContent);
+    
+    messagesContainer.appendChild(messageDiv);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+    if (isBot && message.includes('✅ Correct! Well done!')) {
+        triggerConfetti();
+    }
+}
+
 function restartServices() {
     const restartBtn = document.querySelector('.restart-button');
+    const messagesContainer = document.getElementById('messages');
+    
     if (restartBtn.classList.contains('restarting')) return;
 
     if (confirm('Are you sure you want to restart all services? This will briefly interrupt the chat.')) {
         restartBtn.classList.add('restarting');
         restartBtn.disabled = true;
         
-        // Show restart message
-        appendMessage('Initiating service restart...', true);
-        
         let countdown = 5;
-        const updateMessage = () => {
-            appendMessage(`Services will restart in ${countdown} seconds...`, true);
-            countdown--;
-            
-            if (countdown >= 0) {
-                setTimeout(updateMessage, 1000);
-            }
-        };
         
-        fetch('/restart', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
+        function updateCountdown() {
+            if (countdown > 0) {
+                appendMessage(`Services will restart in ${countdown} seconds...`, true);
+                countdown--;
+                setTimeout(updateCountdown, 1000);
+            } else {
+                appendMessage('Initiating restart now...', true);
+                
+                fetch('/restart', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(response => {
+                    if (!response.ok) throw new Error('Restart request failed');
+                    appendMessage('Restarting services... The page will refresh automatically.', true);
+                    
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 3000);
+                }).catch(error => {
+                    console.error('Error initiating restart:', error);
+                    restartBtn.classList.remove('restarting');
+                    restartBtn.disabled = false;
+                    appendMessage('Failed to restart services. Please try again.', true);
+                });
             }
-        }).then(response => {
-            if (!response.ok) throw new Error('Restart request failed');
-            updateMessage();
-            
-            // Schedule page reload
-            setTimeout(() => {
-                appendMessage('Restarting now... The page will refresh automatically.', true);
-                setTimeout(() => {
-                    window.location.reload();
-                }, 2000);
-            }, 5000);
-        }).catch(error => {
-            console.error('Error initiating restart:', error);
-            restartBtn.classList.remove('restarting');
-            restartBtn.disabled = false;
-            appendMessage('Failed to restart services. Please try again.', true);
-        });
+        }
+        
+        updateCountdown();
     }
 }
 
-// Update socket.on handler for restart status
-socket.on('restart_status', (data) => {
-    console.log('Received restart status:', data);
-    const restartBtn = document.querySelector('.restart-button');
+// Socket events for restart status
+document.addEventListener('DOMContentLoaded', () => {
+    const socket = io();
     
-    if (data.status === 'restarting') {
-        restartBtn.classList.add('restarting');
-        restartBtn.disabled = true;
-        appendMessage(data.message || 'Restarting services...', true);
-    } else if (data.status === 'error') {
-        restartBtn.classList.remove('restarting');
-        restartBtn.disabled = false;
-        appendMessage(data.message || 'Restart failed. Please try again.', true);
-    }
+    socket.on('restart_status', (data) => {
+        console.log('Received restart status:', data);
+        const restartBtn = document.querySelector('.restart-button');
+        
+        if (data.status === 'restarting') {
+            restartBtn.classList.add('restarting');
+            restartBtn.disabled = true;
+            appendMessage(data.message || 'Restarting services...', true);
+        } else if (data.status === 'error') {
+            restartBtn.classList.remove('restarting');
+            restartBtn.disabled = false;
+            appendMessage(data.message || 'Restart failed. Please try again.', true);
+        }
+    });
 });
