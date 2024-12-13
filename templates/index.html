@@ -13,6 +13,13 @@
     <div class="app-container">
         <!-- Sidebar -->
         <aside class="sidebar">
+            <button class="sidebar-toggle" onclick="toggleSidebar()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
             <div class="sidebar-header">
                 <img src="{{ url_for('static', filename='images/octant-logo.png') }}" alt="Octant Logo" class="sidebar-logo">
             </div>
@@ -52,7 +59,11 @@
                         <canvas id="activity-chart"></canvas>
                     </div>
                 </div>
-            </nav>
+                <div class="connection-status">
+                    <div class="status-indicator"></div>
+                    <span class="status-text">Disconnected</span>
+                </div>
+            </div>
         </aside>
 
         <!-- Main Content -->
@@ -97,6 +108,42 @@
             document.documentElement.setAttribute('data-theme', newTheme);
             localStorage.setItem('theme', newTheme);
         }
+
+        let sidebarOpen = false; // added state variable
+
+        function toggleSidebar() {
+            sidebarOpen = !sidebarOpen;
+            document.querySelector('.sidebar').classList.toggle('open', sidebarOpen);
+        }
+
+        // Initially close the sidebar.
+        toggleSidebar();
+
+    </script>
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            sidebar.classList.toggle('expanded');
+        }
+
+        // Update connection status
+        const socket = io();
+        
+        socket.on('connect', () => {
+            const statusIndicator = document.querySelector('.status-indicator');
+            if (statusIndicator) {
+                statusIndicator.classList.add('connected');
+                document.querySelector('.status-text').textContent = 'Connected';
+            }
+        });
+        
+        socket.on('disconnect', () => {
+            const statusIndicator = document.querySelector('.status-indicator');
+            if (statusIndicator) {
+                statusIndicator.classList.remove('connected');
+                document.querySelector('.status-text').textContent = 'Disconnected';
+            }
+        });
     </script>
 </body>
 </html>

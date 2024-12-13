@@ -61,6 +61,48 @@ body {
     gap: 1rem;
     z-index: 1000;
     box-shadow: var(--shadow-md);
+    transform: translateX(-200px);
+    transition: transform 0.3s ease;
+}
+
+.sidebar.expanded {
+    transform: translateX(0);
+}
+
+.sidebar-toggle {
+    position: absolute;
+    right: -50px;
+    top: 20px;
+    background: var(--background-color);
+    border: 1px solid var(--message-bg);
+    border-radius: 0 8px 8px 0;
+    padding: 8px;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    z-index: 1001;
+}
+
+.connection-status {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    border-radius: 8px;
+    background: var(--message-bg);
+}
+
+.status-indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #dc3545;
+}
+
+.status-indicator.connected {
+    background-color: #28a745;
 }
 
 .sidebar-header {
