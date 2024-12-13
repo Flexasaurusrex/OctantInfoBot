@@ -403,40 +403,77 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
                     if not text:
                         return text
 
-                    # Define exact official URLs and their display names
-                    OFFICIAL_URLS = {
-                        'https://octant.build': 'Octant',
-                        'https://docs.octant.app': 'Documentation',
-                        'https://golem.foundation': 'Golem Foundation',
-                        'https://x.com/OctantApp': '@OctantApp',
-                        'https://warpcast.com/octant': 'Warpcast',
-                        'https://discord.gg/octant': 'Discord'
+                    # First, escape HTML to prevent XSS
+                    processed_text = html.escape(text)
+                    
+                    # Define canonical URLs with their variations and display names
+                    URL_MAPPINGS = {
+                        # Main websites
+                        'octant.build': ('https://octant.build', 'Octant'),
+                        'docs.octant.app': ('https://docs.octant.app', 'Documentation'),
+                        'golem.foundation': ('https://golem.foundation', 'Golem Foundation'),
+                        
+                        # Social and community
+                        'x.com/OctantApp': ('https://x.com/OctantApp', '@OctantApp'),
+                        'warpcast.com/octant': ('https://warpcast.com/octant', 'Warpcast'),
+                        'discord.gg/octant': ('https://discord.gg/octant', 'Discord'),
+                        
+                        # James's social media (exact matches only)
+                        'x.com/vpabundance': ('https://x.com/vpabundance', 'https://x.com/vpabundance'),
+                        'warpcast.com/vpabundance.eth': ('https://warpcast.com/vpabundance.eth', 'https://warpcast.com/vpabundance.eth'),
+                        'linkedin.com/in/vpabundance': ('https://www.linkedin.com/in/vpabundance', 'https://www.linkedin.com/in/vpabundance')
                     }
 
-                    # First, escape any HTML in the text to prevent XSS
-                    escaped_text = html.escape(text)
+                    # Helper function to check URL boundaries
+                    def is_boundary_char(char):
+                        return char in ' \n\t()[]<>"\'.,:;!?'
 
-                    # Replace each exact URL with its formatted version
-                    for url, display in OFFICIAL_URLS.items():
-                        # Create a formatted link with proper escaping
-                        formatted_link = f'<a href="{url}" class="bot-link">{display}</a>'
-                        # Replace the exact URL with the formatted link
-                        escaped_text = escaped_text.replace(url, formatted_link)
-
-                        # Also handle www. version
-                        www_url = url.replace('https://', 'https://www.')
-                        escaped_text = escaped_text.replace(www_url, formatted_link)
-
-                        # Handle non-https version
-                        http_url = url.replace('https://', 'http://')
-                        escaped_text = escaped_text.replace(http_url, formatted_link)
-
-                        # Handle domain-only version (without protocol)
-                        domain = url.replace('https://', '')
-                        escaped_text = escaped_text.replace(f" {domain}", f" {formatted_link}")
-                        escaped_text = escaped_text.replace(f"\n{domain}", f"\n{formatted_link}")
+                    # Process text character by character
+                    result = []
+                    i = 0
+                    while i < len(processed_text):
+                        found_match = False
                         
-                    return escaped_text.strip()
+                        # Look for URL matches at current position
+                        for domain, (canonical_url, display_name) in URL_MAPPINGS.items():
+                            # Generate URL variants to check
+                            variants = [
+                                f'https://{domain}',
+                                f'http://{domain}',
+                                f'https://www.{domain}',
+                                f'http://www.{domain}',
+                                domain
+                            ]
+                            
+                            for variant in variants:
+                                # Check if variant matches at current position
+                                if processed_text[i:].lower().startswith(variant.lower()):
+                                    # Verify URL boundaries
+                                    before_ok = i == 0 or is_boundary_char(processed_text[i-1])
+                                    after_pos = i + len(variant)
+                                    after_ok = after_pos >= len(processed_text) or is_boundary_char(processed_text[after_pos])
+                                    
+                                    if before_ok and after_ok:
+                                        # Special handling for James's social media links
+                                        if domain in ['x.com/vpabundance', 'warpcast.com/vpabundance.eth', 'linkedin.com/in/vpabundance']:
+                                            result.append(canonical_url)
+                                        else:
+                                            # Add formatted link for regular URLs
+                                            result.append(f'<a href="{canonical_url}" class="bot-link">{display_name}</a>')
+                                        i += len(variant)
+                                        found_match = True
+                                        break
+                            
+                            if found_match:
+                                break
+                        
+                        if not found_match:
+                            # No URL match found, keep current character
+                            result.append(processed_text[i])
+                            i += 1
+                    
+                    # Return the final processed text
+                    return ''.join(result).strip()
 
                 try:
                     # Format URLs with the improved function
