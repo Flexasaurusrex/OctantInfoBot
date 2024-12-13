@@ -38,7 +38,18 @@ limiter = Limiter(
     storage_uri="memory://"
 )
 
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet', ping_timeout=5, ping_interval=1)
+# Configure Socket.IO with enhanced connection handling
+socketio = SocketIO(
+    app,
+    cors_allowed_origins="*",
+    async_mode='eventlet',
+    ping_timeout=10,
+    ping_interval=5,
+    reconnection=True,
+    reconnection_attempts=5,
+    reconnection_delay=1000,
+    reconnection_delay_max=5000
+)
 chat_handler = None
 
 try:
@@ -71,14 +82,24 @@ def restart_services():
         
         def cleanup_and_restart():
             try:
-                # Step 1: Prepare for restart
-                logger.info("Starting cleanup process...")
-                eventlet.sleep(5)  # Give time for initial message
+                # Step 1: Prepare for restart with enhanced state preservation
+                logger.info("Starting cleanup process with state preservation...")
+                eventlet.sleep(3)  # Reduced initial delay
+                
+                # Save current state
+                current_state = {
+                    'active_connections': len(socketio.server.manager.rooms.get('/', set())),
+                    'start_time': datetime.now().isoformat(),
+                    'environment': os.environ.get('FLASK_ENV', 'development')
+                }
+                
+                logger.info(f"Preserving state: {current_state}")
                 
                 socketio.emit('restart_status', {
                     'status': 'preparing',
-                    'message': 'Preparing to close active connections...',
-                    'countdown': 25
+                    'message': f'Preparing restart (Active connections: {current_state["active_connections"]})...',
+                    'countdown': 25,
+                    'details': current_state
                 }, namespace='/')
                 
                 # Step 2: Close connections
@@ -149,21 +170,31 @@ def restart_services():
 
 @socketio.on('connect')
 def handle_connect():
-    logger.info(f"Client connected: {request.sid}")
+    """Handle client connection with enhanced error handling and state tracking."""
     try:
+        client_info = {
+            'sid': request.sid,
+            'ip': request.remote_addr,
+            'timestamp': datetime.now().isoformat(),
+            'user_agent': request.headers.get('User-Agent', 'Unknown')
+        }
+        logger.info(f"Client connected: {client_info}")
+        
+        # Send connection acknowledgment
+        socketio.emit('connection_status', {
+            'status': 'connected',
+            'sid': request.sid,
+            'timestamp': datetime.now().isoformat()
+        }, room=request.sid)
+        
+        # Send welcome message with command help
         help_message = """
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📚 Available Commands
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-🎮 Game Commands:
-• /trivia - Start a trivia game
-• start trivia - Also starts trivia game
-• end trivia - End current trivia game
-
 📋 Information Commands:
 • /help - Show this help message
-• /stats - View your chat statistics
 • /learn - Access learning modules
 
 📌 Topic-Specific Commands:
@@ -177,8 +208,14 @@ Type any command to get started!
             'message': help_message,
             'is_bot': True
         }, room=request.sid)
+        
     except Exception as e:
-        logger.error(f"Error sending welcome message: {str(e)}")
+        logger.error(f"Error in handle_connect: {str(e)}", exc_info=True)
+        socketio.emit('connection_status', {
+            'status': 'error',
+            'message': 'Connection error occurred',
+            'timestamp': datetime.now().isoformat()
+        }, room=request.sid)
 
 @socketio.on('disconnect')
 def handle_disconnect():
