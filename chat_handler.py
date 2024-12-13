@@ -397,103 +397,68 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
                 import re
 
                 def format_urls(text):
-                    """Format URLs in text with improved handling of domain extensions and HTML tags."""
+                    """Format URLs with a strict, controlled approach."""
                     if not text:
                         return text
 
-                    # Handle James's social media links
-                    james_social = [
-                        "https://x.com/vpabundance",
-                        "https://warpcast.com/vpabundance.eth",
-                        "https://www.linkedin.com/in/vpabundance"
-                    ]
-                    if any(url in text for url in james_social):
-                        return text
-
-                    # Remove all malformed and nested tags first
-                    text = re.sub(r'<a[^>]*<a[^>]*>[^<]*</a>[^>]*>[^<]*</a>', '', text)
-                    text = re.sub(r'<a href="[^"]*"[^>]*>[^<]*</a>', '', text)
-
-                    # Map of special URLs and their display text
-                    url_display_map = {
-                        'x.com/OctantApp': ('@OctantApp', 'https://x.com/OctantApp'),
-                        'discord.gg/octant': ('discord.gg/octant', 'https://discord.gg/octant'),
-                        'warpcast.com/octant': ('warpcast.com/octant', 'https://warpcast.com/octant'),
-                        'octant.build': ('octant.build', 'https://octant.build'),
-                        'docs.octant.app': ('docs.octant.app', 'https://docs.octant.app'),
-                        'golem.foundation': ('golem.foundation', 'https://golem.foundation')
-                    }
-
-                    # Process special URLs first
-                    for key, (display, url) in url_display_map.items():
-                        if key in text.lower():
-                            text = text.replace(key, f'<a href="{url}" class="bot-link">{display}</a>')
-
-                    # Process remaining URLs
-                    domain_endings = r'(?:com|org|net|edu|gov|io|app|build|foundation|eth|gg)'
-                    url_pattern = fr'(?<!href=")(?<!>)(?<![\w/])((?:https?://)?(?:www\.)?[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*\.{domain_endings}(?:/[^\s<>"\']*)?)'
+                    # Strip all HTML tags first
+                    text = re.sub(r'<[^>]+>', '', text)
                     
-                    def format_match(match):
-                        url = match.group(1).rstrip('.,;:!?)"')
-                        if not url.startswith('http'):
-                            url = f'https://{url}'
-                        display = url.replace('https://', '').replace('http://', '').rstrip('/')
-                        return f'<a href="{url}" class="bot-link">{display}</a>'
-
-                    # Format remaining URLs
-                    text = re.sub(url_pattern, format_match, text, flags=re.IGNORECASE)
-                    return text
+                    # Remove any protocol prefixes and brackets
+                    text = re.sub(r'https?://', '', text)
+                    text = re.sub(r'<[^>]*>', '', text)
+                    
+                    # Define exact URL mappings with proper formatting
+                    url_mappings = {
+                        'octant.build': '<a href="https://octant.build" class="bot-link">octant.build</a>',
+                        'docs.octant.app': '<a href="https://docs.octant.app" class="bot-link">docs.octant.app</a>',
+                        'golem.foundation': '<a href="https://golem.foundation" class="bot-link">golem.foundation</a>',
+                        '@OctantApp': '<a href="https://x.com/OctantApp" class="bot-link">@OctantApp</a>',
+                        'x.com/OctantApp': '<a href="https://x.com/OctantApp" class="bot-link">@OctantApp</a>',
+                        'warpcast.com/octant': '<a href="https://warpcast.com/octant" class="bot-link">warpcast.com/octant</a>',
+                        'discord.gg/octant': '<a href="https://discord.gg/octant" class="bot-link">discord.gg/octant</a>'
+                    }
+                    
+                    # Process text word by word to avoid partial matches
+                    words = text.split()
+                    processed_words = []
+                    
+                    for word in words:
+                        clean_word = word.strip('.,!?()[]{}').lower()
+                        if clean_word in url_mappings:
+                            processed_words.append(url_mappings[clean_word])
+                        else:
+                            processed_words.append(word)
+                    
+                    return ' '.join(processed_words)
                 
                 # Format the response text
                 response_text = format_urls(response_text)
                 
                 # Enhanced cleanup to fix any remaining nested tags
                 def fix_nested_tags(text):
-                    """Fix any nested or malformed HTML link tags with improved safety."""
+                    """Enhanced cleanup for nested or malformed tags."""
                     if not text:
                         return text
-
-                    def clean_url_text(url):
-                        """Clean URL for display"""
-                        return url.replace('https://', '').rstrip('/')
-
-                    def safe_sub(pattern, repl, text, max_iterations=5):
-                        """Safely apply substitution with iteration limit"""
-                        for _ in range(max_iterations):
-                            new_text = re.sub(pattern, repl, text)
-                            if new_text == text:  # No changes made
-                                break
-                            text = new_text
-                        return text
-
-                    # Simpler, more reliable patterns
-                    patterns = [
-                        # Fix nested href attributes (most common issue)
-                        (r'<a href="([^"]*<a href="[^"]*"[^>]*>[^<]*</a>[^"]*)"',
-                         lambda m: '<a href="' + m.group(1).split('"')[0] + '"'),
-
-                        # Fix completely nested tags
-                        (r'<a href="([^"]+)"[^>]*><a href="[^"]+"[^>]*>([^<]+)</a></a>',
-                         lambda m: f'<a href="{m.group(1)}" class="bot-link">{m.group(2)}</a>'),
-
-                        # Remove duplicate adjacent tags
-                        (r'(<a href="[^"]+"[^>]*>[^<]+</a>)\s*\1',
-                         r'\1'),
-
-                        # Fix tags with multiple closing tags
-                        (r'<a href="([^"]+)"[^>]*>([^<]+)</a></a>',
-                         r'<a href="\1" class="bot-link">\2</a>'),
-
-                        # Ensure proper link class
-                        (r'<a href="([^"]+)"(?!\s+class="bot-link")',
-                         r'<a href="\1" class="bot-link"')
-                    ]
-
-                    # Apply patterns safely
-                    for pattern, replacement in patterns:
-                        text = safe_sub(pattern, replacement, text)
-        
-                    return text
+                        
+                    # Remove multi-level nested tags
+                    while re.search(r'<a[^>]*><a[^>]*>', text):
+                        text = re.sub(r'<a[^>]*><a[^>]*>(.*?)</a></a>', r'\1', text)
+                    
+                    # Remove any stray closing tags
+                    text = re.sub(r'(?<!<a[^>]*>.*)</a>', '', text)
+                    
+                    # Remove any stray opening tags
+                    text = re.sub(r'<a[^>]*>(?!.*</a>)', '', text)
+                    
+                    # Ensure proper spacing around links
+                    text = re.sub(r'\s*(<a[^>]*>)\s*', r' \1', text)
+                    text = re.sub(r'\s*(</a>)\s*', r'\1 ', text)
+                    
+                    # Clean up multiple spaces
+                    text = re.sub(r'\s+', ' ', text)
+                    
+                    return text.strip()
                 
                 # Apply the enhanced cleanup
                 response_text = fix_nested_tags(response_text)
