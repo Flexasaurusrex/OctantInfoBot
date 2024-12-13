@@ -75,20 +75,27 @@ class OctantDiscordBot(commands.Bot):
         # Process commands first (for /help, /trivia etc)
         await self.process_commands(message)
         
-        # Check if bot is mentioned or message is in DM
-        should_respond = (
-            self.user.mentioned_in(message) or 
-            isinstance(message.channel, discord.DMChannel)
-        )
+        # Enhanced logging for message debugging
+        logger.info(f"Processing message - Author: {message.author}, Content: {message.content}, Mentions: {message.mentions}")
         
-        if should_respond:
-            logger.info(f"Bot should respond to message from {message.author}")
+        # Check for bot mention more thoroughly
+        is_mentioned = any([
+            self.user.mentioned_in(message),  # Standard mention check
+            isinstance(message.channel, discord.DMChannel),  # DM check
+            f'<@{self.user.id}>' in message.content,  # Raw mention ID check
+            f'<@!{self.user.id}>' in message.content  # Nickname mention check
+        ])
+        
+        if is_mentioned:
+            logger.info(f"Bot was mentioned by {message.author}")
             
             try:
                 # Clean the message content
                 content = message.content.strip()
-                # Remove bot mentions
-                content = content.replace(f'<@{self.user.id}>', '').replace(f'<@!{self.user.id}>', '')
+                # Remove all possible forms of bot mentions
+                content = content.replace(f'<@{self.user.id}>', '')
+                content = content.replace(f'<@!{self.user.id}>', '')
+                content = content.replace(self.user.mention, '')
                 content = content.strip()
                 
                 # Use default prompt if empty
@@ -96,26 +103,43 @@ class OctantDiscordBot(commands.Bot):
                     content = "What is Octant?"
                     logger.info("Using default prompt: What is Octant?")
                 
-                logger.info(f"Getting response for: {content}")
+                logger.info(f"Processing query: {content}")
                 
-                # Get response from chat handler
-                response = self.chat_handler.get_response(content)
-                logger.info("Got response from chat handler")
-                
-                # Handle empty or invalid response
-                if not response:
-                    response = "I'm here to help you learn about Octant! What would you like to know?"
-                    logger.warning("Using default response due to empty chat handler response")
-                
-                # Send response, handling chunks if needed
-                if isinstance(response, list):
-                    for chunk in response:
-                        if chunk and chunk.strip():
-                            await message.reply(chunk.strip())
-                            logger.info("Sent response chunk")
-                else:
-                    await message.reply(response)
-                    logger.info("Sent full response")
+                # Get response from chat handler with enhanced error handling
+                try:
+                    logger.info("Requesting response from chat handler...")
+                    response = self.chat_handler.get_response(content)
+                    logger.info(f"Received response type: {type(response)}, length: {len(str(response)) if response else 0}")
+                    
+                    # Handle empty or invalid response
+                    if not response:
+                        response = "I'm here to help you learn about Octant! What would you like to know?"
+                        logger.warning("Using default response due to empty chat handler response")
+                    
+                    # Send response with improved chunking
+                    if isinstance(response, list):
+                        logger.info(f"Processing list response with {len(response)} chunks")
+                        for i, chunk in enumerate(response, 1):
+                            if chunk and chunk.strip():
+                                await message.reply(chunk.strip())
+                                logger.info(f"Sent chunk {i}/{len(response)}")
+                    else:
+                        # Split long responses if needed
+                        if len(str(response)) > 2000:  # Discord's message length limit
+                            chunks = [response[i:i+1900] for i in range(0, len(response), 1900)]
+                            logger.info(f"Splitting long response into {len(chunks)} chunks")
+                            for i, chunk in enumerate(chunks, 1):
+                                await message.reply(chunk.strip())
+                                logger.info(f"Sent split chunk {i}/{len(chunks)}")
+                        else:
+                            await message.reply(response)
+                            logger.info("Sent complete response")
+                    
+                    logger.info("Response handling completed successfully")
+                    
+                except Exception as chat_error:
+                    logger.error(f"Error getting/sending response: {str(chat_error)}", exc_info=True)
+                    await message.reply("I encountered an issue while processing your request. Please try again.")
                 
             except Exception as e:
                 logger.error(f"Error handling message: {str(e)}", exc_info=True)
