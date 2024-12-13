@@ -75,18 +75,26 @@ class OctantDiscordBot(commands.Bot):
                 await self.trivia.start_game(await self.get_context(message))
                 return
                 
-            # Only respond if the bot is mentioned or it's a reply to the bot
-            if is_mentioned or is_reply_to_bot:
+            # Only respond if the bot is explicitly mentioned (not just replied to)
+            if is_mentioned:
                 # Remove the mention from the message content
                 clean_content = message.clean_content.replace(f"@{self.user.display_name}", "").strip()
                 
                 response = self.chat_handler.get_response(clean_content)
-                # Split long messages if needed
-                if isinstance(response, list):
-                    for chunk in response:
-                        await message.reply(chunk)
-                else:
-                    await message.reply(response)
+                
+                try:
+                    # Split long messages if needed
+                    if isinstance(response, list):
+                        for chunk in response:
+                            await message.reply(chunk)
+                    else:
+                        await message.reply(response)
+                except discord.errors.HTTPException as e:
+                    if e.code == 429:  # Rate limited
+                        await asyncio.sleep(e.retry_after)
+                        await message.reply(response)
+                    else:
+                        raise
                     
         except Exception as e:
             logger.error(f"Error processing message: {str(e)}")
