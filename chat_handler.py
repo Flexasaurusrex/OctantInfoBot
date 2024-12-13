@@ -410,64 +410,46 @@ And remember, as Robin would say: "Reality... what a concept!" - especially in W
                     if any(url in text for url in james_social):
                         return text
 
-                    # Map of special URLs to their display text
-                    url_display_map = {
-                        'x.com/OctantApp': '@OctantApp',
-                        'discord.gg/octant': 'discord.gg/octant',
-                        'warpcast.com/octant': 'warpcast.com/octant',
-                        'octant.build': 'octant.build',
-                        'docs.octant.app': 'docs.octant.app',
-                        'golem.foundation': 'golem.foundation'
-                    }
-
-                    # Protect complete existing link tags
-                    def protect_tags(match):
+                    # Protect existing HTML tags
+                    existing_tags = []
+                    def protect_html(match):
                         tag = match.group(0)
-                        if re.match(r'<a\s+href="[^"]+"\s+class="bot-link">[^<]+</a>', tag):
-                            return f"__PROTECTED__{hash(tag)}__"
-                        return tag
-
-                    # First pass: protect existing complete link tags
-                    protected_text = re.sub(
-                        r'<a\s+href="[^"]+"\s+class="bot-link">[^<]+</a>',
-                        protect_tags,
-                        text
-                    )
+                        existing_tags.append(tag)
+                        return f"__PROTECTED_TAG_{len(existing_tags)-1}__"
                     
-                    # Store protected tags for restoration
-                    protected_tags = {
-                        f"__PROTECTED__{hash(tag)}__": tag
-                        for tag in re.findall(r'<a\s+href="[^"]+"\s+class="bot-link">[^<]+</a>', text)
+                    protected_text = re.sub(r'<a\s+href="[^"]*"[^>]*>.*?</a>', protect_html, text)
+
+                    # Map of special URLs and their display text
+                    url_display_map = {
+                        'x.com/OctantApp': ('@OctantApp', 'https://x.com/OctantApp'),
+                        'discord.gg/octant': ('discord.gg/octant', 'https://discord.gg/octant'),
+                        'warpcast.com/octant': ('warpcast.com/octant', 'https://warpcast.com/octant'),
+                        'octant.build': ('octant.build', 'https://octant.build'),
+                        'docs.octant.app': ('docs.octant.app', 'https://docs.octant.app'),
+                        'golem.foundation': ('golem.foundation', 'https://golem.foundation')
                     }
 
-                    # Process URLs that aren't already in tags
+                    # Process special platform mentions first
+                    for key, (display, url) in url_display_map.items():
+                        protected_text = protected_text.replace(display, f'<a href="{url}" class="bot-link">{display}</a>')
+
+                    # Process remaining URLs
                     domain_endings = r'(?:com|org|net|edu|gov|io|app|build|foundation|eth|gg)'
-                    url_pattern = fr'(?<!href=")https?://(?:www\.)?[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*\.{domain_endings}(?:/[^\s<>"\']*)?'
+                    url_pattern = fr'(?<!href=")(?:https?://)?(?:www\.)?[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*\.{domain_endings}(?:/[^\s<>"\']*)?'
                     
                     def format_match(match):
                         url = match.group(0).rstrip('.,;:!?)"')
-                        # Skip if this is part of a protected tag
-                        if f"__PROTECTED__{hash(url)}__" in protected_tags:
-                            return url
-                            
-                        # Get display text based on URL
-                        display = None
-                        for key, value in url_display_map.items():
-                            if key in url.lower():
-                                display = value
-                                break
-                        
-                        if not display:
-                            display = url.replace('https://', '').rstrip('/')
-                        
+                        if not url.startswith('http'):
+                            url = f'https://{url}'
+                        display = url.replace('https://', '').replace('http://', '').rstrip('/')
                         return f'<a href="{url}" class="bot-link">{display}</a>'
 
-                    # Format unprotected URLs
+                    # Format remaining URLs
                     formatted = re.sub(url_pattern, format_match, protected_text)
                     
                     # Restore protected tags
-                    for placeholder, original in protected_tags.items():
-                        formatted = formatted.replace(placeholder, original)
+                    for i, tag in enumerate(existing_tags):
+                        formatted = formatted.replace(f"__PROTECTED_TAG_{i}__", tag)
                     
                     return formatted
                     
