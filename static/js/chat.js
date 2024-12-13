@@ -327,11 +327,35 @@ function restartServices() {
         restartBtn.classList.add('restarting');
         restartBtn.disabled = true;
         
+        // Show restart message
+        appendMessage('Initiating service restart...', true);
+        
+        let countdown = 5;
+        const updateMessage = () => {
+            appendMessage(`Services will restart in ${countdown} seconds...`, true);
+            countdown--;
+            
+            if (countdown >= 0) {
+                setTimeout(updateMessage, 1000);
+            }
+        };
+        
         fetch('/restart', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             }
+        }).then(response => {
+            if (!response.ok) throw new Error('Restart request failed');
+            updateMessage();
+            
+            // Schedule page reload
+            setTimeout(() => {
+                appendMessage('Restarting now... The page will refresh automatically.', true);
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            }, 5000);
         }).catch(error => {
             console.error('Error initiating restart:', error);
             restartBtn.classList.remove('restarting');
@@ -340,3 +364,19 @@ function restartServices() {
         });
     }
 }
+
+// Update socket.on handler for restart status
+socket.on('restart_status', (data) => {
+    console.log('Received restart status:', data);
+    const restartBtn = document.querySelector('.restart-button');
+    
+    if (data.status === 'restarting') {
+        restartBtn.classList.add('restarting');
+        restartBtn.disabled = true;
+        appendMessage(data.message || 'Restarting services...', true);
+    } else if (data.status === 'error') {
+        restartBtn.classList.remove('restarting');
+        restartBtn.disabled = false;
+        appendMessage(data.message || 'Restart failed. Please try again.', true);
+    }
+});

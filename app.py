@@ -61,13 +61,26 @@ def index():
 def restart_services():
     try:
         logger.info("Restart request received")
-        socketio.emit('restart_status', {'status': 'restarting', 'message': 'Restarting services...'})
-        # Give clients time to receive the message before restart
-        eventlet.sleep(1)
-        os._exit(0)  # This will trigger the replit system to restart all services
+        # Notify all connected clients
+        socketio.emit('restart_status', {'status': 'restarting', 'message': 'Restarting services...'}, namespace='/')
+        
+        # Give clients time to receive the message and update UI
+        eventlet.sleep(2)
+        
+        def delayed_restart():
+            logger.info("Initiating delayed restart...")
+            eventlet.sleep(3)  # Additional delay for client-side handling
+            os._exit(0)  # Trigger Replit restart
+        
+        # Schedule the restart
+        eventlet.spawn(delayed_restart)
         return {"status": "success", "message": "Restart initiated"}
     except Exception as e:
         logger.error(f"Error during restart: {str(e)}")
+        socketio.emit('restart_status', {
+            'status': 'error',
+            'message': 'Failed to restart services. Please try again.'
+        }, namespace='/')
         return {"status": "error", "message": str(e)}, 500
 
 @socketio.on('connect')
