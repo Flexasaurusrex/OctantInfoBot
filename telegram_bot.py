@@ -144,124 +144,63 @@ Just type your question and I'll help you out! 📚
     await update.message.reply_text(help_text)
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Handle incoming messages with enhanced reliability and verbose logging."""
+    """Handle incoming messages with simplified logic."""
+    if not update.message or not update.message.text:
+        return
+
+    message = update.message
     try:
-        # Basic message validation
-        message = update.message
-        if not message or not message.text:
-            logger.info("Skipping empty message")
-            return
-
-        # Get message details
-        user_id = update.effective_user.id
-        username = update.effective_user.username
-        chat_type = message.chat.type
-
-        # Enhanced logging
-        logger.info("━━━━━━ Received Message ━━━━━━")
-        logger.info(f"User: {username} (ID: {user_id})")
-        logger.info(f"Chat Type: {chat_type}")
-        logger.info(f"Message: {message.text[:100]}...")
-
-        # Process messages based on chat type
-        try:
-            # Process all messages in private chats immediately
-            if chat_type == "private":
-                logger.info("Private chat - processing message")
-                await process_message(update, context, message, chat_type)
-                return
-
-            # For group chats, only respond to commands, mentions, or replies
-            if chat_type in ["group", "supergroup"]:
-                should_respond = (
-                    message.text.startswith('/') or  # Commands
-                    (message.reply_to_message and  # Direct replies
-                     message.reply_to_message.from_user and
-                     message.reply_to_message.from_user.id == context.bot.id) or
-                    any(  # Mentions
-                        (entity.type == "mention" and
-                         message.text[entity.offset:entity.offset + entity.length].lower() in
-                         [f"@{context.bot.username.lower()}", "@octantbot"]) or
-                        (entity.type == "text_mention" and
-                         entity.user and entity.user.id == context.bot.id)
-                        for entity in (message.entities or [])
-                    )
-                )
-                
-                if should_respond:
-                    logger.info(f"Group chat - responding to {message.text[:50]}...")
-                    await process_message(update, context, message, chat_type)
-                else:
-                    logger.debug("Group chat - message not for bot, ignoring")
-                return
-
-            logger.warning(f"Unsupported chat type: {chat_type}")
-            return
-
-        except Exception as e:
-            logger.error(f"Error processing message: {str(e)}", exc_info=True)
-            error_message = "I apologize for the confusion. I'm here to help! Please feel free to ask your question again."
-            if chat_type == "private":
-                error_message += "\nI can answer questions about Octant, the Golem Foundation, GLM tokens, and more!"
-            await message.reply_text(error_message)
-            
-            # Log the actual error for debugging
-            logger.error(f"Error details: {str(e)}")
-            logger.error(f"User message: {message.text}")
-
-    except Exception as e:
-        logger.error(f"Unexpected error in message handler: {str(e)}", exc_info=True)
-        try:
-            if update and update.message:
-                await update.message.reply_text(
-                    "An unexpected error occurred. Please try again in a moment."
-                )
-        except Exception as reply_error:
-            logger.error(f"Failed to send error message: {str(reply_error)}")
-            logger.error("Complete error trace:", exc_info=True)
-
-async def process_message(update: Update, context: ContextTypes.DEFAULT_TYPE, message, chat_type):
-    """Process a message that should receive a response."""
-    try:
-        # Ping watchdog
-        if hasattr(context.application, 'watchdog'):
-            context.application.watchdog.ping()
-
-        # Log the incoming message for debugging
-        logger.info(f"Processing message: {message.text}")
-
-        # Get response from chat handler
-        logger.info("Getting response from chat handler")
-        response = chat_handler.get_response(message.text)
-
-        if not response:
-            logger.warning("Empty response from chat handler")
-            error_message = "I apologize for the confusion. Let me try to help you better! Could you please rephrase your question?"
-            if chat_type == "private":
-                error_message += "\nI can answer questions about Octant, the Golem Foundation, GLM tokens, and much more!"
-            await message.reply_text(error_message)
-            return
-
-        # Handle response (single message or multiple chunks)
-        if isinstance(response, list):
-            for chunk in response:
-                await message.reply_text(
-                    chunk,
-                    parse_mode='HTML',
-                    disable_web_page_preview=False
-                )
-                await asyncio.sleep(0.1)  # Small delay between chunks
-        else:
-            await message.reply_text(
-                response,
-                parse_mode='HTML',
-                disable_web_page_preview=False
+        # Process messages if any of these conditions are met
+        should_process = (
+            message.text.startswith('/') or  # Commands
+            message.chat.type == "private" or  # Private chats
+            (message.reply_to_message and  # Direct replies
+             message.reply_to_message.from_user and 
+             message.reply_to_message.from_user.id == context.bot.id) or
+            any(  # Mentions
+                entity.type == "mention" and 
+                message.text[entity.offset:entity.offset + entity.length].lower() == f"@{context.bot.username.lower()}"
+                for entity in (message.entities or [])
             )
-        logger.info("Response sent successfully")
+        )
+
+        if should_process:
+            await process_message(update, context)
 
     except Exception as e:
-        logger.error(f"Error in process_message: {str(e)}", exc_info=True)
-        raise
+        logger.error(f"Message handler error: {str(e)}", exc_info=True)
+        try:
+            await message.reply_text("I encountered an issue. Please try again later.")
+        except Exception as reply_error:
+            logger.error(f"Failed to send error message: {str(reply_error)}", exc_info=True)
+
+async def process_message(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Process a message with simplified response handling."""
+    message = update.message
+    try:
+        # Get response from chat handler
+        response = chat_handler.get_response(message.text)
+        if not response:
+            await message.reply_text("I couldn't understand your message. Please try again.")
+            return
+
+        # Split long responses into chunks of 4000 characters max
+        if isinstance(response, str):
+            chunks = [response[i:i+4000] for i in range(0, len(response), 4000)]
+            for chunk in chunks:
+                if chunk.strip():
+                    await message.reply_text(chunk.strip(), parse_mode='HTML')
+        elif isinstance(response, list):
+            for chunk in response:
+                if chunk.strip():
+                    await message.reply_text(chunk.strip(), parse_mode='HTML')
+
+    except Exception as e:
+        logger.error(f"Error processing message: {str(e)}", exc_info=True)
+        await message.reply_text(
+            "I'm having trouble processing your message. Please try again.",
+            parse_mode='HTML'
+        )
 
 async def error_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Handle errors in the telegram bot with aggressive recovery and monitoring."""
@@ -324,15 +263,30 @@ async def error_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         logger.error(f"Critical error in error handler: {str(e)}")
         logger.error("Error handler failed to process the error properly")
 
+def check_running_instance():
+    """Check if another instance is running and terminate it."""
+    import psutil
+    current_pid = os.getpid()
+    
+    for proc in psutil.process_iter(['pid', 'name', 'cmdline']):
+        try:
+            if proc.info['name'] == 'python' and proc.pid != current_pid:
+                cmdline = proc.info['cmdline']
+                if cmdline and 'telegram_bot.py' in cmdline[-1]:
+                    logger.info(f"Found existing bot instance (PID: {proc.pid}), terminating...")
+                    proc.terminate()
+                    proc.wait(timeout=5)
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.TimeoutExpired):
+            continue
+
 async def main() -> None:
-    """Start the bot with enhanced monitoring and reconnection logic."""
-    retry_count = 0
-    max_retries = -1  # Infinite retries for 24/7 uptime
-    base_delay = 5
-    max_delay = 300  # 5 minutes
+    """Start the bot with simplified initialization and instance management."""
+    # Ensure only one instance is running
+    check_running_instance()
+    
     start_time = time.time()
-    last_stats_time = time.time()
-    stats_interval = 3600  # Log statistics every hour
+    retry_count = 0
+    base_delay = 5
     
     # Get or create event loop
     try:
@@ -498,45 +452,42 @@ async def main() -> None:
             # Log initial system statistics
             log_system_stats()
             
-            # Start polling with enhanced error recovery
             try:
                 # Initialize and start application
                 await application.initialize()
                 await application.start()
                 logger.info("Starting polling...")
                 
-                # Run polling in the current event loop
-                if getattr(application, '_restart_requested', False):
-                    application._restart_requested = False
-                
+                # Start polling with simplified error handling
                 await application.updater.start_polling(
                     allowed_updates=Update.ALL_TYPES,
                     drop_pending_updates=True
                 )
                 
-                # Wait for stop signal
-                while not getattr(application, '_restart_requested', False):
+                # Wait for stop signal or keep running
+                while True:
+                    if getattr(application, '_restart_requested', False):
+                        break
                     await asyncio.sleep(1)
-                
-                logger.info("Stop signal received, shutting down...")
+                    
             except Exception as e:
-                logger.error(f"Error during polling: {str(e)}")
-                if not isinstance(e, RuntimeError) or "event loop is already running" not in str(e):
-                    raise
+                logger.error(f"Error during polling: {str(e)}", exc_info=True)
+                raise
             finally:
                 # Cleanup
+                logger.info("Shutting down bot...")
                 try:
                     await application.updater.stop()
                     await application.stop()
                     await application.shutdown()
                 except Exception as e:
-                    logger.error(f"Error during shutdown: {str(e)}")
+                    logger.error(f"Error during shutdown: {str(e)}", exc_info=True)
                 
                 if getattr(application, '_restart_requested', False):
-                    logger.info("Restart requested, will reinitialize...")
+                    logger.info("Restart requested, reinitializing...")
                     continue
                 
-                logger.info("Polling stopped")
+                logger.info("Bot shutdown complete")
             
         except Exception as e:
             retry_count += 1
