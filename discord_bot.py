@@ -13,9 +13,20 @@ logger = logging.getLogger(__name__)
 
 class OctantDiscordBot(commands.Bot):
     def __init__(self):
-        intents = discord.Intents.default()
-        intents.message_content = True
-        super().__init__(command_prefix='/', intents=intents)
+        try:
+            intents = discord.Intents.default()
+            intents.message_content = True  # Requires Message Content Intent
+            intents.members = True          # Requires Server Members Intent
+            intents.presences = True        # Requires Presence Intent
+            logger.info("Setting up bot with privileged intents...")
+            super().__init__(command_prefix='/', intents=intents)
+        except Exception as e:
+            logger.error(f"Failed to initialize bot with intents: {str(e)}")
+            logger.error("Please ensure all required intents are enabled in the Discord Developer Portal:")
+            logger.error("1. PRESENCE INTENT")
+            logger.error("2. SERVER MEMBERS INTENT")
+            logger.error("3. MESSAGE CONTENT INTENT")
+            raise
         
         try:
             self.chat_handler = ChatHandler()
