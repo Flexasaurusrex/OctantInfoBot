@@ -1,124 +1,99 @@
+import os
 import discord
 from discord.ext import commands
-import os
-import logging
 from chat_handler import ChatHandler
 from discord_trivia import DiscordTrivia
+import logging
 
-# Configure logging with more detailed format
+# Configure logging
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s - [%(filename)s:%(lineno)d]'
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
 
 class OctantDiscordBot(commands.Bot):
     def __init__(self):
-        logger.info("Initializing OctantDiscordBot...")
-        intents = discord.Intents.default()
-        intents.message_content = True
-        intents.messages = True
-        intents.guilds = True
-        
-        super().__init__(command_prefix='/', intents=intents)
+        try:
+            intents = discord.Intents.default()
+            intents.message_content = True  # Requires Message Content Intent
+            intents.members = True          # Requires Server Members Intent
+            intents.presences = True        # Requires Presence Intent
+            logger.info("Setting up bot with privileged intents...")
+            super().__init__(command_prefix='/', intents=intents)
+        except Exception as e:
+            logger.error(f"Failed to initialize bot with intents: {str(e)}")
+            logger.error("Please ensure all required intents are enabled in the Discord Developer Portal:")
+            logger.error("1. PRESENCE INTENT")
+            logger.error("2. SERVER MEMBERS INTENT")
+            logger.error("3. MESSAGE CONTENT INTENT")
+            raise
         
         try:
-            logger.info("Initializing ChatHandler...")
             self.chat_handler = ChatHandler()
-            logger.info("ChatHandler initialized successfully")
-            
-            logger.info("Initializing DiscordTrivia...")
             self.trivia = DiscordTrivia()
-            logger.info("DiscordTrivia initialized successfully")
-            
-        except Exception as e:
-            logger.error(f"Initialization error: {str(e)}", exc_info=True)
+        except ValueError as e:
+            logger.error(f"Failed to initialize ChatHandler or DiscordTrivia: {str(e)}")
             raise
-
-    async def setup_hook(self):
-        """Set up the bot's commands."""
-        logger.info("Setting up bot commands...")
+            
+        # Remove default help command
+        self.remove_command('help')
         
-        @self.command(name='trivia')
-        async def trivia_command(ctx):
-            """Start a trivia game"""
-            await self.trivia.start_game(ctx)
-
+    async def setup_hook(self):
+        """Setup hook for the bot."""
+        logger.info("Bot is setting up...")
+        
     async def on_ready(self):
         """Called when the bot is ready."""
-        logger.info(f'Bot is ready! Logged in as {self.user} (ID: {self.user.id})')
-        logger.info(f'Connected to {len(self.guilds)} guilds')
-        for guild in self.guilds:
-            logger.info(f'Connected to guild: {guild.name} (ID: {guild.id})')
-
+        logger.info(f'Logged in as {self.user.name} (ID: {self.user.id})')
+        logger.info('------')
+        
     async def on_message(self, message):
         """Handle incoming messages."""
-        try:
-            # Log every message except our own
-            if message.author != self.user:
-                logger.info(f"""
-━━━━━━ Message Received ━━━━━━
-From: {message.author} (ID: {message.author.id})
-Content: {message.content[:100]}{'...' if len(message.content) > 100 else ''}
-Channel: {message.channel.name} (ID: {message.channel.id})
-Bot Mentioned: {self.user.mentioned_in(message)}
-━━━━━━━━━━━━━━━━━━━━━━━━""")
+        # Ignore messages from the bot itself
+        if message.author == self.user:
+            return
             
-            # Ignore our own messages
-            if message.author == self.user:
+        try:
+            # Process commands first (these start with /)
+            if message.content.startswith(self.command_prefix):
+                await self.process_commands(message)
                 return
 
-            # Check if bot is mentioned
-            if self.user.mentioned_in(message):
-                logger.info("Bot was mentioned - preparing response...")
+            # Check if the message is a direct reply to the bot
+            is_reply_to_bot = (
+                message.reference 
+                and message.reference.resolved 
+                and message.reference.resolved.author.id == self.user.id
+            )
+            
+            # Check if the bot is mentioned
+            is_mentioned = self.user.mentioned_in(message)
+            
+            # Check for "start trivia" message with mention
+            if message.content.lower() == f"<@{self.user.id}> start trivia" or message.content.lower() == f"<@!{self.user.id}> start trivia":
+                await self.trivia.start_game(await self.get_context(message))
+                return
                 
-                # Clean the message content (remove mentions)
-                content = message.content
-                for mention in message.mentions:
-                    content = content.replace(f'<@{mention.id}>', '').replace(f'<@!{mention.id}>', '')
-                content = content.strip()
+            # Only respond if the bot is mentioned or it's a reply to the bot
+            if is_mentioned or is_reply_to_bot:
+                # Remove the mention from the message content
+                clean_content = message.clean_content.replace(f"@{self.user.display_name}", "").strip()
                 
-                # If no content after removing mentions, use default question
-                if not content:
-                    content = "What is Octant?"
-                    logger.info("Using default question: 'What is Octant?'")
-                
-                try:
-                    # Get response from chat handler
-                    logger.info(f"Getting response for: {content}")
-                    response = self.chat_handler.get_response(content)
+                response = self.chat_handler.get_response(clean_content)
+                # Split long messages if needed
+                if isinstance(response, list):
+                    for chunk in response:
+                        await message.reply(chunk)
+                else:
+                    await message.reply(response)
                     
-                    if response:
-                        # Split response if it's too long
-                        if len(str(response)) > 2000:
-                            chunks = [response[i:i+1900] for i in range(0, len(response), 1900)]
-                            logger.info(f"Splitting response into {len(chunks)} chunks")
-                            for chunk in chunks:
-                                await message.reply(chunk.strip())
-                        else:
-                            await message.reply(response)
-                        logger.info("Response sent successfully")
-                    else:
-                        default_response = "I'm here to help you learn about Octant! What would you like to know?"
-                        await message.reply(default_response)
-                        logger.info("Sent default response due to empty chat handler response")
-                        
-                except Exception as e:
-                    logger.error(f"Error getting/sending response: {str(e)}", exc_info=True)
-                    await message.reply("I encountered an issue while processing your request. Please try again.")
-            
-            # Process commands if any
-            await self.process_commands(message)
-            
         except Exception as e:
-            logger.error(f"Error in message handler: {str(e)}", exc_info=True)
-            try:
-                await message.reply("I encountered an unexpected error. Please try again.")
-            except:
-                pass
+            logger.error(f"Error processing message: {str(e)}")
+            await message.channel.send("I encountered an error processing your message. Please try again.")
 
     async def on_interaction(self, interaction: discord.Interaction):
-        """Handle button interactions for trivia."""
+        """Handle button interactions."""
         if interaction.type == discord.InteractionType.component:
             custom_id = interaction.data.get("custom_id", "")
             if custom_id.startswith("trivia_"):
@@ -126,21 +101,55 @@ Bot Mentioned: {self.user.mentioned_in(message)}
                 await self.trivia.handle_answer(interaction, answer)
 
 async def main():
-    """Start the bot with error handling."""
-    try:
-        logger.info("Starting Discord bot...")
-        bot = OctantDiscordBot()
-        
-        discord_token = os.environ.get('DISCORD_BOT_TOKEN')
-        if not discord_token:
-            logger.error("DISCORD_BOT_TOKEN not found in environment variables")
-            raise ValueError("DISCORD_BOT_TOKEN environment variable is required")
-        
-        await bot.start(discord_token)
-    except Exception as e:
-        logger.error(f"Failed to start bot: {str(e)}", exc_info=True)
-        raise
+    # Create bot instance
+    bot = OctantDiscordBot()
+    
+    # Add commands
+    @bot.command(name='trivia')
+    async def trivia_command(ctx):
+        """Start a trivia game"""
+        await bot.trivia.start_game(ctx)
 
+    @bot.command(name='help')
+    async def help_command(ctx):
+        """Show help message"""
+        help_text = """
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📚 Available Commands
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎮 Game Commands:
+• /trivia - Start a trivia game
+• start trivia - Also starts trivia game
+• end trivia - End current trivia game
+
+📋 Information Commands:
+• /help - Show this help message
+• /stats - View your chat statistics
+• /learn - Access learning modules
+
+📌 Topic-Specific Commands:
+• /funding - Learn about Octant's funding
+• /governance - Understand governance
+• /rewards - Explore reward system
+
+Type any command to get started!
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"""
+        await ctx.send(help_text)
+        
+    # Run the bot
+    discord_token = os.environ.get('DISCORD_BOT_TOKEN')
+    if not discord_token:
+        logger.error("DISCORD_BOT_TOKEN not found in environment variables")
+        raise ValueError("DISCORD_BOT_TOKEN environment variable is required")
+        
+    try:
+        await bot.start(discord_token)
+    except discord.LoginFailure:
+        logger.error("Failed to login to Discord. Please check your token.")
+    except Exception as e:
+        logger.error(f"An error occurred: {str(e)}")
+        
 if __name__ == "__main__":
     import asyncio
     asyncio.run(main())
