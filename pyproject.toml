@@ -13,6 +13,8 @@ dependencies = [
     "flask-cors>=5.0.0",
     "flask-limiter>=3.9.2",
     "eventlet>=0.38.0",
-    "python-telegram-bot>=20.7",
     "psutil>=6.1.0",
+    "urllib3>=2.2.3",
+    "python-telegram-bot==21.0",
+    "telegram>=0.0.1",
 ]
