@@ -85,8 +85,22 @@ def restart_services():
                 # Step 1: Enhanced prepare for restart
                 logger.info("━━━━━━ Initiating Restart Sequence ━━━━━━")
                 logger.info("Phase 1: Preparing for service shutdown...")
-                eventlet.sleep(1)
                 
+                # Kill any existing Python processes (Discord bot, etc)
+                import psutil
+                current_pid = os.getpid()
+                for proc in psutil.process_iter(['pid', 'name', 'cmdline']):
+                    try:
+                        if proc.info['name'] == 'python' and proc.pid != current_pid:
+                            cmdline = proc.info['cmdline']
+                            if cmdline and any(x in cmdline[-1] for x in ['discord_bot.py', 'telegram_bot.py']):
+                                logger.info(f"Terminating process: {proc.pid} ({cmdline[-1]})")
+                                proc.terminate()
+                                proc.wait(timeout=5)
+                    except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.TimeoutExpired) as e:
+                        logger.error(f"Error terminating process: {str(e)}")
+                        continue
+
                 # Enhanced state tracking
                 active_connections = len(socketio.server.manager.rooms.get('/', set()))
                 logger.info(f"Current active connections: {active_connections}")
@@ -134,11 +148,28 @@ def restart_services():
                     
                     eventlet.sleep(2)
                     
-                    # Step 4: Stop the server with enhanced logging
+                    # Step 4: Start discord and telegram bots
+                    logger.info("Starting Discord and Telegram bots...")
+                    import subprocess
+                    
+                    try:
+                        subprocess.Popen(['python', 'discord_bot.py'], 
+                                      stdout=subprocess.PIPE,
+                                      stderr=subprocess.PIPE)
+                        logger.info("Discord bot process started")
+                        
+                        subprocess.Popen(['python', 'telegram_bot.py'],
+                                      stdout=subprocess.PIPE,
+                                      stderr=subprocess.PIPE)
+                        logger.info("Telegram bot process started")
+                    except Exception as e:
+                        logger.error(f"Failed to start bot processes: {str(e)}")
+                    
+                    # Step 5: Stop the server with enhanced logging
                     logger.info("Initiating server shutdown sequence...")
                     socketio.stop()
                     
-                    # Step 5: Exit process to trigger workflow restart
+                    # Step 6: Exit process to trigger workflow restart
                     logger.info("Triggering restart sequence...")
                     os._exit(0)
                 except Exception as e:
