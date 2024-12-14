@@ -156,7 +156,11 @@ class OctantDiscordBot(commands.Bot):
             # Check memory and CPU thresholds
             if self.connection_state['memory_usage'] > self.MEMORY_THRESHOLD:
                 logger.warning(f"High memory usage: {self.connection_state['memory_usage']}%")
-                await self._handle_health_failure("high_memory")
+                if self.connection_state['memory_usage'] > self.MEMORY_THRESHOLD + 10:
+                    logger.critical("Critical memory usage - Initiating immediate restart")
+                    await self._emergency_restart(force=True)
+                else:
+                    await self._handle_health_failure("high_memory")
             
             if self.connection_state['cpu_usage'] > self.CPU_THRESHOLD:
                 logger.warning(f"High CPU usage: {self.connection_state['cpu_usage']}%")
@@ -204,9 +208,11 @@ class OctantDiscordBot(commands.Bot):
         except Exception as e:
             logger.error(f"Error in health check: {str(e)}", exc_info=True)
             self.connection_state['error_count'] += 1
-            if self.connection_state['error_count'] > 5:
-                logger.critical("Too many health check errors - Initiating emergency restart")
-                await self._emergency_restart()
+            if (self.connection_state['error_count'] > 5 or 
+                self.connection_state['consecutive_timeouts'] >= self.MAX_CONSECUTIVE_TIMEOUTS or
+                self.connection_state['health_check_failures'] >= self.IMMEDIATE_RESTART_THRESHOLD):
+                logger.critical("Critical condition detected - Initiating immediate restart")
+                await self._emergency_restart(force=True)  # Force immediate restart
 
     @tasks.loop(minutes=1)
     async def connection_monitor(self):
@@ -292,8 +298,12 @@ Action: Continuing normal operation
         except Exception as e:
             logger.error(f"Error handling health failure: {str(e)}", exc_info=True)
 
-    async def _emergency_restart(self):
-        """Perform emergency restart of the bot with aggressive recovery"""
+    async def _emergency_restart(self, force=False):
+        """Perform emergency restart of the bot with aggressive recovery
+        
+        Args:
+            force (bool): If True, skips graceful shutdown attempts and forces immediate restart
+        """
         try:
             current_time = datetime.now(timezone.utc)
             logger.critical(f"""
@@ -309,23 +319,48 @@ Connected Guilds: {self.connection_state['guilds_count']}
 Last Message Time: {self.connection_state['last_message_time']}
 ━━━━━━━━━━━━━━━━━━━━━━━━""")
             
-            # Attempt graceful shutdown of tasks
-            try:
-                # Stop all background tasks
-                self.health_check.cancel()
-                self.connection_monitor.cancel()
-                
-                # Close voice clients
-                for vc in self.voice_clients:
-                    try:
-                        await vc.disconnect(force=True)
-                    except:
-                        pass
-                
-                # Close existing connection
-                await self.close()
-            except Exception as e:
-                logger.error(f"Error during graceful shutdown: {str(e)}")
+            if not force:
+                # Attempt graceful shutdown of tasks
+                try:
+                    logger.info("Attempting graceful shutdown...")
+                    # Stop all background tasks
+                    self.health_check.cancel()
+                    self.connection_monitor.cancel()
+                    
+                    # Close voice clients
+                    for vc in self.voice_clients:
+                        try:
+                            await vc.disconnect(force=True)
+                        except:
+                            pass
+                    
+                    # Close existing connection
+                    await self.close()
+                    await asyncio.sleep(2)  # Wait for cleanup
+                except Exception as e:
+                    logger.error(f"Error during graceful shutdown: {str(e)}")
+            else:
+                logger.warning("Force restart requested - Skipping graceful shutdown")
+                try:
+                    # Forceful cleanup
+                    for task in asyncio.all_tasks():
+                        if task is not asyncio.current_task():
+                            task.cancel()
+                    
+                    # Force close all connections
+                    if hasattr(self, '_connection'):
+                        self._connection.clear()
+                    
+                    # Force clear session
+                    if hasattr(self, 'session'):
+                        await self.session.close()
+                        
+                except Exception as e:
+                    logger.error(f"Error during force shutdown: {str(e)}")
+                    
+            # Immediate process cleanup
+            import gc
+            gc.collect()  # Force garbage collection
             
             # Clear internal state and cache
             self.clear()

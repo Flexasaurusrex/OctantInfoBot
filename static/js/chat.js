@@ -417,8 +417,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Listen for restart status updates
-    restartSocket.on('restart_status', (data) => {
+    // Listen for restart status updates using the main socket
+    socket.on('restart_status', (data) => {
         console.log('Received restart status:', data);
         const restartBtn = document.querySelector('.sidebar-button');
         
