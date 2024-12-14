@@ -8183,3 +8183,158 @@ discord.app_commands.errors.CommandNotFound: Application command 'ping' not foun
 2024-12-14 17:38:46,357 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 8e9e98233c1b7df912f76996974233d8).
 2024-12-14 17:38:48,388 - __main__ - INFO - Logged in as OCTANTBOT#5497 (ID: 1316950341954306159)
 2024-12-14 17:38:48,388 - __main__ - INFO - ------
+2024-12-14 17:40:04,454 - __main__ - INFO - Starting bot...
+2024-12-14 17:40:04,455 - discord.client - INFO - logging in using static token
+2024-12-14 17:40:04,455 - discord.ext.commands.bot - WARNING - Privileged message content intent is missing, commands may not work as expected.
+2024-12-14 17:40:04,912 - __main__ - INFO - Starting command sync...
+2024-12-14 17:40:05,155 - __main__ - INFO - Global command sync completed!
+2024-12-14 17:40:05,373 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: fbc17f7e5e1dce9b22a91e37a763a84d).
+2024-12-14 17:40:07,378 - __main__ - INFO - Logged in as OCTANTBOT#5497 (ID: 1316950341954306159)
+2024-12-14 17:40:07,378 - __main__ - INFO - ------
+2024-12-14 17:40:37,555 - __main__ - INFO - Starting bot with enhanced error handling...
+2024-12-14 17:40:37,555 - discord.client - INFO - logging in using static token
+2024-12-14 17:40:37,884 - __main__ - INFO - Starting command registration and sync...
+2024-12-14 17:40:38,042 - __main__ - INFO - Global command sync completed!
+2024-12-14 17:40:38,328 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: d898cac62b57af1dc7974c4634dbc634).
+2024-12-14 17:40:40,332 - __main__ - INFO - Logged in as OCTANTBOT#5497 (ID: 1316950341954306159)
+2024-12-14 17:40:40,332 - __main__ - INFO - ------
+2024-12-14 17:41:06,605 - __main__ - INFO - Starting bot...
+2024-12-14 17:41:06,606 - discord.client - INFO - logging in using static token
+2024-12-14 17:41:06,860 - __main__ - INFO - Initializing bot and registering commands...
+2024-12-14 17:41:06,861 - __main__ - INFO - Syncing commands globally...
+2024-12-14 17:41:06,969 - __main__ - ERROR - Error in setup_hook: 404 Not Found (error code: 10002): Unknown Application
+Traceback (most recent call last):
+  File "/home/runner/workspace/discord_bot.py", line 91, in setup_hook
+    await self.tree.sync()
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/discord/app_commands/tree.py", line 1129, in sync
+    data = await self._http.bulk_upsert_global_commands(self.client.application_id, payload=payload)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/discord/http.py", line 754, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10002): Unknown Application
+2024-12-14 17:41:06,973 - __main__ - ERROR - Fatal error: 404 Not Found (error code: 10002): Unknown Application
+Traceback (most recent call last):
+  File "/home/runner/workspace/discord_bot.py", line 123, in main
+    await bot.start(token)
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/discord/client.py", line 786, in start
+    await self.login(token)
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/discord/client.py", line 629, in login
+    await self.setup_hook()
+  File "/home/runner/workspace/discord_bot.py", line 91, in setup_hook
+    await self.tree.sync()
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/discord/app_commands/tree.py", line 1129, in sync
+    data = await self._http.bulk_upsert_global_commands(self.client.application_id, payload=payload)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/discord/http.py", line 754, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10002): Unknown Application
+2024-12-14 17:41:34,002 - __main__ - INFO - Starting bot...
+2024-12-14 17:41:34,002 - discord.client - INFO - logging in using static token
+2024-12-14 17:41:34,312 - __main__ - INFO - Initializing bot setup...
+2024-12-14 17:41:34,312 - __main__ - INFO - Syncing commands globally...
+2024-12-14 17:42:07,001 - __main__ - ERROR - Error in setup_hook: 404 Not Found (error code: 10002): Unknown Application
+Traceback (most recent call last):
+  File "/home/runner/workspace/discord_bot.py", line 42, in setup_hook
+    await self.tree.sync()
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/discord/app_commands/tree.py", line 1129, in sync
+    data = await self._http.bulk_upsert_global_commands(self.client.application_id, payload=payload)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/discord/http.py", line 754, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10002): Unknown Application
+2024-12-14 17:42:07,003 - __main__ - ERROR - Fatal error starting bot: 404 Not Found (error code: 10002): Unknown Application
+Traceback (most recent call last):
+  File "/home/runner/workspace/discord_bot.py", line 140, in main
+    await bot.start(token)
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/discord/client.py", line 786, in start
+    await self.login(token)
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/discord/client.py", line 629, in login
+    await self.setup_hook()
+  File "/home/runner/workspace/discord_bot.py", line 42, in setup_hook
+    await self.tree.sync()
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/discord/app_commands/tree.py", line 1129, in sync
+    data = await self._http.bulk_upsert_global_commands(self.client.application_id, payload=payload)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/discord/http.py", line 754, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10002): Unknown Application
+2024-12-14 17:42:07,005 - __main__ - ERROR - Fatal error in main: 404 Not Found (error code: 10002): Unknown Application
+Traceback (most recent call last):
+  File "/home/runner/workspace/discord_bot.py", line 140, in main
+    await bot.start(token)
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/discord/client.py", line 786, in start
+    await self.login(token)
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/discord/client.py", line 629, in login
+    await self.setup_hook()
+  File "/home/runner/workspace/discord_bot.py", line 42, in setup_hook
+    await self.tree.sync()
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/discord/app_commands/tree.py", line 1129, in sync
+    data = await self._http.bulk_upsert_global_commands(self.client.application_id, payload=payload)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/discord/http.py", line 754, in request
+    raise NotFound(response, data)
+discord.errors.NotFound: 404 Not Found (error code: 10002): Unknown Application
+2024-12-14 17:42:12,076 - __main__ - INFO - Starting bot...
+2024-12-14 17:42:12,076 - discord.client - INFO - logging in using static token
+2024-12-14 17:42:12,329 - __main__ - INFO - Initializing bot setup...
+2024-12-14 17:42:12,330 - __main__ - INFO - Syncing commands globally...
+2024-12-14 17:42:12,575 - __main__ - INFO - Global command sync completed!
+2024-12-14 17:42:12,778 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 98e3dfd5a8c02bf0aee552fd50b27c16).
+2024-12-14 17:42:17,799 - __main__ - INFO - Logged in as OCTANTBOT#5497 (ID: 1316950341954306159)
+2024-12-14 17:42:17,800 - __main__ - INFO - Connected to 2 guilds: 32px Penguins, FlexaSaurusRex's Testing Server
+2024-12-14 17:42:48,203 - __main__ - ERROR - Fatal error in main: This client already has an associated command tree.
+Traceback (most recent call last):
+  File "/home/runner/workspace/discord_bot.py", line 80, in main
+    bot = OctantBot()
+          ^^^^^^^^^^^
+  File "/home/runner/workspace/discord_bot.py", line 36, in __init__
+    self.tree = app_commands.CommandTree(self)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/discord/app_commands/tree.py", line 150, in __init__
+    raise ClientException('This client already has an associated command tree.')
+discord.errors.ClientException: This client already has an associated command tree.
+2024-12-14 17:42:50,056 - __main__ - ERROR - Fatal error in main: This client already has an associated command tree.
+Traceback (most recent call last):
+  File "/home/runner/workspace/discord_bot.py", line 80, in main
+    bot = OctantBot()
+          ^^^^^^^^^^^
+  File "/home/runner/workspace/discord_bot.py", line 36, in __init__
+    self.tree = app_commands.CommandTree(self)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/discord/app_commands/tree.py", line 150, in __init__
+    raise ClientException('This client already has an associated command tree.')
+discord.errors.ClientException: This client already has an associated command tree.
+2024-12-14 17:44:09,664 - __main__ - INFO - Starting bot with enhanced error handling...
+2024-12-14 17:44:09,664 - discord.client - INFO - logging in using static token
+2024-12-14 17:44:10,114 - __main__ - INFO - ━━━━━━ Initializing Bot Setup ━━━━━━
+2024-12-14 17:44:10,115 - __main__ - INFO - Cleared existing commands
+2024-12-14 17:44:10,115 - __main__ - ERROR - Critical error in setup_hook: command function must be a coroutine function
+Traceback (most recent call last):
+  File "/home/runner/workspace/discord_bot.py", line 121, in setup_hook
+    self.tree.command(name="help", description="Shows the list of available commands")(self.help_command)
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/discord/app_commands/tree.py", line 925, in decorator
+    raise TypeError('command function must be a coroutine function')
+TypeError: command function must be a coroutine function
+2024-12-14 17:44:13,100 - __main__ - INFO - Starting bot with enhanced error handling...
+2024-12-14 17:44:13,101 - discord.client - INFO - logging in using static token
+2024-12-14 17:44:13,470 - __main__ - INFO - ━━━━━━ Initializing Bot Setup ━━━━━━
+2024-12-14 17:44:13,470 - __main__ - INFO - Cleared existing commands
+2024-12-14 17:44:13,470 - __main__ - ERROR - Critical error in setup_hook: command function must be a coroutine function
+Traceback (most recent call last):
+  File "/home/runner/workspace/discord_bot.py", line 121, in setup_hook
+    self.tree.command(name="help", description="Shows the list of available commands")(self.help_command)
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/discord/app_commands/tree.py", line 925, in decorator
+    raise TypeError('command function must be a coroutine function')
+TypeError: command function must be a coroutine function
+2024-12-14 17:44:48,454 - __main__ - INFO - Starting bot with enhanced error handling...
+2024-12-14 17:44:48,454 - discord.client - INFO - logging in using static token
+2024-12-14 17:44:48,724 - __main__ - INFO - ━━━━━━ Initializing Bot Setup ━━━━━━
+2024-12-14 17:44:48,725 - __main__ - INFO - Cleared existing commands
+2024-12-14 17:44:48,726 - __main__ - INFO - Syncing commands globally...
+2024-12-14 17:44:48,946 - __main__ - INFO - Global command sync completed!
+2024-12-14 17:44:49,119 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: ceae8a3ced6ce89d40d31764924a57f9).
+2024-12-14 17:44:51,277 - __main__ - INFO - Starting bot with enhanced error handling...
+2024-12-14 17:44:51,277 - discord.client - INFO - logging in using static token
+2024-12-14 17:44:51,559 - __main__ - INFO - ━━━━━━ Initializing Bot Setup ━━━━━━
+2024-12-14 17:44:51,560 - __main__ - INFO - Cleared existing commands
+2024-12-14 17:44:51,560 - __main__ - INFO - Syncing commands globally...
