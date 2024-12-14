@@ -43,17 +43,29 @@ socketio = SocketIO(
     app,
     cors_allowed_origins="*",
     async_mode='eventlet',
-    ping_timeout=20,
-    ping_interval=10,
+    ping_timeout=60,  # Increased timeout
+    ping_interval=25,  # Increased interval
     reconnection=True,
-    reconnection_attempts=10,
+    reconnection_attempts=float('inf'),  # Infinite reconnection attempts
     reconnection_delay=1000,
     reconnection_delay_max=5000,
     max_http_buffer_size=1e8,
     logger=True,
     engineio_logger=True,
-    async_handlers=True
+    async_handlers=True,
+    manage_session=True  # Enable session management
 )
+
+# Configure websocket error handlers
+@socketio.on_error()
+def error_handler(e):
+    logger.error(f"SocketIO error: {str(e)}", exc_info=True)
+    return False
+
+@socketio.on_error_default
+def default_error_handler(e):
+    logger.error(f"SocketIO default error: {str(e)}", exc_info=True)
+    return False
 chat_handler = None
 
 try:
@@ -172,7 +184,7 @@ def handle_connect():
             'status': 'connected',
             'sid': request.sid,
             'timestamp': datetime.now().isoformat()
-        }, room=request.sid)
+        }, to=request.sid)
         
         # Send welcome message with command help
         help_message = """
@@ -194,15 +206,30 @@ Type any command to get started!
         socketio.emit('receive_message', {
             'message': help_message,
             'is_bot': True
-        }, room=request.sid)
+        }, to=request.sid)
         
     except Exception as e:
         logger.error(f"Error in handle_connect: {str(e)}", exc_info=True)
-        socketio.emit('connection_status', {
-            'status': 'error',
-            'message': 'Connection error occurred',
-            'timestamp': datetime.now().isoformat()
-        }, room=request.sid)
+        try:
+            socketio.emit('connection_status', {
+                'status': 'error',
+                'message': 'Connection error occurred',
+                'timestamp': datetime.now().isoformat()
+            }, to=request.sid)
+        except Exception as emit_error:
+            logger.error(f"Failed to send error status: {str(emit_error)}")
+            
+    # Setup error recovery handler
+    @socketio.on_error_default
+    def error_handler(e):
+        logger.error(f"SocketIO error: {str(e)}", exc_info=True)
+        try:
+            socketio.emit('error', {
+                'message': 'An error occurred, attempting to recover connection',
+                'timestamp': datetime.now().isoformat()
+            }, to=request.sid)
+        except Exception as emit_error:
+            logger.error(f"Error sending error message: {str(emit_error)}")
 
 @socketio.on('disconnect')
 def handle_disconnect():
@@ -220,10 +247,18 @@ def handle_disconnect():
         socketio.emit('user_disconnected', {
             'sid': request.sid,
             'timestamp': datetime.now().isoformat()
-        }, broadcast=True, include_self=False)
+        }, to=request.sid, skip_sid=request.sid)
         
     except Exception as e:
         logger.error(f"Error in disconnect handler: {str(e)}", exc_info=True)
+        
+    try:
+        # Attempt reconnection
+        socketio.emit('reconnect_attempt', {
+            'timestamp': datetime.now().isoformat()
+        }, to=request.sid)
+    except Exception as e:
+        logger.error(f"Error initiating reconnection: {str(e)}", exc_info=True)
 
 @socketio.on('send_message')
 def handle_message(data):

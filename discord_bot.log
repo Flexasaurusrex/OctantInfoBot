@@ -707,3 +707,1349 @@ Logged in as: OCTANTBOT
 Bot ID: 1316950341954306159
 Guilds connected: 2
 ━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:24:05,505 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:24:20,493 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:24:35,497 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:24:50,508 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:24:50,508 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: True
+Guilds: 2
+Latency: 25.28ms
+Uptime: 0.0h
+Health Failures: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:25:05,507 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:25:20,500 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:25:35,507 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:25:50,507 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:25:50,508 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: True
+Guilds: 2
+Latency: 40.13ms
+Uptime: 0.0h
+Health Failures: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:26:05,503 - __main__ - WARNING - Heartbeat timeout detected. Age: 132.797699s
+2024-12-14 18:26:05,503 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 1
+2024-12-14 18:26:05,503 - __main__ - INFO - 
+━━━━━━ Minor Health Check Issue ━━━━━━
+Failure Count: 1
+Status: Monitoring
+Action: Continuing normal operation
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:26:20,507 - __main__ - WARNING - Heartbeat timeout detected. Age: 147.802156s
+2024-12-14 18:26:20,508 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 2
+2024-12-14 18:26:20,508 - __main__ - WARNING - 
+━━━━━━ Multiple Health Check Failures ━━━━━━
+Failure Count: 2
+Attempting reconnection...
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:26:20,508 - __main__ - INFO - Initializing Discord bot with enhanced monitoring
+2024-12-14 18:26:20,509 - __main__ - INFO - Chat and Trivia handlers initialized successfully
+2024-12-14 18:26:20,509 - __main__ - INFO - Bot initialization completed successfully
+2024-12-14 18:26:20,510 - discord.client - INFO - logging in using static token
+2024-12-14 18:26:20,821 - __main__ - INFO - Health monitoring tasks started
+2024-12-14 18:26:20,822 - __main__ - WARNING - Connection check failed - Bot disconnected
+2024-12-14 18:26:20,822 - __main__ - WARNING - Health check failure (disconnected). Failure count: 1
+2024-12-14 18:26:20,822 - __main__ - INFO - 
+━━━━━━ Minor Health Check Issue ━━━━━━
+Failure Count: 1
+Status: Monitoring
+Action: Continuing normal operation
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:26:20,823 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: False
+Guilds: 0
+Latency: nanms
+Uptime: 0.0h
+Health Failures: 1
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:26:21,049 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: f16aaf79a7dcaf5d15146b9a22b67308).
+2024-12-14 18:26:22,547 - discord.client - INFO - logging in using static token
+2024-12-14 18:26:22,547 - __main__ - ERROR - Reconnection attempt failed: Session is closed
+2024-12-14 18:26:23,081 - __main__ - INFO - ━━━━━━ Bot Ready ━━━━━━
+Logged in as: OCTANTBOT
+Bot ID: 1316950341954306159
+Guilds connected: 2
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:26:35,505 - __main__ - WARNING - Heartbeat timeout detected. Age: 162.799328s
+2024-12-14 18:26:35,505 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 3
+2024-12-14 18:26:35,505 - __main__ - WARNING - 
+━━━━━━ Multiple Health Check Failures ━━━━━━
+Failure Count: 3
+Attempting reconnection...
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:26:35,823 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:26:37,507 - discord.client - INFO - logging in using static token
+2024-12-14 18:26:37,508 - __main__ - ERROR - Reconnection attempt failed: Session is closed
+2024-12-14 18:26:50,506 - __main__ - WARNING - Heartbeat timeout detected. Age: 177.800902s
+2024-12-14 18:26:50,506 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 4
+2024-12-14 18:26:50,507 - __main__ - WARNING - 
+━━━━━━ Multiple Health Check Failures ━━━━━━
+Failure Count: 4
+Attempting reconnection...
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:26:50,507 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: True
+Guilds: 2
+Latency: infms
+Uptime: 0.1h
+Health Failures: 4
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:26:50,823 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:26:52,508 - discord.client - INFO - logging in using static token
+2024-12-14 18:26:52,508 - __main__ - ERROR - Reconnection attempt failed: Session is closed
+2024-12-14 18:27:05,496 - __main__ - WARNING - Heartbeat timeout detected. Age: 192.790715s
+2024-12-14 18:27:05,496 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 5
+2024-12-14 18:27:05,496 - __main__ - WARNING - 
+━━━━━━ Multiple Health Check Failures ━━━━━━
+Failure Count: 5
+Attempting reconnection...
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:27:05,823 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:27:07,499 - discord.client - INFO - logging in using static token
+2024-12-14 18:27:07,499 - __main__ - ERROR - Reconnection attempt failed: Session is closed
+2024-12-14 18:27:20,505 - __main__ - WARNING - Heartbeat timeout detected. Age: 207.799759s
+2024-12-14 18:27:20,505 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 6
+2024-12-14 18:27:20,505 - __main__ - WARNING - 
+━━━━━━ Multiple Health Check Failures ━━━━━━
+Failure Count: 6
+Attempting reconnection...
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:27:20,823 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:27:20,823 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: True
+Guilds: 2
+Latency: 34.55ms
+Uptime: 0.0h
+Health Failures: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:27:22,508 - discord.client - INFO - logging in using static token
+2024-12-14 18:27:22,508 - __main__ - ERROR - Reconnection attempt failed: Session is closed
+2024-12-14 18:27:35,505 - __main__ - WARNING - Heartbeat timeout detected. Age: 222.800066s
+2024-12-14 18:27:35,506 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 7
+2024-12-14 18:27:35,506 - __main__ - WARNING - 
+━━━━━━ Multiple Health Check Failures ━━━━━━
+Failure Count: 7
+Attempting reconnection...
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:27:35,822 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:27:37,508 - discord.client - INFO - logging in using static token
+2024-12-14 18:27:37,508 - __main__ - ERROR - Reconnection attempt failed: Session is closed
+2024-12-14 18:27:50,501 - __main__ - WARNING - Heartbeat timeout detected. Age: 237.795699s
+2024-12-14 18:27:50,501 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 8
+2024-12-14 18:27:50,501 - __main__ - CRITICAL - 
+━━━━━━ Critical Health Check Failure ━━━━━━
+Failure Count: 8
+Last Error: None
+Connection State: True
+Latency: infms
+Memory Usage: 0.1%
+CPU Usage: 0.0%
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:27:50,501 - __main__ - WARNING - Attempting reconnection before emergency restart...
+2024-12-14 18:27:50,502 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: True
+Guilds: 2
+Latency: infms
+Uptime: 0.1h
+Health Failures: 8
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:27:50,822 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:27:55,506 - discord.client - INFO - logging in using static token
+2024-12-14 18:27:55,506 - __main__ - ERROR - Reconnection failed: Session is closed
+2024-12-14 18:27:55,506 - __main__ - CRITICAL - Reconnection failed - Initiating emergency restart
+2024-12-14 18:27:55,506 - __main__ - CRITICAL - 
+━━━━━━ Emergency Restart Initiated ━━━━━━
+Reason: Health check failures exceeded
+Time: 2024-12-14 18:27:55.506783+00:00
+Uptime: 0.1h
+Last Error: None
+Memory Usage: 0.1%
+CPU Usage: 0.0%
+Health Failures: 8
+Connected Guilds: 2
+Last Message Time: None
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:27:55,506 - __main__ - INFO - Attempting graceful shutdown...
+2024-12-14 18:28:05,833 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:28:20,837 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:28:20,837 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: True
+Guilds: 2
+Latency: 41.58ms
+Uptime: 0.0h
+Health Failures: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:28:35,834 - __main__ - WARNING - Heartbeat timeout detected. Age: 132.752607s
+2024-12-14 18:28:35,834 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 1
+2024-12-14 18:28:35,834 - __main__ - INFO - 
+━━━━━━ Minor Health Check Issue ━━━━━━
+Failure Count: 1
+Status: Monitoring
+Action: Continuing normal operation
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:28:50,837 - __main__ - WARNING - Heartbeat timeout detected. Age: 147.756046s
+2024-12-14 18:28:50,838 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 2
+2024-12-14 18:28:50,838 - __main__ - WARNING - 
+━━━━━━ Multiple Health Check Failures ━━━━━━
+Failure Count: 2
+Attempting reconnection...
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:28:50,838 - __main__ - INFO - Initializing Discord bot with enhanced monitoring
+2024-12-14 18:28:50,839 - __main__ - INFO - Chat and Trivia handlers initialized successfully
+2024-12-14 18:28:50,839 - __main__ - INFO - Bot initialization completed successfully
+2024-12-14 18:28:50,839 - discord.client - INFO - logging in using static token
+2024-12-14 18:28:51,158 - __main__ - INFO - Health monitoring tasks started
+2024-12-14 18:28:51,159 - __main__ - WARNING - Connection check failed - Bot disconnected
+2024-12-14 18:28:51,159 - __main__ - WARNING - Health check failure (disconnected). Failure count: 1
+2024-12-14 18:28:51,159 - __main__ - INFO - 
+━━━━━━ Minor Health Check Issue ━━━━━━
+Failure Count: 1
+Status: Monitoring
+Action: Continuing normal operation
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:28:51,159 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: False
+Guilds: 0
+Latency: nanms
+Uptime: 0.0h
+Health Failures: 1
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:28:51,356 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: c1a7d1583dd4cf415aad692685f2b466).
+2024-12-14 18:28:52,877 - discord.client - INFO - logging in using static token
+2024-12-14 18:28:52,877 - __main__ - ERROR - Reconnection attempt failed: Session is closed
+2024-12-14 18:28:53,361 - __main__ - INFO - ━━━━━━ Bot Ready ━━━━━━
+Logged in as: OCTANTBOT
+Bot ID: 1316950341954306159
+Guilds connected: 2
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:29:05,835 - __main__ - WARNING - Heartbeat timeout detected. Age: 162.75356s
+2024-12-14 18:29:05,835 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 3
+2024-12-14 18:29:05,835 - __main__ - WARNING - 
+━━━━━━ Multiple Health Check Failures ━━━━━━
+Failure Count: 3
+Attempting reconnection...
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:29:06,159 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:29:07,838 - discord.client - INFO - logging in using static token
+2024-12-14 18:29:07,838 - __main__ - ERROR - Reconnection attempt failed: Session is closed
+2024-12-14 18:29:20,835 - __main__ - WARNING - Heartbeat timeout detected. Age: 177.753592s
+2024-12-14 18:29:20,835 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 4
+2024-12-14 18:29:20,835 - __main__ - WARNING - 
+━━━━━━ Multiple Health Check Failures ━━━━━━
+Failure Count: 4
+Attempting reconnection...
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:29:20,836 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: True
+Guilds: 2
+Latency: infms
+Uptime: 0.1h
+Health Failures: 4
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:29:21,159 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:29:22,838 - discord.client - INFO - logging in using static token
+2024-12-14 18:29:22,838 - __main__ - ERROR - Reconnection attempt failed: Session is closed
+2024-12-14 18:29:35,826 - __main__ - WARNING - Heartbeat timeout detected. Age: 192.744139s
+2024-12-14 18:29:35,826 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 5
+2024-12-14 18:29:35,826 - __main__ - WARNING - 
+━━━━━━ Multiple Health Check Failures ━━━━━━
+Failure Count: 5
+Attempting reconnection...
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:29:36,159 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:29:37,828 - discord.client - INFO - logging in using static token
+2024-12-14 18:29:37,829 - __main__ - ERROR - Reconnection attempt failed: Session is closed
+2024-12-14 18:29:50,836 - __main__ - WARNING - Heartbeat timeout detected. Age: 207.75458s
+2024-12-14 18:29:50,836 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 6
+2024-12-14 18:29:50,836 - __main__ - WARNING - 
+━━━━━━ Multiple Health Check Failures ━━━━━━
+Failure Count: 6
+Attempting reconnection...
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:29:51,159 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:29:51,159 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: True
+Guilds: 2
+Latency: 24.63ms
+Uptime: 0.0h
+Health Failures: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:29:52,838 - discord.client - INFO - logging in using static token
+2024-12-14 18:29:52,838 - __main__ - ERROR - Reconnection attempt failed: Session is closed
+2024-12-14 18:30:05,835 - __main__ - WARNING - Heartbeat timeout detected. Age: 222.753569s
+2024-12-14 18:30:05,835 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 7
+2024-12-14 18:30:05,835 - __main__ - WARNING - 
+━━━━━━ Multiple Health Check Failures ━━━━━━
+Failure Count: 7
+Attempting reconnection...
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:30:06,159 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:30:07,838 - discord.client - INFO - logging in using static token
+2024-12-14 18:30:07,838 - __main__ - ERROR - Reconnection attempt failed: Session is closed
+2024-12-14 18:30:20,829 - __main__ - WARNING - Heartbeat timeout detected. Age: 237.74759s
+2024-12-14 18:30:20,829 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 8
+2024-12-14 18:30:20,829 - __main__ - CRITICAL - 
+━━━━━━ Critical Health Check Failure ━━━━━━
+Failure Count: 8
+Last Error: None
+Connection State: True
+Latency: infms
+Memory Usage: 0.1%
+CPU Usage: 0.0%
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:30:20,829 - __main__ - WARNING - Attempting reconnection before emergency restart...
+2024-12-14 18:30:20,830 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: True
+Guilds: 2
+Latency: infms
+Uptime: 0.1h
+Health Failures: 8
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:30:21,159 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:30:25,834 - discord.client - INFO - logging in using static token
+2024-12-14 18:30:25,834 - __main__ - ERROR - Reconnection failed: Session is closed
+2024-12-14 18:30:25,834 - __main__ - CRITICAL - Reconnection failed - Initiating emergency restart
+2024-12-14 18:30:25,834 - __main__ - CRITICAL - 
+━━━━━━ Emergency Restart Initiated ━━━━━━
+Reason: Health check failures exceeded
+Time: 2024-12-14 18:30:25.834912+00:00
+Uptime: 0.1h
+Last Error: None
+Memory Usage: 0.1%
+CPU Usage: 0.0%
+Health Failures: 8
+Connected Guilds: 2
+Last Message Time: None
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:30:25,835 - __main__ - INFO - Attempting graceful shutdown...
+2024-12-14 18:30:36,169 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:30:51,174 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:30:51,174 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: True
+Guilds: 2
+Latency: 42.13ms
+Uptime: 0.0h
+Health Failures: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:31:06,169 - __main__ - WARNING - Heartbeat timeout detected. Age: 132.808017s
+2024-12-14 18:31:06,170 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 1
+2024-12-14 18:31:06,170 - __main__ - INFO - 
+━━━━━━ Minor Health Check Issue ━━━━━━
+Failure Count: 1
+Status: Monitoring
+Action: Continuing normal operation
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:31:21,174 - __main__ - WARNING - Heartbeat timeout detected. Age: 147.81255s
+2024-12-14 18:31:21,174 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 2
+2024-12-14 18:31:21,174 - __main__ - WARNING - 
+━━━━━━ Multiple Health Check Failures ━━━━━━
+Failure Count: 2
+Attempting reconnection...
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:31:21,175 - __main__ - INFO - Initializing Discord bot with enhanced monitoring
+2024-12-14 18:31:21,176 - __main__ - INFO - Chat and Trivia handlers initialized successfully
+2024-12-14 18:31:21,176 - __main__ - INFO - Bot initialization completed successfully
+2024-12-14 18:31:21,176 - discord.client - INFO - logging in using static token
+2024-12-14 18:31:21,488 - __main__ - INFO - Health monitoring tasks started
+2024-12-14 18:31:21,489 - __main__ - WARNING - Connection check failed - Bot disconnected
+2024-12-14 18:31:21,489 - __main__ - WARNING - Health check failure (disconnected). Failure count: 1
+2024-12-14 18:31:21,489 - __main__ - INFO - 
+━━━━━━ Minor Health Check Issue ━━━━━━
+Failure Count: 1
+Status: Monitoring
+Action: Continuing normal operation
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:31:21,489 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: False
+Guilds: 0
+Latency: nanms
+Uptime: 0.0h
+Health Failures: 1
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:31:21,681 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 3b591204ed9e15f87e3ca1593357bc18).
+2024-12-14 18:31:23,215 - discord.client - INFO - logging in using static token
+2024-12-14 18:31:23,215 - __main__ - ERROR - Reconnection attempt failed: Session is closed
+2024-12-14 18:31:23,685 - __main__ - INFO - ━━━━━━ Bot Ready ━━━━━━
+Logged in as: OCTANTBOT
+Bot ID: 1316950341954306159
+Guilds connected: 2
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:31:36,171 - __main__ - WARNING - Heartbeat timeout detected. Age: 162.809517s
+2024-12-14 18:31:36,171 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 3
+2024-12-14 18:31:36,171 - __main__ - WARNING - 
+━━━━━━ Multiple Health Check Failures ━━━━━━
+Failure Count: 3
+Attempting reconnection...
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:31:36,490 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:31:38,174 - discord.client - INFO - logging in using static token
+2024-12-14 18:31:38,174 - __main__ - ERROR - Reconnection attempt failed: Session is closed
+2024-12-14 18:31:51,172 - __main__ - WARNING - Heartbeat timeout detected. Age: 177.810822s
+2024-12-14 18:31:51,172 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 4
+2024-12-14 18:31:51,173 - __main__ - WARNING - 
+━━━━━━ Multiple Health Check Failures ━━━━━━
+Failure Count: 4
+Attempting reconnection...
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:31:51,173 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: True
+Guilds: 2
+Latency: infms
+Uptime: 0.1h
+Health Failures: 4
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:31:51,489 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:31:53,175 - discord.client - INFO - logging in using static token
+2024-12-14 18:31:53,176 - __main__ - ERROR - Reconnection attempt failed: Session is closed
+2024-12-14 18:32:06,162 - __main__ - WARNING - Heartbeat timeout detected. Age: 192.80091s
+2024-12-14 18:32:06,163 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 5
+2024-12-14 18:32:06,163 - __main__ - WARNING - 
+━━━━━━ Multiple Health Check Failures ━━━━━━
+Failure Count: 5
+Attempting reconnection...
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:32:06,489 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:32:08,165 - discord.client - INFO - logging in using static token
+2024-12-14 18:32:08,165 - __main__ - ERROR - Reconnection attempt failed: Session is closed
+2024-12-14 18:32:21,172 - __main__ - WARNING - Heartbeat timeout detected. Age: 207.810613s
+2024-12-14 18:32:21,172 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 6
+2024-12-14 18:32:21,172 - __main__ - WARNING - 
+━━━━━━ Multiple Health Check Failures ━━━━━━
+Failure Count: 6
+Attempting reconnection...
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:32:21,489 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:32:21,489 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: True
+Guilds: 2
+Latency: 28.91ms
+Uptime: 0.0h
+Health Failures: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:32:23,175 - discord.client - INFO - logging in using static token
+2024-12-14 18:32:23,175 - __main__ - ERROR - Reconnection attempt failed: Session is closed
+2024-12-14 18:32:36,172 - __main__ - WARNING - Heartbeat timeout detected. Age: 222.810528s
+2024-12-14 18:32:36,172 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 7
+2024-12-14 18:32:36,172 - __main__ - WARNING - 
+━━━━━━ Multiple Health Check Failures ━━━━━━
+Failure Count: 7
+Attempting reconnection...
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:32:36,489 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:32:38,175 - discord.client - INFO - logging in using static token
+2024-12-14 18:32:38,175 - __main__ - ERROR - Reconnection attempt failed: Session is closed
+2024-12-14 18:32:51,166 - __main__ - WARNING - Heartbeat timeout detected. Age: 237.804527s
+2024-12-14 18:32:51,166 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 8
+2024-12-14 18:32:51,166 - __main__ - CRITICAL - 
+━━━━━━ Critical Health Check Failure ━━━━━━
+Failure Count: 8
+Last Error: None
+Connection State: True
+Latency: infms
+Memory Usage: 0.1%
+CPU Usage: 0.0%
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:32:51,166 - __main__ - WARNING - Attempting reconnection before emergency restart...
+2024-12-14 18:32:51,167 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: True
+Guilds: 2
+Latency: infms
+Uptime: 0.1h
+Health Failures: 8
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:32:51,489 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:32:56,172 - discord.client - INFO - logging in using static token
+2024-12-14 18:32:56,172 - __main__ - ERROR - Reconnection failed: Session is closed
+2024-12-14 18:32:56,172 - __main__ - CRITICAL - Reconnection failed - Initiating emergency restart
+2024-12-14 18:32:56,172 - __main__ - CRITICAL - 
+━━━━━━ Emergency Restart Initiated ━━━━━━
+Reason: Health check failures exceeded
+Time: 2024-12-14 18:32:56.172752+00:00
+Uptime: 0.1h
+Last Error: None
+Memory Usage: 0.1%
+CPU Usage: 0.0%
+Health Failures: 8
+Connected Guilds: 2
+Last Message Time: None
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:32:56,172 - __main__ - INFO - Attempting graceful shutdown...
+2024-12-14 18:33:06,499 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:33:21,504 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:33:21,505 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: True
+Guilds: 2
+Latency: 31.21ms
+Uptime: 0.0h
+Health Failures: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:33:36,500 - __main__ - WARNING - Heartbeat timeout detected. Age: 132.814693s
+2024-12-14 18:33:36,500 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 1
+2024-12-14 18:33:36,500 - __main__ - INFO - 
+━━━━━━ Minor Health Check Issue ━━━━━━
+Failure Count: 1
+Status: Monitoring
+Action: Continuing normal operation
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:33:51,505 - __main__ - WARNING - Heartbeat timeout detected. Age: 147.819306s
+2024-12-14 18:33:51,505 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 2
+2024-12-14 18:33:51,505 - __main__ - WARNING - 
+━━━━━━ Multiple Health Check Failures ━━━━━━
+Failure Count: 2
+Attempting reconnection...
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:33:51,505 - __main__ - INFO - Initializing Discord bot with enhanced monitoring
+2024-12-14 18:33:51,508 - __main__ - INFO - Chat and Trivia handlers initialized successfully
+2024-12-14 18:33:51,508 - __main__ - INFO - Bot initialization completed successfully
+2024-12-14 18:33:51,508 - discord.client - INFO - logging in using static token
+2024-12-14 18:33:51,846 - __main__ - INFO - Health monitoring tasks started
+2024-12-14 18:33:51,847 - __main__ - WARNING - Connection check failed - Bot disconnected
+2024-12-14 18:33:51,847 - __main__ - WARNING - Health check failure (disconnected). Failure count: 1
+2024-12-14 18:33:51,847 - __main__ - INFO - 
+━━━━━━ Minor Health Check Issue ━━━━━━
+Failure Count: 1
+Status: Monitoring
+Action: Continuing normal operation
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:33:51,848 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: False
+Guilds: 0
+Latency: nanms
+Uptime: 0.0h
+Health Failures: 1
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:33:52,019 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 6742db2624d37deaefbcddfb6606a3b3).
+2024-12-14 18:33:53,571 - discord.client - INFO - logging in using static token
+2024-12-14 18:33:53,571 - __main__ - ERROR - Reconnection attempt failed: Session is closed
+2024-12-14 18:33:54,028 - __main__ - INFO - ━━━━━━ Bot Ready ━━━━━━
+Logged in as: OCTANTBOT
+Bot ID: 1316950341954306159
+Guilds connected: 2
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:34:06,501 - __main__ - WARNING - Heartbeat timeout detected. Age: 162.815944s
+2024-12-14 18:34:06,501 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 3
+2024-12-14 18:34:06,502 - __main__ - WARNING - 
+━━━━━━ Multiple Health Check Failures ━━━━━━
+Failure Count: 3
+Attempting reconnection...
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:34:06,847 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:34:08,504 - discord.client - INFO - logging in using static token
+2024-12-14 18:34:08,504 - __main__ - ERROR - Reconnection attempt failed: Session is closed
+2024-12-14 18:34:21,502 - __main__ - WARNING - Heartbeat timeout detected. Age: 177.816708s
+2024-12-14 18:34:21,502 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 4
+2024-12-14 18:34:21,502 - __main__ - WARNING - 
+━━━━━━ Multiple Health Check Failures ━━━━━━
+Failure Count: 4
+Attempting reconnection...
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:34:21,502 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: True
+Guilds: 2
+Latency: infms
+Uptime: 0.1h
+Health Failures: 4
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:34:21,848 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:34:23,505 - discord.client - INFO - logging in using static token
+2024-12-14 18:34:23,505 - __main__ - ERROR - Reconnection attempt failed: Session is closed
+2024-12-14 18:34:36,492 - __main__ - WARNING - Heartbeat timeout detected. Age: 192.806877s
+2024-12-14 18:34:36,492 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 5
+2024-12-14 18:34:36,493 - __main__ - WARNING - 
+━━━━━━ Multiple Health Check Failures ━━━━━━
+Failure Count: 5
+Attempting reconnection...
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:34:36,847 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:34:38,496 - discord.client - INFO - logging in using static token
+2024-12-14 18:34:38,496 - __main__ - ERROR - Reconnection attempt failed: Session is closed
+2024-12-14 18:34:51,502 - __main__ - WARNING - Heartbeat timeout detected. Age: 207.816697s
+2024-12-14 18:34:51,502 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 6
+2024-12-14 18:34:51,502 - __main__ - WARNING - 
+━━━━━━ Multiple Health Check Failures ━━━━━━
+Failure Count: 6
+Attempting reconnection...
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:34:51,848 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:34:51,848 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: True
+Guilds: 2
+Latency: 28.23ms
+Uptime: 0.0h
+Health Failures: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:34:53,505 - discord.client - INFO - logging in using static token
+2024-12-14 18:34:53,505 - __main__ - ERROR - Reconnection attempt failed: Session is closed
+2024-12-14 18:35:06,501 - __main__ - WARNING - Heartbeat timeout detected. Age: 222.815691s
+2024-12-14 18:35:06,501 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 7
+2024-12-14 18:35:06,501 - __main__ - WARNING - 
+━━━━━━ Multiple Health Check Failures ━━━━━━
+Failure Count: 7
+Attempting reconnection...
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:35:06,848 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:35:08,505 - discord.client - INFO - logging in using static token
+2024-12-14 18:35:08,505 - __main__ - ERROR - Reconnection attempt failed: Session is closed
+2024-12-14 18:35:21,496 - __main__ - WARNING - Heartbeat timeout detected. Age: 237.810711s
+2024-12-14 18:35:21,496 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 8
+2024-12-14 18:35:21,496 - __main__ - CRITICAL - 
+━━━━━━ Critical Health Check Failure ━━━━━━
+Failure Count: 8
+Last Error: None
+Connection State: True
+Latency: infms
+Memory Usage: 0.1%
+CPU Usage: 0.0%
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:35:21,496 - __main__ - WARNING - Attempting reconnection before emergency restart...
+2024-12-14 18:35:21,497 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: True
+Guilds: 2
+Latency: infms
+Uptime: 0.1h
+Health Failures: 8
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:35:21,848 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:35:26,501 - discord.client - INFO - logging in using static token
+2024-12-14 18:35:26,501 - __main__ - ERROR - Reconnection failed: Session is closed
+2024-12-14 18:35:26,501 - __main__ - CRITICAL - Reconnection failed - Initiating emergency restart
+2024-12-14 18:35:26,501 - __main__ - CRITICAL - 
+━━━━━━ Emergency Restart Initiated ━━━━━━
+Reason: Health check failures exceeded
+Time: 2024-12-14 18:35:26.501911+00:00
+Uptime: 0.1h
+Last Error: None
+Memory Usage: 0.1%
+CPU Usage: 0.0%
+Health Failures: 8
+Connected Guilds: 2
+Last Message Time: None
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:35:26,502 - __main__ - INFO - Attempting graceful shutdown...
+2024-12-14 18:35:36,857 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:35:51,862 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:35:51,862 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: True
+Guilds: 2
+Latency: 32.07ms
+Uptime: 0.0h
+Health Failures: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:36:06,858 - __main__ - WARNING - Heartbeat timeout detected. Age: 132.829716s
+2024-12-14 18:36:06,858 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 1
+2024-12-14 18:36:06,858 - __main__ - INFO - 
+━━━━━━ Minor Health Check Issue ━━━━━━
+Failure Count: 1
+Status: Monitoring
+Action: Continuing normal operation
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:36:21,863 - __main__ - WARNING - Heartbeat timeout detected. Age: 147.834244s
+2024-12-14 18:36:21,863 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 2
+2024-12-14 18:36:21,863 - __main__ - WARNING - 
+━━━━━━ Multiple Health Check Failures ━━━━━━
+Failure Count: 2
+Attempting reconnection...
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:36:21,863 - __main__ - INFO - Initializing Discord bot with enhanced monitoring
+2024-12-14 18:36:21,864 - __main__ - INFO - Chat and Trivia handlers initialized successfully
+2024-12-14 18:36:21,865 - __main__ - INFO - Bot initialization completed successfully
+2024-12-14 18:36:21,865 - discord.client - INFO - logging in using static token
+2024-12-14 18:36:22,310 - __main__ - INFO - Health monitoring tasks started
+2024-12-14 18:36:22,311 - __main__ - WARNING - Connection check failed - Bot disconnected
+2024-12-14 18:36:22,311 - __main__ - WARNING - Health check failure (disconnected). Failure count: 1
+2024-12-14 18:36:22,311 - __main__ - INFO - 
+━━━━━━ Minor Health Check Issue ━━━━━━
+Failure Count: 1
+Status: Monitoring
+Action: Continuing normal operation
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:36:22,311 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: False
+Guilds: 0
+Latency: nanms
+Uptime: 0.0h
+Health Failures: 1
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:36:22,536 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: c9d268e3387cdae15ea219e5f404299d).
+2024-12-14 18:36:23,907 - discord.client - INFO - logging in using static token
+2024-12-14 18:36:23,907 - __main__ - ERROR - Reconnection attempt failed: Session is closed
+2024-12-14 18:36:24,544 - __main__ - INFO - ━━━━━━ Bot Ready ━━━━━━
+Logged in as: OCTANTBOT
+Bot ID: 1316950341954306159
+Guilds connected: 2
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:36:36,859 - __main__ - WARNING - Heartbeat timeout detected. Age: 162.830936s
+2024-12-14 18:36:36,859 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 3
+2024-12-14 18:36:36,860 - __main__ - WARNING - 
+━━━━━━ Multiple Health Check Failures ━━━━━━
+Failure Count: 3
+Attempting reconnection...
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:36:37,311 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:36:38,862 - discord.client - INFO - logging in using static token
+2024-12-14 18:36:38,862 - __main__ - ERROR - Reconnection attempt failed: Session is closed
+2024-12-14 18:36:51,861 - __main__ - WARNING - Heartbeat timeout detected. Age: 177.832172s
+2024-12-14 18:36:51,861 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 4
+2024-12-14 18:36:51,861 - __main__ - WARNING - 
+━━━━━━ Multiple Health Check Failures ━━━━━━
+Failure Count: 4
+Attempting reconnection...
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:36:51,861 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: True
+Guilds: 2
+Latency: infms
+Uptime: 0.1h
+Health Failures: 4
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:36:52,312 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:36:53,863 - discord.client - INFO - logging in using static token
+2024-12-14 18:36:53,863 - __main__ - ERROR - Reconnection attempt failed: Session is closed
+2024-12-14 18:37:06,851 - __main__ - WARNING - Heartbeat timeout detected. Age: 192.822721s
+2024-12-14 18:37:06,851 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 5
+2024-12-14 18:37:06,851 - __main__ - WARNING - 
+━━━━━━ Multiple Health Check Failures ━━━━━━
+Failure Count: 5
+Attempting reconnection...
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:37:07,311 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:37:08,854 - discord.client - INFO - logging in using static token
+2024-12-14 18:37:08,854 - __main__ - ERROR - Reconnection attempt failed: Session is closed
+2024-12-14 18:37:21,861 - __main__ - WARNING - Heartbeat timeout detected. Age: 207.832214s
+2024-12-14 18:37:21,861 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 6
+2024-12-14 18:37:21,861 - __main__ - WARNING - 
+━━━━━━ Multiple Health Check Failures ━━━━━━
+Failure Count: 6
+Attempting reconnection...
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:37:22,312 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:37:22,312 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: True
+Guilds: 2
+Latency: 37.33ms
+Uptime: 0.0h
+Health Failures: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:37:23,862 - discord.client - INFO - logging in using static token
+2024-12-14 18:37:23,862 - __main__ - ERROR - Reconnection attempt failed: Session is closed
+2024-12-14 18:37:36,861 - __main__ - WARNING - Heartbeat timeout detected. Age: 222.832214s
+2024-12-14 18:37:36,861 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 7
+2024-12-14 18:37:36,861 - __main__ - WARNING - 
+━━━━━━ Multiple Health Check Failures ━━━━━━
+Failure Count: 7
+Attempting reconnection...
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:37:37,312 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:37:38,864 - discord.client - INFO - logging in using static token
+2024-12-14 18:37:38,864 - __main__ - ERROR - Reconnection attempt failed: Session is closed
+2024-12-14 18:37:51,854 - __main__ - WARNING - Heartbeat timeout detected. Age: 237.825738s
+2024-12-14 18:37:51,854 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 8
+2024-12-14 18:37:51,854 - __main__ - CRITICAL - 
+━━━━━━ Critical Health Check Failure ━━━━━━
+Failure Count: 8
+Last Error: None
+Connection State: True
+Latency: infms
+Memory Usage: 0.1%
+CPU Usage: 0.0%
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:37:51,854 - __main__ - WARNING - Attempting reconnection before emergency restart...
+2024-12-14 18:37:51,855 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: True
+Guilds: 2
+Latency: infms
+Uptime: 0.1h
+Health Failures: 8
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:37:52,311 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:37:56,859 - discord.client - INFO - logging in using static token
+2024-12-14 18:37:56,859 - __main__ - ERROR - Reconnection failed: Session is closed
+2024-12-14 18:37:56,859 - __main__ - CRITICAL - Reconnection failed - Initiating emergency restart
+2024-12-14 18:37:56,860 - __main__ - CRITICAL - 
+━━━━━━ Emergency Restart Initiated ━━━━━━
+Reason: Health check failures exceeded
+Time: 2024-12-14 18:37:56.860014+00:00
+Uptime: 0.1h
+Last Error: None
+Memory Usage: 0.1%
+CPU Usage: 0.0%
+Health Failures: 8
+Connected Guilds: 2
+Last Message Time: None
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:37:56,860 - __main__ - INFO - Attempting graceful shutdown...
+2024-12-14 18:38:07,321 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:38:22,326 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:38:22,326 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: True
+Guilds: 2
+Latency: 27.25ms
+Uptime: 0.0h
+Health Failures: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:38:37,321 - __main__ - WARNING - Heartbeat timeout detected. Age: 132.776742s
+2024-12-14 18:38:37,321 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 1
+2024-12-14 18:38:37,321 - __main__ - INFO - 
+━━━━━━ Minor Health Check Issue ━━━━━━
+Failure Count: 1
+Status: Monitoring
+Action: Continuing normal operation
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:38:52,325 - __main__ - WARNING - Heartbeat timeout detected. Age: 147.780689s
+2024-12-14 18:38:52,325 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 2
+2024-12-14 18:38:52,325 - __main__ - WARNING - 
+━━━━━━ Multiple Health Check Failures ━━━━━━
+Failure Count: 2
+Attempting reconnection...
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:38:52,326 - __main__ - INFO - Initializing Discord bot with enhanced monitoring
+2024-12-14 18:38:52,327 - __main__ - INFO - Chat and Trivia handlers initialized successfully
+2024-12-14 18:38:52,327 - __main__ - INFO - Bot initialization completed successfully
+2024-12-14 18:38:52,327 - discord.client - INFO - logging in using static token
+2024-12-14 18:38:52,685 - __main__ - INFO - Health monitoring tasks started
+2024-12-14 18:38:52,686 - __main__ - WARNING - Connection check failed - Bot disconnected
+2024-12-14 18:38:52,686 - __main__ - WARNING - Health check failure (disconnected). Failure count: 1
+2024-12-14 18:38:52,686 - __main__ - INFO - 
+━━━━━━ Minor Health Check Issue ━━━━━━
+Failure Count: 1
+Status: Monitoring
+Action: Continuing normal operation
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:38:52,686 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: False
+Guilds: 0
+Latency: nanms
+Uptime: 0.0h
+Health Failures: 1
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:38:52,884 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: e920c57889b04cfae566953f62e309b2).
+2024-12-14 18:38:54,363 - discord.client - INFO - logging in using static token
+2024-12-14 18:38:54,363 - __main__ - ERROR - Reconnection attempt failed: Session is closed
+2024-12-14 18:38:54,888 - __main__ - INFO - ━━━━━━ Bot Ready ━━━━━━
+Logged in as: OCTANTBOT
+Bot ID: 1316950341954306159
+Guilds connected: 2
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:39:07,324 - __main__ - WARNING - Heartbeat timeout detected. Age: 162.779303s
+2024-12-14 18:39:07,324 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 3
+2024-12-14 18:39:07,324 - __main__ - WARNING - 
+━━━━━━ Multiple Health Check Failures ━━━━━━
+Failure Count: 3
+Attempting reconnection...
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:39:07,686 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:39:09,327 - discord.client - INFO - logging in using static token
+2024-12-14 18:39:09,327 - __main__ - ERROR - Reconnection attempt failed: Session is closed
+2024-12-14 18:39:22,324 - __main__ - WARNING - Heartbeat timeout detected. Age: 177.779661s
+2024-12-14 18:39:22,324 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 4
+2024-12-14 18:39:22,324 - __main__ - WARNING - 
+━━━━━━ Multiple Health Check Failures ━━━━━━
+Failure Count: 4
+Attempting reconnection...
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:39:22,324 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: True
+Guilds: 2
+Latency: infms
+Uptime: 0.1h
+Health Failures: 4
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:39:22,686 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:39:24,327 - discord.client - INFO - logging in using static token
+2024-12-14 18:39:24,327 - __main__ - ERROR - Reconnection attempt failed: Session is closed
+2024-12-14 18:39:37,313 - __main__ - WARNING - Heartbeat timeout detected. Age: 192.769137s
+2024-12-14 18:39:37,314 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 5
+2024-12-14 18:39:37,314 - __main__ - WARNING - 
+━━━━━━ Multiple Health Check Failures ━━━━━━
+Failure Count: 5
+Attempting reconnection...
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:39:37,686 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:39:39,316 - discord.client - INFO - logging in using static token
+2024-12-14 18:39:39,316 - __main__ - ERROR - Reconnection attempt failed: Session is closed
+2024-12-14 18:39:52,325 - __main__ - WARNING - Heartbeat timeout detected. Age: 207.780684s
+2024-12-14 18:39:52,325 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 6
+2024-12-14 18:39:52,325 - __main__ - WARNING - 
+━━━━━━ Multiple Health Check Failures ━━━━━━
+Failure Count: 6
+Attempting reconnection...
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:39:52,686 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:39:52,686 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: True
+Guilds: 2
+Latency: 32.46ms
+Uptime: 0.0h
+Health Failures: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:39:54,329 - discord.client - INFO - logging in using static token
+2024-12-14 18:39:54,329 - __main__ - ERROR - Reconnection attempt failed: Session is closed
+2024-12-14 18:40:07,325 - __main__ - WARNING - Heartbeat timeout detected. Age: 222.780759s
+2024-12-14 18:40:07,325 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 7
+2024-12-14 18:40:07,325 - __main__ - WARNING - 
+━━━━━━ Multiple Health Check Failures ━━━━━━
+Failure Count: 7
+Attempting reconnection...
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:40:07,686 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:40:09,329 - discord.client - INFO - logging in using static token
+2024-12-14 18:40:09,329 - __main__ - ERROR - Reconnection attempt failed: Session is closed
+2024-12-14 18:40:22,318 - __main__ - WARNING - Heartbeat timeout detected. Age: 237.773724s
+2024-12-14 18:40:22,318 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 8
+2024-12-14 18:40:22,318 - __main__ - CRITICAL - 
+━━━━━━ Critical Health Check Failure ━━━━━━
+Failure Count: 8
+Last Error: None
+Connection State: True
+Latency: infms
+Memory Usage: 0.1%
+CPU Usage: 0.0%
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:40:22,318 - __main__ - WARNING - Attempting reconnection before emergency restart...
+2024-12-14 18:40:22,319 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: True
+Guilds: 2
+Latency: infms
+Uptime: 0.1h
+Health Failures: 8
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:40:22,686 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:40:27,323 - discord.client - INFO - logging in using static token
+2024-12-14 18:40:27,323 - __main__ - ERROR - Reconnection failed: Session is closed
+2024-12-14 18:40:27,323 - __main__ - CRITICAL - Reconnection failed - Initiating emergency restart
+2024-12-14 18:40:27,323 - __main__ - CRITICAL - 
+━━━━━━ Emergency Restart Initiated ━━━━━━
+Reason: Health check failures exceeded
+Time: 2024-12-14 18:40:27.323819+00:00
+Uptime: 0.1h
+Last Error: None
+Memory Usage: 0.1%
+CPU Usage: 0.0%
+Health Failures: 8
+Connected Guilds: 2
+Last Message Time: None
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:40:27,323 - __main__ - INFO - Attempting graceful shutdown...
+2024-12-14 18:40:37,696 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:40:52,700 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:40:52,700 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: True
+Guilds: 2
+Latency: 30.70ms
+Uptime: 0.0h
+Health Failures: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:41:07,697 - __main__ - WARNING - Heartbeat timeout detected. Age: 132.808666s
+2024-12-14 18:41:07,697 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 1
+2024-12-14 18:41:07,697 - __main__ - INFO - 
+━━━━━━ Minor Health Check Issue ━━━━━━
+Failure Count: 1
+Status: Monitoring
+Action: Continuing normal operation
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:41:22,700 - __main__ - WARNING - Heartbeat timeout detected. Age: 147.812065s
+2024-12-14 18:41:22,701 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 2
+2024-12-14 18:41:22,701 - __main__ - WARNING - 
+━━━━━━ Multiple Health Check Failures ━━━━━━
+Failure Count: 2
+Attempting reconnection...
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:41:22,701 - __main__ - INFO - Initializing Discord bot with enhanced monitoring
+2024-12-14 18:41:22,702 - __main__ - INFO - Chat and Trivia handlers initialized successfully
+2024-12-14 18:41:22,702 - __main__ - INFO - Bot initialization completed successfully
+2024-12-14 18:41:22,702 - discord.client - INFO - logging in using static token
+2024-12-14 18:41:23,085 - __main__ - INFO - Health monitoring tasks started
+2024-12-14 18:41:23,086 - __main__ - WARNING - Connection check failed - Bot disconnected
+2024-12-14 18:41:23,086 - __main__ - WARNING - Health check failure (disconnected). Failure count: 1
+2024-12-14 18:41:23,086 - __main__ - INFO - 
+━━━━━━ Minor Health Check Issue ━━━━━━
+Failure Count: 1
+Status: Monitoring
+Action: Continuing normal operation
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:41:23,086 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: False
+Guilds: 0
+Latency: nanms
+Uptime: 0.0h
+Health Failures: 1
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:41:23,261 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 2a2591d802af86c03ebb3022e03bb99f).
+2024-12-14 18:41:24,740 - discord.client - INFO - logging in using static token
+2024-12-14 18:41:24,740 - __main__ - ERROR - Reconnection attempt failed: Session is closed
+2024-12-14 18:41:25,267 - __main__ - INFO - ━━━━━━ Bot Ready ━━━━━━
+Logged in as: OCTANTBOT
+Bot ID: 1316950341954306159
+Guilds connected: 2
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:41:37,698 - __main__ - WARNING - Heartbeat timeout detected. Age: 162.809697s
+2024-12-14 18:41:37,698 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 3
+2024-12-14 18:41:37,698 - __main__ - WARNING - 
+━━━━━━ Multiple Health Check Failures ━━━━━━
+Failure Count: 3
+Attempting reconnection...
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:41:38,086 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:41:39,701 - discord.client - INFO - logging in using static token
+2024-12-14 18:41:39,701 - __main__ - ERROR - Reconnection attempt failed: Session is closed
+2024-12-14 18:41:52,698 - __main__ - WARNING - Heartbeat timeout detected. Age: 177.809673s
+2024-12-14 18:41:52,698 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 4
+2024-12-14 18:41:52,698 - __main__ - WARNING - 
+━━━━━━ Multiple Health Check Failures ━━━━━━
+Failure Count: 4
+Attempting reconnection...
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:41:52,698 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: True
+Guilds: 2
+Latency: infms
+Uptime: 0.1h
+Health Failures: 4
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:41:53,086 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:41:54,701 - discord.client - INFO - logging in using static token
+2024-12-14 18:41:54,701 - __main__ - ERROR - Reconnection attempt failed: Session is closed
+2024-12-14 18:42:07,688 - __main__ - WARNING - Heartbeat timeout detected. Age: 192.799671s
+2024-12-14 18:42:07,688 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 5
+2024-12-14 18:42:07,688 - __main__ - WARNING - 
+━━━━━━ Multiple Health Check Failures ━━━━━━
+Failure Count: 5
+Attempting reconnection...
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:42:08,086 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:42:09,691 - discord.client - INFO - logging in using static token
+2024-12-14 18:42:09,691 - __main__ - ERROR - Reconnection attempt failed: Session is closed
+2024-12-14 18:42:22,698 - __main__ - WARNING - Heartbeat timeout detected. Age: 207.809667s
+2024-12-14 18:42:22,698 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 6
+2024-12-14 18:42:22,698 - __main__ - WARNING - 
+━━━━━━ Multiple Health Check Failures ━━━━━━
+Failure Count: 6
+Attempting reconnection...
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:42:23,086 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:42:23,086 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: True
+Guilds: 2
+Latency: 36.10ms
+Uptime: 0.0h
+Health Failures: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:42:24,700 - discord.client - INFO - logging in using static token
+2024-12-14 18:42:24,700 - __main__ - ERROR - Reconnection attempt failed: Session is closed
+2024-12-14 18:42:37,699 - __main__ - WARNING - Heartbeat timeout detected. Age: 222.8102s
+2024-12-14 18:42:37,699 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 7
+2024-12-14 18:42:37,699 - __main__ - WARNING - 
+━━━━━━ Multiple Health Check Failures ━━━━━━
+Failure Count: 7
+Attempting reconnection...
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:42:38,087 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:42:39,701 - discord.client - INFO - logging in using static token
+2024-12-14 18:42:39,701 - __main__ - ERROR - Reconnection attempt failed: Session is closed
+2024-12-14 18:42:52,693 - __main__ - WARNING - Heartbeat timeout detected. Age: 237.804669s
+2024-12-14 18:42:52,693 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 8
+2024-12-14 18:42:52,693 - __main__ - CRITICAL - 
+━━━━━━ Critical Health Check Failure ━━━━━━
+Failure Count: 8
+Last Error: None
+Connection State: True
+Latency: infms
+Memory Usage: 0.1%
+CPU Usage: 0.0%
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:42:52,693 - __main__ - WARNING - Attempting reconnection before emergency restart...
+2024-12-14 18:42:52,694 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: True
+Guilds: 2
+Latency: infms
+Uptime: 0.1h
+Health Failures: 8
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:42:53,086 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:42:57,698 - discord.client - INFO - logging in using static token
+2024-12-14 18:42:57,698 - __main__ - ERROR - Reconnection failed: Session is closed
+2024-12-14 18:42:57,698 - __main__ - CRITICAL - Reconnection failed - Initiating emergency restart
+2024-12-14 18:42:57,698 - __main__ - CRITICAL - 
+━━━━━━ Emergency Restart Initiated ━━━━━━
+Reason: Health check failures exceeded
+Time: 2024-12-14 18:42:57.698725+00:00
+Uptime: 0.1h
+Last Error: None
+Memory Usage: 0.1%
+CPU Usage: 0.0%
+Health Failures: 8
+Connected Guilds: 2
+Last Message Time: None
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:42:57,698 - __main__ - INFO - Attempting graceful shutdown...
+2024-12-14 18:43:08,096 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:43:23,100 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:43:23,100 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: True
+Guilds: 2
+Latency: 24.56ms
+Uptime: 0.0h
+Health Failures: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:43:38,098 - __main__ - WARNING - Heartbeat timeout detected. Age: 132.830637s
+2024-12-14 18:43:38,098 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 1
+2024-12-14 18:43:38,098 - __main__ - INFO - 
+━━━━━━ Minor Health Check Issue ━━━━━━
+Failure Count: 1
+Status: Monitoring
+Action: Continuing normal operation
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:43:53,101 - __main__ - WARNING - Heartbeat timeout detected. Age: 147.833266s
+2024-12-14 18:43:53,101 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 2
+2024-12-14 18:43:53,101 - __main__ - WARNING - 
+━━━━━━ Multiple Health Check Failures ━━━━━━
+Failure Count: 2
+Attempting reconnection...
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:43:53,101 - __main__ - INFO - Initializing Discord bot with enhanced monitoring
+2024-12-14 18:43:53,102 - __main__ - INFO - Chat and Trivia handlers initialized successfully
+2024-12-14 18:43:53,102 - __main__ - INFO - Bot initialization completed successfully
+2024-12-14 18:43:53,103 - discord.client - INFO - logging in using static token
+2024-12-14 18:43:53,412 - __main__ - INFO - Health monitoring tasks started
+2024-12-14 18:43:53,413 - __main__ - WARNING - Connection check failed - Bot disconnected
+2024-12-14 18:43:53,413 - __main__ - WARNING - Health check failure (disconnected). Failure count: 1
+2024-12-14 18:43:53,414 - __main__ - INFO - 
+━━━━━━ Minor Health Check Issue ━━━━━━
+Failure Count: 1
+Status: Monitoring
+Action: Continuing normal operation
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:43:53,414 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: False
+Guilds: 0
+Latency: nanms
+Uptime: 0.0h
+Health Failures: 1
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:43:53,618 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 34c1f07ae61f16dbafe5f3c70a4ac8a6).
+2024-12-14 18:43:55,139 - discord.client - INFO - logging in using static token
+2024-12-14 18:43:55,139 - __main__ - ERROR - Reconnection attempt failed: Session is closed
+2024-12-14 18:43:55,624 - __main__ - INFO - ━━━━━━ Bot Ready ━━━━━━
+Logged in as: OCTANTBOT
+Bot ID: 1316950341954306159
+Guilds connected: 2
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:44:08,098 - __main__ - WARNING - Heartbeat timeout detected. Age: 162.830645s
+2024-12-14 18:44:08,098 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 3
+2024-12-14 18:44:08,098 - __main__ - WARNING - 
+━━━━━━ Multiple Health Check Failures ━━━━━━
+Failure Count: 3
+Attempting reconnection...
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:44:08,414 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:44:10,101 - discord.client - INFO - logging in using static token
+2024-12-14 18:44:10,101 - __main__ - ERROR - Reconnection attempt failed: Session is closed
+2024-12-14 18:44:23,099 - __main__ - WARNING - Heartbeat timeout detected. Age: 177.831142s
+2024-12-14 18:44:23,099 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 4
+2024-12-14 18:44:23,099 - __main__ - WARNING - 
+━━━━━━ Multiple Health Check Failures ━━━━━━
+Failure Count: 4
+Attempting reconnection...
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:44:23,099 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: True
+Guilds: 2
+Latency: infms
+Uptime: 0.1h
+Health Failures: 4
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:44:23,414 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:44:25,101 - discord.client - INFO - logging in using static token
+2024-12-14 18:44:25,101 - __main__ - ERROR - Reconnection attempt failed: Session is closed
+2024-12-14 18:44:38,089 - __main__ - WARNING - Heartbeat timeout detected. Age: 192.821643s
+2024-12-14 18:44:38,089 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 5
+2024-12-14 18:44:38,089 - __main__ - WARNING - 
+━━━━━━ Multiple Health Check Failures ━━━━━━
+Failure Count: 5
+Attempting reconnection...
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:44:38,414 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:44:40,092 - discord.client - INFO - logging in using static token
+2024-12-14 18:44:40,092 - __main__ - ERROR - Reconnection attempt failed: Session is closed
+2024-12-14 18:44:53,098 - __main__ - WARNING - Heartbeat timeout detected. Age: 207.830694s
+2024-12-14 18:44:53,098 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 6
+2024-12-14 18:44:53,098 - __main__ - WARNING - 
+━━━━━━ Multiple Health Check Failures ━━━━━━
+Failure Count: 6
+Attempting reconnection...
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:44:53,414 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:44:53,414 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: True
+Guilds: 2
+Latency: 40.28ms
+Uptime: 0.0h
+Health Failures: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:44:55,101 - discord.client - INFO - logging in using static token
+2024-12-14 18:44:55,101 - __main__ - ERROR - Reconnection attempt failed: Session is closed
+2024-12-14 18:45:08,098 - __main__ - WARNING - Heartbeat timeout detected. Age: 222.830658s
+2024-12-14 18:45:08,098 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 7
+2024-12-14 18:45:08,098 - __main__ - WARNING - 
+━━━━━━ Multiple Health Check Failures ━━━━━━
+Failure Count: 7
+Attempting reconnection...
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:45:08,414 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:45:10,101 - discord.client - INFO - logging in using static token
+2024-12-14 18:45:10,101 - __main__ - ERROR - Reconnection attempt failed: Session is closed
+2024-12-14 18:45:23,092 - __main__ - WARNING - Heartbeat timeout detected. Age: 237.825037s
+2024-12-14 18:45:23,093 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 8
+2024-12-14 18:45:23,093 - __main__ - CRITICAL - 
+━━━━━━ Critical Health Check Failure ━━━━━━
+Failure Count: 8
+Last Error: None
+Connection State: True
+Latency: infms
+Memory Usage: 0.1%
+CPU Usage: 0.0%
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:45:23,093 - __main__ - WARNING - Attempting reconnection before emergency restart...
+2024-12-14 18:45:23,093 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: True
+Guilds: 2
+Latency: infms
+Uptime: 0.1h
+Health Failures: 8
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:45:23,414 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:45:28,097 - discord.client - INFO - logging in using static token
+2024-12-14 18:45:28,098 - __main__ - ERROR - Reconnection failed: Session is closed
+2024-12-14 18:45:28,098 - __main__ - CRITICAL - Reconnection failed - Initiating emergency restart
+2024-12-14 18:45:28,098 - __main__ - CRITICAL - 
+━━━━━━ Emergency Restart Initiated ━━━━━━
+Reason: Health check failures exceeded
+Time: 2024-12-14 18:45:28.098599+00:00
+Uptime: 0.1h
+Last Error: None
+Memory Usage: 0.1%
+CPU Usage: 0.0%
+Health Failures: 8
+Connected Guilds: 2
+Last Message Time: None
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:45:28,098 - __main__ - INFO - Attempting graceful shutdown...
+2024-12-14 18:45:38,424 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:45:53,428 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:45:53,428 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: True
+Guilds: 2
+Latency: 29.52ms
+Uptime: 0.0h
+Health Failures: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:46:08,424 - __main__ - WARNING - Heartbeat timeout detected. Age: 132.799685s
+2024-12-14 18:46:08,424 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 1
+2024-12-14 18:46:08,424 - __main__ - INFO - 
+━━━━━━ Minor Health Check Issue ━━━━━━
+Failure Count: 1
+Status: Monitoring
+Action: Continuing normal operation
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:46:23,428 - __main__ - WARNING - Heartbeat timeout detected. Age: 147.80366s
+2024-12-14 18:46:23,428 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 2
+2024-12-14 18:46:23,428 - __main__ - WARNING - 
+━━━━━━ Multiple Health Check Failures ━━━━━━
+Failure Count: 2
+Attempting reconnection...
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:46:23,429 - __main__ - INFO - Initializing Discord bot with enhanced monitoring
+2024-12-14 18:46:23,429 - __main__ - INFO - Chat and Trivia handlers initialized successfully
+2024-12-14 18:46:23,430 - __main__ - INFO - Bot initialization completed successfully
+2024-12-14 18:46:23,430 - discord.client - INFO - logging in using static token
+2024-12-14 18:46:23,830 - __main__ - INFO - Health monitoring tasks started
+2024-12-14 18:46:23,831 - __main__ - WARNING - Connection check failed - Bot disconnected
+2024-12-14 18:46:23,831 - __main__ - WARNING - Health check failure (disconnected). Failure count: 1
+2024-12-14 18:46:23,831 - __main__ - INFO - 
+━━━━━━ Minor Health Check Issue ━━━━━━
+Failure Count: 1
+Status: Monitoring
+Action: Continuing normal operation
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:46:23,831 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: False
+Guilds: 0
+Latency: nanms
+Uptime: 0.0h
+Health Failures: 1
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:46:23,989 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 560372890c08ffc399b200f49fdc45ce).
+2024-12-14 18:46:25,480 - discord.client - INFO - logging in using static token
+2024-12-14 18:46:25,480 - __main__ - ERROR - Reconnection attempt failed: Session is closed
+2024-12-14 18:46:26,013 - __main__ - INFO - ━━━━━━ Bot Ready ━━━━━━
+Logged in as: OCTANTBOT
+Bot ID: 1316950341954306159
+Guilds connected: 2
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:46:38,425 - __main__ - WARNING - Heartbeat timeout detected. Age: 162.801045s
+2024-12-14 18:46:38,426 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 3
+2024-12-14 18:46:38,426 - __main__ - WARNING - 
+━━━━━━ Multiple Health Check Failures ━━━━━━
+Failure Count: 3
+Attempting reconnection...
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:46:38,832 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 18:46:40,428 - discord.client - INFO - logging in using static token
+2024-12-14 18:46:40,428 - __main__ - ERROR - Reconnection attempt failed: Session is closed
+2024-12-14 21:44:10,809 - __main__ - INFO - Initializing Discord bot
+2024-12-14 21:44:10,812 - discord.client - INFO - logging in using static token
+2024-12-14 21:44:11,534 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 1aaf860c02bffd92c322b133c070ecbf).
+2024-12-14 21:44:14,406 - __main__ - INFO - Initializing Discord bot
+2024-12-14 21:44:14,410 - discord.client - INFO - logging in using static token
+2024-12-14 21:44:15,058 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: c638c0d107c8af3ac7256b56d7a83a94).
+2024-12-14 21:44:17,123 - __main__ - INFO - ━━━━━━ Bot Ready ━━━━━━
+Logged in as: OCTANTBOT
+Bot ID: 1316950341954306159
+Guilds connected: 2
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 21:44:48,713 - __main__ - INFO - Initializing Discord bot
+2024-12-14 21:44:48,714 - discord.client - INFO - logging in using static token
+2024-12-14 21:44:49,128 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 6de87c25e50bbaddcdeec8d8a33c158c).
+2024-12-14 21:44:51,612 - __main__ - INFO - Initializing Discord bot
+2024-12-14 21:44:51,614 - discord.client - INFO - logging in using static token
+2024-12-14 21:44:52,141 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: c35ef89d5ade8ea7872dc89ed1995191).
+2024-12-14 21:44:54,146 - __main__ - INFO - ━━━━━━ Bot Ready ━━━━━━
+Logged in as: OCTANTBOT
+Bot ID: 1316950341954306159
+Guilds connected: 2
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 21:45:18,642 - __main__ - INFO - Starting Discord bot
+2024-12-14 21:45:18,644 - discord.client - INFO - logging in using static token
+2024-12-14 21:45:19,299 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 1b571034302577b540e1447ba993aaa2).
+2024-12-14 21:45:21,855 - __main__ - INFO - Starting Discord bot
+2024-12-14 21:45:21,856 - discord.client - INFO - logging in using static token
+2024-12-14 21:45:22,418 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 4a537c0801988ac1e250e5deee090a9a).
+2024-12-14 21:45:24,424 - __main__ - INFO - Logged in as: OCTANTBOT
+2024-12-14 21:45:24,427 - __main__ - INFO - Bot ID: 1316950341954306159
+2024-12-14 21:45:24,427 - __main__ - INFO - Connected to 2 guilds
+2024-12-14 21:45:51,749 - __main__ - INFO - Starting Discord bot
+2024-12-14 21:45:51,750 - discord.client - INFO - logging in using static token
+2024-12-14 21:45:52,256 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: b6e48101c49ff4c7e823b420022dac84).
+2024-12-14 21:45:54,262 - __main__ - INFO - ━━━━━━ Bot Ready ━━━━━━
+2024-12-14 21:45:54,262 - __main__ - INFO - Logged in as: OCTANTBOT
+2024-12-14 21:45:54,262 - __main__ - INFO - Bot ID: 1316950341954306159
+2024-12-14 21:45:54,262 - __main__ - INFO - Guilds connected: 2
+2024-12-14 21:45:54,262 - __main__ - INFO - ━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 21:45:55,207 - __main__ - INFO - Starting Discord bot
+2024-12-14 21:45:55,209 - discord.client - INFO - logging in using static token
+2024-12-14 21:45:55,705 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 5511a51d3e56ddd004b218287a622761).
+2024-12-14 21:45:57,714 - __main__ - INFO - ━━━━━━ Bot Ready ━━━━━━
+2024-12-14 21:45:57,714 - __main__ - INFO - Logged in as: OCTANTBOT
+2024-12-14 21:45:57,714 - __main__ - INFO - Bot ID: 1316950341954306159
+2024-12-14 21:45:57,714 - __main__ - INFO - Guilds connected: 2
+2024-12-14 21:45:57,714 - __main__ - INFO - ━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 21:50:28,948 - __main__ - INFO - Starting Discord bot
+2024-12-14 21:50:28,949 - discord.client - INFO - logging in using static token
+2024-12-14 21:50:29,569 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 2c660683d9a8c753c26278db2a02f785).
+2024-12-14 21:50:31,581 - __main__ - INFO - ━━━━━━ Bot Ready ━━━━━━
+2024-12-14 21:50:31,582 - __main__ - INFO - Logged in as: OCTANTBOT
+2024-12-14 21:50:31,582 - __main__ - INFO - Bot ID: 1316950341954306159
+2024-12-14 21:50:31,582 - __main__ - INFO - Guilds connected: 2
+2024-12-14 21:50:31,582 - __main__ - INFO - ━━━━━━━━━━━━━━━━━━━━━━━━
