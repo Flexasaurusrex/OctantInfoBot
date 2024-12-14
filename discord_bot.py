@@ -1,7 +1,7 @@
 import os
 import logging
 import discord
-from discord.ext import commands
+from discord import app_commands
 from chat_handler import ChatHandler
 from discord_trivia import DiscordTrivia
 
@@ -16,26 +16,23 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-class OctantBot(commands.Bot):
+class OctantBot(discord.Client):
     def __init__(self):
         try:
-            # Set up basic intents
+            # Set up intents
             intents = discord.Intents.default()
             intents.message_content = True
             intents.members = True
-
-            # Initialize the bot
-            super().__init__(
-                command_prefix='/',
-                intents=intents
-            )
-
+            
+            # Initialize the client
+            super().__init__(intents=intents)
+            
+            # Create command tree
+            self.tree = app_commands.CommandTree(self)
+            
             # Initialize handlers
             self.chat_handler = ChatHandler()
             self.trivia = DiscordTrivia()
-            
-            # Remove default help command
-            self.remove_command('help')
             
             logger.info("Bot initialized successfully")
         except Exception as e:
@@ -43,49 +40,63 @@ class OctantBot(commands.Bot):
             raise
 
     async def setup_hook(self):
-        """Called when the bot is starting up"""
-        logger.info("Setting up bot...")
-        
-        @self.command(name='trivia')
-        async def trivia_command(ctx):
-            """Start a trivia game"""
-            try:
-                logger.info(f"Trivia command received from {ctx.author}")
-                await self.trivia.start_game(ctx)
-            except Exception as e:
-                logger.error(f"Error in trivia command: {str(e)}", exc_info=True)
-                await ctx.send("Sorry, there was an error starting the trivia game. Please try again.")
+        """Register application commands"""
+        try:
+            logger.info("Setting up commands...")
+            
+            @self.tree.command(name="help", description="Show available commands")
+            async def help_command(interaction: discord.Interaction):
+                try:
+                    help_embed = discord.Embed(
+                        title="📚 Octant Bot Help",
+                        description="Welcome to Octant Bot! Here are the available commands:",
+                        color=discord.Color.blue()
+                    )
+                    
+                    help_embed.add_field(
+                        name="🎮 Game Commands",
+                        value="• `/trivia` - Start a trivia game about Octant",
+                        inline=False
+                    )
+                    
+                    help_embed.add_field(
+                        name="💬 Chat Features",
+                        value="• Reply to any of my messages to chat\n• Ask questions about Octant\n• Get help with Octant features",
+                        inline=False
+                    )
+                    
+                    help_embed.set_footer(text="Type /trivia to start playing!")
+                    
+                    await interaction.response.send_message(embed=help_embed)
+                    logger.info(f"Help command executed by {interaction.user}")
+                except Exception as e:
+                    logger.error(f"Error in help command: {str(e)}", exc_info=True)
+                    await interaction.response.send_message(
+                        "Sorry, there was an error displaying the help message. Please try again.",
+                        ephemeral=True
+                    )
 
-        @self.command(name='help')
-        async def help_command(ctx):
-            """Show help message"""
-            try:
-                logger.info(f"Help command received from {ctx.author}")
-                help_embed = discord.Embed(
-                    title="📚 Octant Bot Help",
-                    description="Welcome to Octant Bot! Here are the available commands:",
-                    color=discord.Color.blue()
-                )
-                
-                help_embed.add_field(
-                    name="🎮 Game Commands",
-                    value="• `/trivia` - Start a trivia game about Octant",
-                    inline=False
-                )
-                
-                help_embed.add_field(
-                    name="💬 Chat Features",
-                    value="• Reply to any of my messages to chat\n• Ask questions about Octant\n• Get help with Octant features",
-                    inline=False
-                )
-                
-                help_embed.set_footer(text="Type /trivia to start playing!")
-                
-                await ctx.send(embed=help_embed)
-                logger.info("Help message sent successfully")
-            except Exception as e:
-                logger.error(f"Error sending help message: {str(e)}", exc_info=True)
-                await ctx.send("Sorry, there was an error displaying the help message. Please try again.")
+            @self.tree.command(name="trivia", description="Start a trivia game")
+            async def trivia_command(interaction: discord.Interaction):
+                try:
+                    logger.info(f"Trivia command received from {interaction.user}")
+                    await interaction.response.defer()
+                    await self.trivia.start_game(interaction)
+                except Exception as e:
+                    logger.error(f"Error in trivia command: {str(e)}", exc_info=True)
+                    await interaction.followup.send(
+                        "Sorry, there was an error starting the trivia game. Please try again.",
+                        ephemeral=True
+                    )
+
+            # Sync commands
+            logger.info("Syncing commands...")
+            await self.tree.sync()
+            logger.info("Commands synced successfully")
+            
+        except Exception as e:
+            logger.error(f"Error in setup_hook: {str(e)}", exc_info=True)
+            raise
 
     async def on_ready(self):
         """Called when the bot is ready."""
@@ -104,35 +115,19 @@ class OctantBot(commands.Bot):
             if message.author == self.user:
                 return
 
-            logger.info(f"Message received from {message.author}: {message.content[:50]}...")
-
-            # Process commands first
-            await self.process_commands(message)
-
-            # Check if message is a reply to bot
-            is_reply_to_bot = bool(
-                message.reference 
-                and message.reference.resolved 
-                and message.reference.resolved.author.id == self.user.id
-            )
-
-            if not is_reply_to_bot:
-                return
-
-            # Get and send response
-            response = self.chat_handler.get_response(message.content)
-            if response:
-                logger.info("Sending response to user")
-                if isinstance(response, list):
-                    for chunk in response:
-                        if chunk and chunk.strip():
-                            await message.reply(chunk.strip(), mention_author=True)
-                else:
-                    await message.reply(response.strip(), mention_author=True)
+            # Handle message replies
+            if message.reference and message.reference.resolved:
+                referenced_msg = message.reference.resolved
+                if referenced_msg.author == self.user:
+                    response = self.chat_handler.get_response(message.content)
+                    await message.reply(response, mention_author=True)
+                    logger.info(f"Replied to message from {message.author}")
 
         except Exception as e:
             logger.error(f"Error processing message: {str(e)}", exc_info=True)
-            await message.channel.send("I encountered an error processing your message. Please try again.")
+            await message.channel.send(
+                "I encountered an error processing your message. Please try again."
+            )
 
 async def main():
     """Main bot execution."""

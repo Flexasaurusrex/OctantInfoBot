@@ -8115,3 +8115,25 @@ Action: Continuing normal operation
 2024-12-14 17:25:12,539 - __main__ - INFO - Connected to 2 guilds
 2024-12-14 17:25:12,539 - __main__ - INFO - - 32px Penguins (ID: 876809525116665857)
 2024-12-14 17:25:12,539 - __main__ - INFO - - FlexaSaurusRex's Testing Server (ID: 1317082838016856074)
+2024-12-14 17:26:14,553 - discord.app_commands.tree - ERROR - Ignoring exception in command tree
+Traceback (most recent call last):
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/discord/app_commands/tree.py", line 1151, in wrapper
+    await self._call(interaction)
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/discord/app_commands/tree.py", line 1283, in _call
+    command, options = self._get_app_command_options(data)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/discord/app_commands/tree.py", line 1187, in _get_app_command_options
+    raise CommandNotFound(name, parents)
+discord.app_commands.errors.CommandNotFound: Application command 'ping' not found
+2024-12-14 17:27:14,676 - __main__ - INFO - Starting Discord bot...
+2024-12-14 17:27:14,676 - __main__ - INFO - Bot initialized successfully
+2024-12-14 17:27:14,676 - __main__ - INFO - Connecting to Discord...
+2024-12-14 17:27:14,677 - discord.client - INFO - logging in using static token
+2024-12-14 17:27:14,995 - __main__ - INFO - Setting up commands...
+2024-12-14 17:27:14,995 - __main__ - INFO - Syncing commands...
+2024-12-14 17:27:15,263 - __main__ - INFO - Commands synced successfully
+2024-12-14 17:27:15,469 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 599bae05d8c41e408abe63888da8b02e).
+2024-12-14 17:27:17,474 - __main__ - INFO - Bot is ready! Logged in as OCTANTBOT (ID: 1316950341954306159)
+2024-12-14 17:27:17,474 - __main__ - INFO - Connected to 2 guilds
+2024-12-14 17:27:17,474 - __main__ - INFO - - 32px Penguins (ID: 876809525116665857)
+2024-12-14 17:27:17,475 - __main__ - INFO - - FlexaSaurusRex's Testing Server (ID: 1317082838016856074)
