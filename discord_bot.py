@@ -34,22 +34,16 @@ class OctantBot(commands.Bot):
             guild_ready_timeout=5
         )
         self.startup_time = None
-        self.tree.on_error = self.on_app_command_error
+        
+        # Register commands
+        self.setup_commands()
 
-    async def setup_hook(self):
-        """Initial setup after bot is ready with enhanced error handling and verification"""
+    def setup_commands(self):
+        """Register all commands"""
         try:
-            logger.info("\n━━━━━━ Initializing Bot Setup ━━━━━━")
-            self.startup_time = datetime.now()
-            
-            logger.info("Phase 1: Registering commands...")
-            
             # Help command
-            @self.tree.command(
-                name="help",
-                description="Shows the list of available commands"
-            )
-            async def help_cmd(interaction: discord.Interaction):
+            @self.tree.command(name="help", description="Shows the list of available commands")
+            async def help_command(interaction: discord.Interaction):
                 try:
                     logger.info(f"Help command executed by {interaction.user}")
                     embed = discord.Embed(
@@ -68,7 +62,6 @@ class OctantBot(commands.Bot):
                         inline=False
                     )
                     
-                    # Add bot information
                     uptime = datetime.now() - self.startup_time if self.startup_time else datetime.now()
                     uptime_str = str(uptime).split('.')[0]
                     
@@ -83,18 +76,18 @@ class OctantBot(commands.Bot):
                 except Exception as e:
                     error_msg = f"Error in help command: {str(e)}"
                     logger.error(f"{error_msg}\n{traceback.format_exc()}")
-                    if not interaction.response.is_done():
-                        await interaction.response.send_message(
-                            f"❌ {error_msg}",
-                            ephemeral=True
-                        )
+                    try:
+                        if not interaction.response.is_done():
+                            await interaction.response.send_message(
+                                f"❌ {error_msg}",
+                                ephemeral=True
+                            )
+                    except Exception as e2:
+                        logger.error(f"Failed to send error message: {str(e2)}")
 
             # Ping command
-            @self.tree.command(
-                name="ping",
-                description="Check if the bot is responsive"
-            )
-            async def ping_cmd(interaction: discord.Interaction):
+            @self.tree.command(name="ping", description="Check if the bot is responsive")
+            async def ping_command(interaction: discord.Interaction):
                 try:
                     logger.info(f"Ping command executed by {interaction.user}")
                     start_time = time.perf_counter()
@@ -115,24 +108,53 @@ class OctantBot(commands.Bot):
                 except Exception as e:
                     error_msg = f"Error in ping command: {str(e)}"
                     logger.error(f"{error_msg}\n{traceback.format_exc()}")
-                    if not interaction.response.is_done():
-                        await interaction.response.send_message(
-                            f"❌ {error_msg}",
-                            ephemeral=True
-                        )
+                    try:
+                        if not interaction.response.is_done():
+                            await interaction.response.send_message(
+                                f"❌ {error_msg}",
+                                ephemeral=True
+                            )
+                    except Exception as e2:
+                        logger.error(f"Failed to send error message: {str(e2)}")
 
-            # Phase 2: Sync commands
-            logger.info("Phase 2: Syncing commands...")
-            try:
-                await self.tree.sync()
-                commands = await self.tree.fetch_commands()
-                logger.info(f"Successfully synced {len(commands)} commands")
-                for cmd in commands:
-                    logger.info(f"• /{cmd.name} - {cmd.description}")
-            except Exception as e:
-                logger.error(f"Failed to sync commands: {str(e)}\n{traceback.format_exc()}")
-                raise
+            logger.info("Commands registered successfully")
+        except Exception as e:
+            logger.error(f"Error registering commands: {str(e)}\n{traceback.format_exc()}")
+            raise
+
+    async def setup_hook(self):
+        """Initial setup after bot is ready"""
+        try:
+            logger.info("\n━━━━━━ Initializing Bot Setup ━━━━━━")
+            self.startup_time = datetime.now()
             
+            # Sync commands with retries
+            logger.info("Syncing commands...")
+            max_retries = 3
+            retry_count = 0
+            last_error = None
+
+            while retry_count < max_retries:
+                try:
+                    logger.info(f"Attempting to sync commands (attempt {retry_count + 1}/{max_retries})")
+                    await self.tree.sync()
+                    commands = await self.tree.fetch_commands()
+                    logger.info(f"Successfully synced {len(commands)} commands:")
+                    for cmd in commands:
+                        logger.info(f"• /{cmd.name} - {cmd.description}")
+                    break
+                except Exception as e:
+                    last_error = e
+                    retry_count += 1
+                    logger.warning(f"Sync attempt {retry_count} failed: {str(e)}")
+                    if retry_count < max_retries:
+                        wait_time = 2 ** retry_count
+                        logger.info(f"Waiting {wait_time} seconds before retry...")
+                        await asyncio.sleep(wait_time)
+                    else:
+                        logger.error(f"Failed to sync commands after {max_retries} attempts")
+                        raise last_error
+                        
         except Exception as e:
             logger.error(f"Critical error in setup_hook: {str(e)}\n{traceback.format_exc()}")
             raise
@@ -164,18 +186,6 @@ class OctantBot(commands.Bot):
         except Exception as e:
             logger.error(f"Error in on_ready: {str(e)}\n{traceback.format_exc()}")
 
-    async def on_app_command_error(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
-        """Handle command errors"""
-        try:
-            logger.error(f"Command error: {str(error)}\n{traceback.format_exc()}")
-            if not interaction.response.is_done():
-                await interaction.response.send_message(
-                    f"❌ An error occurred: {str(error)}",
-                    ephemeral=True
-                )
-        except Exception as e:
-            logger.error(f"Error handling command error: {str(e)}\n{traceback.format_exc()}")
-
 async def main():
     """Main entry point for the bot"""
     try:
@@ -189,24 +199,44 @@ async def main():
         
         logger.info("Token verified successfully")
         
-        # Initialize bot with error handling
-        try:
-            bot = OctantBot()
-            logger.info("Bot instance created successfully")
-            
-            logger.info("Attempting to connect to Discord...")
-            await bot.start(token)
-            
-        except discord.LoginFailure as e:
-            logger.error(f"Failed to login: {str(e)}")
-            raise
-        except discord.HTTPException as e:
-            logger.error(f"HTTP error connecting to Discord: {str(e)}")
-            raise
-        except Exception as e:
-            logger.error(f"Unexpected error starting bot: {str(e)}\n{traceback.format_exc()}")
-            raise
-            
+        # Initialize bot with retries
+        max_retries = 3
+        retry_count = 0
+        last_error = None
+        
+        while retry_count < max_retries:
+            try:
+                logger.info(f"Attempting to start bot (attempt {retry_count + 1}/{max_retries})")
+                
+                bot = OctantBot()
+                logger.info("Bot instance created successfully")
+                
+                logger.info("Attempting to connect to Discord...")
+                async with bot:
+                    await bot.start(token)
+                return  # Success, exit the retry loop
+                
+            except discord.LoginFailure as e:
+                logger.error(f"Failed to login: {str(e)}")
+                raise  # Don't retry on authentication failures
+                
+            except discord.HTTPException as e:
+                last_error = e
+                retry_count += 1
+                logger.warning(f"HTTP error on attempt {retry_count}: {str(e)}")
+                
+                if retry_count < max_retries:
+                    wait_time = 2 ** retry_count  # Exponential backoff
+                    logger.info(f"Waiting {wait_time} seconds before retry...")
+                    await asyncio.sleep(wait_time)
+                else:
+                    logger.error(f"Failed to start bot after {max_retries} attempts: {str(last_error)}")
+                    raise last_error
+                
+            except Exception as e:
+                logger.error(f"Unexpected error starting bot: {str(e)}\n{traceback.format_exc()}")
+                raise
+                
     except Exception as e:
         logger.error(f"Fatal error in main: {str(e)}\n{traceback.format_exc()}")
         sys.exit(1)
@@ -219,6 +249,3 @@ if __name__ == "__main__":
     except Exception as e:
         logger.error(f"Fatal error: {str(e)}\n{traceback.format_exc()}")
         sys.exit(1)
-
-if __name__ == "__main__":
-    asyncio.run(main())

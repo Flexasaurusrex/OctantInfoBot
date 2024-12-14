@@ -8910,3 +8910,116 @@ client_session: <aiohttp.client.ClientSession object at 0x7f523d758190>
 ━━━━━━ Initializing Bot Setup ━━━━━━
 2024-12-14 18:06:55,834 - __main__ - INFO - Phase 1: Registering commands...
 2024-12-14 18:06:55,834 - __main__ - INFO - Phase 2: Syncing commands...
+2024-12-14 18:07:53,782 - __main__ - INFO - Successfully synced 2 commands
+2024-12-14 18:07:53,782 - __main__ - INFO - • /help - Shows the list of available commands
+2024-12-14 18:07:53,783 - __main__ - INFO - • /ping - Check if the bot is responsive
+2024-12-14 18:07:53,958 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: e4907d89768113df8080777b1dfcbaee).
+2024-12-14 18:07:58,968 - __main__ - INFO - ━━━━━━ Bot Connected ━━━━━━
+2024-12-14 18:07:58,969 - __main__ - INFO - Bot: OCTANTBOT#5497 (ID: 1316950341954306159)
+2024-12-14 18:07:58,969 - __main__ - INFO - Discord.py Version: 2.4.0
+2024-12-14 18:07:58,969 - __main__ - INFO - Python Version: 3.11.9 (main, Apr  2 2024, 08:25:04) [GCC 13.3.0]
+2024-12-14 18:07:58,969 - __main__ - INFO - Status set successfully
+2024-12-14 18:07:59,058 - __main__ - INFO - Available Commands (2):
+2024-12-14 18:07:59,058 - __main__ - INFO - • /help - Shows the list of available commands
+2024-12-14 18:07:59,058 - __main__ - INFO - • /ping - Check if the bot is responsive
+2024-12-14 18:07:59,058 - __main__ - INFO - ━━━━━━ Bot Ready ━━━━━━
+2024-12-14 18:08:28,362 - __main__ - INFO - 
+━━━━━━ Starting Discord Bot ━━━━━━
+2024-12-14 18:08:28,362 - __main__ - INFO - Token verified successfully
+2024-12-14 18:08:28,363 - __main__ - INFO - Attempting to start bot (attempt 1/3)
+2024-12-14 18:08:28,364 - __main__ - INFO - Bot instance created successfully
+2024-12-14 18:08:28,364 - __main__ - INFO - Attempting to connect to Discord...
+2024-12-14 18:08:28,364 - discord.client - INFO - logging in using static token
+2024-12-14 18:08:28,894 - __main__ - INFO - 
+━━━━━━ Starting Discord Bot ━━━━━━
+2024-12-14 18:08:28,895 - __main__ - INFO - Token verified successfully
+2024-12-14 18:08:28,895 - __main__ - INFO - Attempting to start bot (attempt 1/3)
+2024-12-14 18:08:28,896 - __main__ - INFO - Bot instance created successfully
+2024-12-14 18:08:28,896 - __main__ - INFO - Attempting to connect to Discord...
+2024-12-14 18:08:28,896 - discord.client - INFO - logging in using static token
+2024-12-14 18:08:28,940 - __main__ - INFO - 
+━━━━━━ Initializing Bot Setup ━━━━━━
+2024-12-14 18:08:28,940 - __main__ - INFO - Phase 1: Registering commands...
+2024-12-14 18:08:28,941 - __main__ - INFO - Phase 2: Syncing commands...
+2024-12-14 18:08:28,941 - __main__ - INFO - Attempting to sync commands (attempt 1/3)
+2024-12-14 18:08:29,614 - __main__ - INFO - 
+━━━━━━ Initializing Bot Setup ━━━━━━
+2024-12-14 18:08:29,615 - __main__ - INFO - Phase 1: Registering commands...
+2024-12-14 18:08:29,615 - __main__ - INFO - Phase 2: Syncing commands...
+2024-12-14 18:08:29,616 - __main__ - INFO - Attempting to sync commands (attempt 1/3)
+2024-12-14 18:08:29,739 - __main__ - INFO - Successfully synced 2 commands:
+2024-12-14 18:08:29,740 - __main__ - INFO - • /help - Shows the list of available commands
+2024-12-14 18:08:29,740 - __main__ - INFO - • /ping - Check if the bot is responsive
+2024-12-14 18:08:29,993 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 99ee6ee74854fce52cbf1ef042d954db).
+2024-12-14 18:08:35,000 - __main__ - INFO - ━━━━━━ Bot Connected ━━━━━━
+2024-12-14 18:08:35,001 - __main__ - INFO - Bot: OCTANTBOT#5497 (ID: 1316950341954306159)
+2024-12-14 18:08:35,001 - __main__ - INFO - Discord.py Version: 2.4.0
+2024-12-14 18:08:35,001 - __main__ - INFO - Python Version: 3.11.9 (main, Apr  2 2024, 08:25:04) [GCC 13.3.0]
+2024-12-14 18:08:35,001 - __main__ - INFO - Status set successfully
+2024-12-14 18:09:22,851 - __main__ - INFO - 
+━━━━━━ Starting Discord Bot ━━━━━━
+2024-12-14 18:09:22,852 - __main__ - INFO - Token verified successfully
+2024-12-14 18:09:22,852 - __main__ - INFO - Attempting to start bot (attempt 1/3)
+2024-12-14 18:09:22,862 - __main__ - INFO - Bot instance created successfully
+2024-12-14 18:09:22,862 - __main__ - INFO - Attempting to connect to Discord...
+2024-12-14 18:09:22,863 - discord.client - INFO - logging in using static token
+2024-12-14 18:09:29,636 - __main__ - INFO - 
+━━━━━━ Initializing Bot Setup ━━━━━━
+2024-12-14 18:09:29,636 - __main__ - INFO - Phase 1: Registering commands...
+2024-12-14 18:09:29,637 - __main__ - INFO - Commands registered successfully
+2024-12-14 18:09:29,637 - __main__ - INFO - Phase 2: Syncing commands...
+2024-12-14 18:09:29,637 - __main__ - INFO - Attempting to sync commands (attempt 1/3)
+2024-12-14 18:09:30,077 - __main__ - INFO - Successfully synced 2 commands:
+2024-12-14 18:09:30,077 - __main__ - INFO - • /help - Shows the list of available commands
+2024-12-14 18:09:30,077 - __main__ - INFO - • /ping - Check if the bot is responsive
+2024-12-14 18:09:30,267 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 7e76712536c99476c522ac144b7f7e96).
+2024-12-14 18:09:35,280 - __main__ - INFO - ━━━━━━ Bot Connected ━━━━━━
+2024-12-14 18:09:35,280 - __main__ - INFO - Bot: OCTANTBOT#5497 (ID: 1316950341954306159)
+2024-12-14 18:09:35,281 - __main__ - INFO - Discord.py Version: 2.4.0
+2024-12-14 18:09:35,281 - __main__ - INFO - Python Version: 3.11.9 (main, Apr  2 2024, 08:25:04) [GCC 13.3.0]
+2024-12-14 18:09:35,281 - __main__ - INFO - Status set successfully
+2024-12-14 18:09:35,409 - __main__ - INFO - Available Commands (2):
+2024-12-14 18:09:35,409 - __main__ - INFO - • /help - Shows the list of available commands
+2024-12-14 18:09:35,409 - __main__ - INFO - • /ping - Check if the bot is responsive
+2024-12-14 18:09:35,409 - __main__ - INFO - ━━━━━━ Bot Ready ━━━━━━
+2024-12-14 18:10:25,452 - __main__ - INFO - 
+━━━━━━ Starting Discord Bot ━━━━━━
+2024-12-14 18:10:25,453 - __main__ - INFO - Token verified successfully
+2024-12-14 18:10:25,453 - __main__ - INFO - Attempting to start bot (attempt 1/3)
+2024-12-14 18:10:25,454 - __main__ - INFO - Commands registered successfully
+2024-12-14 18:10:25,454 - __main__ - INFO - Bot instance created successfully
+2024-12-14 18:10:25,454 - __main__ - INFO - Attempting to connect to Discord...
+2024-12-14 18:10:25,454 - discord.client - INFO - logging in using static token
+2024-12-14 18:10:25,768 - __main__ - INFO - 
+━━━━━━ Initializing Bot Setup ━━━━━━
+2024-12-14 18:10:25,769 - __main__ - INFO - Syncing commands...
+2024-12-14 18:10:25,769 - __main__ - INFO - Attempting to sync commands (attempt 1/3)
+2024-12-14 18:10:26,103 - __main__ - INFO - Successfully synced 2 commands:
+2024-12-14 18:10:26,103 - __main__ - INFO - • /help - Shows the list of available commands
+2024-12-14 18:10:26,103 - __main__ - INFO - • /ping - Check if the bot is responsive
+2024-12-14 18:10:26,276 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: c5121c23627b99cf1d9c181ed4142baa).
+2024-12-14 18:10:29,083 - __main__ - INFO - 
+━━━━━━ Starting Discord Bot ━━━━━━
+2024-12-14 18:10:29,083 - __main__ - INFO - Token verified successfully
+2024-12-14 18:10:29,083 - __main__ - INFO - Attempting to start bot (attempt 1/3)
+2024-12-14 18:10:29,084 - __main__ - INFO - Commands registered successfully
+2024-12-14 18:10:29,084 - __main__ - INFO - Bot instance created successfully
+2024-12-14 18:10:29,084 - __main__ - INFO - Attempting to connect to Discord...
+2024-12-14 18:10:29,084 - discord.client - INFO - logging in using static token
+2024-12-14 18:10:29,350 - __main__ - INFO - 
+━━━━━━ Initializing Bot Setup ━━━━━━
+2024-12-14 18:10:29,351 - __main__ - INFO - Syncing commands...
+2024-12-14 18:10:29,351 - __main__ - INFO - Attempting to sync commands (attempt 1/3)
+2024-12-14 18:11:26,151 - __main__ - INFO - Successfully synced 2 commands:
+2024-12-14 18:11:26,151 - __main__ - INFO - • /help - Shows the list of available commands
+2024-12-14 18:11:26,151 - __main__ - INFO - • /ping - Check if the bot is responsive
+2024-12-14 18:11:26,448 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: a49c681a70e777569df932b0654db868).
+2024-12-14 18:11:31,458 - __main__ - INFO - ━━━━━━ Bot Connected ━━━━━━
+2024-12-14 18:11:31,458 - __main__ - INFO - Bot: OCTANTBOT#5497 (ID: 1316950341954306159)
+2024-12-14 18:11:31,458 - __main__ - INFO - Discord.py Version: 2.4.0
+2024-12-14 18:11:31,459 - __main__ - INFO - Python Version: 3.11.9 (main, Apr  2 2024, 08:25:04) [GCC 13.3.0]
+2024-12-14 18:11:31,459 - __main__ - INFO - Status set successfully
+2024-12-14 18:11:31,581 - __main__ - INFO - Available Commands (2):
+2024-12-14 18:11:31,581 - __main__ - INFO - • /help - Shows the list of available commands
+2024-12-14 18:11:31,582 - __main__ - INFO - • /ping - Check if the bot is responsive
+2024-12-14 18:11:31,582 - __main__ - INFO - ━━━━━━ Bot Ready ━━━━━━
