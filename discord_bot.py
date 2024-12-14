@@ -40,10 +40,23 @@ class OctantBot(discord.Client):
             raise
 
     async def setup_hook(self):
-        """Register application commands"""
+        """Set up the bot's commands."""
         try:
             logger.info("Setting up commands...")
             
+            # Register commands
+            @self.tree.command(name="ping", description="Check if the bot is responsive")
+            async def ping(interaction: discord.Interaction):
+                try:
+                    await interaction.response.send_message("Pong! 🏓")
+                    logger.info(f"Ping command executed by {interaction.user}")
+                except Exception as e:
+                    logger.error(f"Error in ping command: {str(e)}", exc_info=True)
+                    await interaction.response.send_message(
+                        "Sorry, there was an error processing your command.",
+                        ephemeral=True
+                    )
+
             @self.tree.command(name="help", description="Show available commands")
             async def help_command(interaction: discord.Interaction):
                 try:
@@ -56,6 +69,12 @@ class OctantBot(discord.Client):
                     help_embed.add_field(
                         name="🎮 Game Commands",
                         value="• `/trivia` - Start a trivia game about Octant",
+                        inline=False
+                    )
+                    
+                    help_embed.add_field(
+                        name="🤖 Utility Commands",
+                        value="• `/ping` - Check if the bot is responsive\n• `/help` - Show this help message",
                         inline=False
                     )
                     
