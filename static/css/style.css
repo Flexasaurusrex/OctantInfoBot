@@ -52,16 +52,16 @@ body {
     left: 0;
     top: 0;
     height: 100vh;
-    width: 250px;
+    width: 280px;
     background: var(--background-color);
     border-right: 1px solid var(--message-bg);
-    padding: 1.5rem;
+    padding: 1.5rem 1rem;
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.5rem;
     z-index: 1000;
     box-shadow: var(--shadow-md);
-    transform: translateX(-200px);
+    transform: translateX(-250px);
     transition: transform 0.3s ease;
 }
 
@@ -71,38 +71,54 @@ body {
 
 .sidebar-toggle {
     position: absolute;
-    right: -50px;
-    top: 20px;
+    right: -40px;
+    top: 50%;
+    transform: translateY(-50%);
     background: var(--background-color);
     border: 1px solid var(--message-bg);
     border-radius: 0 8px 8px 0;
-    padding: 8px;
+    padding: 10px 8px;
     cursor: pointer;
     box-shadow: var(--shadow-sm);
     z-index: 1001;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .connection-status {
     position: absolute;
-    bottom: 20px;
-    left: 20px;
+    bottom: 1rem;
+    left: 1rem;
+    right: 1rem;
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 8px;
+    gap: 0.5rem;
+    padding: 0.75rem;
     border-radius: 8px;
     background: var(--message-bg);
+    font-size: 0.85rem;
+    justify-content: center;
+    box-shadow: var(--shadow-sm);
 }
 
 .status-indicator {
-    width: 10px;
-    height: 10px;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
     background-color: #dc3545;
+    flex-shrink: 0;
 }
 
 .status-indicator.connected {
     background-color: #28a745;
+}
+
+.status-text {
+    color: var(--text-color);
+    opacity: 0.8;
 }
 
 .sidebar-header {
@@ -139,15 +155,21 @@ body {
 
 /* Main Content */
 .main-content {
-    margin-left: 250px;
-    width: calc(100% - 250px);
-    transition: margin-left 0.3s ease;
+    margin-left: 30px;
+    width: calc(100% - 30px);
+    transition: all 0.3s ease;
+    padding-top: 1rem;
+}
+
+.sidebar.expanded + .main-content {
+    margin-left: 280px;
+    width: calc(100% - 280px);
 }
 
 /* Header */
 .header {
     background-color: var(--background-color);
-    padding: 2rem 0;
+    padding: 1.5rem 0;
     box-shadow: var(--shadow-sm);
     position: relative;
     z-index: 10;
