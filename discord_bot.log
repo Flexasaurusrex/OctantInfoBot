@@ -294,3 +294,82 @@ Bot ID: 1316950341954306159
 Guilds connected: 2
 ━━━━━━━━━━━━━━━━━━━━━━━━
 2024-12-14 05:53:42,291 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 05:53:47,294 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 05:53:52,293 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 05:53:57,292 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 05:54:02,293 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 05:54:07,294 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 05:54:12,293 - __main__ - WARNING - Heartbeat timeout detected. Age: 32.717425s
+2024-12-14 05:54:12,293 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 1
+2024-12-14 05:54:12,293 - __main__ - INFO - 
+━━━━━━ Minor Health Check Issue ━━━━━━
+Failure Count: 1
+Status: Monitoring
+Action: Continuing normal operation
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 05:54:17,293 - __main__ - WARNING - Heartbeat timeout detected. Age: 37.717264s
+2024-12-14 05:54:17,293 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 2
+2024-12-14 05:54:17,293 - __main__ - WARNING - 
+━━━━━━ Multiple Health Check Failures ━━━━━━
+Failure Count: 2
+Attempting reconnection...
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 05:54:17,293 - __main__ - ERROR - Error handling health failure: 'OctantDiscordBot' object has no attribute 'reconnect'
+Traceback (most recent call last):
+  File "/home/runner/workspace/discord_bot.py", line 265, in _handle_health_failure
+    await self.reconnect()
+          ^^^^^^^^^^^^^^
+AttributeError: 'OctantDiscordBot' object has no attribute 'reconnect'
+2024-12-14 05:54:22,291 - __main__ - WARNING - Heartbeat timeout detected. Age: 42.715795s
+2024-12-14 05:54:22,292 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 3
+2024-12-14 05:54:22,292 - __main__ - CRITICAL - 
+━━━━━━ Critical Health Check Failure ━━━━━━
+Failure Count: 3
+Last Error: None
+Connection State: True
+Latency: 39.18ms
+Memory Usage: 0.1%
+CPU Usage: 0.0%
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 05:54:22,292 - __main__ - WARNING - Attempting reconnection before emergency restart...
+2024-12-14 05:54:22,292 - __main__ - ERROR - Reconnection failed: 'OctantDiscordBot' object has no attribute 'reconnect'
+2024-12-14 05:54:22,292 - __main__ - CRITICAL - Reconnection failed - Initiating emergency restart
+2024-12-14 05:54:22,292 - __main__ - CRITICAL - 
+━━━━━━ Emergency Restart Initiated ━━━━━━
+Reason: Health check failures exceeded
+Time: 2024-12-14 05:54:22.292529+00:00
+Uptime: 0.0h
+Last Error: None
+Memory Usage: 0.1%
+CPU Usage: 0.0%
+Health Failures: 3
+Connected Guilds: 0
+Last Message Time: None
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 05:55:59,670 - __main__ - INFO - Initializing Discord bot with enhanced monitoring
+2024-12-14 05:55:59,671 - __main__ - INFO - Chat and Trivia handlers initialized successfully
+2024-12-14 05:55:59,672 - __main__ - INFO - Bot initialization completed successfully
+2024-12-14 05:55:59,672 - discord.client - INFO - logging in using static token
+2024-12-14 05:56:00,023 - __main__ - INFO - Health monitoring tasks started
+2024-12-14 05:56:00,033 - __main__ - WARNING - Connection check failed - Bot disconnected
+2024-12-14 05:56:00,034 - __main__ - WARNING - Health check failure (disconnected). Failure count: 1
+2024-12-14 05:56:00,034 - __main__ - INFO - 
+━━━━━━ Minor Health Check Issue ━━━━━━
+Failure Count: 1
+Status: Monitoring
+Action: Continuing normal operation
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 05:56:00,034 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: False
+Guilds: 0
+Latency: nanms
+Uptime: 0.0h
+Health Failures: 1
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 05:56:00,179 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: cf9bc173b6e1b156bf65ffdb77d75d7e).
+2024-12-14 05:56:02,188 - __main__ - INFO - ━━━━━━ Bot Ready ━━━━━━
+Logged in as: OCTANTBOT
+Bot ID: 1316950341954306159
+Guilds connected: 2
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 05:56:05,027 - __main__ - INFO - Health check passed - All systems normal

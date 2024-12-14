@@ -55,7 +55,7 @@ function updateConnectionStatus(status) {
         }
     }
 
-    async async function handleReconnection() {
+    async function handleReconnection() {
         reconnectAttempts++;
         updateConnectionStatus('reconnecting');
         
@@ -368,51 +368,46 @@ function appendMessage(message, isBot = false) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize socket with reconnection options
-    const socket = io({
-        reconnectionAttempts: 5,
-        reconnectionDelay: 1000,
-        reconnectionDelayMax: 5000,
-        timeout: 20000
-    });
-    
-    // Enhanced restart button handler with proper socket management
-    const restartButton = document.querySelector('#restartButton');
+    // Initialize restart button functionality
+    const restartButton = document.getElementById('restartButton');
     if (restartButton) {
         restartButton.addEventListener('click', async () => {
             if (!confirm('Are you sure you want to restart all services? This will briefly interrupt the connection.')) {
                 return;
             }
-            
+
             try {
+                console.log('Initiating restart process...');
                 restartButton.classList.add('restarting');
                 restartButton.disabled = true;
                 appendMessage('🔄 Initiating service restart...', true);
-                
+
                 // Send restart request
                 const response = await fetch('/restart', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' }
                 });
-                
+
                 if (!response.ok) {
                     throw new Error(`Restart failed: ${response.statusText}`);
                 }
-                
+
                 // Show restart progress
                 appendMessage('📡 Disconnecting services...', true);
-                socket.disconnect();
+                if (socket) {
+                    socket.disconnect();
+                }
+
+                // Sequential restart process with visual feedback
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                appendMessage('⚡ Restarting services...', true);
                 
-                setTimeout(() => {
-                    appendMessage('⚡ Restarting services...', true);
-                    setTimeout(() => {
-                        appendMessage('🔄 Page will refresh in 5 seconds...', true);
-                        setTimeout(() => {
-                            window.location.reload();
-                        }, 5000);
-                    }, 2000);
-                }, 1000);
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                appendMessage('🔄 Page will refresh in 5 seconds...', true);
                 
+                await new Promise(resolve => setTimeout(resolve, 5000));
+                window.location.reload();
+
             } catch (error) {
                 console.error('Restart error:', error);
                 restartButton.classList.remove('restarting');
