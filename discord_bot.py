@@ -61,15 +61,16 @@ class OctantDiscordBot(commands.Bot):
             }
             
             # Optimized recovery thresholds for better stability
-            self.HEALTH_CHECK_INTERVAL = 30    # Increased interval for less aggressive checking
-            self.MAX_HEALTH_CHECK_FAILURES = 8  # More failures allowed before recovery
-            self.HEARTBEAT_TIMEOUT = 120       # Much more lenient heartbeat timeout (2 minutes)
-            self.RECONNECT_BACKOFF_MAX = 300   # Increased max backoff for better stability (5 minutes)
-            self.MAX_LATENCY = 5000            # More lenient latency threshold (5000ms)
-            self.MAX_CONSECUTIVE_TIMEOUTS = 8   # More lenient timeout trigger
-            self.MEMORY_THRESHOLD = 98         # Very lenient memory threshold
-            self.CPU_THRESHOLD = 95            # Very lenient CPU threshold
-            self.IMMEDIATE_RESTART_THRESHOLD = 10  # More attempts before immediate restart
+            # More aggressive monitoring for better stability
+            self.HEALTH_CHECK_INTERVAL = 15    # More frequent health checks
+            self.MAX_HEALTH_CHECK_FAILURES = 3  # Faster recovery triggering
+            self.HEARTBEAT_TIMEOUT = 60        # Stricter heartbeat timeout (1 minute)
+            self.RECONNECT_BACKOFF_MAX = 120   # Faster reconnection (2 minutes max)
+            self.MAX_LATENCY = 2000           # Stricter latency threshold (2000ms)
+            self.MAX_CONSECUTIVE_TIMEOUTS = 3  # Stricter timeout trigger
+            self.MEMORY_THRESHOLD = 90        # Stricter memory threshold
+            self.CPU_THRESHOLD = 85           # Stricter CPU threshold
+            self.IMMEDIATE_RESTART_THRESHOLD = 5  # Faster immediate restart trigger
             
             # Initialize latency tracking
             self.latency_samples = []
@@ -236,10 +237,16 @@ Health Failures: {self.connection_state['health_check_failures']}
             logger.error(f"Error in connection monitor: {str(e)}", exc_info=True)
 
     async def _handle_health_failure(self, failure_type: str):
-        """Handle health check failures with progressive recovery actions"""
+        """Enhanced health check failure handling with immediate recovery"""
         try:
             failures = self.connection_state['health_check_failures']
             logger.warning(f"Health check failure ({failure_type}). Failure count: {failures}")
+            
+            # Immediate restart on heartbeat timeout
+            if failure_type == "heartbeat_timeout":
+                logger.critical("Heartbeat timeout detected - Initiating immediate restart")
+                await self._emergency_restart(force=True)
+                return
             
             if failures >= self.MAX_HEALTH_CHECK_FAILURES:
                 logger.critical(f"""
@@ -250,6 +257,7 @@ Connection State: {self.connection_state['connected']}
 Latency: {self.latency * 1000:.2f}ms
 Memory Usage: {self.connection_state['memory_usage']:.1f}%
 CPU Usage: {self.connection_state['cpu_usage']:.1f}%
+Session State: {'Active' if self._connection else 'Closed'}
 ━━━━━━━━━━━━━━━━━━━━━━━━""")
                 
                 # Try reconnection first
@@ -299,10 +307,10 @@ Action: Continuing normal operation
             logger.error(f"Error handling health failure: {str(e)}", exc_info=True)
 
     async def _emergency_restart(self, force=False):
-        """Perform emergency restart of the bot with aggressive recovery
+        """Enhanced emergency restart with aggressive session handling
         
         Args:
-            force (bool): If True, skips graceful shutdown attempts and forces immediate restart
+            force (bool): If True, performs immediate forceful restart with session cleanup
         """
         try:
             current_time = datetime.now(timezone.utc)
@@ -319,29 +327,11 @@ Connected Guilds: {self.connection_state['guilds_count']}
 Last Message Time: {self.connection_state['last_message_time']}
 ━━━━━━━━━━━━━━━━━━━━━━━━""")
             
-            if not force:
-                # Attempt graceful shutdown of tasks
-                try:
-                    logger.info("Attempting graceful shutdown...")
-                    # Stop all background tasks
-                    self.health_check.cancel()
-                    self.connection_monitor.cancel()
-                    
-                    # Close voice clients
-                    for vc in self.voice_clients:
-                        try:
-                            await vc.disconnect(force=True)
-                        except:
-                            pass
-                    
-                    # Close existing connection
-                    await self.close()
-                    await asyncio.sleep(2)  # Wait for cleanup
-                except Exception as e:
-                    logger.error(f"Error during graceful shutdown: {str(e)}")
-            else:
-                logger.warning("Force restart requested - Skipping graceful shutdown")
-                try:
+            # Always perform thorough cleanup
+            # Enhanced cleanup process with proper error handling
+            try:
+                if force:
+                    logger.warning("Force restart requested - Performing aggressive shutdown")
                     # Forceful cleanup
                     for task in asyncio.all_tasks():
                         if task is not asyncio.current_task():
@@ -354,9 +344,57 @@ Last Message Time: {self.connection_state['last_message_time']}
                     # Force clear session
                     if hasattr(self, 'session'):
                         await self.session.close()
-                        
-                except Exception as e:
-                    logger.error(f"Error during force shutdown: {str(e)}")
+                else:
+                    logger.info("Initiating graceful cleanup...")
+                    
+                    # Force clear all active sessions
+                    if hasattr(self, '_connection'):
+                        self._connection.clear()
+                    
+                    # Stop all background tasks
+                    try:
+                        self.health_check.cancel()
+                        self.connection_monitor.cancel()
+                    except Exception as e:
+                        logger.error(f"Error canceling tasks: {str(e)}")
+                    
+                    # Close all voice connections
+                    for vc in self.voice_clients:
+                        try:
+                            await vc.disconnect(force=True)
+                        except Exception as e:
+                            logger.error(f"Error disconnecting voice client: {str(e)}")
+                    
+                    # Clear session state
+                    if hasattr(self, 'session'):
+                        try:
+                            await self.session.close()
+                        except Exception as e:
+                            logger.error(f"Error closing session: {str(e)}")
+                    
+                    # Close WebSocket connection
+                    if hasattr(self, 'ws'):
+                        try:
+                            await self.ws.close(code=1000)
+                        except Exception as e:
+                            logger.error(f"Error closing WebSocket: {str(e)}")
+                    
+                    # Close HTTP session
+                    if hasattr(self, 'http'):
+                        try:
+                            await self.http.close()
+                        except Exception as e:
+                            logger.error(f"Error closing HTTP session: {str(e)}")
+                    
+                    # Clear internal state
+                    self.clear()
+                
+                # Wait for cleanup to complete
+                await asyncio.sleep(5 if force else 2)
+                
+            except Exception as e:
+                logger.error(f"Error during cleanup process: {str(e)}")
+                # Continue with restart process despite cleanup errors
                     
             # Immediate process cleanup
             import gc
