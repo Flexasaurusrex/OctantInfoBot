@@ -86,20 +86,66 @@ def restart_services():
                 logger.info("━━━━━━ Initiating Restart Sequence ━━━━━━")
                 logger.info("Phase 1: Preparing for service shutdown...")
                 
-                # Kill any existing Python processes (Discord bot, etc)
+                # Enhanced process cleanup with force kill if needed
                 import psutil
                 current_pid = os.getpid()
+                logger.info("━━━━━━ Cleaning up existing processes ━━━━━━")
+                
+                def force_kill_process(proc):
+                    """Force kill a process if it doesn't terminate gracefully"""
+                    try:
+                        proc.terminate()
+                        try:
+                            proc.wait(timeout=5)
+                        except psutil.TimeoutExpired:
+                            logger.warning(f"Process {proc.pid} didn't terminate gracefully, forcing kill...")
+                            proc.kill()
+                            proc.wait(timeout=5)
+                        return True
+                    except (psutil.NoSuchProcess, psutil.AccessDenied) as e:
+                        logger.error(f"Error killing process {proc.pid}: {str(e)}")
+                        return False
+                
+                # First pass: collect all target processes
+                target_processes = []
                 for proc in psutil.process_iter(['pid', 'name', 'cmdline']):
                     try:
                         if proc.info['name'] == 'python' and proc.pid != current_pid:
                             cmdline = proc.info['cmdline']
                             if cmdline and any(x in cmdline[-1] for x in ['discord_bot.py', 'telegram_bot.py']):
-                                logger.info(f"Terminating process: {proc.pid} ({cmdline[-1]})")
-                                proc.terminate()
-                                proc.wait(timeout=5)
-                    except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.TimeoutExpired) as e:
-                        logger.error(f"Error terminating process: {str(e)}")
+                                target_processes.append(proc)
+                    except (psutil.NoSuchProcess, psutil.AccessDenied) as e:
                         continue
+                
+                # Second pass: terminate all collected processes
+                for proc in target_processes:
+                    try:
+                        cmdline = proc.cmdline()[-1]
+                        logger.info(f"Terminating process: {proc.pid} ({cmdline})")
+                        if force_kill_process(proc):
+                            logger.info(f"Successfully terminated process {proc.pid}")
+                        else:
+                            logger.warning(f"Failed to terminate process {proc.pid}")
+                    except Exception as e:
+                        logger.error(f"Unexpected error terminating process: {str(e)}")
+                        continue
+                
+                # Verify all processes are terminated
+                time.sleep(1)
+                remaining = []
+                for proc in psutil.process_iter(['pid', 'name', 'cmdline']):
+                    try:
+                        if proc.info['name'] == 'python' and proc.pid != current_pid:
+                            cmdline = proc.info['cmdline']
+                            if cmdline and any(x in cmdline[-1] for x in ['discord_bot.py', 'telegram_bot.py']):
+                                remaining.append(proc)
+                    except (psutil.NoSuchProcess, psutil.AccessDenied):
+                        continue
+                
+                if remaining:
+                    logger.warning(f"Warning: {len(remaining)} bot processes still running after cleanup")
+                else:
+                    logger.info("All bot processes successfully terminated")
 
                 # Enhanced state tracking
                 active_connections = len(socketio.server.manager.rooms.get('/', set()))
@@ -153,17 +199,44 @@ def restart_services():
                     import subprocess
                     
                     try:
-                        subprocess.Popen(['python', 'discord_bot.py'], 
-                                      stdout=subprocess.PIPE,
-                                      stderr=subprocess.PIPE)
-                        logger.info("Discord bot process started")
+                        # Enhanced process management for Discord bot
+                        logger.info("Starting Discord bot with process monitoring...")
+                        discord_process = subprocess.Popen(
+                            ['python', 'discord_bot.py'],
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE,
+                            universal_newlines=True
+                        )
                         
-                        subprocess.Popen(['python', 'telegram_bot.py'],
-                                      stdout=subprocess.PIPE,
-                                      stderr=subprocess.PIPE)
-                        logger.info("Telegram bot process started")
+                        # Wait briefly and check if process is still running
+                        time.sleep(2)
+                        if discord_process.poll() is None:
+                            logger.info("Discord bot process started successfully")
+                        else:
+                            stdout, stderr = discord_process.communicate()
+                            logger.error(f"Discord bot failed to start! Stdout: {stdout}, Stderr: {stderr}")
+                            raise Exception("Discord bot failed to start properly")
+                        
+                        # Start Telegram bot with similar monitoring
+                        logger.info("Starting Telegram bot...")
+                        telegram_process = subprocess.Popen(
+                            ['python', 'telegram_bot.py'],
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE,
+                            universal_newlines=True
+                        )
+                        
+                        time.sleep(2)
+                        if telegram_process.poll() is None:
+                            logger.info("Telegram bot process started successfully")
+                        else:
+                            stdout, stderr = telegram_process.communicate()
+                            logger.error(f"Telegram bot failed to start! Stdout: {stdout}, Stderr: {stderr}")
+                            raise Exception("Telegram bot failed to start properly")
+                            
                     except Exception as e:
                         logger.error(f"Failed to start bot processes: {str(e)}")
+                        raise
                     
                     # Step 5: Stop the server with enhanced logging
                     logger.info("Initiating server shutdown sequence...")
