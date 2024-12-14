@@ -195,9 +195,10 @@ def restart_services():
                     
                     eventlet.sleep(2)
                     
-                    # Step 4: Start discord and telegram bots
+                    # Step 4: Start discord and telegram bots with enhanced monitoring
                     logger.info("Starting Discord and Telegram bots...")
                     import subprocess
+                    import time
                     
                     try:
                         # Enhanced process management for Discord bot with retries
@@ -208,44 +209,61 @@ def restart_services():
                         
                         while retry_count < max_retries:
                             try:
+                                # Kill any existing Discord bot processes first
+                                subprocess.run(['pkill', '-f', 'discord_bot.py'], stderr=subprocess.PIPE)
+                                time.sleep(2)  # Wait for process cleanup
+                                
+                                # Start Discord bot with full environment
+                                env = os.environ.copy()
+                                env['PYTHONUNBUFFERED'] = '1'  # Ensure output is not buffered
+                                
                                 discord_process = subprocess.Popen(
                                     ['python', 'discord_bot.py'],
                                     stdout=subprocess.PIPE,
                                     stderr=subprocess.PIPE,
                                     universal_newlines=True,
-                                    env=os.environ.copy()  # Ensure environment variables are passed
+                                    env=env
                                 )
                                 
-                                # Enhanced startup verification
-                                for _ in range(6):  # Check for 30 seconds (5s * 6)
-                                    time.sleep(5)
+                                # Enhanced startup verification with detailed logging
+                                startup_timeout = 30  # 30 seconds total
+                                check_interval = 5    # Check every 5 seconds
+                                checks = startup_timeout // check_interval
+                                
+                                for i in range(checks):
+                                    time.sleep(check_interval)
                                     if discord_process.poll() is not None:
                                         stdout, stderr = discord_process.communicate()
-                                        logger.error(f"Discord bot terminated early! Stdout: {stdout}, Stderr: {stderr}")
-                                        raise Exception("Discord bot terminated unexpectedly")
+                                        logger.error(f"Discord bot terminated early!\nStdout: {stdout}\nStderr: {stderr}")
+                                        raise Exception(f"Discord bot terminated unexpectedly after {(i+1)*check_interval}s")
                                     
-                                    # If process is still running after 30s, consider it successful
-                                    if _ == 5:
-                                        logger.info("Discord bot process verified and running stably")
-                                        break
+                                    # Log startup progress
+                                    logger.info(f"Discord bot startup check {i+1}/{checks} passed")
                                 
-                                # If we get here, the process started successfully
+                                logger.info("Discord bot process verified and running stably")
                                 break
                                 
                             except Exception as e:
                                 retry_count += 1
                                 logger.warning(f"Discord bot start attempt {retry_count} failed: {str(e)}")
+                                
                                 if discord_process:
                                     try:
                                         discord_process.terminate()
                                         discord_process.wait(timeout=5)
                                     except:
-                                        pass
+                                        try:
+                                            discord_process.kill()
+                                        except:
+                                            pass
                                 
                                 if retry_count >= max_retries:
                                     raise Exception(f"Failed to start Discord bot after {max_retries} attempts")
                                 
-                                time.sleep(2 * retry_count)  # Exponential backoff
+                                # Exponential backoff with logging
+                                backoff = 2 * retry_count
+                                logger.info(f"Waiting {backoff}s before retry {retry_count + 1}")
+                                time.sleep(backoff)
                         
                         # Start Telegram bot with similar monitoring
                         logger.info("Starting Telegram bot...")

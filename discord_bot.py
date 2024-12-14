@@ -6,6 +6,7 @@ from discord.ext import commands
 import asyncio
 import time
 from datetime import datetime
+import traceback
 
 # Configure logging with both file and console output
 logging.basicConfig(
@@ -40,22 +41,37 @@ class OctantBot(commands.Bot):
             logger.info("━━━━━━ Initializing Bot Setup ━━━━━━")
             self.startup_time = datetime.now()
             
+            # Register commands
+            await self.register_commands()
+            
+            # Force sync commands
+            logger.info("Syncing commands globally...")
+            await self.tree.sync()
+            logger.info("Commands synced successfully")
+
+        except Exception as e:
+            logger.error(f"Critical error in setup_hook: {str(e)}\n{traceback.format_exc()}")
+            raise
+
+    async def register_commands(self):
+        """Register all slash commands"""
+        try:
+            logger.info("Registering commands...")
+            
             # Clear existing commands first
             self.tree.clear_commands(guild=None)
-            logger.info("Cleared existing commands")
             
-            # Add the commands
-            @self.tree.command(name="help", description="Shows the list of available commands")
+            # Register help command
+            @self.tree.command(name="help", description="Shows the list of available commands", guild=None)
             async def help_command(interaction: discord.Interaction):
-                """Handler for the help command"""
                 try:
+                    logger.info(f"Help command executed by {interaction.user}")
                     embed = discord.Embed(
                         title="📚 Available Commands",
                         description="Here are all the commands you can use:",
                         color=discord.Color.blue()
                     )
                     
-                    # Add command descriptions
                     embed.add_field(
                         name="/help",
                         value="Shows this help message",
@@ -66,15 +82,9 @@ class OctantBot(commands.Bot):
                         value="Check if the bot is responsive",
                         inline=False
                     )
-                    embed.add_field(
-                        name="/trivia",
-                        value="Start a trivia game",
-                        inline=False
-                    )
                     
-                    # Add bot information
-                    uptime = datetime.now() - self.startup_time if self.startup_time else None
-                    uptime_str = f"{uptime.days}d {uptime.seconds//3600}h {(uptime.seconds//60)%60}m" if uptime else "Unknown"
+                    uptime = datetime.now() - self.startup_time if self.startup_time else datetime.now()
+                    uptime_str = str(uptime).split('.')[0]  # Format as HH:MM:SS
                     
                     embed.add_field(
                         name="Bot Information",
@@ -83,21 +93,23 @@ class OctantBot(commands.Bot):
                     )
                     
                     await interaction.response.send_message(embed=embed)
-                    logger.info(f"Help command executed by {interaction.user}")
+                    logger.info("Help command completed successfully")
                     
                 except Exception as e:
-                    logger.error(f"Error in help command: {str(e)}")
+                    logger.error(f"Error in help command: {str(e)}\n{traceback.format_exc()}")
                     if not interaction.response.is_done():
                         await interaction.response.send_message(
                             "❌ Error displaying help message",
                             ephemeral=True
                         )
 
-            @self.tree.command(name="ping", description="Check if the bot is responsive")
+            # Register ping command
+            @self.tree.command(name="ping", description="Check if the bot is responsive", guild=None)
             async def ping_command(interaction: discord.Interaction):
-                """Handler for the ping command"""
                 try:
+                    logger.info(f"Ping command executed by {interaction.user}")
                     start_time = time.perf_counter()
+                    
                     await interaction.response.send_message("Pinging...")
                     
                     end_time = time.perf_counter()
@@ -110,25 +122,41 @@ class OctantBot(commands.Bot):
                     response += f"• Connection status: Connected"
                     
                     await interaction.edit_original_response(content=response)
-                    logger.info(f"Ping command executed - Latency: {latency}ms, Response time: {duration}ms")
+                    logger.info(f"Ping response sent - Latency: {latency}ms, Response time: {duration}ms")
                     
                 except Exception as e:
-                    logger.error(f"Error in ping command: {str(e)}")
+                    logger.error(f"Error in ping command: {str(e)}\n{traceback.format_exc()}")
                     if not interaction.response.is_done():
                         await interaction.response.send_message(
                             "❌ Error processing ping command",
                             ephemeral=True
                         )
             
-            # Force sync commands with Discord
-            logger.info("Syncing commands globally...")
-            await self.tree.sync()
-            self.initial_sync_done = True
-            logger.info("Global command sync completed!")
+            logger.info("Commands registered successfully")
             
         except Exception as e:
-            logger.error(f"Critical error in setup_hook: {str(e)}", exc_info=True)
-            await self.close()
+            logger.error(f"Error registering commands: {str(e)}\n{traceback.format_exc()}")
+            raise
+
+            # Force sync commands with Discord with retries
+            max_retries = 3
+            retry_count = 0
+            while retry_count < max_retries:
+                try:
+                    logger.info(f"Attempting to sync commands globally (attempt {retry_count + 1}/{max_retries})...")
+                    await self.tree.sync()
+                    logger.info("Successfully synced commands globally")
+                    break
+                except Exception as e:
+                    retry_count += 1
+                    logger.error(f"Failed to sync commands (attempt {retry_count}/{max_retries}): {str(e)}")
+                    if retry_count >= max_retries:
+                        raise Exception(f"Failed to sync commands after {max_retries} attempts")
+                    await asyncio.sleep(5)
+                    
+        except Exception as e:
+            logger.error(f"Error registering commands: {str(e)}\n{traceback.format_exc()}")
+            raise
 
     async def on_ready(self):
         """Called when the bot is ready and connected"""
@@ -150,7 +178,7 @@ class OctantBot(commands.Bot):
             logger.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
             
         except Exception as e:
-            logger.error(f"Error in on_ready: {str(e)}", exc_info=True)
+            logger.error(f"Error in on_ready: {str(e)}\n{traceback.format_exc()}")
 
 async def main():
     """Main entry point for the bot"""
