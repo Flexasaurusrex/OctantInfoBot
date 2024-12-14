@@ -76,73 +76,52 @@ def restart_services():
         # Initial notification
         socketio.emit('restart_status', {
             'status': 'initializing',
-            'message': 'Initiating restart sequence (30 seconds)...',
-            'countdown': 30
+            'message': 'Initiating restart sequence...',
+            'countdown': 15
         }, namespace='/')
         
         def cleanup_and_restart():
             try:
-                # Step 1: Prepare for restart with enhanced state preservation
-                logger.info("Starting cleanup process with state preservation...")
-                eventlet.sleep(3)  # Reduced initial delay
+                # Step 1: Prepare for restart
+                logger.info("Starting cleanup process...")
+                eventlet.sleep(1)
                 
-                # Save current state
-                current_state = {
-                    'active_connections': len(socketio.server.manager.rooms.get('/', set())),
-                    'start_time': datetime.now().isoformat(),
-                    'environment': os.environ.get('FLASK_ENV', 'development')
-                }
-                
-                logger.info(f"Preserving state: {current_state}")
+                # Save current state and notify clients
+                active_connections = len(socketio.server.manager.rooms.get('/', set()))
+                logger.info(f"Active connections: {active_connections}")
                 
                 socketio.emit('restart_status', {
                     'status': 'preparing',
-                    'message': f'Preparing restart (Active connections: {current_state["active_connections"]})...',
-                    'countdown': 25,
-                    'details': current_state
+                    'message': 'Preparing to restart server...',
+                    'countdown': 10
                 }, namespace='/')
                 
-                # Step 2: Close connections
+                # Step 2: Close connections gracefully
                 active_sids = list(socketio.server.manager.rooms.get('/', set()))
-                total_connections = len(active_sids)
-                
-                for idx, sid in enumerate(active_sids, 1):
+                for sid in active_sids:
                     try:
                         socketio.server.disconnect(sid, namespace='/')
-                        logger.info(f"Disconnected client {sid} ({idx}/{total_connections})")
-                        
-                        # Update status every few disconnections
-                        if idx % 5 == 0 or idx == total_connections:
-                            socketio.emit('restart_status', {
-                                'status': 'cleaning',
-                                'message': f'Closing connections ({idx}/{total_connections})...',
-                                'countdown': 20 - int((idx/total_connections) * 10) if total_connections > 0 else 20
-                            }, namespace='/')
-                            
-                        eventlet.sleep(0.1)
+                        logger.info(f"Disconnected client {sid}")
                     except Exception as e:
                         logger.warning(f"Error disconnecting client {sid}: {str(e)}")
                 
                 logger.info("All connections cleaned up")
                 
-                # Step 3: Final preparations
-                socketio.emit('restart_status', {
-                    'status': 'finalizing',
-                    'message': 'Finalizing restart preparations...',
-                    'countdown': 10
-                }, namespace='/')
-                eventlet.sleep(5)
-                
-                # Step 4: Final notification
+                # Step 3: Final notification
                 socketio.emit('restart_status', {
                     'status': 'restarting',
-                    'message': 'Services are restarting now...',
+                    'message': 'Server is restarting...',
                     'countdown': 5
-                }, namespace='/')
-                eventlet.sleep(3)
+                }, broadcast=True)
                 
-                # Trigger restart
-                logger.info("Initiating restart...")
+                eventlet.sleep(2)
+                
+                # Step 4: Stop the server
+                logger.info("Stopping server...")
+                socketio.stop()
+                
+                # Step 5: Exit process to trigger workflow restart
+                logger.info("Triggering restart...")
                 os._exit(0)
                 
             except Exception as e:
@@ -153,7 +132,7 @@ def restart_services():
                     'message': f'Restart failed: {error_msg}. Please try again.',
                     'countdown': 0
                 }, namespace='/')
-                
+        
         # Schedule the cleanup and restart process
         eventlet.spawn(cleanup_and_restart)
         return {"status": "success", "message": "Restart sequence initiated"}

@@ -600,3 +600,43 @@ Logged in as: OCTANTBOT
 Bot ID: 1316950341954306159
 Guilds connected: 2
 ━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 06:02:20,467 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 06:02:35,469 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 06:02:50,457 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 06:03:05,469 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 06:03:05,469 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: True
+Guilds: 2
+Latency: 28.12ms
+Uptime: 0.0h
+Health Failures: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 06:03:20,469 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 06:03:35,462 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 06:03:50,469 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 06:03:51,131 - __main__ - INFO - Initializing Discord bot with enhanced monitoring
+2024-12-14 06:03:51,132 - __main__ - INFO - Chat and Trivia handlers initialized successfully
+2024-12-14 06:03:51,132 - __main__ - INFO - Bot initialization completed successfully
+2024-12-14 06:03:51,133 - discord.client - INFO - logging in using static token
+2024-12-14 06:03:51,505 - __main__ - INFO - Health monitoring tasks started
+2024-12-14 06:03:51,507 - __main__ - WARNING - Connection check failed - Bot disconnected
+2024-12-14 06:03:51,507 - __main__ - WARNING - Health check failure (disconnected). Failure count: 1
+2024-12-14 06:03:51,507 - __main__ - INFO - 
+━━━━━━ Minor Health Check Issue ━━━━━━
+Failure Count: 1
+Status: Monitoring
+Action: Continuing normal operation
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 06:03:51,507 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: False
+Guilds: 0
+Latency: nanms
+Uptime: 0.0h
+Health Failures: 1
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 06:03:51,656 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 75aed71733cee25b0a0f5e6efb7b44c2).
+2024-12-14 06:03:53,663 - __main__ - INFO - ━━━━━━ Bot Ready ━━━━━━
+Logged in as: OCTANTBOT
+Bot ID: 1316950341954306159
+Guilds connected: 2
+━━━━━━━━━━━━━━━━━━━━━━━━
