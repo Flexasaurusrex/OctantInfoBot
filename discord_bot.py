@@ -1,34 +1,27 @@
 import os
 import logging
+import asyncio
 import discord
-from discord.ext import commands
-from discord_trivia import DiscordTrivia
+from discord.ext import tasks, commands
+from datetime import datetime, timezone
 from chat_handler import ChatHandler
+from discord_trivia import DiscordTrivia
 
 # Configure logging
 logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - [%(module)s:%(lineno)d] - %(message)s',
     level=logging.INFO,
-    datefmt='%Y-%m-%d %H:%M:%S'
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(),
+        logging.FileHandler('discord_bot.log')
+    ]
 )
 logger = logging.getLogger(__name__)
 
 class OctantDiscordBot(commands.Bot):
     def __init__(self):
+        """Initialize the bot with enhanced monitoring capabilities"""
         try:
-            # Enhanced connection state tracking
-            self.connection_state = {
-                'connected': False,
-                'reconnect_count': 0,
-                'last_heartbeat': None,
-                'last_error': None,
-                'heartbeat_interval': 0,
-                'latency': 0.0,
-                'session_id': None,
-                'last_reconnect_time': None,
-                'connection_errors': []
-            }
-            
             # Set up intents with enhanced permissions
             intents = discord.Intents.default()
             intents.message_content = True
@@ -37,13 +30,34 @@ class OctantDiscordBot(commands.Bot):
             intents.guild_messages = True
             intents.guild_reactions = True
             
-            # Initialize the bot with required intents
+            # Initialize the bot with required intents and command prefix
             super().__init__(
                 command_prefix='/',
                 intents=intents,
-                heartbeat_timeout=60,
-                activity=discord.Game(name="Octant Trivia | /help")
+                heartbeat_timeout=60
             )
+
+            # Initialize connection state tracking
+            self.connection_state = {
+                'connected': False,
+                'last_heartbeat': None,
+                'reconnect_count': 0,
+                'last_reconnect_time': None,
+                'connection_errors': [],
+                'last_error': None,
+                'guilds_count': 0,
+                'health_check_failures': 0,
+                'startup_time': datetime.now(timezone.utc),
+                'last_recovery_action': None,
+                'memory_usage': 0,
+                'cpu_usage': 0
+            }
+            
+            # Initialize recovery thresholds
+            self.HEALTH_CHECK_INTERVAL = 30  # seconds
+            self.MAX_HEALTH_CHECK_FAILURES = 3
+            self.HEARTBEAT_TIMEOUT = 60  # seconds
+            self.RECONNECT_BACKOFF_MAX = 300  # seconds
             
             self._setup_handlers()
             logger.info("Bot initialization completed successfully")
@@ -52,175 +66,6 @@ class OctantDiscordBot(commands.Bot):
             logger.error(f"Failed to initialize bot: {str(e)}", exc_info=True)
             raise
 
-    async def on_ready(self):
-        """Called when the bot is ready."""
-        try:
-            logger.info(f"""━━━━━━ Bot Ready ━━━━━━
-Logged in as: {self.user.name}
-Bot ID: {self.user.id}
-Guilds connected: {len(self.guilds)}
-━━━━━━━━━━━━━━━━━━━━━━━━""")
-            self.connection_state['connected'] = True
-            
-        except Exception as e:
-            logger.error(f"Error in on_ready: {str(e)}", exc_info=True)
-
-    async def on_connect(self):
-        """Handle successful connection with enhanced state tracking"""
-        try:
-            current_time = discord.utils.utcnow()
-            self.connection_state.update({
-                'connected': True,
-                'last_heartbeat': current_time,
-                'last_reconnect_time': current_time if self.connection_state['reconnect_count'] > 0 else None,
-                'session_id': self.ws.session_id if hasattr(self, 'ws') else None,
-                'latency': self.latency
-            })
-            
-            logger.info("""━━━━━━ Bot Connected ━━━━━━
-Connection Details:
-- Name: {0}
-- ID: {1}
-- Latency: {2:.2f}ms
-- Session ID: {3}
-- Reconnect Count: {4}
-━━━━━━━━━━━━━━━━━━━━━━━━""".format(
-                self.user.name,
-                self.user.id,
-                self.latency * 1000,
-                self.connection_state['session_id'],
-                self.connection_state['reconnect_count']
-            ))
-            
-        except Exception as e:
-            logger.error(f"Error in on_connect: {str(e)}", exc_info=True)
-            self.connection_state['connection_errors'].append({
-                'time': discord.utils.utcnow(),
-                'error': str(e),
-                'type': 'connect'
-            })
-
-    async def on_disconnect(self):
-        """Handle disconnection with enhanced reconnection logic and state recovery"""
-        try:
-            self.connection_state['connected'] = False
-            self.connection_state['reconnect_count'] += 1
-            current_time = discord.utils.utcnow()
-            
-            # Calculate time since last reconnect with enhanced tracking
-            last_reconnect = self.connection_state['last_reconnect_time']
-            time_since_reconnect = (current_time - last_reconnect).total_seconds() if last_reconnect else float('inf')
-            
-            # Progressive reconnection strategy with state preservation
-            max_reconnect_attempts = 5
-            backoff_factor = min(2 ** (self.connection_state['reconnect_count'] - 1), 300)  # Max 5 minutes
-            
-            # Enhanced state tracking
-            self.connection_state.update({
-                'last_disconnect_time': current_time,
-                'disconnect_reason': getattr(self.ws, 'close_code', None),
-                'last_sequence': getattr(self.ws, 'sequence', None),
-                'resume_gateway_url': getattr(self.ws, 'resume_gateway_url', None)
-            })
-            
-            logger.warning("""━━━━━━ Bot Disconnected ━━━━━━
-Reconnection Status:
-- Attempt: {0}/{1}
-- Time Since Last Reconnect: {2:.1f}s
-- Last Session ID: {3}
-- Next Retry Delay: {4}s
-- Last Known Latency: {5:.2f}ms
-━━━━━━━━━━━━━━━━━━━━━━━━""".format(
-                self.connection_state['reconnect_count'],
-                max_reconnect_attempts,
-                time_since_reconnect,
-                self.connection_state['session_id'],
-                backoff_factor,
-                self.latency * 1000 if self.latency else 0
-            ))
-            
-            # Check if we should attempt reconnection
-            if self.connection_state['reconnect_count'] <= max_reconnect_attempts:
-                try:
-                    # Clear any existing error states
-                    self.clear()
-                    
-                    # Wait before reconnecting with exponential backoff
-                    await asyncio.sleep(backoff_factor)
-                    
-                    # Attempt to reconnect
-                    await self.connect(reconnect=True)
-                    
-                except Exception as reconnect_error:
-                    logger.error(f"Failed to reconnect: {str(reconnect_error)}", exc_info=True)
-                    self.connection_state['connection_errors'].append({
-                        'time': discord.utils.utcnow(),
-                        'error': str(reconnect_error),
-                        'type': 'reconnect_attempt'
-                    })
-            else:
-                logger.critical("Maximum reconnection attempts reached. Manual intervention required.")
-                # You might want to implement additional recovery mechanisms here
-                
-        except Exception as e:
-            logger.error(f"Error in on_disconnect: {str(e)}", exc_info=True)
-            self.connection_state['connection_errors'].append({
-                'time': discord.utils.utcnow(),
-                'error': str(e),
-                'type': 'disconnect'
-            })
-            
-            # Attempt to clean up and recover
-            try:
-                await self.close()
-            except:
-                pass
-
-    async def on_error(self, event, *args, **kwargs):
-        """Handle errors in event handlers with enhanced recovery"""
-        try:
-            error = args[0] if args else "Unknown error"
-            self.connection_state['last_error'] = str(error)
-            
-            # Enhanced error classification
-            if isinstance(error, discord.errors.HTTPException):
-                if error.status == 429:  # Rate limit error
-                    retry_after = error.retry_after
-                    logger.warning(f"Rate limit hit, waiting {retry_after} seconds")
-                    await asyncio.sleep(retry_after)
-                    return
-                
-            if isinstance(error, (discord.errors.GatewayNotFound, discord.errors.ConnectionClosed)):
-                logger.error("Gateway connection error - attempting recovery")
-                await self.close()
-                await self.connect(reconnect=True)
-                return
-                
-            logger.error(f"""━━━━━━ Event Error ━━━━━━
-Event: {event}
-Error Type: {type(error).__name__}
-Error: {str(error)}
-Args: {args}
-Reconnect Count: {self.connection_state['reconnect_count']}
-Session ID: {self.connection_state.get('session_id')}
-Last Known State: {self.connection_state.get('connected', False)}
-━━━━━━━━━━━━━━━━━━━━━━━━""")
-            
-            # Implement progressive backoff for general errors
-            backoff = min(300, (2 ** self.connection_state['reconnect_count']))
-            logger.info(f"Implementing backoff of {backoff} seconds")
-            await asyncio.sleep(backoff)
-            
-        except Exception as e:
-            logger.error(f"Critical error in error handler: {str(e)}", exc_info=True)
-            # Attempt to recover from critical errors
-            try:
-                await self.close()
-                await asyncio.sleep(5)
-                await self.connect(reconnect=True)
-            except:
-                logger.critical("Failed to recover from critical error")
-
     def _setup_handlers(self):
         """Set up event handlers with proper error handling"""
         try:
@@ -228,94 +73,20 @@ Last Known State: {self.connection_state.get('connected', False)}
             self.trivia = DiscordTrivia()
             logger.info("Chat and Trivia handlers initialized successfully")
             
-        except Exception as e:
-            logger.error(f"Failed to initialize handlers: {str(e)}")
-            raise
-
-    async def on_message(self, message):
-        """Handle incoming messages with enhanced error handling."""
-        try:
-            if message.author == self.user:
-                return
-
-            logger.info(f"""━━━━━━ Message Received ━━━━━━
-Content: {message.content}
-Author: {message.author.name}
-Channel: {message.channel.name}
-Is Command: {message.content.startswith(self.command_prefix)}
-━━━━━━━━━━━━━━━━━━━━━━━━""")
-
-            # Process commands first
-            if message.content.startswith(self.command_prefix):
-                await self.process_commands(message)
-                return
-
-            # Check if message is a reply to bot
-            is_reply_to_bot = bool(
-                message.reference 
-                and message.reference.resolved 
-                and message.reference.resolved.author.id == self.user.id
-            )
-
-            if not is_reply_to_bot:
-                return
-
-            # Get and send response
-            response = self.chat_handler.get_response(message.content)
-            if response:
-                if isinstance(response, list):
-                    for chunk in response:
-                        if chunk and chunk.strip():
-                            await message.reply(chunk.strip(), mention_author=True)
-                else:
-                    await message.reply(response.strip(), mention_author=True)
-
-        except Exception as e:
-            logger.error(f"Error processing message: {str(e)}", exc_info=True)
-            await message.channel.send("I encountered an error processing your message. Please try again.")
-
-    async def on_interaction(self, interaction: discord.Interaction):
-        """Handle button interactions with error handling."""
-        try:
-            if interaction.type == discord.InteractionType.component:
-                custom_id = interaction.data.get("custom_id", "")
-                if custom_id.startswith("trivia_"):
-                    await self.trivia.handle_answer(interaction, custom_id.split("_")[1])
-                    
-        except Exception as e:
-            logger.error(f"Error handling interaction: {str(e)}", exc_info=True)
-            try:
-                await interaction.response.send_message(
-                    "Sorry, there was an error processing your interaction. Please try again.",
-                    ephemeral=True
-                )
-            except:
-                pass
-
-async def main():
-    """Main bot execution with enhanced error handling and reconnection logic."""
-    retry_count = 0
-    max_retries = 5
-    base_delay = 5
-
-    while True:
-        try:
-            bot = OctantDiscordBot()
-            
             # Remove default help command
-            bot.remove_command('help')
+            self.remove_command('help')
             
-            # Add commands
-            @bot.command(name='trivia')
+            # Register commands
+            @self.command(name='trivia')
             async def trivia_command(ctx):
                 """Start a trivia game"""
                 try:
-                    await bot.trivia.start_game(ctx)
+                    await self.trivia.start_game(ctx)
                 except Exception as e:
                     logger.error(f"Error in trivia command: {str(e)}", exc_info=True)
                     await ctx.send("Sorry, there was an error starting the trivia game. Please try again.")
 
-            @bot.command(name='help')
+            @self.command(name='help')
             async def help_command(ctx):
                 """Show help message"""
                 help_embed = discord.Embed(
@@ -343,7 +114,190 @@ async def main():
                 except Exception as e:
                     logger.error(f"Error sending help message: {str(e)}", exc_info=True)
                     await ctx.send("Sorry, there was an error displaying the help message. Please try again.")
+                    
+        except Exception as e:
+            logger.error(f"Failed to initialize handlers: {str(e)}")
+            raise
 
+    async def start_health_monitor(self):
+        """Start the health monitoring tasks"""
+        self.health_check.start()
+        self.connection_monitor.start()
+        logger.info("Health monitoring tasks started")
+
+    @tasks.loop(seconds=30)
+    async def health_check(self):
+        """Periodic health check task"""
+        try:
+            current_time = datetime.now(timezone.utc)
+            
+            # Check last heartbeat
+            if self.connection_state['last_heartbeat']:
+                heartbeat_age = (current_time - self.connection_state['last_heartbeat']).total_seconds()
+                if heartbeat_age > self.HEARTBEAT_TIMEOUT:
+                    logger.warning(f"Heartbeat timeout detected. Age: {heartbeat_age}s")
+                    self.connection_state['health_check_failures'] += 1
+                    await self._handle_health_failure("heartbeat_timeout")
+            
+            # Check connection status
+            if not self.connection_state['connected']:
+                logger.warning("Connection check failed - Bot disconnected")
+                self.connection_state['health_check_failures'] += 1
+                await self._handle_health_failure("disconnected")
+            
+            # Reset failure count if everything is fine
+            if self.connection_state['connected'] and self.latency < 1.0:
+                self.connection_state['health_check_failures'] = 0
+                
+        except Exception as e:
+            logger.error(f"Error in health check: {str(e)}", exc_info=True)
+
+    @tasks.loop(minutes=1)
+    async def connection_monitor(self):
+        """Monitor connection quality and guild status"""
+        try:
+            self.connection_state.update({
+                'guilds_count': len(self.guilds),
+                'latency': self.latency,
+                'last_check_time': datetime.now(timezone.utc)
+            })
+            
+            logger.info(f"""━━━━━━ Connection Status ━━━━━━
+Connected: {self.connection_state['connected']}
+Guilds: {self.connection_state['guilds_count']}
+Latency: {self.latency * 1000:.2f}ms
+Uptime: {(datetime.now(timezone.utc) - self.connection_state['startup_time']).total_seconds() / 3600:.1f}h
+Health Failures: {self.connection_state['health_check_failures']}
+━━━━━━━━━━━━━━━━━━━━━━━━""")
+            
+        except Exception as e:
+            logger.error(f"Error in connection monitor: {str(e)}", exc_info=True)
+
+    async def _handle_health_failure(self, failure_type: str):
+        """Handle health check failures with progressive recovery actions"""
+        try:
+            failures = self.connection_state['health_check_failures']
+            logger.warning(f"Health check failure ({failure_type}). Failure count: {failures}")
+            
+            if failures >= self.MAX_HEALTH_CHECK_FAILURES:
+                logger.critical("Critical health check failure - Initiating full restart")
+                await self._emergency_restart()
+            elif failures >= 2:
+                logger.warning("Multiple health check failures - Attempting reconnection")
+                await self.reconnect()
+            else:
+                logger.info("Single health check failure - Monitoring closely")
+                
+        except Exception as e:
+            logger.error(f"Error handling health failure: {str(e)}", exc_info=True)
+
+    async def _emergency_restart(self):
+        """Perform emergency restart of the bot"""
+        try:
+            logger.critical("Initiating emergency restart sequence")
+            
+            # Log final state before restart
+            logger.info(f"Final state before restart: {self.connection_state}")
+            
+            # Close existing connection
+            try:
+                await self.close()
+            except:
+                pass
+            
+            # Clear internal state
+            self.clear()
+            
+            # Wait briefly before restart
+            await asyncio.sleep(5)
+            
+            # Reinitialize connection
+            await self.start(os.environ.get('DISCORD_BOT_TOKEN'))
+            
+            # Reset health check failures
+            self.connection_state['health_check_failures'] = 0
+            self.connection_state['last_recovery_action'] = datetime.now(timezone.utc)
+            
+            logger.info("Emergency restart completed successfully")
+            
+        except Exception as e:
+            logger.critical(f"Failed to perform emergency restart: {str(e)}", exc_info=True)
+            raise
+
+    async def setup_hook(self):
+        """Called when the bot is starting up"""
+        await self.start_health_monitor()
+
+    async def on_ready(self):
+        """Called when the bot is ready."""
+        try:
+            logger.info(f"""━━━━━━ Bot Ready ━━━━━━
+Logged in as: {self.user.name}
+Bot ID: {self.user.id}
+Guilds connected: {len(self.guilds)}
+━━━━━━━━━━━━━━━━━━━━━━━━""")
+            self.connection_state['connected'] = True
+            self.connection_state['last_heartbeat'] = datetime.now(timezone.utc)
+            
+        except Exception as e:
+            logger.error(f"Error in on_ready: {str(e)}", exc_info=True)
+
+    async def on_message(self, message):
+        """Handle incoming messages with enhanced error handling."""
+        try:
+            if message.author == self.user:
+                return
+
+            await self.process_commands(message)
+
+            # Check if message is a reply to bot
+            is_reply_to_bot = bool(
+                message.reference 
+                and message.reference.resolved 
+                and message.reference.resolved.author.id == self.user.id
+            )
+
+            if not is_reply_to_bot:
+                return
+
+            # Get and send response
+            response = self.chat_handler.get_response(message.content)
+            if response:
+                if isinstance(response, list):
+                    for chunk in response:
+                        if chunk and chunk.strip():
+                            await message.reply(chunk.strip(), mention_author=True)
+                else:
+                    await message.reply(response.strip(), mention_author=True)
+
+        except Exception as e:
+            logger.error(f"Error processing message: {str(e)}", exc_info=True)
+            await message.channel.send("I encountered an error processing your message. Please try again.")
+
+    async def on_error(self, event, *args, **kwargs):
+        """Global error handler for all events"""
+        try:
+            error = sys.exc_info()[1]
+            logger.error(f"Error in {event}: {str(error)}", exc_info=True)
+            self.connection_state['last_error'] = {
+                'event': event,
+                'error': str(error),
+                'timestamp': datetime.now(timezone.utc)
+            }
+        except Exception as e:
+            logger.error(f"Error in error handler: {str(e)}", exc_info=True)
+
+async def main():
+    """Main bot execution with enhanced error handling and monitoring."""
+    retry_count = 0
+    max_retries = 5
+    base_delay = 5
+
+    while True:
+        try:
+            logger.info("Initializing Discord bot with enhanced monitoring")
+            bot = OctantDiscordBot()
+            
             # Get Discord token
             discord_token = os.environ.get('DISCORD_BOT_TOKEN')
             if not discord_token:
@@ -370,5 +324,4 @@ Next Retry: {delay}s
             continue
 
 if __name__ == "__main__":
-    import asyncio
     asyncio.run(main())

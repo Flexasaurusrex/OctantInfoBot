@@ -89,19 +89,19 @@ body {
 }
 
 .connection-status {
-    position: absolute;
-    bottom: 1rem;
-    left: 1rem;
+    position: fixed;
+    top: 0.5rem;
     right: 1rem;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.75rem;
-    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
     background: var(--message-bg);
     font-size: 0.85rem;
     justify-content: center;
     box-shadow: var(--shadow-sm);
+    z-index: 100;
 }
 
 .status-indicator {

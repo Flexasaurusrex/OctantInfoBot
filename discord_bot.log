@@ -1,0 +1,42 @@
+2024-12-14 05:45:32,097 - __main__ - INFO - Initializing Discord bot with enhanced monitoring
+2024-12-14 05:45:32,099 - __main__ - INFO - Chat and Trivia handlers initialized successfully
+2024-12-14 05:45:32,099 - __main__ - INFO - Bot initialization completed successfully
+2024-12-14 05:45:32,099 - discord.client - INFO - logging in using static token
+2024-12-14 05:45:32,440 - __main__ - INFO - Health monitoring tasks started
+2024-12-14 05:45:32,441 - __main__ - WARNING - Connection check failed - Bot disconnected
+2024-12-14 05:45:32,441 - __main__ - WARNING - Health check failure (disconnected). Failure count: 1
+2024-12-14 05:45:32,442 - __main__ - INFO - Single health check failure - Monitoring closely
+2024-12-14 05:45:32,442 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: False
+Guilds: 0
+Latency: nanms
+Uptime: 0.0h
+Health Failures: 1
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 05:45:32,616 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 6be943abba46e7dcfec233710da904b2).
+2024-12-14 05:45:34,624 - __main__ - INFO - ━━━━━━ Bot Ready ━━━━━━
+Logged in as: OCTANTBOT
+Bot ID: 1316950341954306159
+Guilds connected: 2
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 05:45:56,748 - __main__ - INFO - Initializing Discord bot with enhanced monitoring
+2024-12-14 05:45:56,750 - __main__ - INFO - Chat and Trivia handlers initialized successfully
+2024-12-14 05:45:56,750 - __main__ - INFO - Bot initialization completed successfully
+2024-12-14 05:45:56,750 - discord.client - INFO - logging in using static token
+2024-12-14 05:45:57,002 - __main__ - INFO - Health monitoring tasks started
+2024-12-14 05:45:57,003 - __main__ - WARNING - Connection check failed - Bot disconnected
+2024-12-14 05:45:57,003 - __main__ - WARNING - Health check failure (disconnected). Failure count: 1
+2024-12-14 05:45:57,004 - __main__ - INFO - Single health check failure - Monitoring closely
+2024-12-14 05:45:57,004 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: False
+Guilds: 0
+Latency: nanms
+Uptime: 0.0h
+Health Failures: 1
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 05:45:57,300 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 8f27c43bbe8dce2a77d6dbceee13d8df).
+2024-12-14 05:45:59,306 - __main__ - INFO - ━━━━━━ Bot Ready ━━━━━━
+Logged in as: OCTANTBOT
+Bot ID: 1316950341954306159
+Guilds connected: 2
+━━━━━━━━━━━━━━━━━━━━━━━━

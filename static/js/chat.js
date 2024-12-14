@@ -344,10 +344,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const restartSocket = io();
     
     // Add click handler to restart button
-    const restartButton = document.querySelector('.sidebar-button[onclick="restartServices()"]');
+    const restartButton = document.querySelector('#restartButton');
     if (restartButton) {
-        restartButton.removeAttribute('onclick');
-        restartButton.addEventListener('click', () => restartServices(restartSocket));
+        restartButton.addEventListener('click', () => restartServices(socket));
     }
 
     // Listen for restart status updates
