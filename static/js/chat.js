@@ -339,8 +339,36 @@ function appendMessage(message, isBot = false) {
     }
 }
 
-async function restartServices() {
-    const restartBtn = document.querySelector('.restart-button');
+document.addEventListener('DOMContentLoaded', () => {
+    // Initialize socket for restart status
+    const restartSocket = io();
+    
+    // Add click handler to restart button
+    const restartButton = document.querySelector('.sidebar-button[onclick="restartServices()"]');
+    if (restartButton) {
+        restartButton.removeAttribute('onclick');
+        restartButton.addEventListener('click', () => restartServices(restartSocket));
+    }
+
+    // Listen for restart status updates
+    restartSocket.on('restart_status', (data) => {
+        console.log('Received restart status:', data);
+        const restartBtn = document.querySelector('.sidebar-button');
+        
+        if (data.status === 'restarting') {
+            restartBtn.classList.add('restarting');
+            restartBtn.disabled = true;
+            appendMessage(data.message || 'Restarting services...', true);
+        } else if (data.status === 'error') {
+            restartBtn.classList.remove('restarting');
+            restartBtn.disabled = false;
+            appendMessage(data.message || 'Restart failed. Please try again.', true);
+        }
+    });
+});
+
+async function restartServices(socket) {
+    const restartBtn = document.querySelector('.sidebar-button');
     if (!restartBtn || restartBtn.classList.contains('restarting')) return;
 
     try {
@@ -416,23 +444,3 @@ async function restartServices() {
         handleReconnection();
     }
 }
-
-// Socket events for restart status
-document.addEventListener('DOMContentLoaded', () => {
-    const socket = io();
-    
-    socket.on('restart_status', (data) => {
-        console.log('Received restart status:', data);
-        const restartBtn = document.querySelector('.restart-button');
-        
-        if (data.status === 'restarting') {
-            restartBtn.classList.add('restarting');
-            restartBtn.disabled = true;
-            appendMessage(data.message || 'Restarting services...', true);
-        } else if (data.status === 'error') {
-            restartBtn.classList.remove('restarting');
-            restartBtn.disabled = false;
-            appendMessage(data.message || 'Restart failed. Please try again.', true);
-        }
-    });
-});
