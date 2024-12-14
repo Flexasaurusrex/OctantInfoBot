@@ -1,4 +1,20 @@
 document.addEventListener('DOMContentLoaded', () => {
+function updateConnectionStatus(status) {
+    const statusIndicator = document.querySelector('.status-indicator');
+    const statusText = document.querySelector('.status-text');
+    
+    if (!statusIndicator || !statusText) return;
+    
+    const statusMap = {
+        'connected': { text: 'Connected', class: 'connected' },
+        'disconnected': { text: 'Disconnected', class: '' },
+        'reconnecting': { text: 'Reconnecting...', class: '' }
+    };
+    
+    const currentStatus = statusMap[status] || statusMap.disconnected;
+    statusIndicator.className = 'status-indicator ' + currentStatus.class;
+    statusText.textContent = currentStatus.text;
+}
     let socket = null;
     let reconnectAttempts = 0;
     const MAX_RECONNECT_ATTEMPTS = 5;
@@ -39,58 +55,67 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function handleReconnection() {
+    async function handleReconnection() {
         reconnectAttempts++;
-        if (reconnectAttempts <= MAX_RECONNECT_ATTEMPTS) {
-            console.log(`Attempting to reconnect (${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})...`);
-            
-            // Enhanced exponential backoff with jitter
-            const baseDelay = INITIAL_RETRY_DELAY * Math.pow(2, reconnectAttempts - 1);
-            const maxJitter = Math.min(baseDelay * 0.25, 2000); // Up to 25% jitter, max 2s
-            const jitter = Math.random() * maxJitter;
-            const delay = Math.min(baseDelay + jitter, 15000); // Cap at 15 seconds
-            
-            updateConnectionStatus('reconnecting');
-            appendMessage(`Attempting to reconnect in ${(delay/1000).toFixed(1)} seconds...`, true);
-            
-            // Graceful cleanup of existing connection
-            if (socket) {
-                try {
-                    socket.removeAllListeners();
-                    socket.close();
-                } catch (e) {
-                    console.warn('Error during socket cleanup:', e);
-                }
-            }
-            
-            setTimeout(() => {
-                try {
-                    if (createSocket()) {
-                        console.log('Socket recreated successfully');
-                        socket.on('connect', () => {
-                            reconnectAttempts = 0;
-                            console.log('Connection restored');
-                            updateConnectionStatus('connected');
-                            appendMessage('Connection restored! You can continue chatting.', true);
-                        });
-                    } else {
-                        console.error('Failed to recreate socket');
-                        updateConnectionStatus('disconnected');
-                        handleReconnection();
-                    }
-                } catch (error) {
-                    console.error('Error during socket recreation:', error);
-                    updateConnectionStatus('disconnected');
-                    handleReconnection();
-                }
-            }, delay);
-        } else {
+        if (reconnectAttempts > MAX_RECONNECT_ATTEMPTS) {
             console.error('Max reconnection attempts reached');
             updateConnectionStatus('disconnected');
             appendMessage('Unable to restore connection after multiple attempts. The page will refresh in 5 seconds...', true);
-            setTimeout(() => {
-                window.location.reload();
-            }, 5000);
+            await new Promise(resolve => setTimeout(resolve, 5000));
+            window.location.reload();
+            return;
+        }
+
+        console.log(`Attempting to reconnect (${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})...`);
+        
+        // Enhanced exponential backoff with jitter
+        const baseDelay = INITIAL_RETRY_DELAY * Math.pow(2, reconnectAttempts - 1);
+        const maxJitter = Math.min(baseDelay * 0.25, 2000);
+        const jitter = Math.random() * maxJitter;
+        const delay = Math.min(baseDelay + jitter, 15000);
+        
+        updateConnectionStatus('reconnecting');
+        appendMessage(`📡 Reconnecting in ${(delay/1000).toFixed(1)} seconds... (Attempt ${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})`, true);
+        
+        // Cleanup existing connection
+        if (socket) {
+            try {
+                socket.removeAllListeners();
+                await new Promise(resolve => {
+                    socket.once('disconnect', resolve);
+                    socket.close();
+                });
+            } catch (e) {
+                console.warn('Error during socket cleanup:', e);
+            }
+        }
+        
+        // Wait for the backoff delay
+        await new Promise(resolve => setTimeout(resolve, delay));
+        
+        try {
+            if (createSocket()) {
+                // Wait for connection or timeout
+                await Promise.race([
+                    new Promise((resolve, reject) => {
+                        socket.once('connect', () => {
+                            reconnectAttempts = 0;
+                            console.log('Connection restored');
+                            updateConnectionStatus('connected');
+                            appendMessage('✅ Connection restored! You can continue chatting.', true);
+                            resolve();
+                        });
+                        socket.once('connect_error', reject);
+                    }),
+                    new Promise((_, reject) => setTimeout(() => reject(new Error('Connection timeout')), 5000))
+                ]);
+            } else {
+                throw new Error('Failed to recreate socket');
+            }
+        } catch (error) {
+            console.error('Error during reconnection:', error);
+            updateConnectionStatus('disconnected');
+            handleReconnection();
         }
     }
 
@@ -110,37 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        function updateConnectionStatus(status) {
-            let statusDiv = document.getElementById('connection-status');
-            if (!statusDiv) {
-                statusDiv = document.createElement('div');
-                statusDiv.id = 'connection-status';
-                document.body.insertBefore(statusDiv, document.body.firstChild);
-            }
-            
-            const statusMap = {
-                'connected': { text: '🟢 Connected', color: '#4CAF50' },
-                'disconnected': { text: '🔴 Disconnected', color: '#f44336' },
-                'reconnecting': { text: '🟡 Reconnecting...', color: '#ff9800' }
-            };
-            
-            const currentStatus = statusMap[status] || statusMap.disconnected;
-            statusDiv.textContent = currentStatus.text;
-            statusDiv.style.cssText = `
-                position: fixed;
-                top: 60px;
-                right: 10px;
-                padding: 8px 16px;
-                background-color: ${currentStatus.color};
-                color: white;
-                border-radius: 20px;
-                font-weight: bold;
-                z-index: 1000;
-                transition: all 0.3s ease;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-                font-size: 14px;
-            `;
-        }
+        
 
         socket.on('connect_error', (error) => {
             console.warn('Connection error:', error);
@@ -344,81 +339,81 @@ function appendMessage(message, isBot = false) {
     }
 }
 
-function restartServices() {
+async function restartServices() {
     const restartBtn = document.querySelector('.restart-button');
-    const messagesContainer = document.getElementById('messages');
-    
-    if (restartBtn.classList.contains('restarting')) return;
+    if (!restartBtn || restartBtn.classList.contains('restarting')) return;
 
-    if (confirm('Are you sure you want to restart all services? This will briefly interrupt the chat.')) {
+    try {
+        if (!confirm('Are you sure you want to restart all services? This will briefly interrupt the chat.')) {
+            return;
+        }
+
+        // Disable button and show restarting state
         restartBtn.classList.add('restarting');
         restartBtn.disabled = true;
+
+        // Update connection status
+        updateConnectionStatus('reconnecting');
         
-        let countdown = 5;
-        const messages = [];
-        
-        function updateCountdown() {
-            if (countdown > 0) {
-                const msg = `Services will restart in ${countdown} seconds...`;
-                appendMessage(msg, true);
-                messages.push(msg);
-                countdown--;
-                setTimeout(updateCountdown, 1500); // Longer delay between countdown messages
-            } else {
-                const initMsg = '🔄 Initiating restart process...';
-                appendMessage(initMsg, true);
-                messages.push(initMsg);
-                
-                fetch('/restart', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                }).then(response => {
-                    if (!response.ok) throw new Error('Restart request failed');
-                    
-                    const steps = [
-                        '📡 Cleaning up connections...',
-                        '🔄 Preparing services for restart...',
-                        '⚡ Restarting services...',
-                        '🔄 Page will refresh in 5 seconds...'
-                    ];
-                    
-                    let stepIndex = 0;
-                    function showStep() {
-                        if (stepIndex < steps.length) {
-                            appendMessage(steps[stepIndex], true);
-                            messages.push(steps[stepIndex]);
-                            stepIndex++;
-                            setTimeout(showStep, 2000); // 2 seconds between status messages
-                        } else {
-                            setTimeout(() => {
-                                window.location.reload();
-                            }, 5000);
-                        }
-                    }
-                    showStep();
-                    
-                }).catch(error => {
-                    console.error('Error initiating restart:', error);
-                    restartBtn.classList.remove('restarting');
-                    restartBtn.disabled = false;
-                    const errorMsg = '❌ Failed to restart services: ' + error.message;
-                    appendMessage(errorMsg, true);
-                    // Keep error message visible for longer
-                    setTimeout(() => {
-                        messages.forEach(msg => {
-                            const messageDiv = document.createElement('div');
-                            messageDiv.className = 'message bot-message error-message';
-                            messageDiv.innerHTML = msg;
-                            messagesContainer.appendChild(messageDiv);
-                        });
-                    }, 1000);
-                });
-            }
+        // Disconnect existing socket connections
+        if (socket) {
+            socket.disconnect();
         }
+
+        // Show countdown
+        for (let i = 5; i > 0; i--) {
+            appendMessage(`🔄 Restarting services in ${i} seconds...`, true);
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+
+        // Send restart request
+        const response = await fetch('/restart', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`Restart request failed: ${response.statusText}`);
+        }
+
+        // Show progress messages
+        const steps = [
+            '📡 Disconnecting active connections...',
+            '🔄 Preparing services for restart...',
+            '⚡ Restarting all services...',
+            '🔁 Initializing new connections...',
+            '✅ Services restarted successfully!'
+        ];
+
+        for (const step of steps) {
+            appendMessage(step, true);
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+
+        appendMessage('🔄 Refreshing page to complete restart...', true);
         
-        updateCountdown();
+        // Wait briefly before refresh
+        await new Promise(resolve => setTimeout(resolve, 3000));
+        
+        // Reload the page
+        window.location.reload();
+
+    } catch (error) {
+        console.error('Restart error:', error);
+        
+        // Reset button state
+        restartBtn.classList.remove('restarting');
+        restartBtn.disabled = false;
+        
+        // Show error message
+        appendMessage('❌ Failed to restart services. Please try again.', true);
+        appendMessage(`Error details: ${error.message}`, true);
+        
+        // Attempt to restore connection
+        updateConnectionStatus('disconnected');
+        handleReconnection();
     }
 }
 
