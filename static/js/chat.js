@@ -55,14 +55,33 @@ function updateConnectionStatus(status) {
         }
     }
 
-    async function handleReconnection() {
+    async async function handleReconnection() {
         reconnectAttempts++;
+        updateConnectionStatus('reconnecting');
+        
         if (reconnectAttempts > MAX_RECONNECT_ATTEMPTS) {
             console.error('Max reconnection attempts reached');
             updateConnectionStatus('disconnected');
-            appendMessage('Unable to restore connection after multiple attempts. The page will refresh in 5 seconds...', true);
-            await new Promise(resolve => setTimeout(resolve, 5000));
-            window.location.reload();
+            appendMessage('🔄 Connection lost. Maximum retry attempts reached.', true);
+            appendMessage('⚡ Attempting emergency recovery...', true);
+            
+            try {
+                // Try to restart services
+                const response = await fetch('/restart', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                if (response.ok) {
+                    appendMessage('✨ Recovery initiated. Page will refresh in 5 seconds...', true);
+                    setTimeout(() => window.location.reload(), 5000);
+                } else {
+                    throw new Error('Recovery failed');
+                }
+            } catch (error) {
+                appendMessage('❌ Recovery failed. Please refresh the page manually.', true);
+                console.error('Recovery error:', error);
+            }
             return;
         }
 
@@ -300,16 +319,25 @@ function updateConnectionStatus(status) {
         }
     });
 
-    // Add restart functionality
+    // Enhanced restart functionality with better state management
     socket.on('restart_status', (data) => {
-        const restartBtn = document.querySelector('.restart-button');
+        const restartBtn = document.querySelector('#restartButton');
+        if (!restartBtn) return;
+
         if (data.status === 'restarting') {
             restartBtn.classList.add('restarting');
             restartBtn.disabled = true;
-            appendMessage('Restarting services... The page will refresh in 5 seconds.', true);
+            appendMessage('🔄 Restarting services... Please wait.', true);
             setTimeout(() => {
-                window.location.reload();
-            }, 5000);
+                appendMessage('⚡ Services restarting, page will refresh in 5 seconds...', true);
+                setTimeout(() => {
+                    window.location.reload();
+                }, 5000);
+            }, 1000);
+        } else if (data.status === 'error') {
+            restartBtn.classList.remove('restarting');
+            restartBtn.disabled = false;
+            appendMessage('❌ Restart failed: ' + (data.message || 'Unknown error'), true);
         }
     });
 });
@@ -340,13 +368,58 @@ function appendMessage(message, isBot = false) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize socket for restart status
-    const restartSocket = io();
+    // Initialize socket with reconnection options
+    const socket = io({
+        reconnectionAttempts: 5,
+        reconnectionDelay: 1000,
+        reconnectionDelayMax: 5000,
+        timeout: 20000
+    });
     
-    // Add click handler to restart button
+    // Enhanced restart button handler with proper socket management
     const restartButton = document.querySelector('#restartButton');
     if (restartButton) {
-        restartButton.addEventListener('click', () => restartServices(socket));
+        restartButton.addEventListener('click', async () => {
+            if (!confirm('Are you sure you want to restart all services? This will briefly interrupt the connection.')) {
+                return;
+            }
+            
+            try {
+                restartButton.classList.add('restarting');
+                restartButton.disabled = true;
+                appendMessage('🔄 Initiating service restart...', true);
+                
+                // Send restart request
+                const response = await fetch('/restart', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Restart failed: ${response.statusText}`);
+                }
+                
+                // Show restart progress
+                appendMessage('📡 Disconnecting services...', true);
+                socket.disconnect();
+                
+                setTimeout(() => {
+                    appendMessage('⚡ Restarting services...', true);
+                    setTimeout(() => {
+                        appendMessage('🔄 Page will refresh in 5 seconds...', true);
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 5000);
+                    }, 2000);
+                }, 1000);
+                
+            } catch (error) {
+                console.error('Restart error:', error);
+                restartButton.classList.remove('restarting');
+                restartButton.disabled = false;
+                appendMessage(`❌ Restart failed: ${error.message}`, true);
+            }
+        });
     }
 
     // Listen for restart status updates
