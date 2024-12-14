@@ -82,47 +82,68 @@ def restart_services():
         
         def cleanup_and_restart():
             try:
-                # Step 1: Prepare for restart
-                logger.info("Starting cleanup process...")
+                # Step 1: Enhanced prepare for restart
+                logger.info("━━━━━━ Initiating Restart Sequence ━━━━━━")
+                logger.info("Phase 1: Preparing for service shutdown...")
                 eventlet.sleep(1)
                 
-                # Save current state and notify clients
+                # Enhanced state tracking
                 active_connections = len(socketio.server.manager.rooms.get('/', set()))
-                logger.info(f"Active connections: {active_connections}")
+                logger.info(f"Current active connections: {active_connections}")
+                logger.info("Memory usage before cleanup: {:.2f}MB".format(
+                    psutil.Process(os.getpid()).memory_info().rss / 1024 / 1024
+                ))
                 
+                # Notify clients with enhanced status
                 socketio.emit('restart_status', {
                     'status': 'preparing',
-                    'message': 'Preparing to restart server...',
-                    'countdown': 10
+                    'message': 'Preparing to restart services...',
+                    'countdown': 10,
+                    'details': 'Cleaning up connections'
                 }, namespace='/')
                 
-                # Step 2: Close connections gracefully
+                # Step 2: Enhanced connection cleanup
+                logger.info("Phase 2: Gracefully closing connections...")
                 active_sids = list(socketio.server.manager.rooms.get('/', set()))
+                
                 for sid in active_sids:
                     try:
                         socketio.server.disconnect(sid, namespace='/')
-                        logger.info(f"Disconnected client {sid}")
+                        logger.info(f"Successfully disconnected client {sid}")
                     except Exception as e:
-                        logger.warning(f"Error disconnecting client {sid}: {str(e)}")
+                        logger.warning(f"Warning: Error disconnecting client {sid}: {str(e)}")
+                        # Continue with other disconnections even if one fails
                 
-                logger.info("All connections cleaned up")
+                logger.info("Phase 3: Verifying cleanup...")
+                remaining_connections = len(socketio.server.manager.rooms.get('/', set()))
+                logger.info(f"Remaining connections: {remaining_connections}")
                 
-                # Step 3: Final notification
-                socketio.emit('restart_status', {
-                    'status': 'restarting',
-                    'message': 'Server is restarting...',
-                    'countdown': 5
-                }, broadcast=True)
+                if remaining_connections == 0:
+                    logger.info("All connections successfully cleaned up")
+                else:
+                    logger.warning(f"Warning: {remaining_connections} connections still active")
                 
-                eventlet.sleep(2)
-                
-                # Step 4: Stop the server
-                logger.info("Stopping server...")
-                socketio.stop()
-                
-                # Step 5: Exit process to trigger workflow restart
-                logger.info("Triggering restart...")
-                os._exit(0)
+                # Step 3: Final notification with enhanced logging
+                logger.info("Sending final restart notification...")
+                try:
+                    socketio.emit('restart_status', {
+                        'status': 'restarting',
+                        'message': 'Server is restarting...',
+                        'countdown': 5
+                    }, namespace='/')  # Using namespace instead of broadcast
+                    
+                    eventlet.sleep(2)
+                    
+                    # Step 4: Stop the server with enhanced logging
+                    logger.info("Initiating server shutdown sequence...")
+                    socketio.stop()
+                    
+                    # Step 5: Exit process to trigger workflow restart
+                    logger.info("Triggering restart sequence...")
+                    os._exit(0)
+                except Exception as e:
+                    logger.error(f"Critical error during final restart sequence: {str(e)}")
+                    raise
                 
             except Exception as e:
                 error_msg = f"Error during restart: {str(e)}"
