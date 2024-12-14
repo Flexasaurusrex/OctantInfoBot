@@ -1,7 +1,6 @@
 import eventlet
 eventlet.monkey_patch()
 import os
-import time
 import logging
 from datetime import datetime
 from flask import Flask, render_template, request
@@ -83,219 +82,47 @@ def restart_services():
         
         def cleanup_and_restart():
             try:
-                # Step 1: Enhanced prepare for restart
-                logger.info("━━━━━━ Initiating Restart Sequence ━━━━━━")
-                logger.info("Phase 1: Preparing for service shutdown...")
+                # Step 1: Prepare for restart
+                logger.info("Starting cleanup process...")
+                eventlet.sleep(1)
                 
-                # Enhanced process cleanup with force kill if needed
-                import psutil
-                current_pid = os.getpid()
-                logger.info("━━━━━━ Cleaning up existing processes ━━━━━━")
-                
-                def force_kill_process(proc):
-                    """Force kill a process if it doesn't terminate gracefully"""
-                    try:
-                        proc.terminate()
-                        try:
-                            proc.wait(timeout=5)
-                        except psutil.TimeoutExpired:
-                            logger.warning(f"Process {proc.pid} didn't terminate gracefully, forcing kill...")
-                            proc.kill()
-                            proc.wait(timeout=5)
-                        return True
-                    except (psutil.NoSuchProcess, psutil.AccessDenied) as e:
-                        logger.error(f"Error killing process {proc.pid}: {str(e)}")
-                        return False
-                
-                # First pass: collect all target processes
-                target_processes = []
-                for proc in psutil.process_iter(['pid', 'name', 'cmdline']):
-                    try:
-                        if proc.info['name'] == 'python' and proc.pid != current_pid:
-                            cmdline = proc.info['cmdline']
-                            if cmdline and any(x in cmdline[-1] for x in ['discord_bot.py', 'telegram_bot.py']):
-                                target_processes.append(proc)
-                    except (psutil.NoSuchProcess, psutil.AccessDenied) as e:
-                        continue
-                
-                # Second pass: terminate all collected processes
-                for proc in target_processes:
-                    try:
-                        cmdline = proc.cmdline()[-1]
-                        logger.info(f"Terminating process: {proc.pid} ({cmdline})")
-                        if force_kill_process(proc):
-                            logger.info(f"Successfully terminated process {proc.pid}")
-                        else:
-                            logger.warning(f"Failed to terminate process {proc.pid}")
-                    except Exception as e:
-                        logger.error(f"Unexpected error terminating process: {str(e)}")
-                        continue
-                
-                # Verify all processes are terminated
-                time.sleep(1)
-                remaining = []
-                for proc in psutil.process_iter(['pid', 'name', 'cmdline']):
-                    try:
-                        if proc.info['name'] == 'python' and proc.pid != current_pid:
-                            cmdline = proc.info['cmdline']
-                            if cmdline and any(x in cmdline[-1] for x in ['discord_bot.py', 'telegram_bot.py']):
-                                remaining.append(proc)
-                    except (psutil.NoSuchProcess, psutil.AccessDenied):
-                        continue
-                
-                if remaining:
-                    logger.warning(f"Warning: {len(remaining)} bot processes still running after cleanup")
-                else:
-                    logger.info("All bot processes successfully terminated")
-
-                # Enhanced state tracking
+                # Save current state and notify clients
                 active_connections = len(socketio.server.manager.rooms.get('/', set()))
-                logger.info(f"Current active connections: {active_connections}")
-                logger.info("Memory usage before cleanup: {:.2f}MB".format(
-                    psutil.Process(os.getpid()).memory_info().rss / 1024 / 1024
-                ))
+                logger.info(f"Active connections: {active_connections}")
                 
-                # Notify clients with enhanced status
                 socketio.emit('restart_status', {
                     'status': 'preparing',
-                    'message': 'Preparing to restart services...',
-                    'countdown': 10,
-                    'details': 'Cleaning up connections'
+                    'message': 'Preparing to restart server...',
+                    'countdown': 10
                 }, namespace='/')
                 
-                # Step 2: Enhanced connection cleanup
-                logger.info("Phase 2: Gracefully closing connections...")
+                # Step 2: Close connections gracefully
                 active_sids = list(socketio.server.manager.rooms.get('/', set()))
-                
                 for sid in active_sids:
                     try:
                         socketio.server.disconnect(sid, namespace='/')
-                        logger.info(f"Successfully disconnected client {sid}")
+                        logger.info(f"Disconnected client {sid}")
                     except Exception as e:
-                        logger.warning(f"Warning: Error disconnecting client {sid}: {str(e)}")
-                        # Continue with other disconnections even if one fails
+                        logger.warning(f"Error disconnecting client {sid}: {str(e)}")
                 
-                logger.info("Phase 3: Verifying cleanup...")
-                remaining_connections = len(socketio.server.manager.rooms.get('/', set()))
-                logger.info(f"Remaining connections: {remaining_connections}")
+                logger.info("All connections cleaned up")
                 
-                if remaining_connections == 0:
-                    logger.info("All connections successfully cleaned up")
-                else:
-                    logger.warning(f"Warning: {remaining_connections} connections still active")
+                # Step 3: Final notification
+                socketio.emit('restart_status', {
+                    'status': 'restarting',
+                    'message': 'Server is restarting...',
+                    'countdown': 5
+                }, broadcast=True)
                 
-                # Step 3: Final notification with enhanced logging
-                logger.info("Sending final restart notification...")
-                try:
-                    socketio.emit('restart_status', {
-                        'status': 'restarting',
-                        'message': 'Server is restarting...',
-                        'countdown': 5
-                    }, namespace='/')  # Using namespace instead of broadcast
-                    
-                    eventlet.sleep(2)
-                    
-                    # Step 4: Start discord and telegram bots with enhanced monitoring
-                    logger.info("Starting Discord and Telegram bots...")
-                    import subprocess
-                    import time
-                    
-                    try:
-                        # Enhanced process management for Discord bot with retries
-                        logger.info("Starting Discord bot with enhanced monitoring...")
-                        max_retries = 3
-                        retry_count = 0
-                        discord_process = None
-                        
-                        while retry_count < max_retries:
-                            try:
-                                # Kill any existing Discord bot processes first
-                                subprocess.run(['pkill', '-f', 'discord_bot.py'], stderr=subprocess.PIPE)
-                                time.sleep(2)  # Wait for process cleanup
-                                
-                                # Start Discord bot with full environment
-                                env = os.environ.copy()
-                                env['PYTHONUNBUFFERED'] = '1'  # Ensure output is not buffered
-                                
-                                discord_process = subprocess.Popen(
-                                    ['python', 'discord_bot.py'],
-                                    stdout=subprocess.PIPE,
-                                    stderr=subprocess.PIPE,
-                                    universal_newlines=True,
-                                    env=env
-                                )
-                                
-                                # Enhanced startup verification with detailed logging
-                                startup_timeout = 30  # 30 seconds total
-                                check_interval = 5    # Check every 5 seconds
-                                checks = startup_timeout // check_interval
-                                
-                                for i in range(checks):
-                                    time.sleep(check_interval)
-                                    if discord_process.poll() is not None:
-                                        stdout, stderr = discord_process.communicate()
-                                        logger.error(f"Discord bot terminated early!\nStdout: {stdout}\nStderr: {stderr}")
-                                        raise Exception(f"Discord bot terminated unexpectedly after {(i+1)*check_interval}s")
-                                    
-                                    # Log startup progress
-                                    logger.info(f"Discord bot startup check {i+1}/{checks} passed")
-                                
-                                logger.info("Discord bot process verified and running stably")
-                                break
-                                
-                            except Exception as e:
-                                retry_count += 1
-                                logger.warning(f"Discord bot start attempt {retry_count} failed: {str(e)}")
-                                
-                                if discord_process:
-                                    try:
-                                        discord_process.terminate()
-                                        discord_process.wait(timeout=5)
-                                    except:
-                                        try:
-                                            discord_process.kill()
-                                        except:
-                                            pass
-                                
-                                if retry_count >= max_retries:
-                                    raise Exception(f"Failed to start Discord bot after {max_retries} attempts")
-                                
-                                # Exponential backoff with logging
-                                backoff = 2 * retry_count
-                                logger.info(f"Waiting {backoff}s before retry {retry_count + 1}")
-                                time.sleep(backoff)
-                        
-                        # Start Telegram bot with similar monitoring
-                        logger.info("Starting Telegram bot...")
-                        telegram_process = subprocess.Popen(
-                            ['python', 'telegram_bot.py'],
-                            stdout=subprocess.PIPE,
-                            stderr=subprocess.PIPE,
-                            universal_newlines=True
-                        )
-                        
-                        time.sleep(2)
-                        if telegram_process.poll() is None:
-                            logger.info("Telegram bot process started successfully")
-                        else:
-                            stdout, stderr = telegram_process.communicate()
-                            logger.error(f"Telegram bot failed to start! Stdout: {stdout}, Stderr: {stderr}")
-                            raise Exception("Telegram bot failed to start properly")
-                            
-                    except Exception as e:
-                        logger.error(f"Failed to start bot processes: {str(e)}")
-                        raise
-                    
-                    # Step 5: Stop the server with enhanced logging
-                    logger.info("Initiating server shutdown sequence...")
-                    socketio.stop()
-                    
-                    # Step 6: Exit process to trigger workflow restart
-                    logger.info("Triggering restart sequence...")
-                    os._exit(0)
-                except Exception as e:
-                    logger.error(f"Critical error during final restart sequence: {str(e)}")
-                    raise
+                eventlet.sleep(2)
+                
+                # Step 4: Stop the server
+                logger.info("Stopping server...")
+                socketio.stop()
+                
+                # Step 5: Exit process to trigger workflow restart
+                logger.info("Triggering restart...")
+                os._exit(0)
                 
             except Exception as e:
                 error_msg = f"Error during restart: {str(e)}"
