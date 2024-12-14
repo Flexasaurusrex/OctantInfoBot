@@ -8162,3 +8162,24 @@ discord.app_commands.errors.CommandNotFound: Application command 'ping' not foun
 2024-12-14 17:36:11,372 - __main__ - INFO - Connected to 2 guilds
 2024-12-14 17:36:11,372 - __main__ - INFO - - 32px Penguins (ID: 876809525116665857)
 2024-12-14 17:36:11,372 - __main__ - INFO - - FlexaSaurusRex's Testing Server (ID: 1317082838016856074)
+2024-12-14 17:37:17,173 - __main__ - INFO - Starting Discord bot...
+2024-12-14 17:37:17,173 - __main__ - INFO - Bot initialized successfully
+2024-12-14 17:37:17,174 - __main__ - INFO - Registering commands...
+2024-12-14 17:37:17,174 - __main__ - INFO - Commands registered successfully
+2024-12-14 17:37:17,174 - __main__ - INFO - Connecting to Discord...
+2024-12-14 17:37:17,174 - discord.client - INFO - logging in using static token
+2024-12-14 17:37:17,445 - __main__ - INFO - Syncing commands with Discord...
+2024-12-14 17:37:18,043 - __main__ - INFO - Commands synced successfully
+2024-12-14 17:37:18,281 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: a0f1b6ee0919b01330ccda17a9fd2ed8).
+2024-12-14 17:37:20,289 - __main__ - INFO - Bot is ready! Logged in as OCTANTBOT (ID: 1316950341954306159)
+2024-12-14 17:37:20,289 - __main__ - INFO - Connected to 2 guilds
+2024-12-14 17:37:20,289 - __main__ - INFO - - 32px Penguins (ID: 876809525116665857)
+2024-12-14 17:37:20,289 - __main__ - INFO - - FlexaSaurusRex's Testing Server (ID: 1317082838016856074)
+2024-12-14 17:38:45,497 - __main__ - INFO - Starting bot...
+2024-12-14 17:38:45,497 - discord.client - INFO - logging in using static token
+2024-12-14 17:38:45,498 - discord.ext.commands.bot - WARNING - Privileged message content intent is missing, commands may not work as expected.
+2024-12-14 17:38:45,855 - __main__ - INFO - Starting command sync...
+2024-12-14 17:38:46,069 - __main__ - INFO - Global command sync completed!
+2024-12-14 17:38:46,357 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 8e9e98233c1b7df912f76996974233d8).
+2024-12-14 17:38:48,388 - __main__ - INFO - Logged in as OCTANTBOT#5497 (ID: 1316950341954306159)
+2024-12-14 17:38:48,388 - __main__ - INFO - ------

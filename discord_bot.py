@@ -2,8 +2,7 @@ import os
 import logging
 import discord
 from discord import app_commands
-from chat_handler import ChatHandler
-from discord_trivia import DiscordTrivia
+from discord.ext import commands
 
 # Configure logging
 logging.basicConfig(
@@ -16,154 +15,90 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-class OctantBot(discord.Client):
+class OctantBot(commands.Bot):
     def __init__(self):
-        try:
-            # Set up intents
-            intents = discord.Intents.default()
-            intents.message_content = True
-            intents.members = True
-            
-            # Initialize the client
-            super().__init__(intents=intents)
-            
-            # Create command tree
-            self.tree = app_commands.CommandTree(self)
-            
-            # Initialize handlers
-            self.chat_handler = ChatHandler()
-            self.trivia = DiscordTrivia()
-            
-            logger.info("Bot initialized successfully")
-            
-            # Register commands immediately
-            self.register_commands()
-            
-        except Exception as e:
-            logger.error(f"Failed to initialize bot: {str(e)}", exc_info=True)
-            raise
-
-    def register_commands(self):
-        """Register all slash commands."""
-        try:
-            logger.info("Registering commands...")
-            
-            @self.tree.command(
-                name="ping",
-                description="Check if the bot is online and responsive"
-            )
-            async def ping(interaction: discord.Interaction):
-                try:
-                    logger.info(f"Ping command received from {interaction.user}")
-                    await interaction.response.send_message("Pong! 🏓 Bot is online and responsive!")
-                except Exception as e:
-                    logger.error(f"Error in ping command: {str(e)}", exc_info=True)
-                    if not interaction.response.is_done():
-                        await interaction.response.send_message(
-                            "Sorry, there was an error processing your command.",
-                            ephemeral=True
-                        )
-
-            @self.tree.command(
-                name="help",
-                description="Display information about available commands"
-            )
-            async def help_command(interaction: discord.Interaction):
-                try:
-                    logger.info(f"Help command received from {interaction.user}")
-                    help_embed = discord.Embed(
-                        title="📚 Octant Bot Help",
-                        description="Welcome to Octant Bot! Here are the available commands:",
-                        color=discord.Color.blue()
-                    )
-                    
-                    help_embed.add_field(
-                        name="🎮 Game Commands",
-                        value="• `/trivia` - Start a trivia game about Octant",
-                        inline=False
-                    )
-                    
-                    help_embed.add_field(
-                        name="🤖 Utility Commands",
-                        value="• `/ping` - Check if the bot is responsive\n• `/help` - Show this help message",
-                        inline=False
-                    )
-                    
-                    help_embed.add_field(
-                        name="💬 Chat Features",
-                        value="• Reply to any of my messages to chat\n• Ask questions about Octant\n• Get help with Octant features",
-                        inline=False
-                    )
-                    
-                    help_embed.set_footer(text="Type /trivia to start playing!")
-                    
-                    await interaction.response.send_message(embed=help_embed)
-                    
-                except Exception as e:
-                    logger.error(f"Error in help command: {str(e)}", exc_info=True)
-                    if not interaction.response.is_done():
-                        await interaction.response.send_message(
-                            "Sorry, there was an error displaying the help message.",
-                            ephemeral=True
-                        )
-
-            @self.tree.command(
-                name="trivia",
-                description="Start an Octant trivia game"
-            )
-            async def trivia_command(interaction: discord.Interaction):
-                try:
-                    logger.info(f"Trivia command received from {interaction.user}")
-                    await interaction.response.defer()
-                    await self.trivia.start_game(interaction)
-                except Exception as e:
-                    logger.error(f"Error in trivia command: {str(e)}", exc_info=True)
-                    await interaction.followup.send(
-                        "Sorry, there was an error starting the trivia game.",
-                        ephemeral=True
-                    )
-
-            logger.info("Commands registered successfully")
-            
-        except Exception as e:
-            logger.error(f"Error registering commands: {str(e)}", exc_info=True)
-            raise
+        super().__init__(
+            command_prefix="!",  # This is for backup text commands
+            intents=discord.Intents.default(),
+            application_id=1316950341954306159  # Your bot's application ID
+        )
+        self.initial_sync_done = False
 
     async def setup_hook(self):
-        """Sync commands with Discord."""
+        """This is called when the bot starts."""
         try:
-            logger.info("Syncing commands with Discord...")
-            await self.tree.sync()
-            logger.info("Commands synced successfully")
+            logger.info("Starting command sync...")
+            if not self.initial_sync_done:
+                # Sync commands globally
+                await self.tree.sync()
+                self.initial_sync_done = True
+                logger.info("Global command sync completed!")
         except Exception as e:
-            logger.error(f"Error syncing commands: {str(e)}", exc_info=True)
+            logger.error(f"Error in setup_hook: {e}", exc_info=True)
             raise
 
     async def on_ready(self):
         """Called when the bot is ready."""
-        try:
-            logger.info(f"Bot is ready! Logged in as {self.user.name} (ID: {self.user.id})")
-            logger.info(f"Connected to {len(self.guilds)} guilds")
-            for guild in self.guilds:
-                logger.info(f"- {guild.name} (ID: {guild.id})")
-        except Exception as e:
-            logger.error(f"Error in on_ready: {str(e)}", exc_info=True)
+        logger.info(f'Logged in as {self.user} (ID: {self.user.id})')
+        logger.info('------')
 
 async def main():
-    """Main bot execution."""
+    """Main entry point for the bot."""
     try:
-        logger.info("Starting Discord bot...")
+        # Initialize the bot
         bot = OctantBot()
         
-        discord_token = os.environ.get('DISCORD_BOT_TOKEN')
-        if not discord_token:
-            raise ValueError("DISCORD_BOT_TOKEN environment variable is required")
+        # Add the ping command
+        @bot.tree.command(name="ping", description="Check if the bot is responsive")
+        async def ping(interaction: discord.Interaction):
+            try:
+                await interaction.response.send_message("Pong! 🏓")
+                logger.info(f"Ping command executed by {interaction.user}")
+            except Exception as e:
+                logger.error(f"Error in ping command: {e}")
+                try:
+                    await interaction.response.send_message("An error occurred", ephemeral=True)
+                except:
+                    pass
 
-        logger.info("Connecting to Discord...")
-        await bot.start(discord_token)
+        # Add the help command
+        @bot.tree.command(name="help", description="Shows the list of available commands")
+        async def help(interaction: discord.Interaction):
+            try:
+                embed = discord.Embed(
+                    title="📚 Bot Commands",
+                    description="Here are the available commands:",
+                    color=discord.Color.blue()
+                )
+                embed.add_field(
+                    name="/ping",
+                    value="Check if the bot is responsive",
+                    inline=False
+                )
+                embed.add_field(
+                    name="/help",
+                    value="Shows this help message",
+                    inline=False
+                )
+                await interaction.response.send_message(embed=embed)
+                logger.info(f"Help command executed by {interaction.user}")
+            except Exception as e:
+                logger.error(f"Error in help command: {e}")
+                try:
+                    await interaction.response.send_message("An error occurred", ephemeral=True)
+                except:
+                    pass
+
+        # Start the bot
+        token = os.environ.get('DISCORD_BOT_TOKEN')
+        if not token:
+            raise ValueError("No Discord bot token found!")
+            
+        logger.info("Starting bot...")
+        await bot.start(token)
         
     except Exception as e:
-        logger.error(f"Critical error in main: {str(e)}", exc_info=True)
+        logger.error(f"Fatal error: {e}", exc_info=True)
         raise
 
 if __name__ == "__main__":
