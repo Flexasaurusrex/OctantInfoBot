@@ -1,9 +1,12 @@
 import os
+import sys
+import random
 import logging
 import asyncio
 import discord
 from discord.ext import tasks, commands
 from datetime import datetime, timezone
+import psutil
 from chat_handler import ChatHandler
 from discord_trivia import DiscordTrivia
 
@@ -57,16 +60,20 @@ class OctantDiscordBot(commands.Bot):
                 'error_count': 0
             }
             
-            # Enhanced recovery thresholds with balanced detection
-            self.HEALTH_CHECK_INTERVAL = 10  # 10 seconds for balanced detection
-            self.MAX_HEALTH_CHECK_FAILURES = 3  # Allow more failures before recovery
-            self.HEARTBEAT_TIMEOUT = 30  # More lenient heartbeat timeout
-            self.RECONNECT_BACKOFF_MAX = 60  # Increased max backoff for stability
-            self.MAX_LATENCY = 1000  # More lenient latency threshold (1000ms)
-            self.MAX_CONSECUTIVE_TIMEOUTS = 3  # More lenient timeout trigger
-            self.MEMORY_THRESHOLD = 90  # More lenient memory threshold
-            self.CPU_THRESHOLD = 80  # More lenient CPU threshold
-            self.IMMEDIATE_RESTART_THRESHOLD = 3  # More attempts before immediate restart
+            # Optimized recovery thresholds for better stability
+            self.HEALTH_CHECK_INTERVAL = 30    # Increased interval for less aggressive checking
+            self.MAX_HEALTH_CHECK_FAILURES = 8  # More failures allowed before recovery
+            self.HEARTBEAT_TIMEOUT = 120       # Much more lenient heartbeat timeout (2 minutes)
+            self.RECONNECT_BACKOFF_MAX = 300   # Increased max backoff for better stability (5 minutes)
+            self.MAX_LATENCY = 5000            # More lenient latency threshold (5000ms)
+            self.MAX_CONSECUTIVE_TIMEOUTS = 8   # More lenient timeout trigger
+            self.MEMORY_THRESHOLD = 98         # Very lenient memory threshold
+            self.CPU_THRESHOLD = 95            # Very lenient CPU threshold
+            self.IMMEDIATE_RESTART_THRESHOLD = 10  # More attempts before immediate restart
+            
+            # Initialize latency tracking
+            self.latency_samples = []
+            self.MAX_LATENCY_SAMPLES = 10
             
             self._setup_handlers()
             logger.info("Bot initialization completed successfully")
@@ -134,7 +141,7 @@ class OctantDiscordBot(commands.Bot):
         self.connection_monitor.start()
         logger.info("Health monitoring tasks started")
 
-    @tasks.loop(seconds=5)  # Much more frequent health checks for immediate detection
+    @tasks.loop(seconds=15)  # Reduced frequency for better stability
     async def health_check(self):
         """Enhanced periodic health check task with comprehensive monitoring"""
         try:
@@ -242,7 +249,12 @@ CPU Usage: {self.connection_state['cpu_usage']:.1f}%
                 # Try reconnection first
                 try:
                     logger.warning("Attempting reconnection before emergency restart...")
-                    await self.reconnect()
+                    # Close existing connection
+                    await self.close()
+                    await asyncio.sleep(5)  # Wait before reconnecting
+                    
+                    # Attempt to reconnect
+                    await self.start(os.environ.get('DISCORD_BOT_TOKEN'))
                     await asyncio.sleep(5)  # Wait for reconnection
                     
                     if self.is_ready() and self.latency != float('inf'):
@@ -262,7 +274,12 @@ CPU Usage: {self.connection_state['cpu_usage']:.1f}%
 Failure Count: {failures}
 Attempting reconnection...
 ━━━━━━━━━━━━━━━━━━━━━━━━""")
-                await self.reconnect()
+                try:
+                    await self.close()
+                    await asyncio.sleep(2)
+                    await self.start(os.environ.get('DISCORD_BOT_TOKEN'))
+                except Exception as e:
+                    logger.error(f"Reconnection attempt failed: {e}")
             
             else:
                 logger.info(f"""
