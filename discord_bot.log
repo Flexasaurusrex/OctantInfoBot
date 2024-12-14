@@ -8605,3 +8605,308 @@ Exception: Command verification failed. Missing commands: {'ping', 'help'}
 2024-12-14 17:56:09,211 - __main__ - INFO - Registering commands...
 2024-12-14 17:56:09,216 - __main__ - INFO - Commands registered successfully
 2024-12-14 17:56:09,217 - __main__ - INFO - Syncing commands globally...
+2024-12-14 17:57:06,125 - __main__ - INFO - Commands synced successfully
+2024-12-14 17:57:06,339 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 65b3813f5c510aa207590b9d965e9e40).
+2024-12-14 17:57:11,369 - __main__ - INFO - ━━━━━━ Bot Connected ━━━━━━
+2024-12-14 17:57:11,369 - __main__ - INFO - Logged in as OCTANTBOT#5497 (ID: 1316950341954306159)
+2024-12-14 17:57:11,369 - __main__ - INFO - Connected to 2 guilds: 32px Penguins, FlexaSaurusRex's Testing Server
+2024-12-14 17:57:11,370 - __main__ - INFO - Bot presence updated successfully
+2024-12-14 17:57:11,370 - __main__ - INFO - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 17:57:50,185 - __main__ - INFO - Starting bot with enhanced error handling...
+2024-12-14 17:57:50,185 - discord.client - INFO - logging in using static token
+2024-12-14 17:57:50,538 - __main__ - INFO - ━━━━━━ Initializing Bot Setup ━━━━━━
+2024-12-14 17:57:50,539 - __main__ - INFO - Clearing existing commands...
+2024-12-14 17:57:50,540 - __main__ - INFO - Registering commands...
+2024-12-14 17:57:50,541 - __main__ - INFO - Commands registered successfully
+2024-12-14 17:57:50,541 - __main__ - INFO - Attempting to sync commands globally (attempt 1/3)...
+2024-12-14 17:57:50,719 - __main__ - INFO - Commands synced successfully!
+2024-12-14 17:57:50,869 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 679e269dcca18d631fd765b5551f27e4).
+2024-12-14 17:57:53,514 - __main__ - INFO - Starting bot with enhanced error handling...
+2024-12-14 17:57:53,515 - discord.client - INFO - logging in using static token
+2024-12-14 17:57:53,779 - __main__ - INFO - ━━━━━━ Initializing Bot Setup ━━━━━━
+2024-12-14 17:57:53,780 - __main__ - INFO - Clearing existing commands...
+2024-12-14 17:57:53,780 - __main__ - INFO - Registering commands...
+2024-12-14 17:57:53,780 - __main__ - INFO - Commands registered successfully
+2024-12-14 17:57:53,781 - __main__ - INFO - Attempting to sync commands globally (attempt 1/3)...
+2024-12-14 17:58:39,304 - __main__ - INFO - Starting bot with enhanced error handling...
+2024-12-14 17:58:39,304 - discord.client - INFO - logging in using static token
+2024-12-14 17:58:41,030 - __main__ - INFO - Starting bot with enhanced error handling...
+2024-12-14 17:58:41,030 - discord.client - INFO - logging in using static token
+2024-12-14 17:58:42,851 - __main__ - INFO - Starting bot with enhanced error handling...
+2024-12-14 17:58:42,852 - discord.client - INFO - logging in using static token
+2024-12-14 17:58:50,901 - __main__ - INFO - ━━━━━━ Initializing Bot Setup ━━━━━━
+2024-12-14 17:58:50,902 - __main__ - INFO - Registering commands...
+2024-12-14 17:58:50,902 - __main__ - INFO - Attempting to sync commands globally...
+2024-12-14 17:58:51,146 - __main__ - INFO - Commands synced successfully!
+2024-12-14 17:58:51,371 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 95c71d00935ab4e8a56945ccb0445a0c).
+2024-12-14 17:58:56,379 - __main__ - INFO - ━━━━━━ Bot Connected ━━━━━━
+2024-12-14 17:58:56,379 - __main__ - INFO - Logged in as OCTANTBOT#5497 (ID: 1316950341954306159)
+2024-12-14 17:58:56,379 - __main__ - INFO - Connected to 2 guilds: 32px Penguins, FlexaSaurusRex's Testing Server
+2024-12-14 17:58:56,380 - __main__ - INFO - Bot presence updated successfully
+2024-12-14 17:58:56,380 - __main__ - INFO - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 17:59:24,110 - __main__ - INFO - Starting bot with enhanced error handling...
+2024-12-14 17:59:24,111 - discord.client - INFO - logging in using static token
+2024-12-14 17:59:24,454 - __main__ - INFO - ━━━━━━ Initializing Bot Setup ━━━━━━
+2024-12-14 17:59:24,456 - __main__ - INFO - Clearing existing commands...
+2024-12-14 17:59:24,457 - __main__ - INFO - Registering commands...
+2024-12-14 17:59:24,457 - __main__ - INFO - Attempting to sync commands globally (attempt 1/3)...
+2024-12-14 17:59:24,605 - __main__ - INFO - Commands synced successfully!
+2024-12-14 17:59:24,897 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 14b592badf4edae72ca0cbbed36e4026).
+2024-12-14 17:59:27,261 - __main__ - INFO - Starting bot with enhanced error handling...
+2024-12-14 17:59:27,261 - discord.client - INFO - logging in using static token
+2024-12-14 17:59:27,549 - __main__ - INFO - ━━━━━━ Initializing Bot Setup ━━━━━━
+2024-12-14 17:59:27,551 - __main__ - INFO - Clearing existing commands...
+2024-12-14 17:59:27,553 - __main__ - INFO - Registering commands...
+2024-12-14 17:59:27,554 - __main__ - INFO - Attempting to sync commands globally (attempt 1/3)...
+2024-12-14 18:00:24,741 - __main__ - INFO - Commands synced successfully!
+2024-12-14 18:00:24,932 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 9a98c3e5f7b976b63b9c1fdd3b629288).
+2024-12-14 18:00:29,944 - __main__ - INFO - ━━━━━━ Bot Connected ━━━━━━
+2024-12-14 18:00:29,953 - __main__ - INFO - Logged in as OCTANTBOT#5497 (ID: 1316950341954306159)
+2024-12-14 18:00:30,105 - __main__ - INFO - Registered commands: ['help', 'ping']
+2024-12-14 18:00:30,106 - __main__ - INFO - Connected to 2 guilds: 32px Penguins, FlexaSaurusRex's Testing Server
+2024-12-14 18:00:30,106 - __main__ - INFO - Bot presence updated successfully
+2024-12-14 18:00:30,106 - __main__ - INFO - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 18:01:21,109 - __main__ - INFO - Starting bot with enhanced error handling...
+2024-12-14 18:01:21,110 - discord.client - INFO - logging in using static token
+2024-12-14 18:01:21,490 - __main__ - INFO - ━━━━━━ Initializing Bot Setup ━━━━━━
+2024-12-14 18:01:21,490 - __main__ - INFO - Clearing existing commands...
+2024-12-14 18:01:21,490 - __main__ - INFO - Registering commands...
+2024-12-14 18:01:21,490 - __main__ - INFO - ━━━━━━ Command Sync Attempt 1/3 ━━━━━━
+2024-12-14 18:01:21,490 - __main__ - INFO - Phase 1: Preparing command sync...
+2024-12-14 18:01:21,490 - __main__ - INFO - Cleared existing commands
+2024-12-14 18:01:21,491 - __main__ - INFO - Phase 2: Syncing commands (timeout: 30s)...
+2024-12-14 18:01:21,860 - __main__ - INFO - Phase 3: Verifying command sync...
+2024-12-14 18:01:21,952 - __main__ - ERROR - Command verification failed: No commands found after sync
+2024-12-14 18:01:21,952 - __main__ - WARNING - Sync attempt 1 failed: No commands found after sync
+2024-12-14 18:01:21,952 - __main__ - INFO - Waiting 2s before retry...
+2024-12-14 18:01:23,798 - __main__ - INFO - Starting bot with enhanced error handling...
+2024-12-14 18:01:23,799 - discord.client - INFO - logging in using static token
+2024-12-14 18:01:24,122 - __main__ - INFO - ━━━━━━ Initializing Bot Setup ━━━━━━
+2024-12-14 18:01:24,123 - __main__ - INFO - Clearing existing commands...
+2024-12-14 18:01:24,123 - __main__ - INFO - Registering commands...
+2024-12-14 18:01:24,123 - __main__ - INFO - ━━━━━━ Command Sync Attempt 1/3 ━━━━━━
+2024-12-14 18:01:24,123 - __main__ - INFO - Phase 1: Preparing command sync...
+2024-12-14 18:01:24,123 - __main__ - INFO - Cleared existing commands
+2024-12-14 18:01:24,124 - __main__ - INFO - Phase 2: Syncing commands (timeout: 30s)...
+2024-12-14 18:01:30,837 - __main__ - INFO - Starting bot with enhanced error handling...
+2024-12-14 18:01:30,837 - discord.client - INFO - logging in using static token
+2024-12-14 18:02:02,167 - __main__ - INFO - ━━━━━━ Initializing Bot ━━━━━━
+2024-12-14 18:02:02,168 - __main__ - INFO - Token verification passed
+2024-12-14 18:02:02,168 - __main__ - INFO - ━━━━━━ Starting Bot ━━━━━━
+2024-12-14 18:02:02,169 - __main__ - INFO - Phase 1: Initializing connection...
+2024-12-14 18:02:02,169 - __main__ - INFO - Phase 2: Starting bot with token...
+2024-12-14 18:02:02,169 - discord.client - INFO - logging in using static token
+2024-12-14 18:02:05,088 - __main__ - INFO - ━━━━━━ Initializing Bot ━━━━━━
+2024-12-14 18:02:05,089 - __main__ - INFO - Token verification passed
+2024-12-14 18:02:05,089 - __main__ - INFO - ━━━━━━ Starting Bot ━━━━━━
+2024-12-14 18:02:05,089 - __main__ - INFO - Phase 1: Initializing connection...
+2024-12-14 18:02:05,089 - __main__ - INFO - Phase 2: Starting bot with token...
+2024-12-14 18:02:05,089 - discord.client - INFO - logging in using static token
+2024-12-14 18:02:21,919 - __main__ - INFO - ━━━━━━ Initializing Bot Setup ━━━━━━
+2024-12-14 18:02:21,919 - __main__ - INFO - Phase 1: Verifying bot state...
+2024-12-14 18:02:21,919 - __main__ - INFO - Bot user verified: OCTANTBOT (1316950341954306159)
+2024-12-14 18:02:21,919 - __main__ - INFO - Phase 2: Clearing existing commands...
+2024-12-14 18:02:21,919 - __main__ - INFO - Successfully cleared existing commands
+2024-12-14 18:02:21,919 - __main__ - INFO - Phase 3: Registering commands...
+2024-12-14 18:02:21,920 - __main__ - INFO - ━━━━━━ Command Sync Attempt 1/3 ━━━━━━
+2024-12-14 18:02:21,920 - __main__ - INFO - Phase 1: Preparing command sync...
+2024-12-14 18:02:21,920 - __main__ - INFO - Cleared existing commands
+2024-12-14 18:02:21,920 - __main__ - INFO - Phase 2: Syncing commands (timeout: 30s)...
+2024-12-14 18:02:22,015 - __main__ - INFO - Phase 3: Verifying command sync...
+2024-12-14 18:02:22,143 - __main__ - ERROR - Command verification failed: No commands found after sync
+2024-12-14 18:02:22,144 - __main__ - WARNING - Sync attempt 1 failed: No commands found after sync
+2024-12-14 18:02:22,144 - __main__ - INFO - Waiting 2s before retry...
+2024-12-14 18:02:24,146 - __main__ - INFO - ━━━━━━ Command Sync Attempt 2/3 ━━━━━━
+2024-12-14 18:02:24,146 - __main__ - INFO - Phase 1: Preparing command sync...
+2024-12-14 18:02:24,146 - __main__ - INFO - Cleared existing commands
+2024-12-14 18:02:24,146 - __main__ - INFO - Phase 2: Syncing commands (timeout: 30s)...
+2024-12-14 18:02:35,101 - __main__ - ERROR - Bot startup timed out after 30 seconds!
+2024-12-14 18:02:35,101 - __main__ - ERROR - Fatal error in main: Bot startup timed out
+Traceback (most recent call last):
+  File "/home/runner/workspace/discord_bot.py", line 314, in main
+    await bot.start(token)
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/discord/client.py", line 786, in start
+    await self.login(token)
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/discord/client.py", line 629, in login
+    await self.setup_hook()
+  File "/home/runner/workspace/discord_bot.py", line 165, in setup_hook
+    await self.tree.sync()
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/discord/app_commands/tree.py", line 1129, in sync
+    data = await self._http.bulk_upsert_global_commands(self.client.application_id, payload=payload)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/discord/http.py", line 624, in request
+    async with ratelimit:
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/discord/http.py", line 481, in __aexit__
+    await self._refresh()
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/discord/http.py", line 433, in _refresh
+    await asyncio.sleep(self.reset_after)
+  File "/nix/store/f98g7xbckgqbkagdvpzc2r6lv3h1p9ki-python3-3.11.9/lib/python3.11/asyncio/tasks.py", line 649, in sleep
+    return await future
+           ^^^^^^^^^^^^
+asyncio.exceptions.CancelledError
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/runner/workspace/discord_bot.py", line 311, in main
+    async with asyncio.timeout(30):  # 30-second timeout for startup
+  File "/nix/store/f98g7xbckgqbkagdvpzc2r6lv3h1p9ki-python3-3.11.9/lib/python3.11/asyncio/timeouts.py", line 115, in __aexit__
+    raise TimeoutError from exc_val
+TimeoutError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/runner/workspace/discord_bot.py", line 318, in main
+    raise TimeoutError("Bot startup timed out")
+TimeoutError: Bot startup timed out
+2024-12-14 18:02:50,935 - __main__ - INFO - ━━━━━━ Initializing Bot ━━━━━━
+2024-12-14 18:02:50,938 - __main__ - INFO - Token verification passed
+2024-12-14 18:02:50,938 - __main__ - INFO - ━━━━━━ Starting Bot ━━━━━━
+2024-12-14 18:02:50,938 - __main__ - INFO - Phase 1: Initializing connection...
+2024-12-14 18:02:50,938 - __main__ - INFO - Phase 2: Starting bot with token...
+2024-12-14 18:02:50,939 - discord.client - INFO - logging in using static token
+2024-12-14 18:02:52,714 - __main__ - INFO - ━━━━━━ Initializing Bot ━━━━━━
+2024-12-14 18:02:52,715 - __main__ - INFO - Token verification passed
+2024-12-14 18:02:52,715 - __main__ - INFO - ━━━━━━ Starting Bot ━━━━━━
+2024-12-14 18:02:52,715 - __main__ - INFO - Phase 1: Initializing connection...
+2024-12-14 18:02:52,715 - __main__ - INFO - Phase 2: Starting bot with token...
+2024-12-14 18:02:52,715 - discord.client - INFO - logging in using static token
+2024-12-14 18:03:22,326 - __main__ - INFO - ━━━━━━ Initializing Bot Setup ━━━━━━
+2024-12-14 18:03:22,327 - __main__ - INFO - Phase 1: Verifying bot state...
+2024-12-14 18:03:22,327 - __main__ - INFO - Bot user verified: OCTANTBOT (1316950341954306159)
+2024-12-14 18:03:22,327 - __main__ - INFO - Phase 2: Clearing existing commands...
+2024-12-14 18:03:22,327 - __main__ - INFO - Successfully cleared existing commands
+2024-12-14 18:03:22,327 - __main__ - INFO - Phase 3: Registering commands...
+2024-12-14 18:03:22,327 - __main__ - INFO - Phase 3: Registering commands with enhanced verification...
+2024-12-14 18:03:22,328 - __main__ - INFO - ━━━━━━ Command Sync Attempt 1/3 ━━━━━━
+2024-12-14 18:03:22,328 - __main__ - INFO - Phase 1: Preparing command sync...
+2024-12-14 18:03:22,328 - __main__ - INFO - Cleared existing commands
+2024-12-14 18:03:22,328 - __main__ - INFO - Phase 2: Syncing commands (timeout: 30s)...
+2024-12-14 18:03:22,440 - __main__ - INFO - Phase 3: Verifying command sync...
+2024-12-14 18:03:22,552 - __main__ - ERROR - Command verification failed: No commands found after sync
+2024-12-14 18:03:22,552 - __main__ - WARNING - Sync attempt 1 failed: No commands found after sync
+2024-12-14 18:03:22,552 - __main__ - INFO - Waiting 2s before retry...
+2024-12-14 18:03:22,716 - __main__ - ERROR - Bot startup timed out after 30 seconds!
+2024-12-14 18:03:22,716 - __main__ - ERROR - Fatal error in main: Bot startup timed out
+Traceback (most recent call last):
+  File "/home/runner/workspace/discord_bot.py", line 195, in setup_hook
+    raise ValueError("No commands found after sync")
+ValueError: No commands found after sync
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/runner/workspace/discord_bot.py", line 336, in main
+    await bot.start(token)
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/discord/client.py", line 786, in start
+    await self.login(token)
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/discord/client.py", line 629, in login
+    await self.setup_hook()
+  File "/home/runner/workspace/discord_bot.py", line 214, in setup_hook
+    await asyncio.sleep(backoff)
+  File "/nix/store/f98g7xbckgqbkagdvpzc2r6lv3h1p9ki-python3-3.11.9/lib/python3.11/asyncio/tasks.py", line 649, in sleep
+    return await future
+           ^^^^^^^^^^^^
+asyncio.exceptions.CancelledError
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/runner/workspace/discord_bot.py", line 331, in main
+    async with asyncio.timeout(30):  # 30-second timeout for startup
+  File "/nix/store/f98g7xbckgqbkagdvpzc2r6lv3h1p9ki-python3-3.11.9/lib/python3.11/asyncio/timeouts.py", line 115, in __aexit__
+    raise TimeoutError from exc_val
+TimeoutError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/runner/workspace/discord_bot.py", line 350, in main
+    raise TimeoutError("Bot startup timed out")
+TimeoutError: Bot startup timed out
+2024-12-14 18:04:58,580 - __main__ - INFO - ━━━━━━ Initializing Bot ━━━━━━
+2024-12-14 18:04:58,581 - __main__ - INFO - Token verification passed
+2024-12-14 18:04:58,582 - __main__ - INFO - ━━━━━━ Starting Bot (Attempt 1/3) ━━━━━━
+2024-12-14 18:04:58,582 - discord.client - INFO - logging in using static token
+2024-12-14 18:04:58,984 - __main__ - INFO - 
+━━━━━━ Initializing Bot Setup ━━━━━━
+2024-12-14 18:04:58,985 - __main__ - INFO - 
+Phase 1: Preparing command system...
+2024-12-14 18:04:58,986 - __main__ - INFO - Attempt 1/3: Clearing existing commands
+2024-12-14 18:04:59,072 - __main__ - INFO - Current registered commands: 0
+2024-12-14 18:04:59,360 - __main__ - INFO - Successfully cleared all commands
+2024-12-14 18:04:59,360 - __main__ - INFO - Phase 2: Registering commands with enhanced verification...
+2024-12-14 18:04:59,361 - __main__ - INFO - Phase 3: Syncing commands...
+2024-12-14 18:05:00,403 - __main__ - INFO - ━━━━━━ Initializing Bot ━━━━━━
+2024-12-14 18:05:00,404 - __main__ - INFO - Token verification passed
+2024-12-14 18:05:00,404 - __main__ - INFO - ━━━━━━ Starting Bot (Attempt 1/3) ━━━━━━
+2024-12-14 18:05:00,405 - discord.client - INFO - logging in using static token
+2024-12-14 18:05:47,911 - __main__ - INFO - ━━━━━━ Starting Discord Bot ━━━━━━
+2024-12-14 18:05:47,912 - __main__ - INFO - Token verified successfully
+2024-12-14 18:05:47,912 - __main__ - INFO - Attempting to start bot...
+2024-12-14 18:05:47,912 - discord.client - INFO - logging in using static token
+2024-12-14 18:05:50,054 - __main__ - INFO - ━━━━━━ Starting Discord Bot ━━━━━━
+2024-12-14 18:05:50,055 - __main__ - INFO - Token verified successfully
+2024-12-14 18:05:50,055 - __main__ - INFO - Attempting to start bot...
+2024-12-14 18:05:50,056 - discord.client - INFO - logging in using static token
+2024-12-14 18:05:59,364 - __main__ - INFO - 
+━━━━━━ Initializing Bot Setup ━━━━━━
+2024-12-14 18:05:59,364 - __main__ - INFO - Registering commands...
+2024-12-14 18:06:00,687 - __main__ - INFO - Commands synchronized successfully
+2024-12-14 18:06:00,687 - __main__ - INFO - Phase 2: Registering commands with enhanced verification...
+2024-12-14 18:06:00,688 - __main__ - ERROR - Critical error in setup_hook: Command 'help' already registered.
+Traceback (most recent call last):
+  File "/home/runner/workspace/discord_bot.py", line 118, in setup_hook
+    @self.tree.command(
+     ^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/discord/app_commands/tree.py", line 944, in decorator
+    self.add_command(command, guild=guild, guilds=guilds)
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/discord/app_commands/tree.py", line 407, in add_command
+    raise CommandAlreadyRegistered(name, None)
+discord.app_commands.errors.CommandAlreadyRegistered: Command 'help' already registered.
+
+2024-12-14 18:06:00,689 - __main__ - ERROR - Error starting bot: Command 'help' already registered.
+2024-12-14 18:06:00,690 - __main__ - ERROR - Fatal error in main: Command 'help' already registered.
+Traceback (most recent call last):
+  File "/home/runner/workspace/discord_bot.py", line 273, in main
+    await bot.start(token.strip())
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/discord/client.py", line 786, in start
+    await self.login(token)
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/discord/client.py", line 629, in login
+    await self.setup_hook()
+  File "/home/runner/workspace/discord_bot.py", line 118, in setup_hook
+    @self.tree.command(
+     ^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/discord/app_commands/tree.py", line 944, in decorator
+    self.add_command(command, guild=guild, guilds=guilds)
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/discord/app_commands/tree.py", line 407, in add_command
+    raise CommandAlreadyRegistered(name, None)
+discord.app_commands.errors.CommandAlreadyRegistered: Command 'help' already registered.
+
+2024-12-14 18:06:00,709 - asyncio - ERROR - Unclosed client session
+client_session: <aiohttp.client.ClientSession object at 0x7f523d758190>
+2024-12-14 18:06:53,039 - __main__ - INFO - 
+━━━━━━ Starting Discord Bot ━━━━━━
+2024-12-14 18:06:53,039 - __main__ - INFO - Token verified successfully
+2024-12-14 18:06:53,040 - __main__ - INFO - Bot instance created successfully
+2024-12-14 18:06:53,040 - __main__ - INFO - Attempting to connect to Discord...
+2024-12-14 18:06:53,041 - discord.client - INFO - logging in using static token
+2024-12-14 18:06:53,402 - __main__ - INFO - 
+━━━━━━ Initializing Bot Setup ━━━━━━
+2024-12-14 18:06:53,402 - __main__ - INFO - Phase 1: Registering commands...
+2024-12-14 18:06:53,403 - __main__ - INFO - Phase 2: Syncing commands...
+2024-12-14 18:06:53,634 - __main__ - INFO - Successfully synced 2 commands
+2024-12-14 18:06:53,634 - __main__ - INFO - • /help - Shows the list of available commands
+2024-12-14 18:06:53,634 - __main__ - INFO - • /ping - Check if the bot is responsive
+2024-12-14 18:06:53,796 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 8c69ecbfb4c75799d7b7390924510717).
+2024-12-14 18:06:55,514 - __main__ - INFO - 
+━━━━━━ Starting Discord Bot ━━━━━━
+2024-12-14 18:06:55,515 - __main__ - INFO - Token verified successfully
+2024-12-14 18:06:55,516 - __main__ - INFO - Bot instance created successfully
+2024-12-14 18:06:55,516 - __main__ - INFO - Attempting to connect to Discord...
+2024-12-14 18:06:55,516 - discord.client - INFO - logging in using static token
+2024-12-14 18:06:55,834 - __main__ - INFO - 
+━━━━━━ Initializing Bot Setup ━━━━━━
+2024-12-14 18:06:55,834 - __main__ - INFO - Phase 1: Registering commands...
+2024-12-14 18:06:55,834 - __main__ - INFO - Phase 2: Syncing commands...
