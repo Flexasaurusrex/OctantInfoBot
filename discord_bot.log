@@ -8034,3 +8034,84 @@ Logged in as: OCTANTBOT
 Bot ID: 1316950341954306159
 Guilds connected: 2
 ━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 17:22:48,215 - __main__ - WARNING - Failed to send heartbeat ping: 'DiscordWebSocket' object has no attribute 'ping'
+2024-12-14 17:22:48,215 - __main__ - WARNING - Health check failure (heartbeat_ping_failed). Failure count: 1
+2024-12-14 17:22:48,215 - __main__ - INFO - 
+━━━━━━ Minor Health Check Issue ━━━━━━
+Failure Count: 1
+Status: Monitoring
+Action: Continuing normal operation
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 17:22:48,215 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 17:22:58,216 - __main__ - WARNING - Failed to send heartbeat ping: 'DiscordWebSocket' object has no attribute 'ping'
+2024-12-14 17:22:58,217 - __main__ - WARNING - Health check failure (heartbeat_ping_failed). Failure count: 0
+2024-12-14 17:22:58,217 - __main__ - INFO - 
+━━━━━━ Minor Health Check Issue ━━━━━━
+Failure Count: 0
+Status: Monitoring
+Action: Continuing normal operation
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 17:22:58,217 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 17:23:04,413 - __main__ - INFO - Initializing Discord bot with enhanced monitoring
+2024-12-14 17:23:04,415 - __main__ - INFO - Chat and Trivia handlers initialized successfully
+2024-12-14 17:23:04,415 - __main__ - INFO - Bot initialization completed successfully
+2024-12-14 17:23:04,415 - discord.client - INFO - logging in using static token
+2024-12-14 17:23:04,775 - __main__ - INFO - Health monitoring tasks started
+2024-12-14 17:23:04,776 - __main__ - WARNING - WebSocket connection check failed
+2024-12-14 17:23:04,777 - __main__ - WARNING - Health check failure (connection_lost). Failure count: 1
+2024-12-14 17:23:04,777 - __main__ - INFO - 
+━━━━━━ Minor Health Check Issue ━━━━━━
+Failure Count: 1
+Status: Monitoring
+Action: Continuing normal operation
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 17:23:04,777 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: False
+Guilds: 0
+Latency: nanms
+Uptime: 0.0h
+Health Failures: 1
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 17:23:04,943 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 9fcfff41fa311efff67444bf6db542c9).
+2024-12-14 17:23:06,965 - __main__ - INFO - ━━━━━━ Bot Ready ━━━━━━
+Logged in as: OCTANTBOT
+Bot ID: 1316950341954306159
+Guilds connected: 2
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 17:23:14,784 - __main__ - WARNING - Failed to send heartbeat ping: 'DiscordWebSocket' object has no attribute 'ping'
+2024-12-14 17:23:14,785 - __main__ - WARNING - Health check failure (heartbeat_ping_failed). Failure count: 1
+2024-12-14 17:23:14,785 - __main__ - INFO - 
+━━━━━━ Minor Health Check Issue ━━━━━━
+Failure Count: 1
+Status: Monitoring
+Action: Continuing normal operation
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 17:23:14,785 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 17:23:24,786 - __main__ - WARNING - Failed to send heartbeat ping: 'DiscordWebSocket' object has no attribute 'ping'
+2024-12-14 17:23:24,786 - __main__ - WARNING - Health check failure (heartbeat_ping_failed). Failure count: 0
+2024-12-14 17:23:24,786 - __main__ - INFO - 
+━━━━━━ Minor Health Check Issue ━━━━━━
+Failure Count: 0
+Status: Monitoring
+Action: Continuing normal operation
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 17:23:24,786 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 17:23:34,776 - __main__ - WARNING - Failed to send heartbeat ping: 'DiscordWebSocket' object has no attribute 'ping'
+2024-12-14 17:23:34,776 - __main__ - WARNING - Health check failure (heartbeat_ping_failed). Failure count: 0
+2024-12-14 17:23:34,777 - __main__ - INFO - 
+━━━━━━ Minor Health Check Issue ━━━━━━
+Failure Count: 0
+Status: Monitoring
+Action: Continuing normal operation
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 17:23:34,777 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 17:25:09,930 - __main__ - INFO - Starting Discord bot...
+2024-12-14 17:25:09,932 - __main__ - INFO - Bot initialized successfully
+2024-12-14 17:25:09,932 - __main__ - INFO - Connecting to Discord...
+2024-12-14 17:25:09,932 - discord.client - INFO - logging in using static token
+2024-12-14 17:25:10,354 - __main__ - INFO - Setting up bot...
+2024-12-14 17:25:10,528 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 67ec0f43b572c3b2ddb7be22dc06828f).
+2024-12-14 17:25:12,539 - __main__ - INFO - Bot is ready! Logged in as OCTANTBOT (ID: 1316950341954306159)
+2024-12-14 17:25:12,539 - __main__ - INFO - Connected to 2 guilds
+2024-12-14 17:25:12,539 - __main__ - INFO - - 32px Penguins (ID: 876809525116665857)
+2024-12-14 17:25:12,539 - __main__ - INFO - - FlexaSaurusRex's Testing Server (ID: 1317082838016856074)

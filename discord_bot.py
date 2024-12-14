@@ -1,12 +1,7 @@
 import os
-import sys
-import random
 import logging
-import asyncio
 import discord
-from discord.ext import tasks, commands
-from datetime import datetime, timezone
-import psutil
+from discord.ext import commands
 from chat_handler import ChatHandler
 from discord_trivia import DiscordTrivia
 
@@ -21,91 +16,51 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-class OctantDiscordBot(commands.Bot):
+class OctantBot(commands.Bot):
     def __init__(self):
-        """Initialize the bot with enhanced monitoring capabilities"""
         try:
-            # Set up intents with enhanced permissions
+            # Set up basic intents
             intents = discord.Intents.default()
             intents.message_content = True
             intents.members = True
-            intents.guilds = True
-            intents.guild_messages = True
-            intents.guild_reactions = True
-            
-            # Initialize the bot with required intents and command prefix
+
+            # Initialize the bot
             super().__init__(
                 command_prefix='/',
-                intents=intents,
-                heartbeat_timeout=60
+                intents=intents
             )
 
-            # Initialize connection state tracking with enhanced monitoring
-            self.connection_state = {
-                'connected': False,
-                'last_heartbeat': None,
-                'reconnect_count': 0,
-                'last_reconnect_time': None,
-                'connection_errors': [],
-                'last_error': None,
-                'guilds_count': 0,
-                'health_check_failures': 0,
-                'startup_time': datetime.now(timezone.utc),
-                'last_recovery_action': None,
-                'memory_usage': 0,
-                'cpu_usage': 0,
-                'last_message_time': None,
-                'consecutive_timeouts': 0,
-                'latency_history': [],
-                'error_count': 0
-            }
-            
-            # Enhanced recovery thresholds for immediate response
-            self.HEALTH_CHECK_INTERVAL = 10     # More aggressive health checks
-            self.MAX_HEALTH_CHECK_FAILURES = 2  # Faster recovery triggering
-            self.HEARTBEAT_TIMEOUT = 30        # Much stricter heartbeat timeout (30 seconds)
-            self.RECONNECT_BACKOFF_MAX = 60    # Faster reconnection (1 minute max)
-            self.MAX_LATENCY = 1000           # Stricter latency threshold (1000ms)
-            self.MAX_CONSECUTIVE_TIMEOUTS = 2  # More aggressive timeout trigger
-            self.MEMORY_THRESHOLD = 85        # Adjusted memory threshold
-            self.CPU_THRESHOLD = 80           # Adjusted CPU threshold
-            self.IMMEDIATE_RESTART_THRESHOLD = 3  # More aggressive restart trigger
-            self.RECONNECT_RETRY_DELAY = 5    # Short delay between reconnection attempts
-            
-            # Initialize latency tracking
-            self.latency_samples = []
-            self.MAX_LATENCY_SAMPLES = 10
-            
-            self._setup_handlers()
-            logger.info("Bot initialization completed successfully")
-            
-        except Exception as e:
-            logger.error(f"Failed to initialize bot: {str(e)}", exc_info=True)
-            raise
-
-    def _setup_handlers(self):
-        """Set up event handlers with proper error handling"""
-        try:
+            # Initialize handlers
             self.chat_handler = ChatHandler()
             self.trivia = DiscordTrivia()
-            logger.info("Chat and Trivia handlers initialized successfully")
             
             # Remove default help command
             self.remove_command('help')
             
-            # Register commands
-            @self.command(name='trivia')
-            async def trivia_command(ctx):
-                """Start a trivia game"""
-                try:
-                    await self.trivia.start_game(ctx)
-                except Exception as e:
-                    logger.error(f"Error in trivia command: {str(e)}", exc_info=True)
-                    await ctx.send("Sorry, there was an error starting the trivia game. Please try again.")
+            logger.info("Bot initialized successfully")
+        except Exception as e:
+            logger.error(f"Failed to initialize bot: {str(e)}", exc_info=True)
+            raise
 
-            @self.command(name='help')
-            async def help_command(ctx):
-                """Show help message"""
+    async def setup_hook(self):
+        """Called when the bot is starting up"""
+        logger.info("Setting up bot...")
+        
+        @self.command(name='trivia')
+        async def trivia_command(ctx):
+            """Start a trivia game"""
+            try:
+                logger.info(f"Trivia command received from {ctx.author}")
+                await self.trivia.start_game(ctx)
+            except Exception as e:
+                logger.error(f"Error in trivia command: {str(e)}", exc_info=True)
+                await ctx.send("Sorry, there was an error starting the trivia game. Please try again.")
+
+        @self.command(name='help')
+        async def help_command(ctx):
+            """Show help message"""
+            try:
+                logger.info(f"Help command received from {ctx.author}")
                 help_embed = discord.Embed(
                     title="📚 Octant Bot Help",
                     description="Welcome to Octant Bot! Here are the available commands:",
@@ -126,421 +81,32 @@ class OctantDiscordBot(commands.Bot):
                 
                 help_embed.set_footer(text="Type /trivia to start playing!")
                 
-                try:
-                    await ctx.send(embed=help_embed)
-                except Exception as e:
-                    logger.error(f"Error sending help message: {str(e)}", exc_info=True)
-                    await ctx.send("Sorry, there was an error displaying the help message. Please try again.")
-                    
-        except Exception as e:
-            logger.error(f"Failed to initialize handlers: {str(e)}")
-            raise
-
-    async def start_health_monitor(self):
-        """Start the health monitoring tasks"""
-        self.health_check.start()
-        self.connection_monitor.start()
-        logger.info("Health monitoring tasks started")
-
-    @tasks.loop(seconds=10)  # More frequent health checks
-    async def health_check(self):
-        """Enhanced periodic health check with proactive monitoring"""
-        try:
-            current_time = datetime.now(timezone.utc)
-            
-            # Update system metrics
-            import psutil
-            process = psutil.Process()
-            self.connection_state['memory_usage'] = process.memory_percent()
-            self.connection_state['cpu_usage'] = process.cpu_percent()
-            
-            # Proactive heartbeat monitoring
-            if self.ws and self.ws.open:
-                try:
-                    # Send heartbeat ping
-                    await self.ws.ping()
-                    self.connection_state['last_heartbeat'] = current_time
-                    logger.debug("Heartbeat ping sent successfully")
-                except Exception as e:
-                    logger.warning(f"Failed to send heartbeat ping: {str(e)}")
-                    await self._handle_health_failure("heartbeat_ping_failed")
-            
-            # Enhanced connection state monitoring
-            if not self.is_ready() or not self.ws or not self.ws.open:
-                logger.warning("WebSocket connection check failed")
-                self.connection_state['health_check_failures'] += 1
-                await self._handle_health_failure("connection_lost")
-                return
-            
-            # Resource monitoring with gradual response
-            if self.connection_state['memory_usage'] > self.MEMORY_THRESHOLD:
-                logger.warning(f"High memory usage: {self.connection_state['memory_usage']}%")
-                if self.connection_state['memory_usage'] > self.MEMORY_THRESHOLD + 10:
-                    logger.critical("Critical memory usage - Initiating immediate restart")
-                    await self._emergency_restart(force=True)
-                else:
-                    # Attempt memory cleanup before restart
-                    import gc
-                    gc.collect()
-                    await self._handle_health_failure("high_memory")
-            
-            if self.connection_state['cpu_usage'] > self.CPU_THRESHOLD:
-                logger.warning(f"High CPU usage: {self.connection_state['cpu_usage']}%")
-                await self._handle_health_failure("high_cpu")
-            
-            # Strict heartbeat age monitoring
-            if self.connection_state['last_heartbeat']:
-                heartbeat_age = (current_time - self.connection_state['last_heartbeat']).total_seconds()
-                if heartbeat_age > self.HEARTBEAT_TIMEOUT:
-                    logger.warning(f"Heartbeat timeout detected. Age: {heartbeat_age}s")
-                    self.connection_state['consecutive_timeouts'] += 1
-                    self.connection_state['health_check_failures'] += 1
-                    
-                    if self.connection_state['consecutive_timeouts'] >= self.MAX_CONSECUTIVE_TIMEOUTS:
-                        logger.critical("Maximum consecutive timeouts reached - Forcing immediate restart")
-                        await self._emergency_restart(force=True)
-                    else:
-                        # Attempt reconnection before full restart
-                        try:
-                            await self.close()
-                            await asyncio.sleep(self.RECONNECT_RETRY_DELAY)
-                            await self.start(os.environ.get('DISCORD_BOT_TOKEN'))
-                        except Exception as e:
-                            logger.error(f"Reconnection attempt failed: {str(e)}")
-                            await self._handle_health_failure("heartbeat_timeout")
-                else:
-                    self.connection_state['consecutive_timeouts'] = 0
-            
-            # Latency monitoring
-            if self.latency != float('inf'):
-                self.connection_state['latency_history'].append(self.latency * 1000)  # Convert to ms
-                if len(self.connection_state['latency_history']) > 10:
-                    self.connection_state['latency_history'].pop(0)
-                
-                avg_latency = sum(self.connection_state['latency_history']) / len(self.connection_state['latency_history'])
-                if avg_latency > self.MAX_LATENCY:
-                    logger.warning(f"High latency detected: {avg_latency}ms")
-                    await self._handle_health_failure("high_latency")
-            
-            # Connection status check
-            if not self.connection_state['connected']:
-                logger.warning("Connection check failed - Bot disconnected")
-                self.connection_state['health_check_failures'] += 1
-                await self._handle_health_failure("disconnected")
-            
-            # Reset failure count if everything is fine
-            if (self.connection_state['connected'] and 
-                self.latency < self.MAX_LATENCY/1000 and 
-                self.connection_state['consecutive_timeouts'] == 0):
-                self.connection_state['health_check_failures'] = 0
-                logger.info("Health check passed - All systems normal")
-                
-        except Exception as e:
-            logger.error(f"Error in health check: {str(e)}", exc_info=True)
-            self.connection_state['error_count'] += 1
-            if (self.connection_state['error_count'] > 5 or 
-                self.connection_state['consecutive_timeouts'] >= self.MAX_CONSECUTIVE_TIMEOUTS or
-                self.connection_state['health_check_failures'] >= self.IMMEDIATE_RESTART_THRESHOLD):
-                logger.critical("Critical condition detected - Initiating immediate restart")
-                await self._emergency_restart(force=True)  # Force immediate restart
-
-    @tasks.loop(minutes=1)
-    async def connection_monitor(self):
-        """Monitor connection quality and guild status"""
-        try:
-            self.connection_state.update({
-                'guilds_count': len(self.guilds),
-                'latency': self.latency,
-                'last_check_time': datetime.now(timezone.utc)
-            })
-            
-            logger.info(f"""━━━━━━ Connection Status ━━━━━━
-Connected: {self.connection_state['connected']}
-Guilds: {self.connection_state['guilds_count']}
-Latency: {self.latency * 1000:.2f}ms
-Uptime: {(datetime.now(timezone.utc) - self.connection_state['startup_time']).total_seconds() / 3600:.1f}h
-Health Failures: {self.connection_state['health_check_failures']}
-━━━━━━━━━━━━━━━━━━━━━━━━""")
-            
-        except Exception as e:
-            logger.error(f"Error in connection monitor: {str(e)}", exc_info=True)
-
-    async def _handle_health_failure(self, failure_type: str):
-        """Enhanced health check failure handling with immediate recovery"""
-        try:
-            failures = self.connection_state['health_check_failures']
-            logger.warning(f"Health check failure ({failure_type}). Failure count: {failures}")
-            
-            # Immediate restart on heartbeat timeout
-            if failure_type == "heartbeat_timeout":
-                logger.critical("Heartbeat timeout detected - Initiating immediate restart")
-                await self._emergency_restart(force=True)
-                return
-            
-            if failures >= self.MAX_HEALTH_CHECK_FAILURES:
-                logger.critical(f"""
-━━━━━━ Critical Health Check Failure ━━━━━━
-Failure Count: {failures}
-Last Error: {self.connection_state.get('last_error')}
-Connection State: {self.connection_state['connected']}
-Latency: {self.latency * 1000:.2f}ms
-Memory Usage: {self.connection_state['memory_usage']:.1f}%
-CPU Usage: {self.connection_state['cpu_usage']:.1f}%
-Session State: {'Active' if self._connection else 'Closed'}
-━━━━━━━━━━━━━━━━━━━━━━━━""")
-                
-                # Try reconnection first
-                try:
-                    logger.warning("Attempting reconnection before emergency restart...")
-                    # Close existing connection
-                    await self.close()
-                    await asyncio.sleep(5)  # Wait before reconnecting
-                    
-                    # Attempt to reconnect
-                    await self.start(os.environ.get('DISCORD_BOT_TOKEN'))
-                    await asyncio.sleep(5)  # Wait for reconnection
-                    
-                    if self.is_ready() and self.latency != float('inf'):
-                        logger.info("Reconnection successful - Resetting failure count")
-                        self.connection_state['health_check_failures'] = 0
-                        return
-                except Exception as e:
-                    logger.error(f"Reconnection failed: {e}")
-                
-                # If reconnection fails, proceed with emergency restart
-                logger.critical("Reconnection failed - Initiating emergency restart")
-                await self._emergency_restart()
-            
-            elif failures >= 2:
-                logger.warning(f"""
-━━━━━━ Multiple Health Check Failures ━━━━━━
-Failure Count: {failures}
-Attempting reconnection...
-━━━━━━━━━━━━━━━━━━━━━━━━""")
-                try:
-                    await self.close()
-                    await asyncio.sleep(2)
-                    await self.start(os.environ.get('DISCORD_BOT_TOKEN'))
-                except Exception as e:
-                    logger.error(f"Reconnection attempt failed: {e}")
-            
-            else:
-                logger.info(f"""
-━━━━━━ Minor Health Check Issue ━━━━━━
-Failure Count: {failures}
-Status: Monitoring
-Action: Continuing normal operation
-━━━━━━━━━━━━━━━━━━━━━━━━""")
-                
-        except Exception as e:
-            logger.error(f"Error handling health failure: {str(e)}", exc_info=True)
-
-    async def _emergency_restart(self, force=False):
-        """Enhanced emergency restart with aggressive session handling
-        
-        Args:
-            force (bool): If True, performs immediate forceful restart with session cleanup
-        """
-        try:
-            current_time = datetime.now(timezone.utc)
-            logger.critical(f"""
-━━━━━━ Emergency Restart Initiated ━━━━━━
-Reason: Health check failures exceeded
-Time: {current_time}
-Uptime: {(current_time - self.connection_state['startup_time']).total_seconds() / 3600:.1f}h
-Last Error: {self.connection_state.get('last_error')}
-Memory Usage: {self.connection_state['memory_usage']:.1f}%
-CPU Usage: {self.connection_state['cpu_usage']:.1f}%
-Health Failures: {self.connection_state['health_check_failures']}
-Connected Guilds: {self.connection_state['guilds_count']}
-Last Message Time: {self.connection_state['last_message_time']}
-━━━━━━━━━━━━━━━━━━━━━━━━""")
-            
-            # Always perform thorough cleanup
-            # Enhanced cleanup process with WebSocket connection handling
-            try:
-                if force:
-                    logger.warning("Force restart requested - Performing aggressive shutdown")
-                    # Cancel non-essential tasks first
-                    tasks = [t for t in asyncio.all_tasks() if t is not asyncio.current_task()]
-                    for task in tasks:
-                        task.cancel()
-                    
-                    # Wait for tasks to complete their cancellation
-                    if tasks:
-                        await asyncio.wait(tasks, timeout=5)
-                else:
-                    logger.info("Initiating graceful cleanup...")
-                
-                # Unified cleanup sequence for both force and graceful shutdown
-                try:
-                    # Stop background tasks first
-                    for task in [self.health_check, self.connection_monitor]:
-                        if hasattr(task, 'cancel'):
-                            task.cancel()
-                            try:
-                                await asyncio.wait_for(task, timeout=2)
-                            except (asyncio.TimeoutError, Exception) as e:
-                                logger.warning(f"Task cancellation timeout: {str(e)}")
-                    
-                    # Close voice connections with timeout
-                    for vc in self.voice_clients:
-                        try:
-                            await asyncio.wait_for(vc.disconnect(force=True), timeout=2)
-                        except asyncio.TimeoutError:
-                            logger.warning(f"Voice client disconnect timeout for {vc.guild.id}")
-                        except Exception as e:
-                            logger.error(f"Voice disconnect error: {str(e)}")
-                    
-                    # Close WebSocket with proper shutdown sequence
-                    if hasattr(self, 'ws') and self.ws is not None:
-                        try:
-                            # Send close frame
-                            close_code = 1000  # Normal closure
-                            await self.ws.close(code=close_code)
-                            # Wait for close to complete
-                            await asyncio.wait_for(self.ws.wait_closed(), timeout=5)
-                        except asyncio.TimeoutError:
-                            logger.warning("WebSocket close timeout - forcing close")
-                        except Exception as e:
-                            logger.error(f"WebSocket close error: {str(e)}")
-                    
-                    # Clear session and HTTP
-                    for attr in ['session', 'http']:
-                        if hasattr(self, attr):
-                            try:
-                                await asyncio.wait_for(getattr(self, attr).close(), timeout=2)
-                            except (asyncio.TimeoutError, Exception) as e:
-                                logger.warning(f"{attr} close error: {str(e)}")
-                    
-                    # Clear connection state
-                    if hasattr(self, '_connection'):
-                        self._connection.clear()
-                    
-                except Exception as e:
-                    logger.error(f"Error during cleanup sequence: {str(e)}")
-                finally:
-                    # Always clear internal state
-                    self.clear()
-                    
-                # Wait for cleanup to settle
-                await asyncio.sleep(3)
-                
+                await ctx.send(embed=help_embed)
+                logger.info("Help message sent successfully")
             except Exception as e:
-                logger.error(f"Error during cleanup process: {str(e)}")
-                # Continue with restart process despite cleanup errors
-                    
-            # Immediate process cleanup
-            import gc
-            gc.collect()  # Force garbage collection
-            
-            # Clear internal state and cache
-            self.clear()
-            for cache_attr in ['_users', '_guilds', '_channels', '_messages']:
-                if hasattr(self, cache_attr):
-                    getattr(self, cache_attr).clear()
-            
-            # Reset connection state
-            self.connection_state.update({
-                'connected': False,
-                'last_heartbeat': None,
-                'reconnect_count': 0,
-                'health_check_failures': 0,
-                'consecutive_timeouts': 0,
-                'error_count': 0,
-                'latency_history': [],
-                'last_recovery_action': datetime.now(timezone.utc)
-            })
-            
-            # Enhanced cleanup and wait period
-            await asyncio.sleep(10)  # Increased wait time for better cleanup
-            
-            # Attempt reconnection with improved exponential backoff
-            max_retries = 5  # Increased max retries
-            base_delay = 5
-            
-            for attempt in range(max_retries):
-                try:
-                    # Calculate backoff with jitter
-                    delay = min(base_delay * (2 ** attempt) + random.uniform(1, 5), 60)
-                    logger.info(f"""
-━━━━━━ Restart Attempt {attempt + 1}/{max_retries} ━━━━━━
-Delay: {delay:.1f}s
-Previous Errors: {self.connection_state.get('last_error')}
-Memory Usage: {self.connection_state['memory_usage']:.1f}%
-━━━━━━━━━━━━━━━━━━━━━━━━""")
-                    
-                    # Attempt to start with the token
-                    await self.start(os.environ.get('DISCORD_BOT_TOKEN'))
-                    
-                    # Enhanced stability check
-                    stability_check_attempts = 3
-                    for _ in range(stability_check_attempts):
-                        await asyncio.sleep(5)
-                        if self.is_ready() and self.latency != float('inf'):
-                            guild_count = len(self.guilds)
-                            current_latency = self.latency * 1000
-                            
-                            logger.info(f"""
-━━━━━━ Emergency Restart Completed ━━━━━━
-Status: Success
-Connected Guilds: {guild_count}
-Latency: {current_latency:.2f}ms
-Memory Usage: {self.connection_state['memory_usage']:.1f}%
-CPU Usage: {self.connection_state['cpu_usage']:.1f}%
-Time: {datetime.now(timezone.utc)}
-━━━━━━━━━━━━━━━━━━━━━━━━""")
-                            
-                            # Reset health metrics
-                            self.connection_state.update({
-                                'health_check_failures': 0,
-                                'consecutive_timeouts': 0,
-                                'error_count': 0,
-                                'reconnect_count': 0
-                            })
-                            return
-                except Exception as e:
-                    logger.error(f"Restart attempt {attempt + 1} failed: {str(e)}")
-                    await asyncio.sleep(5 * (attempt + 1))  # Exponential backoff
-            
-            raise Exception("Failed to restart after maximum retries")
-            
-        except Exception as e:
-            logger.critical(f"Emergency restart failed: {str(e)}", exc_info=True)
-            # Notify admins or take additional recovery actions
-            try:
-                # Try one last time with a clean slate
-                self.clear()
-                await asyncio.sleep(10)
-                await self.start(os.environ.get('DISCORD_BOT_TOKEN'))
-            except:
-                logger.critical("Final restart attempt failed - Manual intervention required")
-                raise
-
-    async def setup_hook(self):
-        """Called when the bot is starting up"""
-        await self.start_health_monitor()
+                logger.error(f"Error sending help message: {str(e)}", exc_info=True)
+                await ctx.send("Sorry, there was an error displaying the help message. Please try again.")
 
     async def on_ready(self):
         """Called when the bot is ready."""
         try:
-            logger.info(f"""━━━━━━ Bot Ready ━━━━━━
-Logged in as: {self.user.name}
-Bot ID: {self.user.id}
-Guilds connected: {len(self.guilds)}
-━━━━━━━━━━━━━━━━━━━━━━━━""")
-            self.connection_state['connected'] = True
-            self.connection_state['last_heartbeat'] = datetime.now(timezone.utc)
-            
+            logger.info(f"Bot is ready! Logged in as {self.user.name} (ID: {self.user.id})")
+            logger.info(f"Connected to {len(self.guilds)} guilds")
+            for guild in self.guilds:
+                logger.info(f"- {guild.name} (ID: {guild.id})")
         except Exception as e:
             logger.error(f"Error in on_ready: {str(e)}", exc_info=True)
 
     async def on_message(self, message):
-        """Handle incoming messages with enhanced error handling."""
+        """Handle incoming messages."""
         try:
+            # Ignore messages from the bot itself
             if message.author == self.user:
                 return
 
+            logger.info(f"Message received from {message.author}: {message.content[:50]}...")
+
+            # Process commands first
             await self.process_commands(message)
 
             # Check if message is a reply to bot
@@ -556,6 +122,7 @@ Guilds connected: {len(self.guilds)}
             # Get and send response
             response = self.chat_handler.get_response(message.content)
             if response:
+                logger.info("Sending response to user")
                 if isinstance(response, list):
                     for chunk in response:
                         if chunk and chunk.strip():
@@ -567,54 +134,23 @@ Guilds connected: {len(self.guilds)}
             logger.error(f"Error processing message: {str(e)}", exc_info=True)
             await message.channel.send("I encountered an error processing your message. Please try again.")
 
-    async def on_error(self, event, *args, **kwargs):
-        """Global error handler for all events"""
-        try:
-            error = sys.exc_info()[1]
-            logger.error(f"Error in {event}: {str(error)}", exc_info=True)
-            self.connection_state['last_error'] = {
-                'event': event,
-                'error': str(error),
-                'timestamp': datetime.now(timezone.utc)
-            }
-        except Exception as e:
-            logger.error(f"Error in error handler: {str(e)}", exc_info=True)
-
 async def main():
-    """Main bot execution with enhanced error handling and monitoring."""
-    retry_count = 0
-    max_retries = 5
-    base_delay = 5
+    """Main bot execution."""
+    try:
+        logger.info("Starting Discord bot...")
+        bot = OctantBot()
+        
+        discord_token = os.environ.get('DISCORD_BOT_TOKEN')
+        if not discord_token:
+            raise ValueError("DISCORD_BOT_TOKEN environment variable is required")
 
-    while True:
-        try:
-            logger.info("Initializing Discord bot with enhanced monitoring")
-            bot = OctantDiscordBot()
-            
-            # Get Discord token
-            discord_token = os.environ.get('DISCORD_BOT_TOKEN')
-            if not discord_token:
-                raise ValueError("DISCORD_BOT_TOKEN environment variable is required")
-
-            # Start the bot
-            await bot.start(discord_token)
-            
-        except Exception as e:
-            retry_count += 1
-            delay = min(base_delay * (2 ** (retry_count - 1)), 300)  # Max 5 minutes delay
-            
-            logger.error(f"""━━━━━━ Bot Error ━━━━━━
-Error: {str(e)}
-Retry Count: {retry_count}
-Next Retry: {delay}s
-━━━━━━━━━━━━━━━━━━━━━━━━""")
-            
-            if retry_count >= max_retries:
-                logger.error("Maximum retries reached, exiting...")
-                break
-                
-            await asyncio.sleep(delay)
-            continue
+        logger.info("Connecting to Discord...")
+        await bot.start(discord_token)
+        
+    except Exception as e:
+        logger.error(f"Critical error in main: {str(e)}", exc_info=True)
+        raise
 
 if __name__ == "__main__":
+    import asyncio
     asyncio.run(main())
