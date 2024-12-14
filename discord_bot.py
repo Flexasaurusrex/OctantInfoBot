@@ -35,31 +35,42 @@ class OctantBot(discord.Client):
             self.trivia = DiscordTrivia()
             
             logger.info("Bot initialized successfully")
+            
+            # Register commands immediately
+            self.register_commands()
+            
         except Exception as e:
             logger.error(f"Failed to initialize bot: {str(e)}", exc_info=True)
             raise
 
-    async def setup_hook(self):
-        """Set up the bot's commands."""
+    def register_commands(self):
+        """Register all slash commands."""
         try:
-            logger.info("Setting up commands...")
+            logger.info("Registering commands...")
             
-            # Register commands
-            @self.tree.command(name="ping", description="Check if the bot is responsive")
+            @self.tree.command(
+                name="ping",
+                description="Check if the bot is online and responsive"
+            )
             async def ping(interaction: discord.Interaction):
                 try:
-                    await interaction.response.send_message("Pong! 🏓")
-                    logger.info(f"Ping command executed by {interaction.user}")
+                    logger.info(f"Ping command received from {interaction.user}")
+                    await interaction.response.send_message("Pong! 🏓 Bot is online and responsive!")
                 except Exception as e:
                     logger.error(f"Error in ping command: {str(e)}", exc_info=True)
-                    await interaction.response.send_message(
-                        "Sorry, there was an error processing your command.",
-                        ephemeral=True
-                    )
+                    if not interaction.response.is_done():
+                        await interaction.response.send_message(
+                            "Sorry, there was an error processing your command.",
+                            ephemeral=True
+                        )
 
-            @self.tree.command(name="help", description="Show available commands")
+            @self.tree.command(
+                name="help",
+                description="Display information about available commands"
+            )
             async def help_command(interaction: discord.Interaction):
                 try:
+                    logger.info(f"Help command received from {interaction.user}")
                     help_embed = discord.Embed(
                         title="📚 Octant Bot Help",
                         description="Welcome to Octant Bot! Here are the available commands:",
@@ -87,15 +98,19 @@ class OctantBot(discord.Client):
                     help_embed.set_footer(text="Type /trivia to start playing!")
                     
                     await interaction.response.send_message(embed=help_embed)
-                    logger.info(f"Help command executed by {interaction.user}")
+                    
                 except Exception as e:
                     logger.error(f"Error in help command: {str(e)}", exc_info=True)
-                    await interaction.response.send_message(
-                        "Sorry, there was an error displaying the help message. Please try again.",
-                        ephemeral=True
-                    )
+                    if not interaction.response.is_done():
+                        await interaction.response.send_message(
+                            "Sorry, there was an error displaying the help message.",
+                            ephemeral=True
+                        )
 
-            @self.tree.command(name="trivia", description="Start a trivia game")
+            @self.tree.command(
+                name="trivia",
+                description="Start an Octant trivia game"
+            )
             async def trivia_command(interaction: discord.Interaction):
                 try:
                     logger.info(f"Trivia command received from {interaction.user}")
@@ -104,17 +119,24 @@ class OctantBot(discord.Client):
                 except Exception as e:
                     logger.error(f"Error in trivia command: {str(e)}", exc_info=True)
                     await interaction.followup.send(
-                        "Sorry, there was an error starting the trivia game. Please try again.",
+                        "Sorry, there was an error starting the trivia game.",
                         ephemeral=True
                     )
 
-            # Sync commands
-            logger.info("Syncing commands...")
-            await self.tree.sync()
-            logger.info("Commands synced successfully")
+            logger.info("Commands registered successfully")
             
         except Exception as e:
-            logger.error(f"Error in setup_hook: {str(e)}", exc_info=True)
+            logger.error(f"Error registering commands: {str(e)}", exc_info=True)
+            raise
+
+    async def setup_hook(self):
+        """Sync commands with Discord."""
+        try:
+            logger.info("Syncing commands with Discord...")
+            await self.tree.sync()
+            logger.info("Commands synced successfully")
+        except Exception as e:
+            logger.error(f"Error syncing commands: {str(e)}", exc_info=True)
             raise
 
     async def on_ready(self):
@@ -126,27 +148,6 @@ class OctantBot(discord.Client):
                 logger.info(f"- {guild.name} (ID: {guild.id})")
         except Exception as e:
             logger.error(f"Error in on_ready: {str(e)}", exc_info=True)
-
-    async def on_message(self, message):
-        """Handle incoming messages."""
-        try:
-            # Ignore messages from the bot itself
-            if message.author == self.user:
-                return
-
-            # Handle message replies
-            if message.reference and message.reference.resolved:
-                referenced_msg = message.reference.resolved
-                if referenced_msg.author == self.user:
-                    response = self.chat_handler.get_response(message.content)
-                    await message.reply(response, mention_author=True)
-                    logger.info(f"Replied to message from {message.author}")
-
-        except Exception as e:
-            logger.error(f"Error processing message: {str(e)}", exc_info=True)
-            await message.channel.send(
-                "I encountered an error processing your message. Please try again."
-            )
 
 async def main():
     """Main bot execution."""

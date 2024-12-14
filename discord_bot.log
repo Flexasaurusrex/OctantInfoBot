@@ -8149,3 +8149,16 @@ discord.app_commands.errors.CommandNotFound: Application command 'ping' not foun
 2024-12-14 17:32:43,641 - __main__ - INFO - Connected to 2 guilds
 2024-12-14 17:32:43,641 - __main__ - INFO - - 32px Penguins (ID: 876809525116665857)
 2024-12-14 17:32:43,642 - __main__ - INFO - - FlexaSaurusRex's Testing Server (ID: 1317082838016856074)
+2024-12-14 17:36:08,530 - __main__ - INFO - Starting Discord bot...
+2024-12-14 17:36:08,530 - __main__ - INFO - Bot initialized successfully
+2024-12-14 17:36:08,531 - __main__ - INFO - Registering commands...
+2024-12-14 17:36:08,531 - __main__ - INFO - Commands registered successfully
+2024-12-14 17:36:08,531 - __main__ - INFO - Connecting to Discord...
+2024-12-14 17:36:08,531 - discord.client - INFO - logging in using static token
+2024-12-14 17:36:08,828 - __main__ - INFO - Syncing commands with Discord...
+2024-12-14 17:36:09,108 - __main__ - INFO - Commands synced successfully
+2024-12-14 17:36:09,364 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 70b5c95bf22d6a4723ee96aad9351bba).
+2024-12-14 17:36:11,372 - __main__ - INFO - Bot is ready! Logged in as OCTANTBOT (ID: 1316950341954306159)
+2024-12-14 17:36:11,372 - __main__ - INFO - Connected to 2 guilds
+2024-12-14 17:36:11,372 - __main__ - INFO - - 32px Penguins (ID: 876809525116665857)
+2024-12-14 17:36:11,372 - __main__ - INFO - - FlexaSaurusRex's Testing Server (ID: 1317082838016856074)
