@@ -60,17 +60,17 @@ class OctantDiscordBot(commands.Bot):
                 'error_count': 0
             }
             
-            # Optimized recovery thresholds for better stability
-            # More aggressive monitoring for better stability
-            self.HEALTH_CHECK_INTERVAL = 15    # More frequent health checks
-            self.MAX_HEALTH_CHECK_FAILURES = 3  # Faster recovery triggering
-            self.HEARTBEAT_TIMEOUT = 60        # Stricter heartbeat timeout (1 minute)
-            self.RECONNECT_BACKOFF_MAX = 120   # Faster reconnection (2 minutes max)
-            self.MAX_LATENCY = 2000           # Stricter latency threshold (2000ms)
-            self.MAX_CONSECUTIVE_TIMEOUTS = 3  # Stricter timeout trigger
-            self.MEMORY_THRESHOLD = 90        # Stricter memory threshold
-            self.CPU_THRESHOLD = 85           # Stricter CPU threshold
-            self.IMMEDIATE_RESTART_THRESHOLD = 5  # Faster immediate restart trigger
+            # Enhanced recovery thresholds for immediate response
+            self.HEALTH_CHECK_INTERVAL = 10     # More aggressive health checks
+            self.MAX_HEALTH_CHECK_FAILURES = 2  # Faster recovery triggering
+            self.HEARTBEAT_TIMEOUT = 30        # Much stricter heartbeat timeout (30 seconds)
+            self.RECONNECT_BACKOFF_MAX = 60    # Faster reconnection (1 minute max)
+            self.MAX_LATENCY = 1000           # Stricter latency threshold (1000ms)
+            self.MAX_CONSECUTIVE_TIMEOUTS = 2  # More aggressive timeout trigger
+            self.MEMORY_THRESHOLD = 85        # Adjusted memory threshold
+            self.CPU_THRESHOLD = 80           # Adjusted CPU threshold
+            self.IMMEDIATE_RESTART_THRESHOLD = 3  # More aggressive restart trigger
+            self.RECONNECT_RETRY_DELAY = 5    # Short delay between reconnection attempts
             
             # Initialize latency tracking
             self.latency_samples = []
@@ -142,9 +142,9 @@ class OctantDiscordBot(commands.Bot):
         self.connection_monitor.start()
         logger.info("Health monitoring tasks started")
 
-    @tasks.loop(seconds=15)  # Reduced frequency for better stability
+    @tasks.loop(seconds=10)  # More frequent health checks
     async def health_check(self):
-        """Enhanced periodic health check task with comprehensive monitoring"""
+        """Enhanced periodic health check with proactive monitoring"""
         try:
             current_time = datetime.now(timezone.utc)
             
@@ -154,31 +154,60 @@ class OctantDiscordBot(commands.Bot):
             self.connection_state['memory_usage'] = process.memory_percent()
             self.connection_state['cpu_usage'] = process.cpu_percent()
             
-            # Check memory and CPU thresholds
+            # Proactive heartbeat monitoring
+            if self.ws and self.ws.open:
+                try:
+                    # Send heartbeat ping
+                    await self.ws.ping()
+                    self.connection_state['last_heartbeat'] = current_time
+                    logger.debug("Heartbeat ping sent successfully")
+                except Exception as e:
+                    logger.warning(f"Failed to send heartbeat ping: {str(e)}")
+                    await self._handle_health_failure("heartbeat_ping_failed")
+            
+            # Enhanced connection state monitoring
+            if not self.is_ready() or not self.ws or not self.ws.open:
+                logger.warning("WebSocket connection check failed")
+                self.connection_state['health_check_failures'] += 1
+                await self._handle_health_failure("connection_lost")
+                return
+            
+            # Resource monitoring with gradual response
             if self.connection_state['memory_usage'] > self.MEMORY_THRESHOLD:
                 logger.warning(f"High memory usage: {self.connection_state['memory_usage']}%")
                 if self.connection_state['memory_usage'] > self.MEMORY_THRESHOLD + 10:
                     logger.critical("Critical memory usage - Initiating immediate restart")
                     await self._emergency_restart(force=True)
                 else:
+                    # Attempt memory cleanup before restart
+                    import gc
+                    gc.collect()
                     await self._handle_health_failure("high_memory")
             
             if self.connection_state['cpu_usage'] > self.CPU_THRESHOLD:
                 logger.warning(f"High CPU usage: {self.connection_state['cpu_usage']}%")
                 await self._handle_health_failure("high_cpu")
             
-            # Enhanced heartbeat monitoring
+            # Strict heartbeat age monitoring
             if self.connection_state['last_heartbeat']:
                 heartbeat_age = (current_time - self.connection_state['last_heartbeat']).total_seconds()
                 if heartbeat_age > self.HEARTBEAT_TIMEOUT:
                     logger.warning(f"Heartbeat timeout detected. Age: {heartbeat_age}s")
                     self.connection_state['consecutive_timeouts'] += 1
                     self.connection_state['health_check_failures'] += 1
-                    await self._handle_health_failure("heartbeat_timeout")
                     
                     if self.connection_state['consecutive_timeouts'] >= self.MAX_CONSECUTIVE_TIMEOUTS:
-                        logger.critical("Maximum consecutive timeouts reached - Forcing restart")
-                        await self._emergency_restart()
+                        logger.critical("Maximum consecutive timeouts reached - Forcing immediate restart")
+                        await self._emergency_restart(force=True)
+                    else:
+                        # Attempt reconnection before full restart
+                        try:
+                            await self.close()
+                            await asyncio.sleep(self.RECONNECT_RETRY_DELAY)
+                            await self.start(os.environ.get('DISCORD_BOT_TOKEN'))
+                        except Exception as e:
+                            logger.error(f"Reconnection attempt failed: {str(e)}")
+                            await self._handle_health_failure("heartbeat_timeout")
                 else:
                     self.connection_state['consecutive_timeouts'] = 0
             
@@ -328,69 +357,74 @@ Last Message Time: {self.connection_state['last_message_time']}
 ━━━━━━━━━━━━━━━━━━━━━━━━""")
             
             # Always perform thorough cleanup
-            # Enhanced cleanup process with proper error handling
+            # Enhanced cleanup process with WebSocket connection handling
             try:
                 if force:
                     logger.warning("Force restart requested - Performing aggressive shutdown")
-                    # Forceful cleanup
-                    for task in asyncio.all_tasks():
-                        if task is not asyncio.current_task():
-                            task.cancel()
+                    # Cancel non-essential tasks first
+                    tasks = [t for t in asyncio.all_tasks() if t is not asyncio.current_task()]
+                    for task in tasks:
+                        task.cancel()
                     
-                    # Force close all connections
-                    if hasattr(self, '_connection'):
-                        self._connection.clear()
-                    
-                    # Force clear session
-                    if hasattr(self, 'session'):
-                        await self.session.close()
+                    # Wait for tasks to complete their cancellation
+                    if tasks:
+                        await asyncio.wait(tasks, timeout=5)
                 else:
                     logger.info("Initiating graceful cleanup...")
+                
+                # Unified cleanup sequence for both force and graceful shutdown
+                try:
+                    # Stop background tasks first
+                    for task in [self.health_check, self.connection_monitor]:
+                        if hasattr(task, 'cancel'):
+                            task.cancel()
+                            try:
+                                await asyncio.wait_for(task, timeout=2)
+                            except (asyncio.TimeoutError, Exception) as e:
+                                logger.warning(f"Task cancellation timeout: {str(e)}")
                     
-                    # Force clear all active sessions
+                    # Close voice connections with timeout
+                    for vc in self.voice_clients:
+                        try:
+                            await asyncio.wait_for(vc.disconnect(force=True), timeout=2)
+                        except asyncio.TimeoutError:
+                            logger.warning(f"Voice client disconnect timeout for {vc.guild.id}")
+                        except Exception as e:
+                            logger.error(f"Voice disconnect error: {str(e)}")
+                    
+                    # Close WebSocket with proper shutdown sequence
+                    if hasattr(self, 'ws') and self.ws is not None:
+                        try:
+                            # Send close frame
+                            close_code = 1000  # Normal closure
+                            await self.ws.close(code=close_code)
+                            # Wait for close to complete
+                            await asyncio.wait_for(self.ws.wait_closed(), timeout=5)
+                        except asyncio.TimeoutError:
+                            logger.warning("WebSocket close timeout - forcing close")
+                        except Exception as e:
+                            logger.error(f"WebSocket close error: {str(e)}")
+                    
+                    # Clear session and HTTP
+                    for attr in ['session', 'http']:
+                        if hasattr(self, attr):
+                            try:
+                                await asyncio.wait_for(getattr(self, attr).close(), timeout=2)
+                            except (asyncio.TimeoutError, Exception) as e:
+                                logger.warning(f"{attr} close error: {str(e)}")
+                    
+                    # Clear connection state
                     if hasattr(self, '_connection'):
                         self._connection.clear()
                     
-                    # Stop all background tasks
-                    try:
-                        self.health_check.cancel()
-                        self.connection_monitor.cancel()
-                    except Exception as e:
-                        logger.error(f"Error canceling tasks: {str(e)}")
-                    
-                    # Close all voice connections
-                    for vc in self.voice_clients:
-                        try:
-                            await vc.disconnect(force=True)
-                        except Exception as e:
-                            logger.error(f"Error disconnecting voice client: {str(e)}")
-                    
-                    # Clear session state
-                    if hasattr(self, 'session'):
-                        try:
-                            await self.session.close()
-                        except Exception as e:
-                            logger.error(f"Error closing session: {str(e)}")
-                    
-                    # Close WebSocket connection
-                    if hasattr(self, 'ws'):
-                        try:
-                            await self.ws.close(code=1000)
-                        except Exception as e:
-                            logger.error(f"Error closing WebSocket: {str(e)}")
-                    
-                    # Close HTTP session
-                    if hasattr(self, 'http'):
-                        try:
-                            await self.http.close()
-                        except Exception as e:
-                            logger.error(f"Error closing HTTP session: {str(e)}")
-                    
-                    # Clear internal state
+                except Exception as e:
+                    logger.error(f"Error during cleanup sequence: {str(e)}")
+                finally:
+                    # Always clear internal state
                     self.clear()
-                
-                # Wait for cleanup to complete
-                await asyncio.sleep(5 if force else 2)
+                    
+                # Wait for cleanup to settle
+                await asyncio.sleep(3)
                 
             except Exception as e:
                 logger.error(f"Error during cleanup process: {str(e)}")

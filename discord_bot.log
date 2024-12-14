@@ -7953,3 +7953,84 @@ Logged in as: OCTANTBOT
 Bot ID: 1316950341954306159
 Guilds connected: 2
 ━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 17:09:11,210 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 17:09:26,213 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 17:09:41,201 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 17:09:56,213 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 17:09:56,213 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: True
+Guilds: 2
+Latency: 28.59ms
+Uptime: 0.0h
+Health Failures: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 17:10:11,213 - __main__ - WARNING - Heartbeat timeout detected. Age: 72.705169s
+2024-12-14 17:10:11,213 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 1
+2024-12-14 17:10:11,213 - __main__ - CRITICAL - Heartbeat timeout detected - Initiating immediate restart
+2024-12-14 17:10:11,213 - __main__ - CRITICAL - 
+━━━━━━ Emergency Restart Initiated ━━━━━━
+Reason: Health check failures exceeded
+Time: 2024-12-14 17:10:11.213859+00:00
+Uptime: 0.0h
+Last Error: None
+Memory Usage: 0.1%
+CPU Usage: 0.0%
+Health Failures: 1
+Connected Guilds: 2
+Last Message Time: None
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 17:10:11,214 - __main__ - WARNING - Force restart requested - Performing aggressive shutdown
+2024-12-14 17:20:17,672 - __main__ - INFO - Initializing Discord bot with enhanced monitoring
+2024-12-14 17:20:17,673 - __main__ - INFO - Chat and Trivia handlers initialized successfully
+2024-12-14 17:20:17,673 - __main__ - INFO - Bot initialization completed successfully
+2024-12-14 17:20:17,673 - discord.client - INFO - logging in using static token
+2024-12-14 17:20:18,014 - __main__ - INFO - Health monitoring tasks started
+2024-12-14 17:20:18,015 - __main__ - WARNING - Connection check failed - Bot disconnected
+2024-12-14 17:20:18,015 - __main__ - WARNING - Health check failure (disconnected). Failure count: 1
+2024-12-14 17:20:18,016 - __main__ - INFO - 
+━━━━━━ Minor Health Check Issue ━━━━━━
+Failure Count: 1
+Status: Monitoring
+Action: Continuing normal operation
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 17:20:18,016 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: False
+Guilds: 0
+Latency: nanms
+Uptime: 0.0h
+Health Failures: 1
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 17:20:18,187 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: f2a4ebfaab7e3485834376daa65bb6a0).
+2024-12-14 17:20:20,192 - __main__ - INFO - ━━━━━━ Bot Ready ━━━━━━
+Logged in as: OCTANTBOT
+Bot ID: 1316950341954306159
+Guilds connected: 2
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 17:20:33,028 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 17:20:48,029 - __main__ - INFO - Health check passed - All systems normal
+2024-12-14 17:22:37,840 - __main__ - INFO - Initializing Discord bot with enhanced monitoring
+2024-12-14 17:22:37,841 - __main__ - INFO - Chat and Trivia handlers initialized successfully
+2024-12-14 17:22:37,842 - __main__ - INFO - Bot initialization completed successfully
+2024-12-14 17:22:37,842 - discord.client - INFO - logging in using static token
+2024-12-14 17:22:38,205 - __main__ - INFO - Health monitoring tasks started
+2024-12-14 17:22:38,207 - __main__ - WARNING - WebSocket connection check failed
+2024-12-14 17:22:38,207 - __main__ - WARNING - Health check failure (connection_lost). Failure count: 1
+2024-12-14 17:22:38,207 - __main__ - INFO - 
+━━━━━━ Minor Health Check Issue ━━━━━━
+Failure Count: 1
+Status: Monitoring
+Action: Continuing normal operation
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 17:22:38,207 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: False
+Guilds: 0
+Latency: nanms
+Uptime: 0.0h
+Health Failures: 1
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 17:22:38,386 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 0132a3d8572d12c4480de4b964548ef2).
+2024-12-14 17:22:40,396 - __main__ - INFO - ━━━━━━ Bot Ready ━━━━━━
+Logged in as: OCTANTBOT
+Bot ID: 1316950341954306159
+Guilds connected: 2
+━━━━━━━━━━━━━━━━━━━━━━━━
