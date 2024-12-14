@@ -38,17 +38,21 @@ limiter = Limiter(
     storage_uri="memory://"
 )
 
-# Configure Socket.IO with enhanced connection handling
+# Configure Socket.IO with enhanced connection handling and stability
 socketio = SocketIO(
     app,
     cors_allowed_origins="*",
     async_mode='eventlet',
-    ping_timeout=10,
-    ping_interval=5,
+    ping_timeout=20,
+    ping_interval=10,
     reconnection=True,
-    reconnection_attempts=5,
+    reconnection_attempts=10,
     reconnection_delay=1000,
-    reconnection_delay_max=5000
+    reconnection_delay_max=5000,
+    max_http_buffer_size=1e8,
+    logger=True,
+    engineio_logger=True,
+    async_handlers=True
 )
 chat_handler = None
 
@@ -86,9 +90,13 @@ def restart_services():
                 logger.info("Starting cleanup process...")
                 eventlet.sleep(1)
                 
-                # Save current state and notify clients
-                active_connections = len(socketio.server.manager.rooms.get('/', set()))
-                logger.info(f"Active connections: {active_connections}")
+                try:
+                    # Save current state and notify clients
+                    active_connections = len(socketio.server.manager.rooms.get('/', set()) or set())
+                    logger.info(f"Active connections: {active_connections}")
+                except AttributeError:
+                    logger.warning("Could not get active connections count")
+                    active_connections = 0
                 
                 socketio.emit('restart_status', {
                     'status': 'preparing',
@@ -198,7 +206,24 @@ Type any command to get started!
 
 @socketio.on('disconnect')
 def handle_disconnect():
-    logger.info(f"Client disconnected: {request.sid}")
+    """Enhanced disconnect handler with connection cleanup."""
+    try:
+        client_info = {
+            'sid': request.sid,
+            'ip': request.remote_addr,
+            'timestamp': datetime.now().isoformat(),
+            'reason': request.args.get('reason', 'unknown')
+        }
+        logger.info(f"Client disconnected: {client_info}")
+        
+        # Notify other clients about disconnection if needed
+        socketio.emit('user_disconnected', {
+            'sid': request.sid,
+            'timestamp': datetime.now().isoformat()
+        }, broadcast=True, include_self=False)
+        
+    except Exception as e:
+        logger.error(f"Error in disconnect handler: {str(e)}", exc_info=True)
 
 @socketio.on('send_message')
 def handle_message(data):
