@@ -9541,3 +9541,134 @@ Latency: 24.21ms
 Uptime: 0.0h
 Health Failures: 0
 ━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-15 04:43:05,903 - __main__ - INFO - Health check passed - All systems normal
+2024-12-15 04:43:20,896 - __main__ - INFO - Health check passed - All systems normal
+2024-12-15 04:43:35,903 - __main__ - INFO - Health check passed - All systems normal
+2024-12-15 04:43:50,903 - __main__ - INFO - Health check passed - All systems normal
+2024-12-15 04:43:50,903 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: True
+Guilds: 2
+Latency: 39.68ms
+Uptime: 0.0h
+Health Failures: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-15 04:44:05,899 - __main__ - WARNING - Heartbeat timeout detected. Age: 132.7945s
+2024-12-15 04:44:05,899 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 1
+2024-12-15 04:44:05,899 - __main__ - INFO - 
+━━━━━━ Minor Health Check Issue ━━━━━━
+Failure Count: 1
+Status: Monitoring
+Action: Continuing normal operation
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-15 04:44:20,903 - __main__ - WARNING - Heartbeat timeout detected. Age: 147.798466s
+2024-12-15 04:44:20,903 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 2
+2024-12-15 04:44:20,903 - __main__ - WARNING - 
+━━━━━━ Multiple Health Check Failures ━━━━━━
+Failure Count: 2
+Attempting reconnection...
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-15 04:44:20,903 - __main__ - INFO - Initializing Discord bot with enhanced monitoring
+2024-12-15 04:44:20,905 - __main__ - INFO - Chat and Trivia handlers initialized successfully
+2024-12-15 04:44:20,905 - __main__ - INFO - Bot initialization completed successfully
+2024-12-15 04:44:20,905 - discord.client - INFO - logging in using static token
+2024-12-15 04:44:21,237 - __main__ - INFO - Health monitoring tasks started
+2024-12-15 04:44:21,238 - __main__ - WARNING - Connection check failed - Bot disconnected
+2024-12-15 04:44:21,238 - __main__ - WARNING - Health check failure (disconnected). Failure count: 1
+2024-12-15 04:44:21,238 - __main__ - INFO - 
+━━━━━━ Minor Health Check Issue ━━━━━━
+Failure Count: 1
+Status: Monitoring
+Action: Continuing normal operation
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-15 04:44:21,238 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: False
+Guilds: 0
+Latency: nanms
+Uptime: 0.0h
+Health Failures: 1
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-15 04:44:21,422 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 1174a0d4393b475ee0ea8df64ef33c67).
+2024-12-15 04:44:22,931 - discord.client - INFO - logging in using static token
+2024-12-15 04:44:22,932 - __main__ - ERROR - Reconnection attempt failed: Session is closed
+2024-12-15 04:44:23,428 - __main__ - INFO - ━━━━━━ Bot Ready ━━━━━━
+Logged in as: OCTANTBOT
+Bot ID: 1316950341954306159
+Guilds connected: 2
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-15 04:44:35,900 - __main__ - WARNING - Heartbeat timeout detected. Age: 162.795453s
+2024-12-15 04:44:35,900 - __main__ - WARNING - Health check failure (heartbeat_timeout). Failure count: 3
+2024-12-15 04:44:35,900 - __main__ - WARNING - 
+━━━━━━ Multiple Health Check Failures ━━━━━━
+Failure Count: 3
+Attempting reconnection...
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-15 04:44:36,238 - __main__ - INFO - Health check passed - All systems normal
+2024-12-15 04:44:37,903 - discord.client - INFO - logging in using static token
+2024-12-15 04:44:37,903 - __main__ - ERROR - Reconnection attempt failed: Session is closed
+2024-12-15 04:48:04,535 - __main__ - INFO - Initializing Discord bot with enhanced monitoring
+2024-12-15 04:48:04,538 - __main__ - INFO - Chat and Trivia handlers initialized successfully
+2024-12-15 04:48:04,539 - __main__ - INFO - Bot initialization completed successfully
+2024-12-15 04:48:04,539 - discord.client - INFO - logging in using static token
+2024-12-15 04:48:04,901 - __main__ - INFO - Health monitoring tasks started
+2024-12-15 04:48:04,903 - __main__ - WARNING - Connection check failed - Bot disconnected
+2024-12-15 04:48:04,903 - __main__ - WARNING - Health check failure (disconnected). Failure count: 1
+2024-12-15 04:48:04,903 - __main__ - INFO - 
+━━━━━━ Minor Health Check Issue ━━━━━━
+Failure Count: 1
+Status: Monitoring
+Action: Continuing normal operation
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-15 04:48:04,903 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: False
+Guilds: 0
+Latency: nanms
+Uptime: 0.0h
+Health Failures: 1
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-15 04:48:05,094 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 4336db726b08f9c2f9f097b102479e40).
+2024-12-15 04:48:07,100 - __main__ - INFO - ━━━━━━ Bot Ready ━━━━━━
+Logged in as: OCTANTBOT
+Bot ID: 1316950341954306159
+Guilds connected: 2
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-15 04:48:19,915 - __main__ - INFO - Health check passed - All systems normal
+2024-12-15 04:48:21,846 - __main__ - INFO - Processing message: check
+2024-12-15 04:48:21,846 - chat_handler - INFO - Processing message: check...
+2024-12-15 04:48:23,379 - chat_handler - WARNING - No valid response chunks received
+2024-12-15 04:48:34,913 - __main__ - INFO - Health check passed - All systems normal
+2024-12-15 04:48:49,905 - __main__ - INFO - Health check passed - All systems normal
+2024-12-15 04:49:04,917 - __main__ - INFO - Health check passed - All systems normal
+2024-12-15 04:49:04,917 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: True
+Guilds: 2
+Latency: 36.60ms
+Uptime: 0.0h
+Health Failures: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-15 04:49:13,491 - __main__ - INFO - Initializing Discord bot with enhanced monitoring
+2024-12-15 04:49:13,493 - __main__ - INFO - Chat and Trivia handlers initialized successfully
+2024-12-15 04:49:13,494 - __main__ - INFO - Bot initialization completed successfully
+2024-12-15 04:49:13,494 - discord.client - INFO - logging in using static token
+2024-12-15 04:49:13,719 - __main__ - INFO - Health monitoring tasks started
+2024-12-15 04:49:13,720 - __main__ - WARNING - Connection check failed - Bot disconnected
+2024-12-15 04:49:13,720 - __main__ - WARNING - Health check failure (disconnected). Failure count: 1
+2024-12-15 04:49:13,720 - __main__ - INFO - 
+━━━━━━ Minor Health Check Issue ━━━━━━
+Failure Count: 1
+Status: Monitoring
+Action: Continuing normal operation
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-15 04:49:13,721 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: False
+Guilds: 0
+Latency: nanms
+Uptime: 0.0h
+Health Failures: 1
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-15 04:49:13,989 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: da69c257bec8c5426aa945bf1ad3ebf1).
+2024-12-15 04:49:16,000 - __main__ - INFO - ━━━━━━ Bot Ready ━━━━━━
+Logged in as: OCTANTBOT
+Bot ID: 1316950341954306159
+Guilds connected: 2
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-15 04:49:28,732 - __main__ - INFO - Health check passed - All systems normal

@@ -573,8 +573,12 @@ Guilds connected: {len(self.guilds)}
                     msg_content = message.content.lower().strip()
                     logger.info(f"Processing message: {msg_content}")
                     
+                    # Determine if it's a simple greeting
+                    is_greeting = msg_content in ['gm', 'gm gm', 'hello', 'hi', 'hey']
+                    
                     # Always use chat handler for responses
                     try:
+                        # Enhanced API integration with better error handling
                         response_data = await asyncio.wait_for(
                             self.chat_handler.get_response_async(
                                 message.content,
@@ -585,42 +589,96 @@ Guilds connected: {len(self.guilds)}
                                     'user_id': author_id,
                                     'previous_messages': self._message_history.get(author_id, []),
                                     'guild_id': str(message.guild.id) if message.guild else None,
-                                    'is_greeting': msg_content in ['gm', 'gm gm', 'hello', 'hi', 'hey']
+                                    'is_greeting': is_greeting,
+                                    'api_integration': 'together_ai'  # Explicitly mark API integration
                                 }
                             ),
-                            timeout=30.0
+                            timeout=45.0  # Increased timeout for API responses
                         )
-
-                    response_data = await asyncio.wait_for(
-                        self.chat_handler.get_response_async(
-                            message.content,
-                            context={
-                                'timestamp': message.created_at.isoformat(),
-                                'channel_type': str(message.channel.type),
-                                'previous_topic': self._user_context.get(author_id, {}).get('last_topic'),
-                                'user_id': author_id,
-                                'previous_messages': self._message_history.get(author_id, []),
-                                'guild_id': str(message.guild.id) if message.guild else None
+                        
+                        # Verify Together.ai integration
+                        if not response_data:
+                            logger.error("No response received from Together.ai integration")
+                            raise Exception("API integration error")
+                        
+                        if not response_data:
+                            logger.warning("No response data received from chat handler")
+                            response_data = {
+                                'status': 'success',
+                                'message': "Hello! I'm here to help you learn about Octant. What would you like to know?",
+                                'type': 'greeting' if is_greeting else 'chat'
                             }
-                        ),
-                        timeout=30.0  # 30 second timeout
-                    )
-                    
-                    # Enhanced response handling with better error management
-                    if isinstance(response_data, dict):
-                        if response_data.get('status') == 'error':
-                            error_type = response_data.get('error_type', 'unknown')
-                            # List of error types that shouldn't show error messages
-                            silent_errors = ['normal_interaction', 'simple_response', 'greeting', 'command_response']
+                        
+                        # Enhanced response handling with better error management
+                        if isinstance(response_data, dict):
+                            # Handle successful responses
+                            if response_data.get('status') == 'success':
+                                response_message = response_data.get('message', '')
+                                response_type = response_data.get('type', 'chat')
+                                
+                                if response_type in ['greeting', 'simple_response'] or is_greeting:
+                                    embed = discord.Embed(
+                                        description=response_message,
+                                        color=discord.Color.blue()
+                                    )
+                                    await message.reply(embed=embed, mention_author=False)
+                                    await message.add_reaction('👋' if is_greeting else '👍')
+                                    return
+                                
+                                embed = discord.Embed(
+                                    description=response_message,
+                                    color=discord.Color.green()
+                                )
+                                await message.reply(embed=embed, mention_author=False)
+                                await message.add_reaction('✅')
+                                return
                             
-                            if error_type in silent_errors:
+                            elif response_data.get('status') == 'error':
+                                error_embed = discord.Embed(
+                                    title="I need more information",
+                                    description=response_data.get('message', 'Could you please provide more details?'),
+                                    color=discord.Color.orange()
+                                )
+                                await message.reply(embed=error_embed, mention_author=False)
+                                await message.add_reaction('❓')
+                                return
+                    except asyncio.TimeoutError:
+                        logger.error("Response generation timed out")
+                        timeout_embed = discord.Embed(
+                            title="⏰ Response Timeout",
+                            description="The response is taking longer than expected. Please try again.",
+                            color=discord.Color.orange()
+                        )
+                        await message.reply(embed=timeout_embed, mention_author=True)
+                        await message.add_reaction('⏰')
+                        return
+                    except Exception as e:
+                        logger.error(f"Error processing message: {str(e)}", exc_info=True)
+                        error_embed = discord.Embed(
+                            title="Unexpected Error",
+                            description="I encountered an error processing your message. Please try again.",
+                            color=discord.Color.red()
+                        )
+                        await message.reply(embed=error_embed, mention_author=True)
+                        await message.add_reaction('❌')
+                        return
+
+                except Exception as outer_e:
+                    logger.error(f"Outer message handling error: {str(outer_e)}", exc_info=True)
+                    await message.add_reaction('❌')
+                    await message.reply("I encountered an unexpected error. Please try again later.", mention_author=True)
+                            # Handle errors gracefully
+                except Exception as outer_e:
+                    logger.error(f"Outer message handling error: {str(outer_e)}", exc_info=True)
+                    await message.add_reaction('❌')
+                    await message.reply("I encountered an unexpected error. Please try again later.", mention_author=True)
                                 # For expected interactions, just send a simple acknowledgment
                                 simple_embed = discord.Embed(
-                                    description="I'll help you with that! Let me process your request...",
+                                    description="Hello! I'm here to help you learn about Octant. What would you like to know?",
                                     color=discord.Color.blue()
                                 )
                                 await message.reply(embed=simple_embed, mention_author=False)
-                                await message.add_reaction('👍')
+                                await message.add_reaction('👋' if is_greeting else '👍')
                                 return
                             
                             # Only show detailed error for unexpected errors
