@@ -26,7 +26,8 @@ class TriviaButton(ui.Button):
             is_correct = self.option == view.correct_answer
 
             if is_correct:
-                view.game.score += 1
+                view.game.active_games[interaction.channel_id]['score'] += 1
+                view.game.score = view.game.active_games[interaction.channel_id]['score']
                 embed = discord.Embed(
                     title="✅ Correct!",
                     description=view.explanation,
@@ -112,11 +113,13 @@ class DiscordTrivia:
     async def start_game(self, interaction: discord.Interaction):
         try:
             channel = interaction.channel
-            self.active_games[channel.id] = {
+            game = {
                 'score': 0,
                 'questions_asked': 0,
                 'start_time': datetime.now()
             }
+self.active_games[channel.id] = game
+self.score = game['score']  # Add score to instance for button access
 
             await interaction.response.send_message("Starting Octant Trivia! Get ready...")
             await self.next_question(channel)
