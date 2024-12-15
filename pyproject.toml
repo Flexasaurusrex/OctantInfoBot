@@ -1,21 +1,16 @@
 [project]
-name = "repl-nix-workspace"
+name = "octant-bot"
 version = "0.1.0"
-description = "Add your description here"
+description = "Octant Discord Bot with Core optimization"
 requires-python = ">=3.11"
 dependencies = [
-    "email-validator>=2.2.0",
+    "discord.py>=2.3.2",
+    "python-dotenv>=1.0.1",
     "flask>=3.1.0",
-    "flask-sqlalchemy>=3.1.1",
-    "psycopg2-binary>=2.9.10",
     "flask-socketio>=5.4.1",
-    "requests>=2.32.3",
+    "eventlet>=0.38.0",
     "flask-cors>=5.0.0",
     "flask-limiter>=3.9.2",
-    "eventlet>=0.38.0",
-    "python-telegram-bot>=20.7",
+    "requests>=2.32.3",
     "psutil>=6.1.0",
-    "telegram>=0.0.1",
-    "discord-py>=2.3.2",
-    "python-dotenv>=1.0.1",
 ]

@@ -1,16 +1,29 @@
 import os
 import logging
+import asyncio
+import psutil
+from datetime import datetime
 import discord
 from discord.ext import commands
 from chat_handler import ChatHandler
 from discord_trivia import DiscordTrivia
 
-# Configure logging
+# Enhanced logging configuration
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    format='%(asctime)s - %(name)s - %(levelname)s - [%(module)s:%(lineno)d] - %(message)s',
+    handlers=[
+        logging.StreamHandler(),
+        logging.FileHandler('discord_bot.log', mode='a', encoding='utf-8')
+    ]
 )
 logger = logging.getLogger(__name__)
+
+# Add file handler for debugging
+debug_handler = logging.FileHandler('discord_debug.log', mode='a', encoding='utf-8')
+debug_handler.setLevel(logging.DEBUG)
+debug_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - [%(module)s:%(lineno)d] - %(message)s'))
+logger.addHandler(debug_handler)
 
 class OctantBot(commands.Bot):
     def __init__(self):
@@ -19,23 +32,27 @@ class OctantBot(commands.Bot):
         intents.message_content = True
         intents.members = True
         
-        # Core-optimized configuration
+        # Enhanced Core-optimized configuration
         super().__init__(
             command_prefix='/',
             intents=intents,
             description='Octant Discord Bot',
-            max_messages=10000,  # Increased for Core tier
-            chunk_guilds_at_startup=False,  # Disable for faster startup
-            member_cache_flags=discord.MemberCacheFlags.none(),  # Minimal caching
-            heartbeat_timeout=150.0,  # Increased for stability
-            guild_ready_timeout=5.0,
+            max_messages=5000,  # Optimized for memory
+            chunk_guilds_at_startup=False,  # Faster startup
+            member_cache_flags=discord.MemberCacheFlags.none(),  # Minimal cache
+            heartbeat_timeout=60.0,  # More responsive timeout
+            guild_ready_timeout=2.0,  # Faster guild readiness
             assume_unsync_clock=True,
-            chunk_guilds_before_ready=False,
-            guild_subscriptions=False,
-            fetch_offline_members=False,
-            status=discord.Status.online,
-            activity=discord.Game(name="/help for commands")
+            max_ratelimit_timeout=30.0,  # Prevent long rate limit waits
+            command_timeout=10.0,  # Command timeout for stability
+            case_insensitive=True  # More user-friendly commands
         )
+        
+        # Performance monitoring
+        self.start_time = datetime.now()
+        self.command_count = 0
+        self.error_count = 0
+        self.last_reconnect = None
         
         # Initialize handlers
         self.chat_handler = ChatHandler()
@@ -81,10 +98,16 @@ class OctantBot(commands.Bot):
 
     async def on_ready(self):
         """Called when the bot is ready"""
-        logger.info(f"Logged in as: {self.user.name}")
+        logger.info(f"Bot is ready! Logged in as {self.user.name}")
         logger.info(f"Bot ID: {self.user.id}")
         logger.info(f"Discord.py API version: {discord.__version__}")
         logger.info(f"Connected to {len(self.guilds)} guilds")
+        
+        # Set bot status
+        await self.change_presence(
+            activity=discord.Game(name="/help for commands"),
+            status=discord.Status.online
+        )
 
     async def on_message(self, message):
         """Handle incoming messages"""
@@ -121,14 +144,18 @@ async def main():
         logger.error("DISCORD_BOT_TOKEN environment variable is required")
         return
     
-    async with OctantBot() as bot:
-        try:
-            logger.info("Starting bot with Core-optimized configuration...")
-            await bot.start(token)
-        except discord.errors.LoginFailure:
-            logger.error("Failed to login. Please check your token.")
-        except Exception as e:
-            logger.error(f"Error starting bot: {e}")
+    bot = OctantBot()
+    
+    try:
+        logger.info("Starting bot with Core-optimized configuration...")
+        await bot.start(token)
+    except discord.errors.LoginFailure:
+        logger.error("Failed to login. Please check your token.")
+    except Exception as e:
+        logger.error(f"Error starting bot: {e}")
+    finally:
+        if not bot.is_closed():
+            await bot.close()
 
 if __name__ == "__main__":
     import asyncio
