@@ -151,6 +151,9 @@ def restart_services():
         }, namespace='/')
         return {"status": "error", "message": error_msg}, 500
 
+# Track active connections and their state
+active_connections = {}
+
 @socketio.on('connect')
 def handle_connect():
     """Handle client connection with enhanced error handling and state tracking."""
@@ -159,15 +162,23 @@ def handle_connect():
             'sid': request.sid,
             'ip': request.remote_addr,
             'timestamp': datetime.now().isoformat(),
-            'user_agent': request.headers.get('User-Agent', 'Unknown')
+            'user_agent': request.headers.get('User-Agent', 'Unknown'),
+            'reconnect_attempts': 0,
+            'last_ping': datetime.now()
         }
+        active_connections[request.sid] = client_info
         logger.info(f"Client connected: {client_info}")
         
-        # Send connection acknowledgment
+        # Send connection acknowledgment with enhanced status
         socketio.emit('connection_status', {
             'status': 'connected',
             'sid': request.sid,
-            'timestamp': datetime.now().isoformat()
+            'timestamp': datetime.now().isoformat(),
+            'reconnect_info': {
+                'attempts': client_info['reconnect_attempts'],
+                'max_attempts': 5,
+                'delay': 2000
+            }
         }, room=request.sid)
         
         # Send welcome message with command help
@@ -194,15 +205,46 @@ Type any command to get started!
         
     except Exception as e:
         logger.error(f"Error in handle_connect: {str(e)}", exc_info=True)
-        socketio.emit('connection_status', {
+        error_response = {
             'status': 'error',
             'message': 'Connection error occurred',
-            'timestamp': datetime.now().isoformat()
-        }, room=request.sid)
+            'timestamp': datetime.now().isoformat(),
+            'error_details': str(e),
+            'reconnect_info': {
+                'should_retry': True,
+                'delay': 2000
+            }
+        }
+        socketio.emit('connection_status', error_response, room=request.sid)
 
 @socketio.on('disconnect')
 def handle_disconnect():
-    logger.info(f"Client disconnected: {request.sid}")
+    """Handle client disconnection with cleanup and reconnection support."""
+    try:
+        client_info = active_connections.get(request.sid)
+        if client_info:
+            logger.info(f"Client disconnected: {client_info}")
+            # Update reconnection attempts for tracking
+            client_info['reconnect_attempts'] += 1
+            # Keep connection info for potential reconnection
+            if client_info['reconnect_attempts'] < 5:
+                client_info['last_disconnect'] = datetime.now().isoformat()
+            else:
+                # Clean up if max reconnection attempts reached
+                active_connections.pop(request.sid, None)
+    except Exception as e:
+        logger.error(f"Error in handle_disconnect: {str(e)}", exc_info=True)
+
+@socketio.on('ping')
+def handle_ping():
+    """Handle client ping to maintain connection state."""
+    try:
+        if request.sid in active_connections:
+            active_connections[request.sid]['last_ping'] = datetime.now()
+            return {'status': 'ok', 'timestamp': datetime.now().isoformat()}
+    except Exception as e:
+        logger.error(f"Error in handle_ping: {str(e)}")
+        return {'status': 'error', 'message': str(e)}
 
 @socketio.on('send_message')
 def handle_message(data):

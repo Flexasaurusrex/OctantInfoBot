@@ -8720,3 +8720,223 @@ Retry Count: 0
 Max Retries: 5
 ━━━━━━━━━━━━━━━━━━━━━━━━
 2024-12-15 18:46:19,930 - discord.client - INFO - logging in using static token
+2024-12-15 18:46:34,232 - __main__ - INFO - ━━━━━━ Bot Setup Started ━━━━━━
+Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+Memory Usage: {psutil.Process().memory_info().rss / 1024 / 1024:.1f}MB
+CPU Usage: {psutil.cpu_percent()}%
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-15 18:46:34,232 - __main__ - INFO - Token validated successfully
+2024-12-15 18:46:34,232 - __main__ - INFO - Registering commands...
+2024-12-15 18:46:34,703 - __main__ - INFO - Commands registered successfully
+2024-12-15 18:46:34,703 - __main__ - INFO - Starting health monitoring...
+2024-12-15 18:46:34,703 - __main__ - INFO - Health monitoring activated
+2024-12-15 18:46:34,704 - __main__ - INFO - ━━━━━━ Setup Complete ━━━━━━
+Application ID: {self.application_id}
+Shard Count: {self.shard_count if self.shard_count else 'None'}
+Command Count: {len(self.tree.get_commands())}
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-15 18:46:34,705 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Disconnected
+Memory: 0.1%
+CPU: 19.8%
+Latency: nanms
+Guilds: 0
+Uptime: 0.0h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-15 18:46:34,705 - __main__ - WARNING - Health check failed (attempt 1/5)
+2024-12-15 18:46:34,901 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 6ba1f938ef46d7de4e2ee9de77540ffd).
+2024-12-15 18:46:36,950 - __main__ - INFO - ━━━━━━ Bot Ready ━━━━━━
+Logged in as: OCTANTBOT
+Bot ID: 1316950341954306159
+Guilds: 2
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-15 18:46:43,891 - chat_handler - INFO - URLs formatted successfully
+2024-12-15 18:47:04,715 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 21.7%
+Latency: 34.25ms
+Guilds: 2
+Uptime: 0.0h
+Error Count: 1
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-15 18:47:04,715 - __main__ - INFO - Health check recovered - resetting error count
+2024-12-15 18:47:14,947 - chat_handler - INFO - URLs formatted successfully
+2024-12-15 18:47:34,723 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 20.4%
+Latency: 29.97ms
+Guilds: 2
+Uptime: 0.0h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-15 18:48:04,712 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 19.8%
+Latency: 28.62ms
+Guilds: 2
+Uptime: 0.0h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-15 18:48:34,734 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 16.6%
+Latency: 28.62ms
+Guilds: 2
+Uptime: 0.0h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-15 18:49:04,730 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 10.9%
+Latency: 33.49ms
+Guilds: 2
+Uptime: 0.0h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-15 18:49:34,719 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 24.2%
+Latency: 28.21ms
+Guilds: 2
+Uptime: 0.1h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-15 18:50:04,707 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 19.2%
+Latency: 39.67ms
+Guilds: 2
+Uptime: 0.1h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-15 18:50:34,735 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 32.6%
+Latency: 39.67ms
+Guilds: 2
+Uptime: 0.1h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-15 18:51:04,726 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 24.4%
+Latency: 35.87ms
+Guilds: 2
+Uptime: 0.1h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-15 18:51:34,716 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 41.5%
+Latency: 67.28ms
+Guilds: 2
+Uptime: 0.1h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-15 18:52:04,732 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 26.2%
+Latency: 67.28ms
+Guilds: 2
+Uptime: 0.1h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-15 18:52:13,020 - __main__ - INFO - ━━━━━━ Connection Attempt 1 ━━━━━━
+Bot Version: 1.0.1
+Token Status: Valid
+Retry Count: 0
+Max Retries: 5
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-15 18:52:13,020 - discord.client - INFO - logging in using static token
+2024-12-15 18:52:13,326 - __main__ - INFO - ━━━━━━ Bot Setup Started ━━━━━━
+Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+Memory Usage: {psutil.Process().memory_info().rss / 1024 / 1024:.1f}MB
+CPU Usage: {psutil.cpu_percent()}%
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-15 18:52:13,326 - __main__ - INFO - Token validated successfully
+2024-12-15 18:52:13,326 - __main__ - INFO - Registering commands...
+2024-12-15 18:52:13,493 - __main__ - INFO - Commands registered successfully
+2024-12-15 18:52:13,494 - __main__ - INFO - Starting health monitoring...
+2024-12-15 18:52:13,494 - __main__ - INFO - Health monitoring activated
+2024-12-15 18:52:13,494 - __main__ - INFO - ━━━━━━ Setup Complete ━━━━━━
+Application ID: {self.application_id}
+Shard Count: {self.shard_count if self.shard_count else 'None'}
+Command Count: {len(self.tree.get_commands())}
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-15 18:52:13,495 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Disconnected
+Memory: 0.1%
+CPU: 33.9%
+Latency: nanms
+Guilds: 0
+Uptime: 0.0h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-15 18:52:13,495 - __main__ - WARNING - Health check failed (attempt 1/5)
+2024-12-15 18:52:13,764 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 4db0e2c66c4246652d5d639e55acab52).
+2024-12-15 18:52:15,772 - __main__ - INFO - ━━━━━━ Bot Ready ━━━━━━
+Logged in as: OCTANTBOT
+Bot ID: 1316950341954306159
+Guilds: 2
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-15 18:52:43,523 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 28.5%
+Latency: 24.31ms
+Guilds: 2
+Uptime: 0.0h
+Error Count: 1
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-15 18:52:43,523 - __main__ - INFO - Health check recovered - resetting error count
+2024-12-15 18:52:53,106 - chat_handler - INFO - URLs formatted successfully
+2024-12-15 18:52:57,170 - __main__ - INFO - ━━━━━━ Connection Attempt 1 ━━━━━━
+Bot Version: 1.0.1
+Token Status: Valid
+Retry Count: 0
+Max Retries: 5
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-15 18:52:57,170 - discord.client - INFO - logging in using static token
+2024-12-15 18:52:57,410 - __main__ - INFO - ━━━━━━ Bot Setup Started ━━━━━━
+Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+Memory Usage: {psutil.Process().memory_info().rss / 1024 / 1024:.1f}MB
+CPU Usage: {psutil.cpu_percent()}%
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-15 18:52:57,410 - __main__ - INFO - Token validated successfully
+2024-12-15 18:52:57,410 - __main__ - INFO - Registering commands...
+2024-12-15 18:52:57,964 - __main__ - INFO - Commands registered successfully
+2024-12-15 18:52:57,964 - __main__ - INFO - Starting health monitoring...
+2024-12-15 18:52:57,965 - __main__ - INFO - Health monitoring activated
+2024-12-15 18:52:57,965 - __main__ - INFO - ━━━━━━ Setup Complete ━━━━━━
+Application ID: {self.application_id}
+Shard Count: {self.shard_count if self.shard_count else 'None'}
+Command Count: {len(self.tree.get_commands())}
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-15 18:52:57,966 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Disconnected
+Memory: 0.1%
+CPU: 80.0%
+Latency: nanms
+Guilds: 0
+Uptime: 0.0h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-15 18:52:57,966 - __main__ - WARNING - Health check failed (attempt 1/5)
+2024-12-15 18:52:58,237 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 2867956dc73b8c345c5cb79f34658674).
+2024-12-15 18:53:00,242 - __main__ - INFO - ━━━━━━ Bot Ready ━━━━━━
+Logged in as: OCTANTBOT
+Bot ID: 1316950341954306159
+Guilds: 2
+━━━━━━━━━━━━━━━━━━━━━━━━

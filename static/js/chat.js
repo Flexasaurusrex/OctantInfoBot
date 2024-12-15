@@ -26,9 +26,15 @@ function updateConnectionStatus(status) {
 
     function createSocket() {
         try {
-            // Close any existing connections
+            // Cleanup existing socket
             if (socket) {
-                socket.close();
+                try {
+                    socket.removeAllListeners();
+                    socket.close();
+                    socket.disconnect();
+                } catch (e) {
+                    console.warn('Error cleaning up existing socket:', e);
+                }
             }
             
             socket = io({
@@ -37,50 +43,92 @@ function updateConnectionStatus(status) {
                 reconnectionDelay: INITIAL_RETRY_DELAY,
                 reconnectionDelayMax: 5000,
                 timeout: 20000,
-                transports: ['websocket', 'polling'],  // Fallback to polling if websocket fails
-                upgrade: true,  // Allow transport upgrade
-                autoConnect: true,
-                forceNew: true,
-                reconnectionDelayMax: 10000,  // Increased max delay
-                randomizationFactor: 0.5,  // Add randomization to prevent thundering herd
-                pingTimeout: 30000,  // Increased ping timeout
-                pingInterval: 10000  // More frequent ping checks
+                transports: ['websocket', 'polling']
             });
 
+            // Add connection state monitoring
+            let connectionMonitor = setInterval(() => {
+                if (socket && !socket.connected && !socket.connecting) {
+                    console.log('Connection monitor: detected disconnection');
+                    handleReconnection();
+                }
+            }, 10000);
+
+            // Track connection state
+            socket.connectionState = {
+                lastAttempt: Date.now(),
+                attemptCount: 0,
+                lastError: null,
+                isReconnecting: false
+            };
+
             initializeSocketEvents();
+            
+            // Monitor socket health
+            const healthCheck = setInterval(() => {
+                if (socket && !socket.connected && !socket.connectionState.isReconnecting) {
+                    console.warn('Socket health check failed - initiating reconnection');
+                    handleReconnection();
+                }
+            }, 30000);
+
+            socket.on('close', () => {
+                clearInterval(healthCheck);
+            });
+
             return true;
         } catch (error) {
             console.error('Error creating socket:', error);
+            updateConnectionStatus('disconnected');
             return false;
         }
     }
 
     async function handleReconnection() {
-        reconnectAttempts++;
+        if (socket && socket.connectionState.isReconnecting) {
+            console.warn('Reconnection already in progress');
+            return;
+        }
+
+        socket.connectionState.attemptCount++;
+        socket.connectionState.isReconnecting = true;
+        socket.connectionState.lastAttempt = Date.now();
+        
         updateConnectionStatus('reconnecting');
         
-        if (reconnectAttempts > MAX_RECONNECT_ATTEMPTS) {
+        if (socket.connectionState.attemptCount > MAX_RECONNECT_ATTEMPTS) {
             console.error('Max reconnection attempts reached');
             updateConnectionStatus('disconnected');
             appendMessage('🔄 Connection lost. Maximum retry attempts reached.', true);
             appendMessage('⚡ Attempting emergency recovery...', true);
             
             try {
-                // Try to restart services
+                // Enhanced recovery process
+                await cleanupConnection();
                 const response = await fetch('/restart', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' }
+                    headers: { 'Content-Type': 'application/json' },
+                    signal: AbortSignal.timeout(10000) // 10s timeout
                 });
                 
                 if (response.ok) {
-                    appendMessage('✨ Recovery initiated. Page will refresh in 5 seconds...', true);
-                    setTimeout(() => window.location.reload(), 5000);
+                    const data = await response.json();
+                    appendMessage(`✨ ${data.message || 'Recovery initiated'}. Page will refresh in 5 seconds...`, true);
+                    await new Promise(resolve => setTimeout(resolve, 5000));
+                    window.location.reload();
                 } else {
-                    throw new Error('Recovery failed');
+                    throw new Error(`Recovery failed: ${response.statusText}`);
                 }
             } catch (error) {
-                appendMessage('❌ Recovery failed. Please refresh the page manually.', true);
                 console.error('Recovery error:', error);
+                appendMessage('❌ Recovery failed. Please refresh the page manually.', true);
+                appendMessage(`Error details: ${error.message}`, true);
+                
+                // Attempt one final reconnect after a longer delay
+                await new Promise(resolve => setTimeout(resolve, 10000));
+                createSocket();
+            } finally {
+                socket.connectionState.isReconnecting = false;
             }
             return;
         }
