@@ -38,32 +38,32 @@ limiter = Limiter(
     storage_uri="memory://"
 )
 
-# Configure Socket.IO with hyper-aggressive Core-optimized settings
+# Configure Socket.IO with balanced settings for stability
 socketio = SocketIO(
     app,
     cors_allowed_origins="*",
     async_mode='eventlet',
-    ping_timeout=30,  # Even more aggressive timeout
-    ping_interval=5,  # Ultra-aggressive ping interval
+    ping_timeout=60,  # More lenient timeout
+    ping_interval=25,  # More balanced ping interval
     reconnection=True,
     reconnection_attempts=float('inf'),
-    reconnection_delay=100,  # Super fast initial reconnect
-    reconnection_delay_max=1000,  # More aggressive max delay
+    reconnection_delay=1000,  # More gradual reconnect
+    reconnection_delay_max=5000,  # More patient max delay
     max_http_buffer_size=1e8,
     logger=True,
     engineio_logger=True,
     async_handlers=True,
-    manage_session=False,  # Disable session management for better performance
+    manage_session=True,  # Enable session management for better state tracking
     always_connect=True,
-    transports=['websocket'],  # WebSocket only for better performance
-    upgrade_timeout=2000,  # Ultra-fast upgrade timeout
+    transports=['websocket', 'polling'],  # Allow fallback to polling
+    upgrade_timeout=5000,  # More lenient upgrade timeout
     allow_upgrades=True,
     http_compression=True,
-    compression_threshold=512,  # More aggressive compression
-    cookie=None,
-    max_payload_length=1e6,  # Limit payload size
-    ping_interval_grace_period=2,  # Shorter grace period
-    close_timeout=5  # Faster close timeout
+    compression_threshold=1024,  # Standard compression threshold
+    cookie={'httpOnly': True, 'secure': True},  # Enhanced security
+    max_payload_length=1e6,
+    ping_interval_grace_period=5,  # More lenient grace period
+    close_timeout=10  # More graceful close timeout
 )
 
 # Enhanced connection state tracking
@@ -81,11 +81,23 @@ connection_manager = {
 }
 
 def implement_backoff(sid):
-    """Implement exponential backoff for reconnection attempts."""
-    current_backoff = connection_manager['backoff_times'].get(sid, 0.1)
-    new_backoff = min(current_backoff * 2, connection_manager['max_backoff'])
+    """Implement smoother exponential backoff with jitter for reconnection attempts."""
+    import random
+    current_backoff = connection_manager['backoff_times'].get(sid, 1.0)  # Start with 1 second
+    # Add jitter to prevent thundering herd
+    jitter = random.uniform(-0.2 * current_backoff, 0.2 * current_backoff)
+    new_backoff = min((current_backoff * 1.5) + jitter, connection_manager['max_backoff'])
     connection_manager['backoff_times'][sid] = new_backoff
-    logger.info(f"Implementing backoff for {sid}: {new_backoff}s")
+    
+    # Log detailed backoff information
+    logger.info(f"""━━━━━━ Connection Backoff ━━━━━━
+Client: {sid}
+Previous Backoff: {current_backoff:.2f}s
+New Backoff: {new_backoff:.2f}s
+Jitter Applied: {jitter:.2f}s
+Max Backoff: {connection_manager['max_backoff']}s
+━━━━━━━━━━━━━━━━━━━━━━━━""")
+    
     return new_backoff
 
 def check_circuit_breaker(sid):
