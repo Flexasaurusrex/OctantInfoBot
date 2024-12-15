@@ -2,8 +2,10 @@ import eventlet
 eventlet.monkey_patch()
 import os
 import logging
+import random
 from datetime import datetime
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
+from typing import Dict, Set, Optional
 logger = logging.getLogger('app')
 logger.setLevel(logging.INFO)
 handler = logging.StreamHandler()
@@ -703,22 +705,41 @@ Transport: {disconnect_info['transport']}
 Time: {current_time}
 ━━━━━━━━━━━━━━━━━━━━━━━━""")
         
-        # Track reconnection attempts
-        if sid in connection_manager['reconnection_attempts']:
-            connection_manager['reconnection_attempts'][sid] += 1
-        else:
-            connection_manager['reconnection_attempts'][sid] = 1
+        # Enhanced reconnection handling with exponential backoff
+        current_attempts = connection_manager['reconnection_attempts'].get(sid, 0) + 1
+        connection_manager['reconnection_attempts'][sid] = current_attempts
         
-        # Implement aggressive recovery for unexpected disconnects
+        # Calculate exponential backoff with jitter
+        base_delay = min(2 ** (current_attempts - 1), 30)  # Cap at 30 seconds
+        jitter = random.uniform(0, 0.1 * base_delay)
+        backoff_time = base_delay + jitter
+        
+        # Implement progressive recovery for unexpected disconnects
         if disconnect_info['reason'] not in ['client_disconnect', 'ping_timeout']:
             try:
-                # Attempt immediate reconnection
-                socketio.emit('connection_recovery', {
+                # Select appropriate transport based on connection history
+                suggested_transport = 'websocket'
+                if sid in connection_manager.get('transport_type', {}) and \
+                   connection_manager['transport_type'][sid] == 'websocket':
+                    suggested_transport = 'polling'  # Try alternative transport
+                
+                recovery_message = {
                     'action': 'reconnect',
-                    'attempt': connection_manager['reconnection_attempts'][sid],
+                    'attempt': current_attempts,
+                    'backoff': backoff_time,
                     'timestamp': current_time.isoformat(),
-                    'transport_suggestions': ['websocket', 'polling']
-                }, broadcast=True)  # Broadcast to ensure delivery
+                    'suggested_transport': suggested_transport,
+                    'next_attempt': (current_time + eventlet.Timeout(backoff_time)).isoformat()
+                }
+                
+                # Send recovery instructions to client
+                socketio.emit('connection_recovery', recovery_message, to=sid)
+                logger.info(f"""━━━━━━ Recovery Attempt ━━━━━━
+Client: {sid}
+Attempt: {current_attempts}
+Backoff: {backoff_time:.2f}s
+Transport: {suggested_transport}
+━━━━━━━━━━━━━━━━━━━━━━━━""")
                 
                 # Schedule delayed cleanup
                 def delayed_cleanup():
@@ -738,9 +759,55 @@ Time: {current_time}
         cleanup_connection(request.sid)
 
 def cleanup_connection(sid):
-    """Clean up connection state with proper error handling."""
+    """Clean up connection state with enhanced error handling and resource management."""
     try:
-        # Remove from all tracking
+        if not sid:
+            logger.warning("Attempted cleanup with invalid SID")
+            return
+            
+        logger.info(f"Starting cleanup for client {sid}")
+        
+        # Calculate connection metrics before cleanup
+        if sid in connection_manager['connection_times']:
+            connected_duration = (datetime.now() - connection_manager['connection_times'][sid]).total_seconds()
+            logger.info(f"Connection duration: {connected_duration:.1f}s")
+            
+        # Cleanup all tracking data
+        tracking_keys = [
+            'active_connections',
+            'connection_times',
+            'reconnection_attempts',
+            'last_activity',
+            'connection_quality',
+            'backoff_times',
+            'circuit_breakers',
+            'transport_type'
+        ]
+        
+        for key in tracking_keys:
+            try:
+                if sid in connection_manager.get(key, {}):
+                    if isinstance(connection_manager[key], set):
+                        connection_manager[key].discard(sid)
+                    else:
+                        del connection_manager[key][sid]
+            except Exception as e:
+                logger.warning(f"Error cleaning up {key} for {sid}: {str(e)}")
+                
+        # Force socket disconnect if still connected
+        try:
+            socketio.disconnect(sid)
+        except Exception as e:
+            logger.debug(f"Error disconnecting socket for {sid}: {str(e)}")
+            
+        logger.info(f"Cleanup completed for client {sid}")
+        
+    except Exception as e:
+        logger.error(f"Error in connection cleanup: {str(e)}", exc_info=True)
+    finally:
+        # Ensure critical cleanup always happens
+        if sid in connection_manager['active_connections']:
+            connection_manager['active_connections'].discard(sid)
         connection_manager['active_connections'].discard(sid)
         connection_manager['connection_times'].pop(sid, None)
         connection_manager['last_activity'].pop(sid, None)
