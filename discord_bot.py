@@ -502,15 +502,119 @@ Guilds connected: {len(self.guilds)}
             if not is_reply_to_bot:
                 return
 
-            # Get and send response
-            response = self.chat_handler.get_response(message.content)
-            if response:
+            # Enhanced message handling with improved context and topic detection
+            try:
+                # Get message context with expanded topic detection
+                message_content = message.content.lower()
+                is_command = message.content.startswith('/')
+                
+                # Expanded topic detection with specific categories
+                topics = {
+                    'funding': ['funding', 'budget', 'allocation', 'invest'],
+                    'governance': ['governance', 'voting', 'proposal', 'decision'],
+                    'rewards': ['reward', 'distribution', 'earnings', 'payout'],
+                    'tokens': ['glm', 'token', 'staking', 'lock'],
+                    'platform': ['octant', 'platform', 'system', 'mechanism']
+                }
+                
+                # Detect primary topic
+                detected_topic = None
+                for topic, keywords in topics.items():
+                    if any(keyword in message_content for keyword in keywords):
+                        detected_topic = topic
+                        break
+                
+                # Enhanced context management
+                context = {
+                    'topic': detected_topic,
+                    'is_command': is_command,
+                    'previous_context': getattr(message.author, 'last_topic', None),
+                    'message_history': getattr(message.author, 'message_history', [])[-3:],  # Keep last 3 messages for context
+                    'user_id': str(message.author.id),
+                    'channel_id': str(message.channel.id),
+                    'guild_id': str(message.guild.id) if message.guild else None
+                }
+                
+                # Update message history
+                if not hasattr(message.author, 'message_history'):
+                    message.author.message_history = []
+                message.author.message_history.append(message.content)
+                
+                # Get response with enhanced context handling
+                try:
+                    response = await asyncio.wait_for(
+                        asyncio.create_task(self.chat_handler.get_response_async(
+                            message.content,
+                            context=context
+                        )),
+                        timeout=30.0  # 30 second timeout
+                    )
+                    
+                    if not response or response.isspace():
+                        logger.warning(f"Empty response received for message: {message.content[:50]}...")
+                        await message.reply(
+                            "I apologize, but I couldn't generate a meaningful response. Please try rephrasing your question.", 
+                            mention_author=True
+                        )
+                        return
+                        
+                except asyncio.TimeoutError:
+                    logger.error("Response generation timed out")
+                    await message.reply(
+                        "I apologize, but the response is taking longer than expected. Please try again.", 
+                        mention_author=True
+                    )
+                    return
+                except Exception as e:
+                    logger.error(f"Error generating response: {str(e)}", exc_info=True)
+                    await message.reply(
+                        "I encountered an error while processing your request. Please try again.", 
+                        mention_author=True
+                    )
+                    return
+                
+                # Format response with improved readability
                 if isinstance(response, list):
-                    for chunk in response:
-                        if chunk and chunk.strip():
-                            await message.reply(chunk.strip(), mention_author=True)
+                    formatted_response = "\n\n".join(
+                        chunk.strip() for chunk in response 
+                        if chunk and chunk.strip()
+                    )
                 else:
-                    await message.reply(response.strip(), mention_author=True)
+                    formatted_response = response.strip()
+                
+                # Create an enhanced embedded response
+                embed = discord.Embed(
+                    description=formatted_response,
+                    color=discord.Color.blue()
+                )
+                
+                # Add context-aware title and formatting
+                if detected_topic:
+                    topic_icons = {
+                        'funding': '💰',
+                        'governance': '🏛️',
+                        'rewards': '🎁',
+                        'tokens': '🪙',
+                        'platform': '🔍'
+                    }
+                    embed.title = f"{topic_icons.get(detected_topic, '🔍')} {detected_topic.title()} Information"
+                elif is_command:
+                    embed.title = "🤖 Command Response"
+                else:
+                    embed.title = "💬 Chat Response"
+                
+                # Store last topic for context maintenance
+                setattr(message.author, 'last_topic', detected_topic)
+                
+                # Send the formatted response
+                await message.reply(embed=embed)
+                
+                # Update connection state
+                self.connection_state['last_message_time'] = datetime.now(timezone.utc)
+                
+            except Exception as e:
+                logger.error(f"Error processing message response: {str(e)}", exc_info=True)
+                await message.reply("I encountered an error processing your message. Please try again.", mention_author=True)
 
         except Exception as e:
             logger.error(f"Error processing message: {str(e)}", exc_info=True)
