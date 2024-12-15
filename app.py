@@ -353,8 +353,87 @@ def restart_services():
 
 @socketio.on('connect')
 def handle_connect():
-    """Handle client connection with enhanced error recovery and state management."""
+    """Handle client connection with intelligent transport selection and state recovery."""
     try:
+try:
+    current_time = datetime.now()
+    sid = request.sid
+    
+    # Get preserved reconnection state if available
+    reconnection_state = connection_manager.get('reconnection_state', {}).get(sid, {})
+    reconnection_data = reconnection_state.get('reconnection_data', {})
+    
+    # Intelligent transport selection
+    current_transport = request.args.get('transport', 'websocket')
+    last_transport = reconnection_data.get('last_transport')
+    
+    if last_transport and last_transport != current_transport:
+        logger.info(f"Transport changed from {last_transport} to {current_transport}")
+        
+        # If websocket failed previously, try polling
+        if last_transport == 'websocket' and reconnection_data.get('attempts', 0) > 2:
+            logger.info("Multiple websocket failures detected, suggesting polling transport")
+            socketio.emit('transport_suggestion', {
+                'suggested_transport': 'polling',
+                'reason': 'websocket_stability'
+            }, to=sid)
+    
+    # Initialize enhanced connection metrics
+    connection_manager['transport_type'][sid] = current_transport
+    connection_manager['active_connections'].add(sid)
+    connection_manager['connection_times'][sid] = current_time
+    connection_manager['last_activity'][sid] = current_time
+    
+    # Restore reconnection counters with decay
+    if 'attempts' in reconnection_data:
+        decay_factor = min(1.0, (datetime.now() - reconnection_state.get('last_cleanup', datetime.now())).total_seconds() / 300)
+        connection_manager['reconnection_attempts'][sid] = int(reconnection_data['attempts'] * decay_factor)
+    else:
+        connection_manager['reconnection_attempts'][sid] = 0
+    
+    # Initialize quality metrics
+    connection_manager['connection_quality'][sid] = {
+        'latency': 0,
+        'failed_pings': 0,
+        'successful_pings': 0,
+        'transport_upgrades': 0,
+        'ping_history': [],
+        'error_count': 0,
+        'transport_history': [current_transport]
+    }
+    
+    # Send enhanced connection acknowledgment
+    socketio.emit('connection_status', {
+        'status': 'connected',
+        'sid': sid,
+        'timestamp': current_time.isoformat(),
+        'transport': current_transport,
+        'reconnection_enabled': True,
+        'ping_interval': 25000,
+        'ping_timeout': 60000,
+        'connection_info': {
+            'previous_transport': last_transport,
+            'reconnection_count': connection_manager['reconnection_attempts'][sid],
+            'suggested_transport': 'polling' if reconnection_data.get('attempts', 0) > 2 else 'websocket'
+        }
+    })
+    
+    # Start enhanced monitoring
+    eventlet.spawn(monitor_connection_quality, sid)
+    
+except Exception as e:
+    logger.error(f"Error in connection handler: {str(e)}", exc_info=True)
+    try:
+        if not request.sid:
+            return
+        
+        socketio.emit('connection_recovery', {
+            'status': 'error',
+            'message': 'Connection initialization failed, retrying...',
+            'timestamp': datetime.now().isoformat()
+        }, to=request.sid)
+    except Exception as emit_error:
+        logger.error(f"Failed to send error status: {str(emit_error)}")
         current_time = datetime.now()
         sid = request.sid
         
@@ -681,6 +760,61 @@ def handle_disconnect():
         logger.info(f"""━━━━━━ Enhanced Disconnect ━━━━━━
 Client: {sid}
 Reason: {reason}
+def monitor_connection_quality(sid):
+    """Monitor connection quality and implement adaptive transport selection."""
+    if not sid:
+        logger.error("Invalid SID provided to monitor_connection_quality")
+        return
+        
+    try:
+        while sid in connection_manager.get('active_connections', set()):
+            current_time = datetime.now()
+            quality = connection_manager.get('connection_quality', {}).get(sid, {})
+            
+            # Initialize quality metrics if not present
+            if 'ping_history' not in quality:
+                quality['ping_history'] = []
+                quality['failed_pings'] = 0
+                quality['successful_pings'] = 0
+                connection_manager['connection_quality'][sid] = quality
+            
+            # Calculate quality metrics
+            ping_history = quality.get('ping_history', [])
+            recent_pings = [p for p in ping_history if (current_time - p['timestamp']).total_seconds() <= 300]
+            
+            if recent_pings:
+                # Calculate weighted metrics
+                total_weight = sum(1 + (current_time - p['timestamp']).total_seconds() / 300 for p in recent_pings)
+                weighted_latency = sum(p['latency'] * (1 + (current_time - p['timestamp']).total_seconds() / 300) 
+                                    for p in recent_pings) / total_weight
+                
+                # Detect degrading connection
+                if weighted_latency > 1000 or quality.get('failed_pings', 0) > 3:
+                    current_transport = connection_manager.get('transport_type', {}).get(sid)
+                    if current_transport == 'websocket':
+                        logger.warning(f"Connection quality degrading for {sid}, suggesting transport fallback")
+                        socketio.emit('transport_suggestion', {
+                            'suggested_transport': 'polling',
+                            'reason': 'quality_degradation',
+                            'metrics': {
+                                'latency': weighted_latency,
+                                'failed_pings': quality.get('failed_pings', 0)
+                            }
+                        }, to=sid)
+            
+            # Update quality metrics
+            quality['ping_history'] = recent_pings
+            connection_manager['connection_quality'][sid] = quality
+            
+            # Adaptive monitoring interval
+            sleep_time = 5 if len(recent_pings) < 5 or weighted_latency > 500 else 10
+            eventlet.sleep(sleep_time)
+            
+    except Exception as e:
+        logger.error(f"Error monitoring connection quality for {sid}: {str(e)}", exc_info=True)
+    finally:
+        if sid in connection_manager['active_connections']:
+            logger.info(f"Stopping quality monitoring for {sid}")
 Transport: {transport}
 Clean Disconnect: {is_clean_disconnect}
 Time: {current_time}
@@ -786,17 +920,30 @@ Transport: {suggested_transport}
 
 def cleanup_connection(sid):
     """Clean up connection state with enhanced error handling and resource management."""
-    try:
-        if not sid:
-            logger.warning("Attempted cleanup with invalid SID")
-            return
-            
-        logger.info(f"Starting cleanup for client {sid}")
+    if not sid:
+        logger.warning("Attempted cleanup with invalid SID")
+        return
         
-        # Calculate connection metrics before cleanup
-        if sid in connection_manager['connection_times']:
-            connected_duration = (datetime.now() - connection_manager['connection_times'][sid]).total_seconds()
+    logger.info(f"Starting cleanup for client {sid}")
+    current_time = datetime.now()
+    
+    try:
+        # Safely calculate connection duration
+        if sid in connection_manager.get('connection_times', {}):
+            connected_duration = (current_time - connection_manager['connection_times'][sid]).total_seconds()
             logger.info(f"Connection duration: {connected_duration:.1f}s")
+            
+        # Initialize cleanup status tracking
+        cleanup_status = {
+            'active_connections': False,
+            'connection_times': False,
+            'reconnection_attempts': False,
+            'last_activity': False,
+            'connection_quality': False,
+            'transport_type': False,
+            'backoff_times': False,
+            'circuit_breakers': False
+        }
             
         # Cleanup all tracking data
         tracking_keys = [
@@ -848,11 +995,26 @@ def handle_heartbeat():
     """Advanced heartbeat handler with sophisticated connection analysis."""
     try:
         current_time = datetime.now()
-        sid = request.sid
+        sid = request.sid if hasattr(request, 'sid') else None
         
-        if sid in connection_manager['active_connections']:
-            quality = connection_manager['connection_quality'][sid]
-            last_activity = connection_manager['last_activity'].get(sid)
+        if not sid:
+            logger.error("No SID available in heartbeat request")
+            return {'status': 'error', 'message': 'Invalid session'}
+            
+        # Initialize connection tracking if needed
+        if sid not in connection_manager.get('active_connections', set()):
+            connection_manager.setdefault('active_connections', set()).add(sid)
+            connection_manager.setdefault('connection_quality', {})[sid] = {
+                'latency': 0,
+                'successful_pings': 0,
+                'failed_pings': 0,
+                'ping_history': [],
+                'last_ping_time': current_time
+            }
+            connection_manager.setdefault('last_activity', {})[sid] = current_time
+            
+        quality = connection_manager['connection_quality'][sid]
+        last_activity = connection_manager['last_activity'].get(sid)
             
             if last_activity:
                 # Calculate detailed timing metrics
