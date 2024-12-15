@@ -107,6 +107,94 @@ class DiscordTrivia:
                 },
                 "correct": "C",
                 "explanation": "Each epoch lasts 90 days, followed by a two-week allocation period."
+            },
+            {
+                "question": "What percentage of Octant's rewards goes to foundation operations?",
+                "options": {
+                    "A": "15%",
+                    "B": "20%",
+                    "C": "25%",
+                    "D": "30%"
+                },
+                "correct": "C",
+                "explanation": "25% of rewards go to foundation operations, while 70% goes to user and matched rewards, and 5% to community initiatives."
+            },
+            {
+                "question": "What is the purpose of Patron mode in Octant?",
+                "options": {
+                    "A": "To increase personal rewards",
+                    "B": "To boost project funding",
+                    "C": "To skip voting periods",
+                    "D": "To reduce fees"
+                },
+                "correct": "B",
+                "explanation": "Patron mode allows users to boost project funding by allocating their rewards directly to the matched rewards pool."
+            },
+            {
+                "question": "How much ETH backs Octant's operations?",
+                "options": {
+                    "A": "50,000 ETH",
+                    "B": "75,000 ETH",
+                    "C": "100,000 ETH",
+                    "D": "125,000 ETH"
+                },
+                "correct": "C",
+                "explanation": "Octant is backed by 100,000 ETH from the Golem Foundation."
+            },
+            {
+                "question": "What is the maximum funding cap for a single project from the Matched Rewards pool?",
+                "options": {
+                    "A": "10%",
+                    "B": "15%",
+                    "C": "20%",
+                    "D": "25%"
+                },
+                "correct": "C",
+                "explanation": "A maximum funding cap of 20% ensures balanced distribution. Users can still donate but won't receive additional matching."
+            },
+            {
+                "question": "What percentage of rewards goes to community initiatives?",
+                "options": {
+                    "A": "5%",
+                    "B": "10%",
+                    "C": "15%",
+                    "D": "20%"
+                },
+                "correct": "A",
+                "explanation": "5% of rewards are allocated to community initiatives, fostering growth and innovation."
+            },
+            {
+                "question": "What type of staking mechanism does Octant use for GLM tokens?",
+                "options": {
+                    "A": "Liquid staking",
+                    "B": "Locked staking",
+                    "C": "Flexible staking",
+                    "D": "Delegated staking"
+                },
+                "correct": "B",
+                "explanation": "Octant uses a locked staking mechanism where GLM tokens must be locked to participate."
+            },
+            {
+                "question": "Which organization oversees Octant's development?",
+                "options": {
+                    "A": "Ethereum Foundation",
+                    "B": "Golem Foundation",
+                    "C": "Octant DAO",
+                    "D": "Decentralized Council"
+                },
+                "correct": "B",
+                "explanation": "The Golem Foundation oversees Octant's development, backed by their commitment of 100,000 ETH."
+            },
+            {
+                "question": "What happens after each 90-day epoch in Octant?",
+                "options": {
+                    "A": "Immediate reward distribution",
+                    "B": "Two-week allocation window",
+                    "C": "One-month voting period",
+                    "D": "System maintenance"
+                },
+                "correct": "B",
+                "explanation": "After each 90-day epoch, there's a two-week allocation window for claiming or donating rewards."
             }
         ]
         self.active_games = {}
