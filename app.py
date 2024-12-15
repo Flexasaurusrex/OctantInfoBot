@@ -1001,17 +1001,29 @@ def handle_heartbeat():
             logger.error("No SID available in heartbeat request")
             return {'status': 'error', 'message': 'Invalid session'}
             
-        # Initialize connection tracking if needed
-        if sid not in connection_manager.get('active_connections', set()):
-            connection_manager.setdefault('active_connections', set()).add(sid)
-            connection_manager.setdefault('connection_quality', {})[sid] = {
-                'latency': 0,
-                'successful_pings': 0,
-                'failed_pings': 0,
-                'ping_history': [],
-                'last_ping_time': current_time
-            }
-            connection_manager.setdefault('last_activity', {})[sid] = current_time
+        try:
+            # Initialize connection tracking if needed
+            if sid not in connection_manager.get('active_connections', set()):
+                connection_manager.setdefault('active_connections', set()).add(sid)
+                connection_manager.setdefault('connection_quality', {})[sid] = {
+                    'latency': 0,
+                    'successful_pings': 0,
+                    'failed_pings': 0,
+                    'ping_history': [],
+                    'last_ping_time': current_time,
+                    'transport': request.args.get('transport', 'websocket')
+                }
+                connection_manager.setdefault('last_activity', {})[sid] = current_time
+                
+                # Log new connection
+                logger.info(f"""━━━━━━ New Connection ━━━━━━
+Client: {sid}
+Transport: {request.args.get('transport', 'websocket')}
+Time: {current_time}
+━━━━━━━━━━━━━━━━━━━━━━━━""")
+        except Exception as e:
+            logger.error(f"Error initializing connection for {sid}: {str(e)}")
+            return {'status': 'error', 'message': 'Connection initialization failed'}
             
         quality = connection_manager['connection_quality'][sid]
         last_activity = connection_manager['last_activity'].get(sid)
