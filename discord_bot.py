@@ -53,6 +53,10 @@ class OctantBot(commands.Bot):
         self.command_count = 0
         self.error_count = 0
         self.last_reconnect = None
+        self.health_check_interval = 60  # Check every minute
+        self.last_health_check = datetime.now()
+        self.consecutive_errors = 0
+        self.max_consecutive_errors = 3
         
         # Initialize handlers
         self.chat_handler = ChatHandler()
@@ -62,7 +66,9 @@ class OctantBot(commands.Bot):
         logger.info("Bot initialized with Core-optimized settings")
 
     async def setup_hook(self):
-        """Set up commands with proper error handling"""
+        """Set up commands and start background tasks"""
+        self.bg_task = self.loop.create_task(self.background_health_check())
+        
         @self.command(name='trivia')
         async def trivia(ctx):
             """Start a trivia game"""
@@ -96,6 +102,43 @@ class OctantBot(commands.Bot):
                 logger.error(f"Error showing help: {e}")
                 await ctx.send("Error showing help message. Please try again.")
 
+    async def background_health_check(self):
+        """Background task for health monitoring and auto-recovery"""
+        while not self.is_closed():
+            try:
+                current_time = datetime.now()
+                if (current_time - self.last_health_check).total_seconds() >= self.health_check_interval:
+                    # Check system resources
+                    process = psutil.Process()
+                    memory_percent = process.memory_percent()
+                    cpu_percent = process.cpu_percent()
+                    
+                    logger.info(f"""━━━━━━ Health Check ━━━━━━
+Memory Usage: {memory_percent:.1f}%
+CPU Usage: {cpu_percent:.1f}%
+Uptime: {str(current_time - self.start_time)}
+Command Count: {self.command_count}
+Error Count: {self.error_count}
+━━━━━━━━━━━━━━━━━━━━━━━━""")
+                    
+                    # Auto-recovery triggers
+                    if memory_percent > 80 or cpu_percent > 90:
+                        self.consecutive_errors += 1
+                        if self.consecutive_errors >= self.max_consecutive_errors:
+                            logger.warning("Resource threshold exceeded - initiating recovery")
+                            await self.close()
+                            return
+                    else:
+                        self.consecutive_errors = 0
+                    
+                    self.last_health_check = current_time
+                
+                await asyncio.sleep(30)  # Check every 30 seconds
+                
+            except Exception as e:
+                logger.error(f"Health check error: {e}")
+                await asyncio.sleep(5)  # Shorter sleep on error
+
     async def on_ready(self):
         """Called when the bot is ready"""
         logger.info(f"Bot is ready! Logged in as {self.user.name}")
@@ -108,6 +151,17 @@ class OctantBot(commands.Bot):
             activity=discord.Game(name="/help for commands"),
             status=discord.Status.online
         )
+
+    async def on_error(self, event, *args, **kwargs):
+        """Global error handler"""
+        self.error_count += 1
+        error = args[0] if args else "Unknown error"
+        logger.error(f"""━━━━━━ Error Event ━━━━━━
+Event: {event}
+Error: {str(error)}
+Args: {args}
+Kwargs: {kwargs}
+━━━━━━━━━━━━━━━━━━━━━━━━""")
 
     async def on_message(self, message):
         """Handle incoming messages"""
