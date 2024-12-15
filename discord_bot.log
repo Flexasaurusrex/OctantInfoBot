@@ -949,3 +949,42 @@ Bot ID: 1316950341954306159
 Guilds connected: 2
 ━━━━━━━━━━━━━━━━━━━━━━━━
 2024-12-15 02:13:41,356 - __main__ - INFO - Health check passed - All systems normal
+2024-12-15 04:59:04,925 - __main__ - INFO - Initializing Discord bot with enhanced monitoring
+2024-12-15 04:59:04,928 - __main__ - INFO - Chat and Trivia handlers initialized successfully
+2024-12-15 04:59:04,928 - __main__ - INFO - Bot initialization completed successfully
+2024-12-15 04:59:04,928 - discord.client - INFO - logging in using static token
+2024-12-15 04:59:05,265 - __main__ - INFO - Health monitoring tasks started
+2024-12-15 04:59:05,266 - __main__ - WARNING - Connection check failed - Bot disconnected
+2024-12-15 04:59:05,267 - __main__ - WARNING - Health check failure (disconnected). Failure count: 1
+2024-12-15 04:59:05,267 - __main__ - INFO - 
+━━━━━━ Minor Health Check Issue ━━━━━━
+Failure Count: 1
+Status: Monitoring
+Action: Continuing normal operation
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-15 04:59:05,267 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: False
+Guilds: 0
+Latency: nanms
+Uptime: 0.0h
+Health Failures: 1
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-15 04:59:05,433 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 172b13acfd16f9c32023c1b273ddbb80).
+2024-12-15 04:59:07,442 - __main__ - INFO - ━━━━━━ Bot Ready ━━━━━━
+Logged in as: OCTANTBOT
+Bot ID: 1316950341954306159
+Guilds connected: 2
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-15 04:59:14,895 - chat_handler - WARNING - Response lacks Octant-related content, returning default message
+2024-12-15 04:59:20,271 - __main__ - INFO - Health check passed - All systems normal
+2024-12-15 04:59:35,271 - __main__ - INFO - Health check passed - All systems normal
+2024-12-15 04:59:38,302 - chat_handler - WARNING - Response lacks Octant-related content, returning default message
+2024-12-15 04:59:50,271 - __main__ - INFO - Health check passed - All systems normal
+2024-12-15 05:00:05,282 - __main__ - INFO - Health check passed - All systems normal
+2024-12-15 05:00:05,283 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: True
+Guilds: 2
+Latency: 23.66ms
+Uptime: 0.0h
+Health Failures: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
