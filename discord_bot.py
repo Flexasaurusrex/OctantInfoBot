@@ -145,10 +145,14 @@ Guilds: {len(self.guilds)}
             self._last_processed = {k:v for k,v in self._last_processed.items() 
                                   if current_time - v < 3600}  # Clean older than 1 hour
 
-        if message.reference and message.reference.resolved.author == self.user:
+        # Check for bot mention or reply
+        if (message.reference and message.reference.resolved.author == self.user) or \
+           (self.user.mentioned_in(message) and message.content.lower().replace('@octantbot', '').strip()):
             try:
+                # Remove bot mention from message
+                content = message.content.lower().replace('@octantbot', '').strip()
                 async with message.channel.typing():
-                    response = self.chat_handler.get_response(message.content)
+                    response = self.chat_handler.get_response(content)
                     
                 if isinstance(response, list):
                     for chunk in response:
