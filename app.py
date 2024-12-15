@@ -1,9 +1,12 @@
-import eventlet
-eventlet.monkey_patch()
 import os
 import logging
 from datetime import datetime
-from flask import Flask, render_template, request
+
+# Initialize eventlet first
+import eventlet
+eventlet.monkey_patch(os=True, select=True, socket=True, thread=True, time=True)
+
+from flask import Flask, render_template, request, current_app
 logger = logging.getLogger('app')
 logger.setLevel(logging.INFO)
 handler = logging.StreamHandler()
@@ -116,13 +119,25 @@ def restart_services():
                 
                 eventlet.sleep(2)
                 
-                # Step 4: Stop the server
-                logger.info("Stopping server...")
-                socketio.stop()
+                # Step 4: Clean up socket connections
+                logger.info("Cleaning up socket connections...")
+                for namespace in socketio.server.namespace_handlers:
+                    socketio.server.namespace_handlers[namespace].clear()
                 
-                # Step 5: Exit process to trigger workflow restart
+                # Step 5: Stop the server
+                logger.info("Stopping server...")
+                try:
+                    socketio.stop()
+                except Exception as e:
+                    logger.error(f"Error stopping socketio: {e}")
+                
+                # Step 6: Exit process to trigger workflow restart
                 logger.info("Triggering restart...")
-                os._exit(0)
+                try:
+                    import signal
+                    os.kill(os.getpid(), signal.SIGTERM)
+                except Exception:
+                    os._exit(0)
                 
             except Exception as e:
                 error_msg = f"Error during restart: {str(e)}"
