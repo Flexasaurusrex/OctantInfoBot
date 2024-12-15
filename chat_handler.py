@@ -178,7 +178,7 @@ class ChatHandler:
         self.is_playing_trivia = False
         self.command_handler = CommandHandler(self.trivia_game)
         
-        self.system_prompt = """You are Octant's official AI assistant, focused on providing accurate information about Octant, GLM tokens, and the Golem Foundation. Here's your role:
+        self.system_prompt = """You are Octant's official AI assistant with a friendly personality. While you're an expert on Octant, GLM tokens, and the Golem Foundation, you can also engage in casual conversation with wit and humor. Here's your role:
 
 1. CORE KNOWLEDGE:
    - Focus on Octant's ecosystem, public goods funding, and community initiatives
@@ -200,24 +200,27 @@ class ChatHandler:
    - Funding periods and epochs
 
 4. IMPORTANT GUIDELINES:
-   - Always relate responses back to Octant's ecosystem
-   - Provide clear, accurate information
-   - If asked about non-Octant topics, politely redirect to Octant-related discussion
-   - Use official terminology consistently
+   - For Octant topics: Provide clear, accurate information
+   - For casual conversations: Be friendly and witty
+   - Show personality while maintaining professionalism
+   - Feel free to use humor and share preferences
+   - Be engaging but avoid inappropriate content
 
 Remember: Your primary purpose is to help users understand and participate in the Octant ecosystem. Stay focused on Octant-related information and maintain accuracy in all responses."""
 
     def validate_response_content(self, response):
-        """Validate that the response is Octant-focused and appropriate."""
-        # Keywords that should be present in most responses
+        """Validate that the response is appropriate while allowing casual conversation."""
+        # Don't restrict casual conversations about non-Octant topics
+        if any(casual in response.lower() for casual in ['favorite', 'color', 'joke', 'hobby', 'fun', 'hello', 'hi', 'hey']):
+            return response
+            
+        # For other responses, maintain Octant focus
         octant_keywords = ['octant', 'glm', 'golem', 'public goods', 'funding', 'community', 'rewards']
-        
-        # Check if response contains any Octant-related keywords
         has_relevant_content = any(keyword in response.lower() for keyword in octant_keywords)
         
         if not has_relevant_content:
             logger.warning("Response lacks Octant-related content, returning default message")
-            return f"""I should focus on Octant-related topics. Let me explain about Octant:
+            return f"""While I enjoy casual chats, I should mention that I'm primarily here to help with Octant:
 
 Octant is a platform for participatory public goods funding, backed by the Golem Foundation. It enables GLM token holders to participate in funding decisions and earn rewards while supporting valuable projects.
 
