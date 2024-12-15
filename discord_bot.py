@@ -569,6 +569,28 @@ Guilds connected: {len(self.guilds)}
                 
                 # Enhanced response handling with better context and visual feedback
                 try:
+                    # Process all messages through chat handler for consistent AI responses
+                    msg_content = message.content.lower().strip()
+                    logger.info(f"Processing message: {msg_content}")
+                    
+                    # Always use chat handler for responses
+                    try:
+                        response_data = await asyncio.wait_for(
+                            self.chat_handler.get_response_async(
+                                message.content,
+                                context={
+                                    'timestamp': message.created_at.isoformat(),
+                                    'channel_type': str(message.channel.type),
+                                    'previous_topic': self._user_context.get(author_id, {}).get('last_topic'),
+                                    'user_id': author_id,
+                                    'previous_messages': self._message_history.get(author_id, []),
+                                    'guild_id': str(message.guild.id) if message.guild else None,
+                                    'is_greeting': msg_content in ['gm', 'gm gm', 'hello', 'hi', 'hey']
+                                }
+                            ),
+                            timeout=30.0
+                        )
+
                     response_data = await asyncio.wait_for(
                         self.chat_handler.get_response_async(
                             message.content,
@@ -584,32 +606,36 @@ Guilds connected: {len(self.guilds)}
                         timeout=30.0  # 30 second timeout
                     )
                     
-                    # Handle response based on status
-                    if response_data['status'] == 'error':
-                        error_type = response_data.get('error_type', 'unknown')
-                        error_embed = discord.Embed(
-                            title=f"❌ {error_type.replace('_', ' ').title()}",
-                            description=response_data['message'],
-                            color=discord.Color.red()
-                        )
-                        
-                        if 'details' in response_data:
-                            error_embed.add_field(
-                                name="Error Details",
-                                value=f"```{response_data['details'][:100]}```",
-                                inline=False
-                            )
-                        
-                        error_embed.add_field(
-                            name="Troubleshooting",
-                            value="Try breaking down your question into smaller parts or providing more context.",
-                            inline=False
-                        )
-                        
-                        await message.reply(embed=error_embed, mention_author=True)
-                        await message.remove_reaction('⏳', self.user)
-                        await message.add_reaction('❌')
-                        return
+                    # Enhanced response handling with better error management
+                    if isinstance(response_data, dict):
+                        if response_data.get('status') == 'error':
+                            error_type = response_data.get('error_type', 'unknown')
+                            # List of error types that shouldn't show error messages
+                            silent_errors = ['normal_interaction', 'simple_response', 'greeting', 'command_response']
+                            
+                            if error_type in silent_errors:
+                                # For expected interactions, just send a simple acknowledgment
+                                simple_embed = discord.Embed(
+                                    description="I'll help you with that! Let me process your request...",
+                                    color=discord.Color.blue()
+                                )
+                                await message.reply(embed=simple_embed, mention_author=False)
+                                await message.add_reaction('👍')
+                                return
+                            
+                            # Only show detailed error for unexpected errors
+                            if 'message' in response_data:
+                                error_embed = discord.Embed(
+                                    title="I need more information",
+                                    description=response_data['message'],
+                                    color=discord.Color.orange()
+                                )
+                                
+                                await message.reply(embed=error_embed, mention_author=False)
+                                if '⏳' in [r.emoji for r in message.reactions if r.me]:
+                                    await message.remove_reaction('⏳', self.user)
+                                await message.add_reaction('❓')
+                                return
                         
                 except asyncio.TimeoutError:
                     logger.error("Response generation timed out")
