@@ -72,12 +72,6 @@ connection_manager = {
     'connection_times': {},
     'reconnection_attempts': {},
     'last_activity': {},
-# Connection and error tracking
-connection_manager = {
-    'active_connections': set(),
-    'connection_times': {},
-    'reconnection_attempts': {},
-    'last_activity': {},
     'connection_quality': {},
     'backoff_times': {},
     'circuit_breakers': {},
@@ -119,36 +113,104 @@ def check_circuit_breaker(sid):
 # Enhanced error handlers with recovery mechanisms
 @socketio.on_error()
 def error_handler(e):
-    """Handle specific SocketIO errors with recovery."""
+    """Enhanced error handler with sophisticated recovery mechanisms."""
     sid = request.sid if hasattr(request, 'sid') else 'unknown'
-    logger.error(f"SocketIO error for {sid}: {str(e)}", exc_info=True)
+    error_type = type(e).__name__
+    error_msg = str(e)
+    
+    logger.error(f"""━━━━━━ WebSocket Error ━━━━━━
+Type: {error_type}
+SID: {sid}
+Error: {error_msg}
+Time: {datetime.now()}
+━━━━━━━━━━━━━━━━━━━━━━━━""", exc_info=True)
     
     try:
         if sid in connection_manager['active_connections']:
-            # Update failure metrics
+            # Update failure metrics with error categorization
             breaker = connection_manager['circuit_breakers'].get(sid, {
                 'failures': 0,
-                'last_failure': None
+                'last_failure': None,
+                'error_types': {},
+                'recovery_attempts': 0
             })
+            
+            # Track error types for pattern detection
+            breaker['error_types'][error_type] = breaker['error_types'].get(error_type, 0) + 1
             breaker['failures'] += 1
             breaker['last_failure'] = datetime.now()
-            connection_manager['circuit_breakers'][sid] = breaker
+            breaker['recovery_attempts'] += 1
             
-            # Implement recovery strategy
+            # Advanced recovery strategy based on error patterns
+            recovery_strategy = determine_recovery_strategy(error_type, breaker)
             backoff_time = implement_backoff(sid)
+            
+            # Implement progressive recovery steps
+            recovery_steps = [
+                {'action': 'reconnect', 'timeout': backoff_time},
+                {'action': 'transport_upgrade', 'timeout': backoff_time * 1.5},
+                {'action': 'session_refresh', 'timeout': backoff_time * 2}
+            ]
+            
+            current_step = min(breaker['recovery_attempts'] - 1, len(recovery_steps) - 1)
+            step = recovery_steps[current_step]
+            
+            # Send detailed recovery information to client
             socketio.emit('connection_recovery', {
-                'status': 'error',
-                'message': 'Connection error detected, implementing recovery...',
-                'backoff': backoff_time
+                'status': 'recovering',
+                'message': f'Implementing recovery step {current_step + 1}: {step["action"]}',
+                'action': step['action'],
+                'backoff': step['timeout'],
+                'attempt': breaker['recovery_attempts'],
+                'error_type': error_type,
+                'strategy': recovery_strategy
             }, to=sid)
             
-            # Force disconnect if too many failures
-            if breaker['failures'] >= connection_manager['circuit_breaker_threshold']:
-                logger.warning(f"Circuit breaker triggered for {sid}, forcing disconnect")
+            # Circuit breaker logic with error pattern analysis
+            if should_trigger_circuit_breaker(breaker):
+                logger.warning(f"""━━━━━━ Circuit Breaker Triggered ━━━━━━
+SID: {sid}
+Failures: {breaker['failures']}
+Error Pattern: {dict(breaker['error_types'])}
+Recovery Attempts: {breaker['recovery_attempts']}
+━━━━━━━━━━━━━━━━━━━━━━━━""")
+                
                 cleanup_connection(sid)
                 return False
+            
+            connection_manager['circuit_breakers'][sid] = breaker
+            
     except Exception as recovery_error:
-        logger.error(f"Error in error recovery for {sid}: {str(recovery_error)}")
+        logger.error(f"Error in recovery handler: {str(recovery_error)}", exc_info=True)
+        try:
+            socketio.emit('connection_recovery', {
+                'status': 'failed',
+                'message': 'Recovery mechanism failed, please refresh the page',
+                'error': str(recovery_error)
+            }, to=sid)
+        except:
+            pass
+    return False
+
+def determine_recovery_strategy(error_type, breaker):
+    """Determine the best recovery strategy based on error patterns."""
+    if error_type in ['ConnectionError', 'TimeoutError']:
+        return 'reconnect'
+    elif error_type in ['TransportError']:
+        return 'transport_upgrade'
+    elif breaker['failures'] > 3:
+        return 'session_refresh'
+    return 'reconnect'
+
+def should_trigger_circuit_breaker(breaker):
+    """Enhanced circuit breaker decision logic."""
+    if breaker['failures'] >= connection_manager['circuit_breaker_threshold']:
+        # Check error pattern severity
+        error_pattern_severity = sum(
+            count * (2 if error_type in ['ConnectionError', 'TimeoutError'] else 1)
+            for error_type, count in breaker['error_types'].items()
+        )
+        return error_pattern_severity >= connection_manager['circuit_breaker_threshold']
     return False
 
 @socketio.on_error_default
@@ -268,10 +330,73 @@ def restart_services():
 
 @socketio.on('connect')
 def handle_connect():
-    """Handle client connection with hyper-aggressive Core-optimized error handling and monitoring."""
-    # Reset any existing connection state for this client
-    if request.sid in connection_manager['active_connections']:
-        cleanup_connection(request.sid)
+    """Handle client connection with enhanced error recovery and state management."""
+    try:
+        current_time = datetime.now()
+        sid = request.sid
+        
+        # Enhanced connection handling with transport optimization
+        transport = request.args.get('transport', 'websocket')
+        
+        # If reconnecting, check previous state
+        if sid in connection_manager['active_connections']:
+            prev_transport = connection_manager.get('transport_type', {}).get(sid)
+            if prev_transport and prev_transport != transport:
+                logger.info(f"Transport change detected for {sid}: {prev_transport} -> {transport}")
+                
+            # Reset failure counters on successful reconnect
+            if sid in connection_manager['circuit_breakers']:
+                connection_manager['circuit_breakers'][sid]['consecutive_failures'] = 0
+                
+            cleanup_connection(sid)  # Clean old state
+            
+        # Track transport type
+        connection_manager.setdefault('transport_type', {})[sid] = transport
+        
+        # Initialize connection state with defaults
+        connection_manager['active_connections'].add(sid)
+        connection_manager['connection_times'][sid] = current_time
+        connection_manager['last_activity'][sid] = current_time
+        connection_manager['reconnection_attempts'][sid] = 0
+        connection_manager['backoff_times'][sid] = 0.1  # Initial backoff
+        
+        # Initialize quality metrics
+        connection_manager['connection_quality'][sid] = {
+            'latency': 0,
+            'failed_pings': 0,
+            'successful_pings': 0,
+            'transport_upgrades': 0,
+            'ping_history': [],
+            'error_count': 0
+        }
+        
+        # Send enhanced connection acknowledgment
+        socketio.emit('connection_status', {
+            'status': 'connected',
+            'sid': sid,
+            'timestamp': current_time.isoformat(),
+            'transport': request.args.get('transport', 'websocket'),
+            'ping_timeout': socketio.ping_timeout,
+            'ping_interval': socketio.ping_interval
+        }, to=sid)
+        
+        logger.info(f"""━━━━━━ New Connection ━━━━━━
+Client: {sid}
+Transport: {request.args.get('transport', 'websocket')}
+Time: {current_time}
+━━━━━━━━━━━━━━━━━━━━━━━━""")
+        
+    except Exception as e:
+        logger.error(f"Error in connection handler: {str(e)}", exc_info=True)
+        # Attempt graceful recovery
+        try:
+            socketio.emit('connection_recovery', {
+                'status': 'error',
+                'message': 'Connection initialization failed, retrying...',
+                'timestamp': datetime.now().isoformat()
+            }, to=request.sid)
+        except:
+            pass
     try:
         current_time = datetime.now()
         sid = request.sid
@@ -307,40 +432,113 @@ Agent: {client_info['user_agent']}
             'latency': 0,
             'failed_pings': 0,
             'successful_pings': 0,
-            'transport_upgrades': 0
+            'transport_upgrades': 0,
+            'ping_history': []
         }
         
         # Aggressive connection status monitoring
         def monitor_connection_quality():
+            """Enhanced connection quality monitoring with adaptive thresholds."""
             while sid in connection_manager['active_connections']:
                 try:
-                    # Calculate connection quality metrics
-                    time_connected = (datetime.now() - connection_manager['connection_times'][sid]).total_seconds()
+                    # Calculate advanced connection quality metrics
+                    current_time = datetime.now()
+                    time_connected = (current_time - connection_manager['connection_times'][sid]).total_seconds()
                     quality = connection_manager['connection_quality'][sid]
-                    success_rate = quality['successful_pings'] / (quality['successful_pings'] + quality['failed_pings']) if (quality['successful_pings'] + quality['failed_pings']) > 0 else 1
                     
-                    # Log connection quality metrics
+                    # Calculate weighted success rate based on recent activity
+                    recent_window = 300  # Last 5 minutes
+                    
+                    # Add current ping to history with timestamp
+                    quality['ping_history'].append({
+                        'success': True,
+                        'latency': quality['latency'],
+                        'timestamp': current_time
+                    })
+                    
+                    # Remove old entries
+                    quality['ping_history'] = [
+                        ping for ping in quality['ping_history']
+                        if (current_time - ping['timestamp']).total_seconds() <= recent_window
+                    ]
+                    
+                    # Calculate weighted metrics
+                    recent_pings = quality['ping_history']
+                    total_pings = len(recent_pings)
+                    if total_pings > 0:
+                        # Weight more recent pings higher
+                        weighted_success = sum(
+                            ping['success'] * (1 + (current_time - ping['timestamp']).total_seconds() / recent_window)
+                            for ping in recent_pings
+                        ) / total_pings
+                        
+                        avg_latency = sum(ping['latency'] for ping in recent_pings) / total_pings
+                        latency_variance = sum((ping['latency'] - avg_latency) ** 2 for ping in recent_pings) / total_pings
+                    else:
+                        weighted_success = 1.0
+                        avg_latency = 0
+                        latency_variance = 0
+                    
+                    # Update quality metrics
+                    quality['weighted_success_rate'] = weighted_success
+                    quality['avg_latency'] = avg_latency
+                    quality['latency_variance'] = latency_variance
+                    
+                    # Log detailed metrics periodically
                     if time_connected % 60 == 0:  # Log every minute
-                        logger.info(f"""━━━━━━ Connection Quality ━━━━━━
+                        logger.info(f"""━━━━━━ Enhanced Connection Quality ━━━━━━
 Client: {sid}
 Uptime: {time_connected:.1f}s
-Success Rate: {success_rate:.2%}
-Latency: {quality['latency']}ms
-Transport Upgrades: {quality['transport_upgrades']}
+Weighted Success: {weighted_success:.2%}
+Avg Latency: {avg_latency:.2f}ms
+Latency Variance: {latency_variance:.2f}
+Recent Pings: {total_pings}
+Transport: {request.args.get('transport', 'unknown')}
+Upgrades: {quality['transport_upgrades']}
 ━━━━━━━━━━━━━━━━━━━━━━━━""")
                     
-                    # Implement recovery if needed
-                    if success_rate < 0.5:
-                        logger.warning(f"Poor connection quality for {sid}, initiating recovery...")
+                    # Adaptive recovery thresholds
+                    should_recover = (
+                        weighted_success < 0.7 or  # Poor success rate
+                        avg_latency > 1000 or      # High latency
+                        latency_variance > 5000 or  # Unstable connection
+                        total_pings < 10           # Too few pings
+                    )
+                    
+                    if should_recover:
+                        logger.warning(f"""━━━━━━ Connection Recovery Needed ━━━━━━
+Client: {sid}
+Reason: {'Success Rate' if weighted_success < 0.7 else 'High Latency' if avg_latency > 1000 else 'Unstable Connection' if latency_variance > 5000 else 'Low Ping Count'}
+Metrics:
+- Success Rate: {weighted_success:.2%}
+- Avg Latency: {avg_latency:.2f}ms
+- Variance: {latency_variance:.2f}
+━━━━━━━━━━━━━━━━━━━━━━━━""")
+                        
+                        # Implement progressive transport upgrade
+                        current_transport = request.args.get('transport', 'polling')
+                        new_transport = 'websocket' if current_transport == 'polling' else 'polling'
+                        
                         socketio.emit('connection_recovery', {
                             'action': 'transport_upgrade',
-                            'current_transport': request.args.get('transport', 'unknown')
+                            'current_transport': current_transport,
+                            'new_transport': new_transport,
+                            'metrics': {
+                                'success_rate': weighted_success,
+                                'avg_latency': avg_latency,
+                                'variance': latency_variance
+                            }
                         }, to=sid)
                         
+                        quality['transport_upgrades'] += 1
+                        
                 except Exception as e:
-                    logger.error(f"Error monitoring connection quality: {str(e)}")
+                    logger.error(f"Error in connection monitoring: {str(e)}", exc_info=True)
+                    quality['failed_pings'] += 1
                 finally:
-                    eventlet.sleep(1)  # Check every second
+                    # Adaptive monitoring interval based on connection quality
+                    sleep_time = 1 if weighted_success > 0.8 else 0.5
+                    eventlet.sleep(sleep_time)
                     
         eventlet.spawn(monitor_connection_quality)
         
@@ -425,10 +623,56 @@ Type any command to get started!
 
 @socketio.on('disconnect')
 def handle_disconnect():
-    """Handle client disconnection with aggressive recovery and cleanup."""
+    """Enhanced disconnect handler with intelligent reconnection strategy and state management."""
     try:
         current_time = datetime.now()
         sid = request.sid
+        
+        if not sid:
+            logger.warning("Disconnect event without SID")
+            return
+            
+        # Get disconnect reason and classify it
+        reason = request.args.get('reason', 'unknown')
+        is_clean_disconnect = reason in ['client_disconnect', 'ping_timeout']
+        transport = connection_manager.get('transport_type', {}).get(sid, 'unknown')
+        
+        # Log enhanced disconnect information
+        logger.info(f"""━━━━━━ Enhanced Disconnect ━━━━━━
+Client: {sid}
+Reason: {reason}
+Transport: {transport}
+Clean Disconnect: {is_clean_disconnect}
+Time: {current_time}
+━━━━━━━━━━━━━━━━━━━━━━━━""")
+            
+        # Get connection metrics
+        connected_duration = 0
+        if sid in connection_manager['connection_times']:
+            connected_duration = (current_time - connection_manager['connection_times'][sid]).total_seconds()
+        
+        # Increment reconnection counter
+        if sid in connection_manager['reconnection_attempts']:
+            connection_manager['reconnection_attempts'][sid] += 1
+            attempts = connection_manager['reconnection_attempts'][sid]
+        else:
+            connection_manager['reconnection_attempts'][sid] = 1
+            attempts = 1
+            
+        # Calculate backoff with jitter
+        base_delay = min(connection_manager['backoff_times'].get(sid, 0.1) * 2, 30)
+        jitter = random.uniform(0, 0.1 * base_delay)
+        backoff_time = base_delay + jitter
+        connection_manager['backoff_times'][sid] = backoff_time
+        
+        # Log disconnect details
+        logger.info(f"""━━━━━━ Client Disconnected ━━━━━━
+SID: {sid}
+Duration: {connected_duration:.1f}s
+Attempts: {attempts}
+Backoff: {backoff_time:.2f}s
+Reason: {request.args.get('reason', 'unknown')}
+━━━━━━━━━━━━━━━━━━━━━━━━""")
         
         # Enhanced disconnect logging
         disconnect_info = {
@@ -496,42 +740,122 @@ def cleanup_connection(sid):
 
 @socketio.on('heartbeat')
 def handle_heartbeat():
-    """Enhanced heartbeat handler with connection quality monitoring."""
+    """Advanced heartbeat handler with sophisticated connection analysis."""
     try:
         current_time = datetime.now()
         sid = request.sid
         
         if sid in connection_manager['active_connections']:
-            # Update activity timestamp
+            quality = connection_manager['connection_quality'][sid]
             last_activity = connection_manager['last_activity'].get(sid)
+            
             if last_activity:
-                # Calculate and update connection quality metrics
-                latency = (current_time - last_activity).total_seconds() * 1000  # Convert to ms
-                quality = connection_manager['connection_quality'][sid]
-                quality['latency'] = latency
+                # Calculate detailed timing metrics
+                interval = (current_time - last_activity).total_seconds() * 1000
+                expected_interval = socketio.ping_interval * 1000
+                drift = abs(interval - expected_interval)
+                
+                # Update connection quality metrics
+                quality.setdefault('timing_stats', {
+                    'intervals': [],
+                    'drifts': [],
+                    'jitter': 0,
+                    'drift_threshold': expected_interval * 0.2  # 20% tolerance
+                })
+                
+                # Update timing statistics
+                stats = quality['timing_stats']
+                stats['intervals'].append(interval)
+                stats['drifts'].append(drift)
+                
+                # Keep only recent history
+                max_history = 50
+                if len(stats['intervals']) > max_history:
+                    stats['intervals'] = stats['intervals'][-max_history:]
+                    stats['drifts'] = stats['drifts'][-max_history:]
+                
+                # Calculate jitter (variation in intervals)
+                if len(stats['intervals']) >= 2:
+                    differences = [abs(stats['intervals'][i] - stats['intervals'][i-1])
+                                 for i in range(1, len(stats['intervals']))]
+                    stats['jitter'] = sum(differences) / len(differences)
+                
+                # Analyze connection health
+                avg_drift = sum(stats['drifts']) / len(stats['drifts'])
+                max_drift = max(stats['drifts'])
+                
+                # Detect timing anomalies
+                timing_issues = []
+                if avg_drift > stats['drift_threshold']:
+                    timing_issues.append('high_average_drift')
+                if max_drift > stats['drift_threshold'] * 2:
+                    timing_issues.append('excessive_drift_spike')
+                if stats['jitter'] > expected_interval * 0.1:
+                    timing_issues.append('high_jitter')
+                
+                # Log timing anomalies
+                if timing_issues:
+                    logger.warning(f"""━━━━━━ Heartbeat Timing Issues ━━━━━━
+Client: {sid}
+Issues: {', '.join(timing_issues)}
+Metrics:
+- Avg Drift: {avg_drift:.2f}ms
+- Max Drift: {max_drift:.2f}ms
+- Jitter: {stats['jitter']:.2f}ms
+Expected Interval: {expected_interval}ms
+━━━━━━━━━━━━━━━━━━━━━━━━""")
+                
+                # Update quality metrics
+                quality['latency'] = interval
                 quality['successful_pings'] += 1
                 
-                # Log excessive latency
-                if latency > 1000:  # More than 1 second
-                    logger.warning(f"""━━━━━━ High Latency Detected ━━━━━━
-Client: {sid}
-Latency: {latency:.2f}ms
-Timestamp: {current_time}
-━━━━━━━━━━━━━━━━━━━━━━━━""")
-            
-            connection_manager['last_activity'][sid] = current_time
-            
-            return {
-                'status': 'ok',
-                'timestamp': current_time.isoformat(),
-                'latency': quality['latency'] if 'quality' in locals() else 0,
-                'connection_quality': 'good' if not quality.get('failed_pings') else 'degraded'
-            }
+                # Calculate health score (0-100)
+                drift_score = max(0, 100 - (avg_drift / stats['drift_threshold']) * 50)
+                jitter_score = max(0, 100 - (stats['jitter'] / (expected_interval * 0.1)) * 50)
+                health_score = (drift_score + jitter_score) / 2
+                
+                # Determine connection status
+                connection_status = (
+                    'excellent' if health_score >= 90 else
+                    'good' if health_score >= 70 else
+                    'fair' if health_score >= 50 else
+                    'poor'
+                )
+                
+                # Enhanced response with detailed metrics
+                response = {
+                    'status': 'ok',
+                    'timestamp': current_time.isoformat(),
+                    'metrics': {
+                        'latency': interval,
+                        'jitter': stats['jitter'],
+                        'drift': avg_drift,
+                        'health_score': health_score
+                    },
+                    'connection_quality': connection_status,
+                    'timing_issues': timing_issues if timing_issues else None
+                }
+                
+                # Update last activity
+                connection_manager['last_activity'][sid] = current_time
+                
+                return response
+                
     except Exception as e:
-        logger.error(f"Heartbeat error: {str(e)}", exc_info=True)
-        if sid in connection_manager['connection_quality']:
+        logger.error(f"""━━━━━━ Heartbeat Error ━━━━━━
+SID: {sid if 'sid' in locals() else 'unknown'}
+Error: {str(e)}
+Time: {datetime.now()}
+━━━━━━━━━━━━━━━━━━━━━━━━""", exc_info=True)
+        
+        if 'sid' in locals() and sid in connection_manager['connection_quality']:
             connection_manager['connection_quality'][sid]['failed_pings'] += 1
-        return {'status': 'error', 'message': str(e)}
+        
+        return {
+            'status': 'error',
+            'message': str(e),
+            'timestamp': datetime.now().isoformat()
+        }
 
 @socketio.on('send_message')
 def handle_message(data):
