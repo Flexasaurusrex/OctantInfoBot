@@ -102,6 +102,21 @@ class OctantDiscordBot(commands.Bot):
                     logger.error(f"Error in trivia command: {str(e)}", exc_info=True)
                     await ctx.send("Sorry, there was an error starting the trivia game. Please try again.")
 
+            @self.command(name='ping')
+            async def ping_command(ctx):
+                """Check bot's latency"""
+                try:
+                    latency = round(self.latency * 1000)  # Convert to ms
+                    embed = discord.Embed(
+                        title="🏓 Pong!",
+                        description=f"Latency: {latency}ms",
+                        color=discord.Color.green() if latency < 200 else discord.Color.orange()
+                    )
+                    await ctx.send(embed=embed)
+                except Exception as e:
+                    logger.error(f"Error in ping command: {str(e)}", exc_info=True)
+                    await ctx.send("Sorry, there was an error checking latency. Please try again.")
+
             @self.command(name='help')
             async def help_command(ctx):
                 """Show help message"""
@@ -114,6 +129,12 @@ class OctantDiscordBot(commands.Bot):
                 help_embed.add_field(
                     name="🎮 Game Commands",
                     value="• `/trivia` - Start a trivia game about Octant",
+                    inline=False
+                )
+                
+                help_embed.add_field(
+                    name="🛠️ Utility Commands",
+                    value="• `/ping` - Check bot's response time\n• `/help` - Show this help message",
                     inline=False
                 )
                 

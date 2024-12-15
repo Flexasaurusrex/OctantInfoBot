@@ -41,13 +41,17 @@ limiter = Limiter(
     storage_uri="memory://"
 )
 
+# Store SocketIO configuration values
+PING_TIMEOUT = 20000  # milliseconds
+PING_INTERVAL = 10000  # milliseconds
+
 # Configure Socket.IO with robust error handling and connection management
 socketio = SocketIO(
     app,
     cors_allowed_origins="*",
     async_mode='eventlet',
-    ping_timeout=20,
-    ping_interval=10,
+    ping_timeout=PING_TIMEOUT//1000,  # Convert to seconds for SocketIO
+    ping_interval=PING_INTERVAL//1000,  # Convert to seconds for SocketIO
     reconnection=True,
     reconnection_attempts=10,
     reconnection_delay=1000,
@@ -205,7 +209,7 @@ def restart_services():
 def handle_connect():
     """Handle client connection with comprehensive error handling and state tracking."""
     try:
-        # Initialize client state
+        # Initialize client state with enhanced monitoring
         client_info = {
             'sid': request.sid,
             'ip': request.remote_addr,
@@ -213,18 +217,32 @@ def handle_connect():
             'user_agent': request.headers.get('User-Agent', 'Unknown'),
             'error_count': 0,
             'reconnect_count': 0,
-            'last_activity': datetime.now().isoformat()
+            'last_activity': datetime.now().isoformat(),
+            'connection_attempts': 0,
+            'connected': True,
+            'last_ping': datetime.now().isoformat()
         }
+        
+        # Update or create client record
+        if request.sid in connected_clients:
+            client_info['reconnect_count'] = connected_clients[request.sid].get('reconnect_count', 0) + 1
+            client_info['connection_attempts'] = connected_clients[request.sid].get('connection_attempts', 0) + 1
+        
         connected_clients[request.sid] = client_info
-        logger.info(f"Client connected: {client_info}")
+        logger.info(f"""━━━━━━ Client Connected ━━━━━━
+Client ID: {request.sid}
+IP: {client_info['ip']}
+Reconnects: {client_info['reconnect_count']}
+Timestamp: {client_info['timestamp']}
+━━━━━━━━━━━━━━━━━━━━━━━━""")
         
         # Send enhanced connection acknowledgment
         socketio.emit('connection_status', {
             'status': 'connected',
             'sid': request.sid,
             'timestamp': datetime.now().isoformat(),
-            'ping_interval': socketio.ping_interval,
-            'ping_timeout': socketio.ping_timeout
+            'ping_interval': PING_INTERVAL,
+            'ping_timeout': PING_TIMEOUT
         }, room=request.sid)
         
         # Send welcome message with command help
