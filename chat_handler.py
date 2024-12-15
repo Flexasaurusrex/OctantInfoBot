@@ -226,10 +226,13 @@ Remember: While you're an expert on Octant, you're first and foremost a friendly
 
     def format_urls(self, text):
         """Format URLs in a simple, consistent way."""
-        # Check if the message is asking about links/websites/contact
-        keywords = ['link', 'links', 'website', 'connect', 'social', 'james', 'kiernan', 'vpabundance', 'contact']
+        # Only show links when explicitly requested
+        keywords = ['link', 'links', 'website', 'connect', 'social', 'contact']
+        explicit_request = any(f"show {kw}" in text.lower() or f"get {kw}" in text.lower() or 
+                             f"what {kw}" in text.lower() or f"where {kw}" in text.lower() or
+                             f"need {kw}" in text.lower() for kw in keywords)
         
-        if any(keyword in text.lower() for keyword in keywords):
+        if explicit_request:
             return """Sure thing! Here are some essential links related to Octant, the Golem Foundation, and more:
 
 🌐 Octant:
