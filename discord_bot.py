@@ -143,23 +143,14 @@ Guilds: {len(self.guilds)}
         if message.author == self.user:
             return
             
-        # Generate a unique message ID that includes message content
-        message_id = f"{message.channel.id}:{message.id}:{message.content}"
-        
-        # Skip if message was recently processed (within last 5 seconds)
-        current_time = time.time()
+        # Generate a unique message ID
+        message_id = f"{message.channel.id}:{message.id}"
         if message_id in self._last_processed:
-            last_time = self._last_processed[message_id]
-            if current_time - last_time < 5:
-                return
-                
+            return
+            
         # Check for bot mention or reply
         is_mention = self.user.mentioned_in(message)
         is_reply = message.reference and message.reference.resolved and message.reference.resolved.author == self.user
-        
-        # Only process if either mentioned or replied to, not both
-        if is_mention and is_reply:
-            return
         
         if is_reply or is_mention:
             try:
