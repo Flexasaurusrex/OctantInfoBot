@@ -147,10 +147,10 @@ Guilds: {len(self.guilds)}
 
         # Check for bot mention or reply
         if (message.reference and message.reference.resolved.author == self.user) or \
-           (self.user.mentioned_in(message) and message.content.lower().replace('@octantbot', '').strip()):
+           self.user.mentioned_in(message):
             try:
                 # Remove bot mention from message
-                content = message.content.lower().replace('@octantbot', '').strip()
+                content = message.clean_content.replace(f'@{self.user.display_name}', '').strip()
                 async with message.channel.typing():
                     response = self.chat_handler.get_response(content)
                     
