@@ -923,7 +923,7 @@ def cleanup_connection(sid):
     if not sid:
         logger.warning("Attempted cleanup with invalid SID")
         return
-        
+
     logger.info(f"Starting cleanup for client {sid}")
     current_time = datetime.now()
     
@@ -932,6 +932,29 @@ def cleanup_connection(sid):
         if sid in connection_manager.get('connection_times', {}):
             connected_duration = (current_time - connection_manager['connection_times'][sid]).total_seconds()
             logger.info(f"Connection duration: {connected_duration:.1f}s")
+            
+        # Clean up all connection data
+        for key in ['active_connections', 'connection_times', 'reconnection_attempts', 
+                   'last_activity', 'connection_quality', 'transport_type', 
+                   'backoff_times', 'circuit_breakers']:
+            try:
+                if sid in connection_manager.get(key, {}):
+                    if isinstance(connection_manager[key], set):
+                        connection_manager[key].discard(sid)
+                    else:
+                        del connection_manager[key][sid]
+            except Exception as e:
+                logger.warning(f"Error cleaning up {key} for {sid}: {str(e)}")
+                
+    except Exception as e:
+        logger.error(f"Error in connection cleanup: {str(e)}", exc_info=True)
+    finally:
+        # Ensure critical cleanup always happens
+        for key in ['active_connections', 'connection_times', 'last_activity', 'connection_quality']:
+            if isinstance(connection_manager.get(key), set):
+                connection_manager[key].discard(sid)
+            elif isinstance(connection_manager.get(key), dict):
+                connection_manager[key].pop(sid, None)
             
         # Initialize cleanup status tracking
         cleanup_status = {
@@ -992,7 +1015,61 @@ def cleanup_connection(sid):
 
 @socketio.on('heartbeat')
 def handle_heartbeat():
-    """Advanced heartbeat handler with sophisticated connection analysis."""
+    """Handle client heartbeats with connection quality monitoring."""
+    try:
+        current_time = datetime.now()
+        sid = request.sid
+        
+        if not sid:
+            logger.error("No SID available in heartbeat request")
+            return {'status': 'error', 'message': 'Invalid session'}
+            
+        # Update connection tracking
+        if sid not in connection_manager.get('active_connections', set()):
+            logger.warning(f"Heartbeat received for inactive connection {sid}")
+            return {'status': 'error', 'message': 'Connection inactive'}
+            
+        # Update quality metrics
+        quality = connection_manager.setdefault('connection_quality', {}).get(sid, {
+            'latency': 0,
+            'successful_pings': 0,
+            'failed_pings': 0,
+            'ping_history': [],
+            'transport': request.args.get('transport', 'websocket')
+        })
+        
+        last_activity = connection_manager.get('last_activity', {}).get(sid)
+        if last_activity:
+            latency = (current_time - last_activity).total_seconds() * 1000
+            quality['latency'] = latency
+            quality['successful_pings'] += 1
+            quality['ping_history'].append({
+                'timestamp': current_time,
+                'latency': latency
+            })
+            
+            # Keep only recent history
+            quality['ping_history'] = [
+                p for p in quality['ping_history']
+                if (current_time - p['timestamp']).total_seconds() <= 300
+            ]
+            
+        connection_manager['last_activity'][sid] = current_time
+        
+        return {
+            'status': 'ok',
+            'timestamp': current_time.isoformat(),
+            'metrics': {
+                'latency': quality.get('latency', 0),
+                'successful_pings': quality.get('successful_pings', 0)
+            }
+        }
+        
+    except Exception as e:
+        logger.error(f"Error in heartbeat handler: {str(e)}", exc_info=True)
+        if 'sid' in locals() and sid in connection_manager.get('connection_quality', {}):
+            connection_manager['connection_quality'][sid]['failed_pings'] += 1
+        return {'status': 'error', 'message': str(e)}
     try:
         current_time = datetime.now()
         sid = request.sid if hasattr(request, 'sid') else None
