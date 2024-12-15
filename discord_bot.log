@@ -2053,3 +2053,23 @@ Guilds connected: 2
 2024-12-14 21:50:31,582 - __main__ - INFO - Bot ID: 1316950341954306159
 2024-12-14 21:50:31,582 - __main__ - INFO - Guilds connected: 2
 2024-12-14 21:50:31,582 - __main__ - INFO - ━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-14 22:05:47,100 - chat_handler - INFO - URLs formatted successfully
+2024-12-14 22:51:11,396 - discord.gateway - INFO - Shard ID None has successfully RESUMED session 2c660683d9a8c753c26278db2a02f785.
+2024-12-15 00:09:01,905 - discord.client - INFO - logging in using static token
+2024-12-15 00:09:02,472 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: d0661f9ad368333f86011990782231d2).
+2024-12-15 00:09:03,906 - discord.client - INFO - logging in using static token
+2024-12-15 00:09:04,595 - discord.client - INFO - logging in using static token
+2024-12-15 00:09:05,208 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: f8510818be0183f6062c657414319746).
+2024-12-15 00:09:07,217 - __main__ - INFO - Logged in as: OCTANTBOT
+2024-12-15 00:09:07,217 - __main__ - INFO - Bot ID: 1316950341954306159
+2024-12-15 00:09:07,217 - __main__ - INFO - Connected to 2 guilds
+2024-12-15 00:09:32,988 - discord.client - INFO - logging in using static token
+2024-12-15 00:09:33,516 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: ca0eb33ae3ab21494942eef969afd09d).
+2024-12-15 00:09:35,534 - __main__ - INFO - Logged in as: OCTANTBOT
+2024-12-15 00:09:35,534 - __main__ - INFO - Bot ID: 1316950341954306159
+2024-12-15 00:09:35,534 - __main__ - INFO - Connected to 2 guilds
+2024-12-15 00:09:37,996 - discord.client - INFO - logging in using static token
+2024-12-15 00:09:38,615 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 2af39b382ff5b1a2eff91e14d8e40df7).
+2024-12-15 00:09:40,632 - __main__ - INFO - Logged in as: OCTANTBOT
+2024-12-15 00:09:40,633 - __main__ - INFO - Bot ID: 1316950341954306159
+2024-12-15 00:09:40,634 - __main__ - INFO - Connected to 2 guilds

@@ -38,23 +38,31 @@ limiter = Limiter(
     storage_uri="memory://"
 )
 
-# Configure Socket.IO with enhanced connection handling and stability
+# Configure Socket.IO with robust connection handling and stability
 socketio = SocketIO(
     app,
     cors_allowed_origins="*",
     async_mode='eventlet',
-    ping_timeout=60,  # Increased timeout
-    ping_interval=25,  # Increased interval
+    ping_timeout=120,  # Increased timeout for better stability
+    ping_interval=15,  # More frequent ping for faster detection
     reconnection=True,
-    reconnection_attempts=float('inf'),  # Infinite reconnection attempts
+    reconnection_attempts=float('inf'),
     reconnection_delay=1000,
     reconnection_delay_max=5000,
     max_http_buffer_size=1e8,
     logger=True,
     engineio_logger=True,
     async_handlers=True,
-    manage_session=True  # Enable session management
+    manage_session=True,
+    always_connect=True,  # Ensure connection is maintained
+    transports=['websocket', 'polling']  # Enable fallback to polling
 )
+
+# Track connection state
+connection_state = {
+    'connected_clients': set(),
+    'last_heartbeat': {}
+}
 
 # Configure websocket error handlers
 @socketio.on_error()
@@ -169,7 +177,7 @@ def restart_services():
 
 @socketio.on('connect')
 def handle_connect():
-    """Handle client connection with enhanced error handling and state tracking."""
+    """Handle client connection with robust error handling and state tracking."""
     try:
         client_info = {
             'sid': request.sid,
@@ -179,15 +187,31 @@ def handle_connect():
         }
         logger.info(f"Client connected: {client_info}")
         
-        # Send connection acknowledgment
-        socketio.emit('connection_status', {
-            'status': 'connected',
-            'sid': request.sid,
-            'timestamp': datetime.now().isoformat()
-        }, to=request.sid)
+        # Update connection state
+        connection_state['connected_clients'].add(request.sid)
+        connection_state['last_heartbeat'][request.sid] = datetime.now()
         
-        # Send welcome message with command help
-        help_message = """
+        # Send connection acknowledgment with retry mechanism
+        def send_connection_status(retries=3):
+            for attempt in range(retries):
+                try:
+                    socketio.emit('connection_status', {
+                        'status': 'connected',
+                        'sid': request.sid,
+                        'timestamp': datetime.now().isoformat(),
+                        'reconnection_enabled': True
+                    }, to=request.sid)
+                    return True
+                except Exception as e:
+                    if attempt == retries - 1:
+                        logger.error(f"Failed to send connection status after {retries} attempts: {str(e)}")
+                        return False
+                    eventlet.sleep(0.5)
+            return False
+
+        if send_connection_status():
+            # Send welcome message with command help
+            help_message = """
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📚 Available Commands
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -203,10 +227,23 @@ def handle_connect():
 
 Type any command to get started!
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"""
-        socketio.emit('receive_message', {
-            'message': help_message,
-            'is_bot': True
-        }, to=request.sid)
+            socketio.emit('receive_message', {
+                'message': help_message,
+                'is_bot': True
+            }, to=request.sid)
+            
+        # Start heartbeat monitoring for this client
+        def monitor_heartbeat():
+            while request.sid in connection_state['connected_clients']:
+                eventlet.sleep(10)  # Check every 10 seconds
+                if request.sid in connection_state['last_heartbeat']:
+                    last_beat = connection_state['last_heartbeat'][request.sid]
+                    if (datetime.now() - last_beat).total_seconds() > 30:
+                        logger.warning(f"Client {request.sid} heartbeat timeout")
+                        handle_disconnect()
+                        break
+                        
+        eventlet.spawn(monitor_heartbeat)
         
     except Exception as e:
         logger.error(f"Error in handle_connect: {str(e)}", exc_info=True)
@@ -233,7 +270,7 @@ Type any command to get started!
 
 @socketio.on('disconnect')
 def handle_disconnect():
-    """Enhanced disconnect handler with connection cleanup."""
+    """Enhanced disconnect handler with connection cleanup and reconnection support."""
     try:
         client_info = {
             'sid': request.sid,
@@ -243,22 +280,37 @@ def handle_disconnect():
         }
         logger.info(f"Client disconnected: {client_info}")
         
-        # Notify other clients about disconnection if needed
-        socketio.emit('user_disconnected', {
-            'sid': request.sid,
-            'timestamp': datetime.now().isoformat()
-        }, to=request.sid, skip_sid=request.sid)
+        # Clean up connection state
+        if request.sid in connection_state['connected_clients']:
+            connection_state['connected_clients'].remove(request.sid)
+        if request.sid in connection_state['last_heartbeat']:
+            del connection_state['last_heartbeat'][request.sid]
         
+        # Notify about disconnection
+        try:
+            socketio.emit('connection_status', {
+                'status': 'disconnected',
+                'sid': request.sid,
+                'timestamp': datetime.now().isoformat(),
+                'reason': request.args.get('reason', 'unknown'),
+                'reconnection_enabled': True
+            }, to=request.sid)
+        except Exception as emit_error:
+            logger.error(f"Failed to send disconnect status: {str(emit_error)}")
+            
     except Exception as e:
         logger.error(f"Error in disconnect handler: {str(e)}", exc_info=True)
-        
+
+@socketio.on('heartbeat')
+def handle_heartbeat():
+    """Handle client heartbeat to monitor connection health."""
     try:
-        # Attempt reconnection
-        socketio.emit('reconnect_attempt', {
-            'timestamp': datetime.now().isoformat()
-        }, to=request.sid)
+        if request.sid in connection_state['connected_clients']:
+            connection_state['last_heartbeat'][request.sid] = datetime.now()
+            return {'status': 'ok', 'timestamp': datetime.now().isoformat()}
     except Exception as e:
-        logger.error(f"Error initiating reconnection: {str(e)}", exc_info=True)
+        logger.error(f"Error in heartbeat handler: {str(e)}", exc_info=True)
+        return {'status': 'error', 'message': str(e)}
 
 @socketio.on('send_message')
 def handle_message(data):
