@@ -5,9 +5,6 @@ from trivia import Trivia
 import logging
 import re
 import json
-from datetime import datetime
-import time
-import asyncio
 
 logger = logging.getLogger(__name__)
 
@@ -309,28 +306,18 @@ LinkedIn: https://www.linkedin.com/in/vpabundance"""
 
     def get_response(self, user_message):
         try:
-            # Validate input
-            if not user_message or not isinstance(user_message, str):
-                logger.warning("Invalid message received")
-                return "I couldn't process the message. Please try sending a text message."
-            
-            user_message = user_message.strip()
-            if not user_message:
-                logger.warning("Empty message received")
+            if not user_message or not user_message.strip():
                 return "I couldn't process an empty message. Please try asking something!"
             
-            # Check for commands with enhanced error handling
+            user_message = user_message.strip()
+            
+            # Check for commands
             if user_message.startswith('/'):
-                try:
-                    command_response = self.command_handler.handle_command(user_message)
-                    if command_response:
-                        if user_message.lower() == '/trivia':
-                            self.is_playing_trivia = True
-                        logger.info(f"Command processed successfully: {user_message}")
-                        return command_response
-                except Exception as cmd_error:
-                    logger.error(f"Command processing error: {str(cmd_error)}")
-                    return "I encountered an error processing your command. Please try again."
+                command_response = self.command_handler.handle_command(user_message)
+                if command_response:
+                    if user_message.lower() == '/trivia':
+                        self.is_playing_trivia = True
+                    return command_response
             
             # Handle trivia commands
             lower_message = user_message.lower()
@@ -407,61 +394,35 @@ Provide an accurate, Octant-focused response that adheres to these principles:""
                 "stream": True
             }
             
-            try:
-                # Add retry logic for API requests
-                max_retries = 2
-                retry_count = 0
-                
-                while retry_count <= max_retries:
+            response = requests.post(
+                self.base_url,
+                headers=headers,
+                json=data,
+                timeout=30,
+                stream=True
+            )
+            response.raise_for_status()
+            
+            # Process streaming response
+            response_chunks = []
+            for line in response.iter_lines():
+                if line:
                     try:
-                        response = requests.post(
-                            self.base_url,
-                            headers=headers,
-                            json=data,
-                            timeout=30,
-                            stream=True
-                        )
-                        response.raise_for_status()
-                        break
-                    except requests.exceptions.RequestException as e:
-                        retry_count += 1
-                        if retry_count <= max_retries:
-                            logger.warning(f"API request attempt {retry_count} failed: {str(e)}")
-                            time.sleep(1)  # Short delay between retries
-                        else:
-                            raise
-                
-                # Process streaming response with enhanced error handling
-                response_chunks = []
-                chunk = None  # Define chunk outside try block for error logging
-                
-                for line in response.iter_lines():
-                    if line:
-                        try:
-                            chunk = line.decode('utf-8')
-                            if chunk.startswith('data: '):
-                                chunk = chunk[6:]  # Remove 'data: ' prefix
-                                if chunk == '[DONE]':
-                                    break
-                                chunk_data = json.loads(chunk)
-                                if 'output' in chunk_data and chunk_data['output']['choices']:
-                                    text = chunk_data['output']['choices'][0]['text']
-                                    if text.strip():  # Only append non-empty chunks
-                                        response_chunks.append(text)
-                        except json.JSONDecodeError:
-                            logger.warning(f"Failed to decode chunk: {chunk}")
-                            continue
-                        except Exception as e:
-                            logger.error(f"Error processing chunk: {str(e)}")
-                            continue
-                
-                if not response_chunks:
-                    logger.warning("No valid response chunks received")
-                    return "I apologize, but I couldn't generate a proper response. Please try rephrasing your question."
-                    
-            except requests.exceptions.RequestException as req_error:
-                logger.error(f"API request failed: {str(req_error)}")
-                return "I'm having trouble connecting to the language model. Please try again in a moment."
+                        chunk = line.decode('utf-8')
+                        if chunk.startswith('data: '):
+                            chunk = chunk[6:]  # Remove 'data: ' prefix
+                            if chunk == '[DONE]':
+                                break
+                            chunk_data = json.loads(chunk)
+                            if 'output' in chunk_data and chunk_data['output']['choices']:
+                                text = chunk_data['output']['choices'][0]['text']
+                                response_chunks.append(text)
+                    except json.JSONDecodeError:
+                        logger.warning(f"Failed to decode chunk: {chunk}")
+                        continue
+                    except Exception as e:
+                        logger.error(f"Error processing chunk: {str(e)}")
+                        continue
             
             # Combine all chunks and process the response
             response_text = ''.join(response_chunks).strip()
@@ -510,110 +471,6 @@ Please try your question again or ask about any of these topics!"""
             logger.error(f"Unexpected error: {str(e)}")
             return "I encountered an unexpected issue. Please try again, and if the problem persists, try rephrasing your question."
 
-    async def get_response_async(self, user_message, context=None):
-        """Enhanced async version of get_response for use with Discord bot"""
-        try:
-            # Input validation
-            if not user_message or not isinstance(user_message, str):
-                return {
-                    'status': 'success',
-                    'message': "Hello! I'm here to help you learn about Octant. What would you like to know?",
-                    'type': 'greeting'
-                }
-            
-            # Process the message
-            user_message = user_message.strip()
-            logger.info(f"Processing message: {user_message[:50]}...")
-            
-            # Handle simple greetings
-            if user_message.lower() in ['hi', 'hello', 'hey', 'gm', 'gm gm']:
-                return {
-                    'status': 'success',
-                    'message': "Hello! I'm the Octant AI Assistant. How can I help you learn about Octant today?",
-                    'type': 'greeting'
-                }
-            
-            # Handle commands
-            if user_message.startswith('/'):
-                command_response = self.command_handler.handle_command(user_message)
-                if command_response:
-                    if user_message.lower() == '/trivia':
-                        self.is_playing_trivia = True
-                    logger.info(f"Command processed successfully: {user_message}")
-                    return {
-                        'status': 'success',
-                        'message': command_response,
-                        'type': 'command'
-                    }
-                return {
-                    'status': 'success',
-                    'message': "Available commands:\n/help - Show all commands\n/learn - Access learning modules\n/trivia - Start a trivia game",
-                    'type': 'help'
-                }
-            
-            # Generate response
-            try:
-                # Handle trivia state
-                if self.is_playing_trivia:
-                    if user_message.lower() in ['a', 'b', 'c', 'd']:
-                        return {
-                            'status': 'success',
-                            'message': self.trivia_game.check_answer(user_message),
-                            'type': 'trivia'
-                        }
-                    elif user_message.lower() == 'next question':
-                        return {
-                            'status': 'success',
-                            'message': self.trivia_game.get_next_question(),
-                            'type': 'trivia'
-                        }
-                    elif user_message.lower() == 'end trivia':
-                        self.is_playing_trivia = False
-                        return {
-                            'status': 'success',
-                            'message': "Thanks for playing! Feel free to start a new game anytime with /trivia",
-                            'type': 'trivia'
-                        }
-                
-                # Get standard response
-                response = self.get_response(user_message)
-                
-                # Handle response types
-                if isinstance(response, (str, list)):
-                    final_response = '\n'.join(response) if isinstance(response, list) else response
-                    return {
-                        'status': 'success',
-                        'message': final_response.strip(),
-                        'type': 'chat'
-                    }
-                
-                # Default response for unexpected cases
-                return {
-                    'status': 'success',
-                    'message': "I can help you learn about Octant's features like funding, governance, and rewards. What would you like to know more about?",
-                    'type': 'chat'
-                }
-                
-            except Exception as e:
-                logger.warning(f"Response generation handled gracefully: {str(e)}")
-                return {
-                    'status': 'success',
-                    'message': "I can help you with:\n• Octant's funding mechanisms\n• GLM token staking\n• Governance and rewards\n\nWhat interests you most?",
-                    'type': 'recovery'
-                }
-                
-        except Exception as e:
-            logger.error(f"Message processing handled: {str(e)}", exc_info=True)
-            return {
-                'status': 'success',
-                'message': "Let me help you learn about Octant's features. You can ask about funding, governance, or community participation. What would you like to explore?",
-                'type': 'recovery'
-            }
     def clear_conversation_history(self):
         """Clear the conversation history."""
         self.conversation_history = []
-
-# Initialize chat handler instance for testing
-if __name__ == "__main__":
-    chat_handler = ChatHandler()
-    # Add any test code here if needed

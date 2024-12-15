@@ -126,27 +126,10 @@
             sidebar.classList.toggle('expanded');
         }
 
-        // Enhanced WebSocket connection management
-        const socket = io({
-            reconnection: true,
-            reconnectionDelay: 1000,
-            reconnectionDelayMax: 5000,
-            reconnectionAttempts: 10,
-            timeout: 20000,
-            autoConnect: true,
-            transports: ['websocket', 'polling']
-        });
+        // Update connection status
+        const socket = io();
         
-        let reconnectAttempt = 0;
-        const maxReconnectAttempts = 5;
-        let reconnectTimer = null;
-
-        // Connection handlers
         socket.on('connect', () => {
-            console.log('Connected to server');
-            reconnectAttempt = 0;
-            clearTimeout(reconnectTimer);
-            
             const statusIndicator = document.querySelector('.status-indicator');
             if (statusIndicator) {
                 statusIndicator.classList.add('connected');
@@ -154,55 +137,12 @@
             }
         });
         
-        socket.on('disconnect', (reason) => {
-            console.warn('Disconnected:', reason);
-            
+        socket.on('disconnect', () => {
             const statusIndicator = document.querySelector('.status-indicator');
             if (statusIndicator) {
                 statusIndicator.classList.remove('connected');
                 document.querySelector('.status-text').textContent = 'Disconnected';
             }
-        });
-
-        socket.on('connect_error', (error) => {
-            console.error('Connection error:', error);
-            handleReconnect();
-        });
-
-        socket.on('reconnect_attempt', (attemptNumber) => {
-            console.log(`Attempting to reconnect (${attemptNumber}/${maxReconnectAttempts})...`);
-        });
-
-        socket.on('reconnect_failed', () => {
-            console.error('Failed to reconnect after maximum attempts');
-            document.querySelector('.status-text').textContent = 'Connection Failed';
-        });
-
-        // Enhanced reconnection handling
-        function handleReconnect() {
-            if (reconnectAttempt >= maxReconnectAttempts) {
-                console.error('Maximum reconnection attempts reached');
-                document.querySelector('.status-text').textContent = 'Connection Failed';
-                return;
-            }
-
-            reconnectAttempt++;
-            const delay = Math.min(1000 * Math.pow(2, reconnectAttempt - 1), 10000);
-            
-            clearTimeout(reconnectTimer);
-            reconnectTimer = setTimeout(() => {
-                if (!socket.connected) {
-                    console.log(`Reconnecting... Attempt ${reconnectAttempt}/${maxReconnectAttempts}`);
-                    socket.connect();
-                }
-            }, delay);
-        }
-
-        // Error handling for unhandled promise rejections
-        window.addEventListener('unhandledrejection', function(event) {
-            console.warn('Unhandled promise rejection:', event.reason);
-            // Prevent the default browser handling
-            event.preventDefault();
         });
     </script>
 </body>

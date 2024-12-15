@@ -41,34 +41,24 @@ limiter = Limiter(
     storage_uri="memory://"
 )
 
-# Store SocketIO configuration values
-PING_TIMEOUT = 20000  # milliseconds
-PING_INTERVAL = 10000  # milliseconds
-
 # Configure Socket.IO with robust error handling and connection management
 socketio = SocketIO(
     app,
     cors_allowed_origins="*",
     async_mode='eventlet',
-    ping_timeout=20,  # in seconds
-    ping_interval=10,  # in seconds
+    ping_timeout=20,
+    ping_interval=10,
+    reconnection=True,
+    reconnection_attempts=10,
+    reconnection_delay=1000,
+    reconnection_delay_max=5000,
     logger=True,
     engineio_logger=True,
     max_http_buffer_size=1e8,
     async_handlers=True,
-    manage_session=True,
-    always_connect=True
+    always_connect=True,
+    http_compression=True
 )
-
-# Client-side configuration to be sent to the browser
-client_config = {
-    'reconnection': True,
-    'reconnectionAttempts': 5,
-    'reconnectionDelay': 1000,
-    'reconnectionDelayMax': 5000,
-    'randomizationFactor': 0.5,
-    'transports': ['websocket', 'polling']
-}
 
 # Track client connections and their state
 connected_clients = {}
@@ -215,7 +205,7 @@ def restart_services():
 def handle_connect():
     """Handle client connection with comprehensive error handling and state tracking."""
     try:
-        # Initialize client state with enhanced monitoring
+        # Initialize client state
         client_info = {
             'sid': request.sid,
             'ip': request.remote_addr,
@@ -223,35 +213,18 @@ def handle_connect():
             'user_agent': request.headers.get('User-Agent', 'Unknown'),
             'error_count': 0,
             'reconnect_count': 0,
-            'last_activity': datetime.now().isoformat(),
-            'connection_attempts': 0,
-            'connected': True,
-            'last_ping': datetime.now().isoformat()
+            'last_activity': datetime.now().isoformat()
         }
-        
-        # Send client configuration for connection management
-        socketio.emit('connection_config', client_config, room=request.sid)
-        
-        # Update or create client record
-        if request.sid in connected_clients:
-            client_info['reconnect_count'] = connected_clients[request.sid].get('reconnect_count', 0) + 1
-            client_info['connection_attempts'] = connected_clients[request.sid].get('connection_attempts', 0) + 1
-        
         connected_clients[request.sid] = client_info
-        logger.info(f"""━━━━━━ Client Connected ━━━━━━
-Client ID: {request.sid}
-IP: {client_info['ip']}
-Reconnects: {client_info['reconnect_count']}
-Timestamp: {client_info['timestamp']}
-━━━━━━━━━━━━━━━━━━━━━━━━""")
+        logger.info(f"Client connected: {client_info}")
         
         # Send enhanced connection acknowledgment
         socketio.emit('connection_status', {
             'status': 'connected',
             'sid': request.sid,
             'timestamp': datetime.now().isoformat(),
-            'ping_interval': PING_INTERVAL,
-            'ping_timeout': PING_TIMEOUT
+            'ping_interval': socketio.ping_interval,
+            'ping_timeout': socketio.ping_timeout
         }, room=request.sid)
         
         # Send welcome message with command help
@@ -289,58 +262,26 @@ Type any command to get started!
 
 @socketio.on('disconnect')
 def handle_disconnect():
-    """Enhanced disconnect handler with proper cleanup and reconnection handling."""
+    """Handle client disconnection with cleanup."""
     try:
         client_info = connected_clients.get(request.sid, {})
         logger.info(f"Client disconnected: {client_info}")
         
-        # Enhanced cleanup process
+        # Perform cleanup
         if request.sid in connected_clients:
-            # Get disconnect details
+            # Log disconnect reason if available
             reason = request.args.get('reason', 'unknown')
-            transport = request.args.get('transport', 'unknown')
-            logger.info(f"""━━━━━━ Client Disconnect Details ━━━━━━
-Client ID: {request.sid}
-Reason: {reason}
-Transport: {transport}
-Last Activity: {client_info.get('last_activity', 'unknown')}
-━━━━━━━━━━━━━━━━━━━━━━━━""")
+            logger.info(f"Disconnect reason for {request.sid}: {reason}")
             
-            # Update client state for potential reconnection
-            connected_clients[request.sid].update({
-                'connected': False,
-                'disconnect_time': datetime.now().isoformat(),
-                'disconnect_reason': reason,
-                'reconnect_attempts': connected_clients[request.sid].get('reconnect_attempts', 0) +1
-            })
+            # Clean up client state
+            connected_clients.pop(request.sid, None)
             
-            # Only remove client data after grace period
-            if reason not in ['transport close', 'ping timeout']:
-                connected_clients.pop(request.sid, None)
-            
-            # Notify remaining clients
-            active_users = len([c for c in connected_clients.values() if c.get('connected', False)])
-            socketio.emit('user_count_update', {
-                'count': active_users,
-                'timestamp': datetime.now().isoformat()
-            }, to='/')
-            
-            # Send disconnect acknowledgment
-            try:
-                socketio.emit('connection_status', {
-                    'status': 'disconnected',
-                    'reason': reason,
-                    'timestamp': datetime.now().isoformat(),
-                    'reconnect': reason in ['transport close', 'ping timeout']
-                }, to=request.sid)
-            except Exception as emit_error:
-                logger.warning(f"Could not send disconnect acknowledgment: {str(emit_error)}")
+        # Notify remaining clients about user count
+        active_users = len(connected_clients)
+        socketio.emit('user_count_update', {'count': active_users}, broadcast=True)
         
     except Exception as e:
         logger.error(f"Error in handle_disconnect: {str(e)}", exc_info=True)
-        # Attempt to cleanup even if error occurs
-        if request.sid in connected_clients:
-            connected_clients.pop(request.sid, None)
 
 @socketio.on('send_message')
 def handle_message(data):

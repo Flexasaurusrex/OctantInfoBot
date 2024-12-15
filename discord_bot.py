@@ -41,11 +41,6 @@ class OctantDiscordBot(commands.Bot):
             )
 
             # Initialize connection state tracking with enhanced monitoring
-            # Initialize message and context storage
-            self._message_history = {}
-            self._user_context = {}
-            
-            # Initialize connection state
             self.connection_state = {
                 'connected': False,
                 'last_heartbeat': None,
@@ -107,21 +102,6 @@ class OctantDiscordBot(commands.Bot):
                     logger.error(f"Error in trivia command: {str(e)}", exc_info=True)
                     await ctx.send("Sorry, there was an error starting the trivia game. Please try again.")
 
-            @self.command(name='ping')
-            async def ping_command(ctx):
-                """Check bot's latency"""
-                try:
-                    latency = round(self.latency * 1000)  # Convert to ms
-                    embed = discord.Embed(
-                        title="🏓 Pong!",
-                        description=f"Latency: {latency}ms",
-                        color=discord.Color.green() if latency < 200 else discord.Color.orange()
-                    )
-                    await ctx.send(embed=embed)
-                except Exception as e:
-                    logger.error(f"Error in ping command: {str(e)}", exc_info=True)
-                    await ctx.send("Sorry, there was an error checking latency. Please try again.")
-
             @self.command(name='help')
             async def help_command(ctx):
                 """Show help message"""
@@ -134,12 +114,6 @@ class OctantDiscordBot(commands.Bot):
                 help_embed.add_field(
                     name="🎮 Game Commands",
                     value="• `/trivia` - Start a trivia game about Octant",
-                    inline=False
-                )
-                
-                help_embed.add_field(
-                    name="🛠️ Utility Commands",
-                    value="• `/ping` - Check bot's response time\n• `/help` - Show this help message",
                     inline=False
                 )
                 
@@ -490,7 +464,7 @@ Guilds connected: {len(self.guilds)}
             logger.error(f"Error in on_ready: {str(e)}", exc_info=True)
 
     async def on_message(self, message):
-        """Handle incoming messages with enhanced error handling and visual feedback."""
+        """Handle incoming messages with enhanced error handling."""
         try:
             if message.author == self.user:
                 return
@@ -507,303 +481,15 @@ Guilds connected: {len(self.guilds)}
             if not is_reply_to_bot:
                 return
 
-            # Add typing indicator to show the bot is processing
-            async with message.channel.typing():
-                # Add reaction to show message was received
-                await message.add_reaction('⏳')
-
-            # Enhanced message handling with improved context and topic detection
-            try:
-                # Get message context with expanded topic detection
-                message_content = message.content.lower()
-                is_command = message.content.startswith('/')
-                
-                # Expanded topic detection with specific categories
-                topics = {
-                    'funding': ['funding', 'budget', 'allocation', 'invest'],
-                    'governance': ['governance', 'voting', 'proposal', 'decision'],
-                    'rewards': ['reward', 'distribution', 'earnings', 'payout'],
-                    'tokens': ['glm', 'token', 'staking', 'lock'],
-                    'platform': ['octant', 'platform', 'system', 'mechanism']
-                }
-                
-                # Detect primary topic
-                detected_topic = None
-                for topic, keywords in topics.items():
-                    if any(keyword in message_content for keyword in keywords):
-                        detected_topic = topic
-                        break
-                
-                # Enhanced context management
-                author_id = str(message.author.id)
-                context = {
-                    'topic': detected_topic,
-                    'is_command': is_command,
-                    'previous_context': self._user_context.get(author_id, {}).get('last_topic'),
-                    'message_history': self._message_history.get(author_id, [])[-3:],  # Keep last 3 messages for context
-                    'user_id': author_id,
-                    'channel_id': str(message.channel.id),
-                    'guild_id': str(message.guild.id) if message.guild else None
-                }
-                
-                # Update message history using class-level storage
-                if not hasattr(self, '_message_history'):
-                    self._message_history = {}
-                
-                author_id = str(message.author.id)
-                if author_id not in self._message_history:
-                    self._message_history[author_id] = []
-                
-                # Update message history
-                self._message_history[author_id].append(message.content)
-                if len(self._message_history[author_id]) > 10:  # Keep last 10 messages
-                    self._message_history[author_id] = self._message_history[author_id][-10:]
-                
-                # Store topic in context dictionary
-                if not hasattr(self, '_user_context'):
-                    self._user_context = {}
-                if author_id not in self._user_context:
-                    self._user_context[author_id] = {}
-                
-                self._user_context[author_id]['last_topic'] = detected_topic
-                
-                # Enhanced response handling with better context and visual feedback
-                try:
-                    # Process all messages through chat handler for consistent AI responses
-                    msg_content = message.content.lower().strip()
-                    logger.info(f"Processing message: {msg_content}")
-                    
-                    # Determine if it's a simple greeting
-                    is_greeting = msg_content in ['gm', 'gm gm', 'hello', 'hi', 'hey']
-                    
-                    # Always use chat handler for responses
-                    try:
-                        # Enhanced API integration with better error handling
-                        response_data = await asyncio.wait_for(
-                            self.chat_handler.get_response_async(
-                                message.content,
-                                context={
-                                    'timestamp': message.created_at.isoformat(),
-                                    'channel_type': str(message.channel.type),
-                                    'previous_topic': self._user_context.get(author_id, {}).get('last_topic'),
-                                    'user_id': author_id,
-                                    'previous_messages': self._message_history.get(author_id, []),
-                                    'guild_id': str(message.guild.id) if message.guild else None,
-                                    'is_greeting': is_greeting,
-                                    'api_integration': 'together_ai'  # Explicitly mark API integration
-                                }
-                            ),
-                            timeout=45.0  # Increased timeout for API responses
-                        )
-                        
-                        # Verify Together.ai integration
-                        if not response_data:
-                            logger.error("No response received from Together.ai integration")
-                            raise Exception("API integration error")
-                        
-                        if not response_data:
-                            logger.warning("No response data received from chat handler")
-                            response_data = {
-                                'status': 'success',
-                                'message': "Hello! I'm here to help you learn about Octant. What would you like to know?",
-                                'type': 'greeting' if is_greeting else 'chat'
-                            }
-                        
-                        # Enhanced response handling with better error management
-                        if isinstance(response_data, dict):
-                            # Handle successful responses
-                            if response_data.get('status') == 'success':
-                                response_message = response_data.get('message', '')
-                                response_type = response_data.get('type', 'chat')
-                                
-                                if response_type in ['greeting', 'simple_response'] or is_greeting:
-                                    embed = discord.Embed(
-                                        description=response_message,
-                                        color=discord.Color.blue()
-                                    )
-                                    await message.reply(embed=embed, mention_author=False)
-                                    await message.add_reaction('👋' if is_greeting else '👍')
-                                    return
-                                
-                                embed = discord.Embed(
-                                    description=response_message,
-                                    color=discord.Color.green()
-                                )
-                                await message.reply(embed=embed, mention_author=False)
-                                await message.add_reaction('✅')
-                                return
-                            
-                            elif response_data.get('status') == 'error':
-                                error_embed = discord.Embed(
-                                    title="I need more information",
-                                    description=response_data.get('message', 'Could you please provide more details?'),
-                                    color=discord.Color.orange()
-                                )
-                                await message.reply(embed=error_embed, mention_author=False)
-                                await message.add_reaction('❓')
-                                return
-                    except asyncio.TimeoutError:
-                        logger.error("Response generation timed out")
-                        timeout_embed = discord.Embed(
-                            title="⏰ Response Timeout",
-                            description="The response is taking longer than expected. Please try again.",
-                            color=discord.Color.orange()
-                        )
-                        await message.reply(embed=timeout_embed, mention_author=True)
-                        await message.add_reaction('⏰')
-                        return
-                    except Exception as e:
-                        logger.error(f"Error processing message: {str(e)}", exc_info=True)
-                        error_embed = discord.Embed(
-                            title="Unexpected Error",
-                            description="I encountered an error processing your message. Please try again.",
-                            color=discord.Color.red()
-                        )
-                        await message.reply(embed=error_embed, mention_author=True)
-                        await message.add_reaction('❌')
-                        return
-
-                except Exception as outer_e:
-                    logger.error(f"Outer message handling error: {str(outer_e)}", exc_info=True)
-                    await message.add_reaction('❌')
-                    await message.reply("I encountered an unexpected error. Please try again later.", mention_author=True)
-                            # Handle errors gracefully
-                except Exception as outer_e:
-                    logger.error(f"Outer message handling error: {str(outer_e)}", exc_info=True)
-                    await message.add_reaction('❌')
-                    await message.reply("I encountered an unexpected error. Please try again later.", mention_author=True)
-                                # For expected interactions, just send a simple acknowledgment
-                                simple_embed = discord.Embed(
-                                    description="Hello! I'm here to help you learn about Octant. What would you like to know?",
-                                    color=discord.Color.blue()
-                                )
-                                await message.reply(embed=simple_embed, mention_author=False)
-                                await message.add_reaction('👋' if is_greeting else '👍')
-                                return
-                            
-                            # Only show detailed error for unexpected errors
-                            if 'message' in response_data:
-                                error_embed = discord.Embed(
-                                    title="I need more information",
-                                    description=response_data['message'],
-                                    color=discord.Color.orange()
-                                )
-                                
-                                await message.reply(embed=error_embed, mention_author=False)
-                                if '⏳' in [r.emoji for r in message.reactions if r.me]:
-                                    await message.remove_reaction('⏳', self.user)
-                                await message.add_reaction('❓')
-                                return
-                        
-                except asyncio.TimeoutError:
-                    logger.error("Response generation timed out")
-                    timeout_embed = discord.Embed(
-                        title="⏰ Response Timeout",
-                        description="The response is taking longer than expected.",
-                        color=discord.Color.orange()
-                    )
-                    timeout_embed.add_field(
-                        name="What to do",
-                        value="Please try again. If the issue persists, try breaking your question into smaller parts.",
-                        inline=False
-                    )
-                    await message.reply(embed=timeout_embed, mention_author=True)
-                    await message.remove_reaction('⏳', self.user)
-                    await message.add_reaction('⏰')
-                    return
-                except Exception as e:
-                    error_msg = str(e)
-                    logger.error(f"Error generating response: {error_msg}", exc_info=True)
-                    error_embed = discord.Embed(
-                        title="⚠️ Processing Error",
-                        description="I encountered an error while processing your request.",
-                        color=discord.Color.red()
-                    )
-                    error_embed.add_field(
-                        name="Error Details",
-                        value=f"```{error_msg[:100]}...```" if len(error_msg) > 100 else f"```{error_msg}```",
-                        inline=False
-                    )
-                    await message.reply(embed=error_embed, mention_author=True)
-                    await message.remove_reaction('⏳', self.user)
-                    await message.add_reaction('⚠️')
-                    return
-                
-                # Enhanced success response handling with rich formatting
-                if response_data['status'] == 'success':
-                    response_type = response_data.get('type', 'chat')
-                    response_context = response_data.get('context', {})
-                    
-                    # Format response content
-                    if isinstance(response_data['message'], list):
-                        formatted_response = "\n\n".join(
-                            chunk.strip() for chunk in response_data['message'] 
-                            if chunk and chunk.strip()
-                        )
-                    else:
-                        formatted_response = response_data['message'].strip()
-                    
-                    # Create rich embed with enhanced formatting
-                    embed = discord.Embed(
-                        description=formatted_response,
-                        color=discord.Color.green() if response_type == 'command' else discord.Color.blue(),
-                        timestamp=datetime.now(timezone.utc)
-                    )
-                    
-                    # Add response type specific elements
-                    if response_type == 'command':
-                        embed.set_author(
-                            name="Command Response",
-                            icon_url=self.user.display_avatar.url
-                        )
-                    elif response_type == 'chat':
-                        embed.set_author(
-                            name="Chat Response",
-                            icon_url=self.user.display_avatar.url
-                        )
-                
-                # Add context-aware title and formatting
-                if detected_topic:
-                    topic_icons = {
-                        'funding': '💰',
-                        'governance': '🏛️',
-                        'rewards': '🎁',
-                        'tokens': '🪙',
-                        'platform': '🔍'
-                    }
-                    topic_title = f"{topic_icons.get(detected_topic, '🔍')} {detected_topic.title()} Information"
-                    embed.title = topic_title
-                    embed.set_footer(text=f"Category: {detected_topic.title()}")
-                elif is_command:
-                    embed.title = "🤖 Command Response"
-                    embed.set_footer(text="Command Processed")
+            # Get and send response
+            response = self.chat_handler.get_response(message.content)
+            if response:
+                if isinstance(response, list):
+                    for chunk in response:
+                        if chunk and chunk.strip():
+                            await message.reply(chunk.strip(), mention_author=True)
                 else:
-                    embed.title = "💬 Chat Response"
-                    embed.set_footer(text="General Chat")
-
-                # Add user context if available
-                if context.get('previous_context'):
-                    embed.add_field(
-                        name="Previous Topic",
-                        value=context['previous_context'].title(),
-                        inline=True
-                    )
-
-                # Send the formatted response and update reactions
-                response_msg = await message.reply(embed=embed)
-                await message.remove_reaction('⏳', self.user)
-                await message.add_reaction('✅')
-                
-                # Add navigation reactions for long responses
-                if len(formatted_response) > 1000:
-                    await response_msg.add_reaction('📖')  # Indicates there's more to read
-                
-                # Update connection state
-                self.connection_state['last_message_time'] = datetime.now(timezone.utc)
-                
-            except Exception as e:
-                logger.error(f"Error processing message response: {str(e)}", exc_info=True)
-                await message.reply("I encountered an error processing your message. Please try again.", mention_author=True)
+                    await message.reply(response.strip(), mention_author=True)
 
         except Exception as e:
             logger.error(f"Error processing message: {str(e)}", exc_info=True)
