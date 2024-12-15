@@ -41,18 +41,57 @@ limiter = Limiter(
     storage_uri="memory://"
 )
 
-# Configure Socket.IO with enhanced connection handling
+# Configure Socket.IO with robust error handling and connection management
 socketio = SocketIO(
     app,
     cors_allowed_origins="*",
     async_mode='eventlet',
-    ping_timeout=10,
-    ping_interval=5,
+    ping_timeout=20,
+    ping_interval=10,
     reconnection=True,
-    reconnection_attempts=5,
+    reconnection_attempts=10,
     reconnection_delay=1000,
-    reconnection_delay_max=5000
+    reconnection_delay_max=5000,
+    logger=True,
+    engineio_logger=True,
+    max_http_buffer_size=1e8,
+    async_handlers=True,
+    always_connect=True,
+    http_compression=True
 )
+
+# Track client connections and their state
+connected_clients = {}
+
+# Connection state monitoring
+@socketio.on_error_default
+def default_error_handler(e):
+    """Handle all unnamed events."""
+    logger.error(f"SocketIO Error: {str(e)}", exc_info=True)
+    if request.sid in connected_clients:
+        connected_clients[request.sid]['error_count'] = connected_clients[request.sid].get('error_count', 0) + 1
+
+@socketio.on('connect_error')
+def handle_connect_error(error):
+    """Handle connection errors."""
+    logger.error(f"Connection error for client {request.sid}: {str(error)}")
+    socketio.emit('connection_status', {
+        'status': 'error',
+        'message': 'Connection error occurred, attempting to reconnect...',
+        'timestamp': datetime.now().isoformat()
+    }, room=request.sid)
+
+@socketio.on('disconnect_request')
+def handle_disconnect_request():
+    """Handle client disconnect requests."""
+    logger.info(f"Client {request.sid} requested disconnect")
+    if request.sid in connected_clients:
+        connected_clients.pop(request.sid, None)
+    socketio.emit('connection_status', {
+        'status': 'disconnecting',
+        'message': 'Disconnecting by request...',
+        'timestamp': datetime.now().isoformat()
+    }, room=request.sid)
 chat_handler = None
 
 try:
@@ -164,21 +203,28 @@ def restart_services():
 
 @socketio.on('connect')
 def handle_connect():
-    """Handle client connection with enhanced error handling and state tracking."""
+    """Handle client connection with comprehensive error handling and state tracking."""
     try:
+        # Initialize client state
         client_info = {
             'sid': request.sid,
             'ip': request.remote_addr,
             'timestamp': datetime.now().isoformat(),
-            'user_agent': request.headers.get('User-Agent', 'Unknown')
+            'user_agent': request.headers.get('User-Agent', 'Unknown'),
+            'error_count': 0,
+            'reconnect_count': 0,
+            'last_activity': datetime.now().isoformat()
         }
+        connected_clients[request.sid] = client_info
         logger.info(f"Client connected: {client_info}")
         
-        # Send connection acknowledgment
+        # Send enhanced connection acknowledgment
         socketio.emit('connection_status', {
             'status': 'connected',
             'sid': request.sid,
-            'timestamp': datetime.now().isoformat()
+            'timestamp': datetime.now().isoformat(),
+            'ping_interval': socketio.ping_interval,
+            'ping_timeout': socketio.ping_timeout
         }, room=request.sid)
         
         # Send welcome message with command help
@@ -200,55 +246,132 @@ Type any command to get started!
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"""
         socketio.emit('receive_message', {
             'message': help_message,
-            'is_bot': True
+            'is_bot': True,
+            'timestamp': datetime.now().isoformat()
         }, room=request.sid)
         
     except Exception as e:
         logger.error(f"Error in handle_connect: {str(e)}", exc_info=True)
         socketio.emit('connection_status', {
             'status': 'error',
-            'message': 'Connection error occurred',
-            'timestamp': datetime.now().isoformat()
+            'message': 'Connection error occurred, retrying...',
+            'timestamp': datetime.now().isoformat(),
+            'retry': True
         }, room=request.sid)
+        raise
 
 @socketio.on('disconnect')
 def handle_disconnect():
-    logger.info(f"Client disconnected: {request.sid}")
+    """Handle client disconnection with cleanup."""
+    try:
+        client_info = connected_clients.get(request.sid, {})
+        logger.info(f"Client disconnected: {client_info}")
+        
+        # Perform cleanup
+        if request.sid in connected_clients:
+            # Log disconnect reason if available
+            reason = request.args.get('reason', 'unknown')
+            logger.info(f"Disconnect reason for {request.sid}: {reason}")
+            
+            # Clean up client state
+            connected_clients.pop(request.sid, None)
+            
+        # Notify remaining clients about user count
+        active_users = len(connected_clients)
+        socketio.emit('user_count_update', {'count': active_users}, broadcast=True)
+        
+    except Exception as e:
+        logger.error(f"Error in handle_disconnect: {str(e)}", exc_info=True)
 
 @socketio.on('send_message')
 def handle_message(data):
+    """Handle incoming messages with comprehensive error handling and recovery."""
+    if request.sid not in connected_clients:
+        logger.error(f"Message received from unknown client: {request.sid}")
+        return
+    
     try:
+        # Update client activity timestamp
+        connected_clients[request.sid]['last_activity'] = datetime.now().isoformat()
+        
         message = data['message']
         logger.info(f"Received message from {request.sid}: {message[:50]}...")
         
+        # Validate chat handler
         if chat_handler is None:
             logger.error("ChatHandler not initialized")
             raise RuntimeError("ChatHandler not initialized")
+        
+        # Send typing indicator
+        socketio.emit('bot_typing', {'typing': True}, room=request.sid)
+        
+        # Get response with timeout handling
+        try:
+            response = chat_handler.get_response(message)
             
-        response = chat_handler.get_response(message)
-        socketio.emit('receive_message', {
-            'message': response,
-            'is_bot': True
-        })
-        logger.info(f"Sent response to {request.sid}")
+            # Reset error count on successful response
+            connected_clients[request.sid]['error_count'] = 0
+            
+            # Send response with timestamp
+            socketio.emit('receive_message', {
+                'message': response,
+                'is_bot': True,
+                'timestamp': datetime.now().isoformat()
+            }, room=request.sid)
+            
+            logger.info(f"Sent response to {request.sid}")
+            
+        except Exception as response_error:
+            # Increment error count
+            connected_clients[request.sid]['error_count'] = connected_clients[request.sid].get('error_count', 0) + 1
+            error_count = connected_clients[request.sid]['error_count']
+            
+            # Handle repeated errors
+            if error_count >= 3:
+                logger.error(f"Multiple errors for client {request.sid}, suggesting refresh")
+                error_message = "I'm having trouble maintaining a stable connection. Please refresh your browser."
+            else:
+                error_message = "I encountered an issue. Please try your message again."
+            
+            socketio.emit('receive_message', {
+                'message': error_message,
+                'is_bot': True,
+                'error': True,
+                'timestamp': datetime.now().isoformat()
+            }, room=request.sid)
+            
+            raise response_error
+            
     except KeyError as e:
         logger.error(f"Invalid message format from {request.sid}: {str(e)}")
         socketio.emit('receive_message', {
             'message': "I couldn't process your message. Please try again with a valid message format.",
-            'is_bot': True
-        })
+            'is_bot': True,
+            'error': True,
+            'timestamp': datetime.now().isoformat()
+        }, room=request.sid)
+        
     except RuntimeError as e:
         logger.error(f"Runtime error: {str(e)}")
         socketio.emit('receive_message', {
             'message': "The chat service is currently unavailable. Please try again in a few moments.",
-            'is_bot': True
-        })
+            'is_bot': True,
+            'error': True,
+            'timestamp': datetime.now().isoformat()
+        }, room=request.sid)
+        
     except Exception as e:
-        logger.error(f"Unexpected error handling message: {str(e)}")
+        logger.error(f"Unexpected error handling message: {str(e)}", exc_info=True)
         socketio.emit('receive_message', {
             'message': "I apologize, but I encountered an unexpected error. Please try again.",
-            'is_bot': True
-        })
+            'is_bot': True,
+            'error': True,
+            'timestamp': datetime.now().isoformat()
+        }, room=request.sid)
+    
+    finally:
+        # Always clear typing indicator
+        socketio.emit('bot_typing', {'typing': False}, room=request.sid)
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
