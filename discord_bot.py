@@ -98,7 +98,8 @@ class OctantBot(commands.Bot):
 async def main():
     """Main entry point"""
     retry_count = 0
-    while True:
+    max_retries = 20  # Limit maximum retries
+    while retry_count < max_retries:
         try:
             token = os.environ.get('DISCORD_BOT_TOKEN')
             if not token:
@@ -110,8 +111,11 @@ async def main():
                 await bot.start(token)
         except Exception as e:
             retry_count += 1
-            wait_time = min(retry_count * 5, 30)  # Progressive backoff, max 30s
-            logger.error(f"Connection error (attempt {retry_count}): {e}")
+            wait_time = min(retry_count * 3, 15)  # Shorter backoff, max 15s
+            logger.error(f"Connection error (attempt {retry_count}/{max_retries}): {e}")
+            if retry_count >= max_retries:
+                logger.error("Maximum retry attempts reached, restarting bot")
+                retry_count = 0  # Reset for next cycle
             await asyncio.sleep(wait_time)
             logger.info(f"Attempting to reconnect in {wait_time}s...")
             continue
