@@ -4,7 +4,6 @@ from collections import deque
 from trivia import Trivia
 import logging
 import re
-import json
 
 logger = logging.getLogger(__name__)
 
@@ -178,10 +177,42 @@ class ChatHandler:
         self.trivia_game = Trivia()
         self.is_playing_trivia = False
         self.command_handler = CommandHandler(self.trivia_game)
+        
+        self.system_prompt = """You are Octant's official AI assistant, focused on providing accurate information about Octant, GLM tokens, and the Golem Foundation. Here's your role:
+
+1. CORE KNOWLEDGE:
+   - Focus on Octant's ecosystem, public goods funding, and community initiatives
+   - Provide accurate information about GLM tokens and staking mechanisms
+   - Explain Octant's quadratic funding and reward distribution
+   - Share details about the Golem Foundation's role
+
+2. RESPONSE STYLE:
+   - Keep responses concise and factual
+   - Be friendly but maintain focus on Octant-related topics
+   - Use official sources: octant.build, docs.octant.app, golem.foundation
+   - Correct any misconceptions about Octant politely
+
+3. KEY TOPICS TO COVER:
+   - Octant's public goods funding model
+   - GLM token locking and rewards
+   - Community participation and governance
+   - Matched Rewards and Patron mode
+   - Funding periods and epochs
+
+4. IMPORTANT GUIDELINES:
+   - Always relate responses back to Octant's ecosystem
+   - Provide clear, accurate information
+   - If asked about non-Octant topics, politely redirect to Octant-related discussion
+   - Use official terminology consistently
+
+Remember: Your primary purpose is to help users understand and participate in the Octant ecosystem. Stay focused on Octant-related information and maintain accuracy in all responses."""
 
     def validate_response_content(self, response):
         """Validate that the response is Octant-focused and appropriate."""
+        # Keywords that should be present in most responses
         octant_keywords = ['octant', 'glm', 'golem', 'public goods', 'funding', 'community', 'rewards']
+        
+        # Check if response contains any Octant-related keywords
         has_relevant_content = any(keyword in response.lower() for keyword in octant_keywords)
         
         if not has_relevant_content:
@@ -197,7 +228,7 @@ Would you like to learn more about:
 • Community participation
 
 Please ask about any of these topics!"""
-        
+            
         return response
 
     def validate_message(self, message):
@@ -210,11 +241,13 @@ Please ask about any of these topics!"""
         """Format the conversation history for the prompt."""
         if not self.conversation_history:
             return ""
+        # Only include the last message for immediate context
         last_entry = self.conversation_history[-1]
         return f"\nPrevious message: {last_entry['assistant']}\n"
 
     def format_urls(self, text):
         """Format URLs in a simple, consistent way."""
+        # Check if the message is asking about links/websites/contact
         keywords = ['link', 'links', 'website', 'connect', 'social', 'james', 'kiernan', 'vpabundance', 'contact']
         
         if any(keyword in text.lower() for keyword in keywords):
@@ -238,22 +271,25 @@ Warpcast: https://warpcast.com/vpabundance.eth
 LinkedIn: https://www.linkedin.com/in/vpabundance
 
 I hope this helps! Let me know if there's anything else you need. 😊"""
-        
+            
+        # For James-specific queries
         if any(name in text.lower() for name in ['james', 'kiernan', 'vpabundance']):
             return """X: https://x.com/vpabundance
 Warpcast: https://warpcast.com/vpabundance.eth
 LinkedIn: https://www.linkedin.com/in/vpabundance"""
-        
+            
         return text
 
     def validate_response_length(self, response):
         """Validate response length and split if necessary."""
-        max_length = 2000
+        max_length = 2000  # Discord's max message length
         if len(response) <= max_length:
             return [response]
 
+        # Try to find better split points at paragraph boundaries
         paragraphs = response.split('\n\n')
         
+        # If we only have one paragraph, fall back to sentence splitting
         if len(paragraphs) <= 1:
             current_chunk = ""
             chunks = []
@@ -272,19 +308,21 @@ LinkedIn: https://www.linkedin.com/in/vpabundance"""
                 chunks.append(current_chunk.strip())
             return chunks
         
+        # Combine paragraphs into chunks
         chunks = []
         current_chunk = ""
         
         for paragraph in paragraphs:
             if not paragraph.strip():
                 continue
-            
-            if len(current_chunk) + len(paragraph) + 4 <= max_length:
+                
+            if len(current_chunk) + len(paragraph) + 4 <= max_length:  # +4 for \n\n
                 current_chunk += (paragraph + '\n\n')
             else:
                 if current_chunk:
                     chunks.append(current_chunk.strip())
                 if len(paragraph) > max_length:
+                    # If a single paragraph is too long, split it into sentences
                     sentences = paragraph.split('. ')
                     sub_chunk = ""
                     for sentence in sentences:
@@ -306,6 +344,7 @@ LinkedIn: https://www.linkedin.com/in/vpabundance"""
 
     def get_response(self, user_message):
         try:
+            # Basic validation - just check for empty messages
             if not user_message or not user_message.strip():
                 return "I couldn't process an empty message. Please try asking something!"
             
@@ -329,16 +368,20 @@ LinkedIn: https://www.linkedin.com/in/vpabundance"""
                 self.trivia_game.reset_game()
                 return "Thanks for playing Octant Trivia! Feel free to start a new game anytime by saying 'start trivia'."
             elif self.is_playing_trivia:
+                lower_message = user_message.lower()
+                # Check for trivia-specific commands first
                 if lower_message == "next question":
                     return self.trivia_game.get_next_question()
                 elif lower_message in ['a', 'b', 'c', 'd']:
                     return self.trivia_game.check_answer(user_message)
                 elif lower_message.startswith('/') or lower_message in ['help', 'stats', 'learn']:
+                    # Allow certain commands during trivia
                     command_response = self.command_handler.handle_command(user_message)
                     if command_response:
                         return command_response
                     self.is_playing_trivia = False
                 else:
+                    # Only exit trivia mode if explicitly requested or after game completion
                     if lower_message != "end trivia":
                         return "You're currently in a trivia game! Please answer with A, B, C, or D, or type 'end trivia' to quit."
             
@@ -390,68 +433,60 @@ Provide an accurate, Octant-focused response that adheres to these principles:""
                 "temperature": 0.7,
                 "top_p": 0.9,
                 "top_k": 50,
-                "repetition_penalty": 1.1,
-                "stream": True
+                "repetition_penalty": 1.1
             }
             
             response = requests.post(
                 self.base_url,
                 headers=headers,
                 json=data,
-                timeout=30,
-                stream=True
+                timeout=30
             )
             response.raise_for_status()
             
-            # Process streaming response
-            response_chunks = []
-            for line in response.iter_lines():
-                if line:
-                    try:
-                        chunk = line.decode('utf-8')
-                        if chunk.startswith('data: '):
-                            chunk = chunk[6:]  # Remove 'data: ' prefix
-                            if chunk == '[DONE]':
-                                break
-                            chunk_data = json.loads(chunk)
-                            if 'output' in chunk_data and chunk_data['output']['choices']:
-                                text = chunk_data['output']['choices'][0]['text']
-                                response_chunks.append(text)
-                    except json.JSONDecodeError:
-                        logger.warning(f"Failed to decode chunk: {chunk}")
-                        continue
-                    except Exception as e:
-                        logger.error(f"Error processing chunk: {str(e)}")
-                        continue
-            
-            # Combine all chunks and process the response
-            response_text = ''.join(response_chunks).strip()
-            
-            try:
-                # Format URLs in validated response
-                response_text = self.validate_response_content(response_text)
-                formatted_text = self.format_urls(response_text)
+            result = response.json()
+            if "output" in result and result["output"]["choices"]:
+                # Get the raw response text
+                response_text = result["output"]["choices"][0]["text"].strip()
                 
-                # Update conversation history
-                self.conversation_history.append({
-                    "user": user_message,
-                    "assistant": formatted_text
-                })
+                try:
+                    # Format URLs with the improved function
+                    formatted_text = self.format_urls(response_text)
+                    logger.info("URLs formatted successfully")
+                    
+                    # Validate response content
+                    validated_text = self.validate_response_content(response_text)
+                    
+                    # Format URLs in validated response
+                    formatted_text = self.format_urls(validated_text)
+                    
+                    # Update conversation history
+                    self.conversation_history.append({
+                        "user": user_message,
+                        "assistant": formatted_text
+                    })
+                except Exception as format_error:
+                    logger.error(f"Error formatting URLs: {str(format_error)}")
+                    formatted_text = self.validate_response_content(response_text)  # Fall back to validated but unformatted text
                 
                 # Keep only the last max_history entries
                 if len(self.conversation_history) > self.max_history:
                     self.conversation_history = self.conversation_history[-self.max_history:]
                 
                 # Handle long responses
-                if len(formatted_text) > 2000:
+                if len(formatted_text) > 2000:  # Discord's limit
                     return self.validate_response_length(formatted_text)
                 
                 return formatted_text
+            else:
+                logger.error("Unexpected API response format:", result)
+                return "I apologize, but I couldn't generate a response at the moment. Please try again."
                 
-            except Exception as format_error:
-                logger.error(f"Error formatting response: {str(format_error)}")
-                return self.validate_response_content(response_text)
-                
+        except ValueError as e:
+            error_message = str(e)
+            logger.error(f"Validation error: {error_message}")
+            return f"I couldn't process your message: {error_message}"
+            
         except requests.exceptions.Timeout:
             logger.error("API request timed out")
             return "I'm sorry, but the request is taking longer than expected. Please try again in a moment."
@@ -470,7 +505,7 @@ Please try your question again or ask about any of these topics!"""
         except Exception as e:
             logger.error(f"Unexpected error: {str(e)}")
             return "I encountered an unexpected issue. Please try again, and if the problem persists, try rephrasing your question."
-
+            
     def clear_conversation_history(self):
         """Clear the conversation history."""
         self.conversation_history = []
