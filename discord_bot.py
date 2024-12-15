@@ -130,11 +130,12 @@ Guilds: {len(self.guilds)}
         if message.author == self.user:
             return
             
-        # Check for bot mention or reply
+        # Check for bot mention or reply, but not both
         is_mention = self.user.mentioned_in(message)
         is_reply = message.reference and message.reference.resolved and message.reference.resolved.author == self.user
         
-        if is_mention or is_reply:
+        # Prevent duplicate responses by prioritizing replies over mentions
+        if is_reply or (is_mention and not is_reply):
             try:
                 # Clean the message content
                 content = message.content
