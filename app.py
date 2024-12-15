@@ -43,12 +43,16 @@ socketio = SocketIO(
     app,
     cors_allowed_origins="*",
     async_mode='eventlet',
-    ping_timeout=10,
-    ping_interval=5,
+    ping_timeout=20,
+    ping_interval=10,
     reconnection=True,
-    reconnection_attempts=5,
-    reconnection_delay=1000,
-    reconnection_delay_max=5000
+    reconnection_attempts=3,
+    reconnection_delay=2000,
+    reconnection_delay_max=5000,
+    max_http_buffer_size=5e6,
+    async_handlers=True,
+    logger=True,
+    engineio_logger=True
 )
 chat_handler = None
 

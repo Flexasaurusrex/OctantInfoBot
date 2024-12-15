@@ -107,9 +107,28 @@ Bot ID: {self.user.id}
 Guilds: {len(self.guilds)}
 ━━━━━━━━━━━━━━━━━━━━━━━━""")
 
+    # Track last processed message
+    _last_processed = {}
+    
     async def on_message(self, message):
         if message.author == self.user:
             return
+            
+        # Generate unique key for message
+        msg_key = f"{message.channel.id}:{message.id}"
+        
+        # Check if we already processed this message
+        if msg_key in self._last_processed:
+            return
+            
+        # Mark message as processed
+        self._last_processed[msg_key] = time.time()
+        
+        # Cleanup old entries (keep last 1000 messages)
+        if len(self._last_processed) > 1000:
+            current_time = time.time()
+            self._last_processed = {k:v for k,v in self._last_processed.items() 
+                                  if current_time - v < 3600}  # Clean older than 1 hour
 
         if message.reference and message.reference.resolved.author == self.user:
             try:
