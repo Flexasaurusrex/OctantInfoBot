@@ -86,10 +86,19 @@ def implement_backoff(sid):
     """Implement smoother exponential backoff with jitter for reconnection attempts."""
     import random
     current_backoff = connection_manager['backoff_times'].get(sid, 1.0)  # Start with 1 second
+    attempts = connection_manager['reconnection_attempts'].get(sid, 0)
+    
+    # Progressive backoff based on attempt count
+    base_delay = min(2 ** attempts, connection_manager['max_backoff'])
+    
     # Add jitter to prevent thundering herd
-    jitter = random.uniform(-0.2 * current_backoff, 0.2 * current_backoff)
-    new_backoff = min((current_backoff * 1.5) + jitter, connection_manager['max_backoff'])
+    jitter = random.uniform(0, 0.1 * base_delay)
+    new_backoff = min(base_delay + jitter, connection_manager['max_backoff'])
     connection_manager['backoff_times'][sid] = new_backoff
+
+    # Reset if we've reached max backoff
+    if new_backoff >= connection_manager['max_backoff']:
+        connection_manager['reconnection_attempts'][sid] = 0
     
     # Log detailed backoff information
     logger.info(f"""━━━━━━ Connection Backoff ━━━━━━
@@ -460,6 +469,16 @@ Agent: {client_info['user_agent']}
                     time_connected = (current_time - connection_manager['connection_times'][sid]).total_seconds()
                     quality = connection_manager['connection_quality'][sid]
                     
+                    # Initialize quality metrics if not exist
+                    quality = connection_manager['connection_quality'].get(sid, {
+                        'latency': 0,
+                        'failed_pings': 0,
+                        'successful_pings': 0,
+                        'transport_upgrades': 0,
+                        'ping_history': [],
+                        'weighted_success_rate': 1.0
+                    })
+                    
                     # Calculate weighted success rate based on recent activity
                     recent_window = 300  # Last 5 minutes
                     
@@ -479,6 +498,8 @@ Agent: {client_info['user_agent']}
                     # Calculate weighted metrics
                     recent_pings = quality['ping_history']
                     total_pings = len(recent_pings)
+                    weighted_success = 1.0  # Default to perfect score
+                    
                     if total_pings > 0:
                         # Weight more recent pings higher
                         weighted_success = sum(
@@ -486,6 +507,11 @@ Agent: {client_info['user_agent']}
                             for ping in recent_pings
                         ) / total_pings
                         
+                    # Update quality metrics in connection manager
+                    connection_manager['connection_quality'][sid] = quality
+                        
+                        # Calculate metrics based on ping history
+                    if total_pings > 0:
                         avg_latency = sum(ping['latency'] for ping in recent_pings) / total_pings
                         latency_variance = sum((ping['latency'] - avg_latency) ** 2 for ping in recent_pings) / total_pings
                     else:
@@ -601,11 +627,11 @@ Type any command to get started!
             
         # Start heartbeat monitoring for this client
         def monitor_heartbeat():
-            while request.sid in connection_state['connected_clients']:
+            while request.sid in connection_manager['active_connections']:
                 eventlet.sleep(10)  # Check every 10 seconds
-                if request.sid in connection_state['last_heartbeat']:
-                    last_beat = connection_state['last_heartbeat'][request.sid]
-                    if (datetime.now() - last_beat).total_seconds() > 30:
+                if request.sid in connection_manager['last_activity']:
+                    last_activity = connection_manager['last_activity'][request.sid]
+                    if (datetime.now() - last_activity).total_seconds() > 30:
                         logger.warning(f"Client {request.sid} heartbeat timeout")
                         handle_disconnect()
                         break
