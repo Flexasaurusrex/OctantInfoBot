@@ -17,6 +17,7 @@ if __name__ == "__main__":
         logger.info(f"Starting server on port {port}")
         
         with app.app_context():
+            # Enhanced WebSocket configuration
             socketio.run(
                 app,
                 host='0.0.0.0',

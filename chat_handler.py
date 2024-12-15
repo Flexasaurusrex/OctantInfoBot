@@ -471,6 +471,127 @@ Please try your question again or ask about any of these topics!"""
             logger.error(f"Unexpected error: {str(e)}")
             return "I encountered an unexpected issue. Please try again, and if the problem persists, try rephrasing your question."
 
+    async def get_response_async(self, user_message, context=None):
+        """Enhanced async version of get_response for use with Discord bot"""
+        try:
+            # Input validation with detailed feedback
+            if not user_message:
+                logger.warning("Empty message received")
+                return {
+                    'status': 'error',
+                    'message': "I couldn't process an empty message. Please try asking something!",
+                    'error_type': 'empty_message'
+                }
+            
+            if not isinstance(user_message, str):
+                logger.warning(f"Invalid message type received: {type(user_message)}")
+                return {
+                    'status': 'error',
+                    'message': "I received an invalid message format. Please send text messages only.",
+                    'error_type': 'invalid_message_type'
+                }
+            
+            # Context validation
+            if context is None:
+                context = {}
+                logger.info("No context provided, using empty context")
+            
+            user_message = user_message.strip()
+            logger.info(f"Processing message: {user_message[:50]}...")
+            
+            # Enhanced context management
+            current_context = {
+                'timestamp': context.get('timestamp', ''),
+                'channel_type': context.get('channel_type', 'unknown'),
+                'previous_topic': context.get('previous_topic', None),
+                'user_id': context.get('user_id', 'unknown'),
+                'message_type': 'command' if user_message.startswith('/') else 'chat'
+            }
+            
+            # Check for commands with enhanced error handling
+            if user_message.startswith('/'):
+                try:
+                    command_response = self.command_handler.handle_command(user_message)
+                    if command_response:
+                        if user_message.lower() == '/trivia':
+                            self.is_playing_trivia = True
+                        logger.info(f"Command processed successfully: {user_message}")
+                        return {
+                            'status': 'success',
+                            'message': command_response,
+                            'type': 'command',
+                            'command': user_message
+                        }
+                except Exception as cmd_error:
+                    logger.error(f"Command processing error: {str(cmd_error)}", exc_info=True)
+                    return {
+                        'status': 'error',
+                        'message': "There was an error processing your command. Please try again.",
+                        'error_type': 'command_error',
+                        'details': str(cmd_error)
+                    }
+            
+            try:
+                # Enhanced context processing
+                if context:
+                    logger.info(f"Processing with context: {str(current_context)}")
+                    if 'previous_messages' in context:
+                        # Keep last 3 messages for better context
+                        recent_messages = context['previous_messages'][-3:]
+                        self.conversation_history.extend(recent_messages)
+                
+                # Process response with enhanced error handling
+                response = self.get_response(user_message)
+                
+                if not response:
+                    logger.warning("Empty response generated")
+                    return {
+                        'status': 'error',
+                        'message': "I couldn't generate a meaningful response. This might be because:\n• The question was unclear\n• The topic is outside my knowledge\n• There was an issue processing your request\n\nPlease try rephrasing your question or breaking it into smaller parts.",
+                        'error_type': 'empty_response',
+                        'suggestions': [
+                            "Try being more specific",
+                            "Break down complex questions",
+                            "Check if the topic is related to Octant"
+                        ]
+                    }
+                
+                if response.isspace():
+                    logger.warning("Whitespace-only response generated")
+                    return {
+                        'status': 'error',
+                        'message': "I generated an invalid response. Please try asking your question again.",
+                        'error_type': 'invalid_response',
+                        'suggestions': [
+                            "Rephrase your question",
+                            "Make sure your question is complete"
+                        ]
+                    }
+                
+                return {
+                    'status': 'success',
+                    'message': response,
+                    'type': 'chat',
+                    'context': current_context
+                }
+                
+            except Exception as process_error:
+                logger.error(f"Error processing message: {str(process_error)}", exc_info=True)
+                return {
+                    'status': 'error',
+                    'message': "I encountered an error understanding your message. Could you please rephrase it?",
+                    'error_type': 'process_error',
+                    'details': str(process_error)
+                }
+                
+        except Exception as e:
+            logger.error(f"Critical error in async response: {str(e)}", exc_info=True)
+            return {
+                'status': 'error',
+                'message': "I encountered an error processing your message. Please try again.",
+                'error_type': 'critical_error',
+                'details': str(e)
+            }
     def clear_conversation_history(self):
         """Clear the conversation history."""
         self.conversation_history = []
