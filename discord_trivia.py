@@ -40,14 +40,18 @@ class TriviaButton(ui.Button):
                 )
 
             score = view.game.score
-            total = view.game.questions_asked + 1
+            total = view.game.questions_asked
             embed.add_field(
                 name="Score",
                 value=f"{score}/{total} ({(score/total*100):.1f}%)"
             )
 
-            await interaction.response.send_message(embed=embed)
-            await view.game.next_question(interaction)
+            try:
+                await interaction.response.send_message(embed=embed)
+                await view.game.next_question(interaction.channel)
+            except discord.errors.HTTPException:
+                await interaction.channel.send(embed=embed)
+                await view.game.next_question(interaction.channel)
 
         except Exception as e:
             logger.error(f"Button error: {str(e)}")
@@ -113,21 +117,25 @@ class DiscordTrivia:
                 'questions_asked': 0,
                 'start_time': datetime.now()
             }
-            
-            await self.next_question(interaction)
+
+            await interaction.response.send_message("Starting Octant Trivia! Get ready...")
+            await self.next_question(channel)
             
         except Exception as e:
             logger.error(f"Game start error: {str(e)}")
-            await interaction.response.send_message("Failed to start game. Please try again.", ephemeral=True)
+            try:
+                await interaction.response.send_message("Failed to start game. Please try again.", ephemeral=True)
+            except:
+                await interaction.channel.send("Failed to start game. Please try again.")
 
-    async def next_question(self, interaction: discord.Interaction):
+    async def next_question(self, channel):
         try:
-            game = self.active_games.get(interaction.channel_id)
+            game = self.active_games.get(channel.id)
             if not game:
                 return
 
             if game['questions_asked'] >= len(self.questions):
-                await self.end_game(interaction.channel)
+                await self.end_game(channel)
                 return
 
             question = self.questions[game['questions_asked']]
@@ -140,13 +148,13 @@ class DiscordTrivia:
             )
 
             view = TriviaView(self, question)
-            await interaction.followup.send(embed=embed, view=view)
+            await channel.send(embed=embed, view=view)
 
         except Exception as e:
             logger.error(f"Question error: {str(e)}")
-            await interaction.followup.send("Failed to send question. Game ended.", ephemeral=True)
-            if interaction.channel_id in self.active_games:
-                del self.active_games[interaction.channel_id]
+            await channel.send("Failed to send question. Game ended.")
+            if channel.id in self.active_games:
+                del self.active_games[channel.id]
 
     async def end_game(self, channel):
         try:
