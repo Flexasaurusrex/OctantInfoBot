@@ -70,17 +70,6 @@ args = "python discord_bot.py"
 run = ["sh", "-c", "python main.py"]
 deploymentTarget = "cloudrun"
 
-[nix]
-channel = "stable-24_05"
-
-[[deployment.environment]]
-name = "REPLIT_CORE"
-value = "1"
-
-[hosting]
-route = "/"
-directory = "/"
-
 [[ports]]
 localPort = 5000
 externalPort = 80
