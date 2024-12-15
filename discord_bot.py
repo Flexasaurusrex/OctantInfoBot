@@ -97,19 +97,23 @@ class OctantBot(commands.Bot):
 
 async def main():
     """Main entry point"""
+    retry_count = 0
     while True:
         try:
             token = os.environ.get('DISCORD_BOT_TOKEN')
             if not token:
                 raise ValueError("DISCORD_BOT_TOKEN environment variable is required")
-                
+            
             bot = OctantBot()
             async with bot:
+                retry_count = 0  # Reset counter on successful connection
                 await bot.start(token)
         except Exception as e:
-            logger.error(f"Critical error: {e}")
-            await asyncio.sleep(60)  # Wait 60 seconds before reconnecting
-            logger.info("Attempting to reconnect...")
+            retry_count += 1
+            wait_time = min(retry_count * 5, 30)  # Progressive backoff, max 30s
+            logger.error(f"Connection error (attempt {retry_count}): {e}")
+            await asyncio.sleep(wait_time)
+            logger.info(f"Attempting to reconnect in {wait_time}s...")
             continue
 
 if __name__ == "__main__":
