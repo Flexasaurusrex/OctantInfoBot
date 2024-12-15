@@ -878,3 +878,74 @@ Logged in as: OCTANTBOT
 Bot ID: 1316950341954306159
 Guilds connected: 2
 ━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-15 02:09:48,287 - __main__ - INFO - Health check passed - All systems normal
+2024-12-15 02:10:03,276 - __main__ - INFO - Health check passed - All systems normal
+2024-12-15 02:10:06,127 - chat_handler - INFO - URLs formatted successfully
+2024-12-15 02:10:18,280 - __main__ - INFO - Health check passed - All systems normal
+2024-12-15 02:10:20,847 - chat_handler - INFO - URLs formatted successfully
+2024-12-15 02:10:27,271 - discord.app_commands.tree - ERROR - Ignoring exception in command tree
+Traceback (most recent call last):
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/discord/app_commands/tree.py", line 1151, in wrapper
+    await self._call(interaction)
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/discord/app_commands/tree.py", line 1283, in _call
+    command, options = self._get_app_command_options(data)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/discord/app_commands/tree.py", line 1187, in _get_app_command_options
+    raise CommandNotFound(name, parents)
+discord.app_commands.errors.CommandNotFound: Application command 'help' not found
+2024-12-15 02:10:33,280 - __main__ - INFO - Health check passed - All systems normal
+2024-12-15 02:10:33,280 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: True
+Guilds: 2
+Latency: 33.31ms
+Uptime: 0.0h
+Health Failures: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-15 02:10:36,090 - discord.app_commands.tree - ERROR - Ignoring exception in command tree
+Traceback (most recent call last):
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/discord/app_commands/tree.py", line 1151, in wrapper
+    await self._call(interaction)
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/discord/app_commands/tree.py", line 1283, in _call
+    command, options = self._get_app_command_options(data)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/discord/app_commands/tree.py", line 1187, in _get_app_command_options
+    raise CommandNotFound(name, parents)
+discord.app_commands.errors.CommandNotFound: Application command 'ping' not found
+2024-12-15 02:10:48,288 - __main__ - INFO - Health check passed - All systems normal
+2024-12-15 02:11:03,282 - __main__ - INFO - Health check passed - All systems normal
+2024-12-15 02:11:18,289 - __main__ - INFO - Health check passed - All systems normal
+2024-12-15 02:11:33,289 - __main__ - INFO - Health check passed - All systems normal
+2024-12-15 02:11:33,289 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: True
+Guilds: 2
+Latency: 26.23ms
+Uptime: 0.0h
+Health Failures: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-15 02:13:25,978 - __main__ - INFO - Initializing Discord bot with enhanced monitoring
+2024-12-15 02:13:25,982 - __main__ - INFO - Chat and Trivia handlers initialized successfully
+2024-12-15 02:13:25,984 - __main__ - INFO - Bot initialization completed successfully
+2024-12-15 02:13:25,984 - discord.client - INFO - logging in using static token
+2024-12-15 02:13:26,341 - __main__ - INFO - Health monitoring tasks started
+2024-12-15 02:13:26,343 - __main__ - WARNING - Connection check failed - Bot disconnected
+2024-12-15 02:13:26,343 - __main__ - WARNING - Health check failure (disconnected). Failure count: 1
+2024-12-15 02:13:26,343 - __main__ - INFO - 
+━━━━━━ Minor Health Check Issue ━━━━━━
+Failure Count: 1
+Status: Monitoring
+Action: Continuing normal operation
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-15 02:13:26,343 - __main__ - INFO - ━━━━━━ Connection Status ━━━━━━
+Connected: False
+Guilds: 0
+Latency: nanms
+Uptime: 0.0h
+Health Failures: 1
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-15 02:13:26,569 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 744736a148d263b23cf1a26a9d7e8e5b).
+2024-12-15 02:13:28,574 - __main__ - INFO - ━━━━━━ Bot Ready ━━━━━━
+Logged in as: OCTANTBOT
+Bot ID: 1316950341954306159
+Guilds connected: 2
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-15 02:13:41,356 - __main__ - INFO - Health check passed - All systems normal
