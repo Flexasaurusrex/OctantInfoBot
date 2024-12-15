@@ -122,6 +122,19 @@ Logged in as: {self.user.name}
 Bot ID: {self.user.id}
 Guilds: {len(self.guilds)}
 ━━━━━━━━━━━━━━━━━━━━━━━━""")
+        
+        # Start message cleanup task
+        self.cleanup_messages.start()
+        
+    @tasks.loop(minutes=5)
+    async def cleanup_messages(self):
+        """Clean up old processed messages"""
+        current_time = time.time()
+        self._last_processed = {
+            msg_id: timestamp 
+            for msg_id, timestamp in self._last_processed.items()
+            if current_time - timestamp < 300  # Keep last 5 minutes
+        }
 
     # Track last processed message
     _last_processed = {}
@@ -130,13 +143,20 @@ Guilds: {len(self.guilds)}
         if message.author == self.user:
             return
             
-        # Check for bot mention or reply, but not both
+        # Generate a unique message ID
+        message_id = f"{message.channel.id}:{message.id}"
+        if message_id in self._last_processed:
+            return
+            
+        # Check for bot mention or reply
         is_mention = self.user.mentioned_in(message)
         is_reply = message.reference and message.reference.resolved and message.reference.resolved.author == self.user
         
-        # Prevent duplicate responses by prioritizing replies over mentions
-        if is_reply or (is_mention and not is_reply):
+        if is_reply or is_mention:
             try:
+                # Track this message as processed
+                self._last_processed[message_id] = time.time()
+                
                 # Clean the message content
                 content = message.content
                 if is_mention:
