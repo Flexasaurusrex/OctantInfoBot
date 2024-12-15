@@ -72,48 +72,98 @@ connection_manager = {
     'connection_times': {},
     'reconnection_attempts': {},
     'last_activity': {},
-# Enhanced error recovery system
-error_recovery = {
+# Connection and error tracking
+connection_manager = {
+    'active_connections': set(),
+    'connection_times': {},
+    'reconnection_attempts': {},
+    'last_activity': {},
+    'connection_quality': {},
     'backoff_times': {},
     'circuit_breakers': {},
     'max_backoff': 30,  # Maximum backoff in seconds
     'circuit_breaker_threshold': 5,  # Number of failures before circuit breaks
-    'circuit_breaker_timeout': 60,  # Time in seconds before circuit resets
+    'circuit_breaker_timeout': 60  # Time in seconds before circuit resets
 }
 
 def implement_backoff(sid):
     """Implement exponential backoff for reconnection attempts."""
-    current_backoff = error_recovery['backoff_times'].get(sid, 0.1)
-    new_backoff = min(current_backoff * 2, error_recovery['max_backoff'])
-    error_recovery['backoff_times'][sid] = new_backoff
+    current_backoff = connection_manager['backoff_times'].get(sid, 0.1)
+    new_backoff = min(current_backoff * 2, connection_manager['max_backoff'])
+    connection_manager['backoff_times'][sid] = new_backoff
+    logger.info(f"Implementing backoff for {sid}: {new_backoff}s")
     return new_backoff
 
 def check_circuit_breaker(sid):
     """Check if circuit breaker should prevent reconnection."""
-    breaker = error_recovery['circuit_breakers'].get(sid, {'failures': 0, 'last_failure': None})
-    if breaker['failures'] >= error_recovery['circuit_breaker_threshold']:
+    breaker = connection_manager['circuit_breakers'].get(sid, {
+        'failures': 0,
+        'last_failure': None
+    })
+    
+    if breaker['failures'] >= connection_manager['circuit_breaker_threshold']:
         if breaker['last_failure']:
-            if (datetime.now() - breaker['last_failure']).seconds < error_recovery['circuit_breaker_timeout']:
+            time_since_failure = (datetime.now() - breaker['last_failure']).seconds
+            if time_since_failure < connection_manager['circuit_breaker_timeout']:
+                logger.warning(f"Circuit breaker active for {sid}, {time_since_failure}s since last failure")
                 return False  # Circuit is broken
+            else:
+                # Reset circuit breaker after timeout
+                connection_manager['circuit_breakers'][sid] = {
+                    'failures': 0,
+                    'last_failure': None
+                }
+                logger.info(f"Circuit breaker reset for {sid}")
     return True  # Circuit is closed
-    'connection_quality': {}
-}
 
-# Track connection state
-connection_state = {
-    'connected_clients': set(),
-    'last_heartbeat': {}
-}
-
-# Configure websocket error handlers
+# Enhanced error handlers with recovery mechanisms
 @socketio.on_error()
 def error_handler(e):
-    logger.error(f"SocketIO error: {str(e)}", exc_info=True)
+    """Handle specific SocketIO errors with recovery."""
+    sid = request.sid if hasattr(request, 'sid') else 'unknown'
+    logger.error(f"SocketIO error for {sid}: {str(e)}", exc_info=True)
+    
+    try:
+        if sid in connection_manager['active_connections']:
+            # Update failure metrics
+            breaker = connection_manager['circuit_breakers'].get(sid, {
+                'failures': 0,
+                'last_failure': None
+            })
+            breaker['failures'] += 1
+            breaker['last_failure'] = datetime.now()
+            connection_manager['circuit_breakers'][sid] = breaker
+            
+            # Implement recovery strategy
+            backoff_time = implement_backoff(sid)
+            socketio.emit('connection_recovery', {
+                'status': 'error',
+                'message': 'Connection error detected, implementing recovery...',
+                'backoff': backoff_time
+            }, to=sid)
+            
+            # Force disconnect if too many failures
+            if breaker['failures'] >= connection_manager['circuit_breaker_threshold']:
+                logger.warning(f"Circuit breaker triggered for {sid}, forcing disconnect")
+                cleanup_connection(sid)
+                return False
+    except Exception as recovery_error:
+        logger.error(f"Error in error recovery for {sid}: {str(recovery_error)}")
     return False
 
 @socketio.on_error_default
 def default_error_handler(e):
-    logger.error(f"SocketIO default error: {str(e)}", exc_info=True)
+    """Handle uncaught SocketIO errors."""
+    sid = request.sid if hasattr(request, 'sid') else 'unknown'
+    logger.error(f"Unhandled SocketIO error for {sid}: {str(e)}", exc_info=True)
+    
+    try:
+        socketio.emit('error', {
+            'message': 'An unexpected error occurred',
+            'reconnect': True
+        }, to=sid)
+    except Exception as emit_error:
+        logger.error(f"Error sending error message to {sid}: {str(emit_error)}")
     return False
 chat_handler = None
 
