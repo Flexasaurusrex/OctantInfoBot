@@ -42,9 +42,11 @@ class TriviaButton(ui.Button):
 
             score = view.game.score
             total = view.game.questions_asked
+            game = view.game.active_games[interaction.channel_id]
+            total = game['questions_asked']
             embed.add_field(
                 name="Score",
-                value=f"{score}/{total} ({(score/total*100):.1f}%)"
+                value=f"{score}/{total} ({(score/total*100):.1f}%)" if total > 0 else "0/0 (0%)"
             )
 
             try:
