@@ -97,17 +97,20 @@ class OctantBot(commands.Bot):
 
 async def main():
     """Main entry point"""
-    try:
-        token = os.environ.get('DISCORD_BOT_TOKEN')
-        if not token:
-            raise ValueError("DISCORD_BOT_TOKEN environment variable is required")
-            
-        bot = OctantBot()
-        async with bot:
-            await bot.start(token)
-    except Exception as e:
-        logger.error(f"Critical error: {e}")
-        raise
+    while True:
+        try:
+            token = os.environ.get('DISCORD_BOT_TOKEN')
+            if not token:
+                raise ValueError("DISCORD_BOT_TOKEN environment variable is required")
+                
+            bot = OctantBot()
+            async with bot:
+                await bot.start(token)
+        except Exception as e:
+            logger.error(f"Critical error: {e}")
+            await asyncio.sleep(60)  # Wait 60 seconds before reconnecting
+            logger.info("Attempting to reconnect...")
+            continue
 
 if __name__ == "__main__":
     import asyncio
