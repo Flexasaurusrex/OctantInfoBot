@@ -46,8 +46,45 @@ class OctantBot(commands.Bot):
         self.remove_command('help')
         
     async def setup_hook(self):
-        await self.register_commands()
-        self.health_check.start()
+        """Enhanced setup with proper error handling and status verification."""
+        try:
+            logger.info("""━━━━━━ Bot Setup Started ━━━━━━
+Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+Memory Usage: {psutil.Process().memory_info().rss / 1024 / 1024:.1f}MB
+CPU Usage: {psutil.cpu_percent()}%
+━━━━━━━━━━━━━━━━━━━━━━━━""")
+            
+            # Verify token and application status
+            if not self.application_id:
+                logger.error("Invalid token detected during setup")
+                raise ValueError("Invalid Discord token. Please check your configuration.")
+            
+            logger.info("Token validated successfully")
+            
+            # Initialize commands
+            logger.info("Registering commands...")
+            await self.register_commands()
+            logger.info("Commands registered successfully")
+            
+            # Start health monitoring
+            logger.info("Starting health monitoring...")
+            self.health_check.start()
+            logger.info("Health monitoring activated")
+            
+            # Final setup verification
+            logger.info("""━━━━━━ Setup Complete ━━━━━━
+Application ID: {self.application_id}
+Shard Count: {self.shard_count if self.shard_count else 'None'}
+Command Count: {len(self.tree.get_commands())}
+━━━━━━━━━━━━━━━━━━━━━━━━""")
+            
+        except Exception as e:
+            logger.error(f"""━━━━━━ Setup Error ━━━━━━
+Error Type: {type(e).__name__}
+Error Message: {str(e)}
+Stack Trace: {traceback.format_exc()}
+━━━━━━━━━━━━━━━━━━━━━━━━""")
+            raise
         
     async def register_commands(self):
         @self.tree.command(name="help", description="Show available commands")
@@ -92,25 +129,48 @@ class OctantBot(commands.Bot):
 
     @tasks.loop(seconds=30)
     async def health_check(self):
+        """Enhanced health monitoring with connection verification."""
         try:
             memory = psutil.Process().memory_percent()
             cpu = psutil.cpu_percent()
             
+            # Check if bot is properly connected
+            is_connected = self.is_ready() and hasattr(self, 'user')
+            connection_status = "Connected" if is_connected else "Disconnected"
+            
             logger.info(f"""━━━━━━ Health Check ━━━━━━
+Status: {connection_status}
 Memory: {memory:.1f}%
 CPU: {cpu:.1f}%
 Latency: {self.latency*1000:.2f}ms
 Guilds: {len(self.guilds)}
 Uptime: {(datetime.now(timezone.utc) - self.start_time).total_seconds()/3600:.1f}h
+Error Count: {self.error_count}
 ━━━━━━━━━━━━━━━━━━━━━━━━""")
             
-            if memory > 90 or cpu > 90 or self.latency > 5:
+            # Enhanced health checks
+            needs_restart = any([
+                memory > 90,
+                cpu > 90,
+                self.latency > 5,
+                not is_connected
+            ])
+            
+            if needs_restart:
                 self.error_count += 1
+                logger.warning(f"Health check failed (attempt {self.error_count}/5)")
+                
                 if self.error_count >= 5:
+                    logger.error("Critical health check failure - initiating restart")
                     await self.close()
                     await asyncio.sleep(5)
-                    await self.start(os.getenv('DISCORD_BOT_TOKEN'))
+                    token = os.getenv('DISCORD_BOT_TOKEN')
+                    if not token:
+                        raise ValueError("Discord token not found")
+                    await self.start(token)
             else:
+                if self.error_count > 0:
+                    logger.info("Health check recovered - resetting error count")
                 self.error_count = 0
                 
         except Exception as e:
@@ -183,20 +243,66 @@ Guilds: {len(self.guilds)}
         logger.error(f"Error in {event}: {str(error)}")
 
 async def main():
-    bot = OctantBot()
-    
-    while True:
-        try:
-            token = os.getenv('DISCORD_BOT_TOKEN')
-            if not token:
-                raise ValueError("DISCORD_BOT_TOKEN not set")
+        bot = OctantBot()
+        retry_count = 0
+        max_retries = 5
+        
+        while True:
+            try:
+                # Validate token
+                token = os.getenv('DISCORD_BOT_TOKEN')
+                if not token:
+                    logger.error("DISCORD_BOT_TOKEN not set")
+                    raise ValueError("Discord token not found in environment variables")
                 
-            await bot.start(token)
-            
-        except Exception as e:
-            logger.error(f"Bot error: {str(e)}")
-            await asyncio.sleep(5)
-            continue
+                # Log connection attempt
+                logger.info(f"""━━━━━━ Connection Attempt {retry_count + 1} ━━━━━━
+Bot Version: 1.0.1
+Token Status: Valid
+Retry Count: {retry_count}
+Max Retries: {max_retries}
+━━━━━━━━━━━━━━━━━━━━━━━━""")
+                
+                # Enhanced connection handling
+                try:
+                    await bot.start(token)
+                except discord.LoginFailure as e:
+                    logger.error(f"Login Failed: {str(e)}")
+                    raise
+                except discord.ConnectionClosed as e:
+                    logger.error(f"Connection Closed: {str(e)}")
+                    raise
+                except Exception as e:
+                    logger.error(f"Unexpected Error: {str(e)}")
+                    raise
+                    
+            except Exception as e:
+                retry_count += 1
+                logger.error(f"""━━━━━━ Connection Error ━━━━━━
+Error Type: {type(e).__name__}
+Error Message: {str(e)}
+Retry Count: {retry_count}/{max_retries}
+━━━━━━━━━━━━━━━━━━━━━━━━""")
+                
+                if retry_count >= max_retries:
+                    logger.critical("Max retries reached - shutting down")
+                    sys.exit(1)
+                    
+                wait_time = min(30, 2 ** retry_count)  # Exponential backoff
+                logger.info(f"Waiting {wait_time} seconds before retry...")
+                await asyncio.sleep(wait_time)
+                continue
+                
+            finally:
+                # Cleanup on exit
+                if hasattr(bot, 'is_closed') and not bot.is_closed():
+                    await bot.close()
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        logger.info("Received keyboard interrupt - shutting down")
+    except Exception as e:
+        logger.critical(f"Critical error: {str(e)}")
+        sys.exit(1)

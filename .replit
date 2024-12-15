@@ -64,11 +64,15 @@ task = "packager.installForAll"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "python discord_bot.py"
+args = "python3 discord_bot.py"
 
 [deployment]
 run = ["sh", "-c", "python main.py"]
 deploymentTarget = "cloudrun"
+
+[[ports]]
+localPort = 3000
+externalPort = 3000
 
 [[ports]]
 localPort = 5000
