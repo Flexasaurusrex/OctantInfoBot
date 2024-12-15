@@ -254,8 +254,9 @@ LinkedIn: https://www.linkedin.com/in/vpabundance
 
 I hope this helps! Let me know if there's anything else you need. 😊"""
             
-        # For James-specific queries
-        if any(name in text.lower() for name in ['james', 'kiernan', 'vpabundance']):
+        # Only show James' links when explicitly requesting contact/social info
+        if any(name in text.lower() for name in ['james', 'kiernan', 'vpabundance']) and \
+           any(action in text.lower() for action in ['contact', 'social', 'link', 'connect', 'follow']):
             return """X: https://x.com/vpabundance
 Warpcast: https://warpcast.com/vpabundance.eth
 LinkedIn: https://www.linkedin.com/in/vpabundance"""
