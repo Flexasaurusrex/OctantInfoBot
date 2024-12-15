@@ -40,9 +40,8 @@ class TriviaButton(ui.Button):
                     color=discord.Color.red()
                 )
 
-            score = view.game.score
-            total = view.game.questions_asked
             game = view.game.active_games[interaction.channel_id]
+            score = game['score']
             total = game['questions_asked']
             embed.add_field(
                 name="Score",
