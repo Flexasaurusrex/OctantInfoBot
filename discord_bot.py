@@ -62,9 +62,24 @@ class OctantBot(commands.Bot):
                 inline=False
             )
             embed.add_field(
+                name="🛠️ Utility Commands",
+                value="• `/ping` - Check bot latency\n• `/help` - Show this message",
+                inline=False
+            )
+            embed.add_field(
                 name="💬 Chat Features",
                 value="Reply to any of my messages to chat about Octant!",
                 inline=False
+            )
+            await interaction.response.send_message(embed=embed)
+
+        @self.tree.command(name="ping", description="Check bot latency")
+        async def ping(interaction: discord.Interaction):
+            latency = round(self.latency * 1000)
+            embed = discord.Embed(
+                title="🏓 Pong!",
+                description=f"Bot latency: {latency}ms",
+                color=discord.Color.green()
             )
             await interaction.response.send_message(embed=embed)
 
