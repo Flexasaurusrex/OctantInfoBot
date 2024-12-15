@@ -4,6 +4,7 @@ import sys
 import random
 import logging
 import asyncio
+import time
 import discord
 from discord import app_commands
 from discord.ext import tasks, commands
@@ -129,28 +130,19 @@ Guilds: {len(self.guilds)}
         if message.author == self.user:
             return
             
-        # Generate unique key for message
-        msg_key = f"{message.channel.id}:{message.id}"
-        
-        # Check if we already processed this message
-        if msg_key in self._last_processed:
-            return
-            
-        # Mark message as processed
-        self._last_processed[msg_key] = time.time()
-        
-        # Cleanup old entries (keep last 1000 messages)
-        if len(self._last_processed) > 1000:
-            current_time = time.time()
-            self._last_processed = {k:v for k,v in self._last_processed.items() 
-                                  if current_time - v < 3600}  # Clean older than 1 hour
-
         # Check for bot mention or reply
-        if (message.reference and message.reference.resolved.author == self.user) or \
-           self.user.mentioned_in(message):
+        is_mention = self.user.mentioned_in(message)
+        is_reply = message.reference and message.reference.resolved and message.reference.resolved.author == self.user
+        
+        if is_mention or is_reply:
             try:
-                # Remove bot mention from message
-                content = message.clean_content.replace(f'@{self.user.display_name}', '').strip()
+                # Clean the message content
+                content = message.content
+                if is_mention:
+                    # Remove the bot mention
+                    for mention in message.mentions:
+                        if mention == self.user:
+                            content = content.replace(f'<@{mention.id}>', '').strip()
                 async with message.channel.typing():
                     response = self.chat_handler.get_response(content)
                     
