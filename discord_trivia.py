@@ -118,8 +118,8 @@ class DiscordTrivia:
                 'questions_asked': 0,
                 'start_time': datetime.now()
             }
-self.active_games[channel.id] = game
-self.score = game['score']  # Add score to instance for button access
+            self.active_games[channel.id] = game
+            self.score = game['score']  # Add score to instance for button access
 
             await interaction.response.send_message("Starting Octant Trivia! Get ready...")
             await self.next_question(channel)
