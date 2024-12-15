@@ -21,7 +21,13 @@ class OctantBot(commands.Bot):
         super().__init__(
             command_prefix='/',
             intents=intents,
-            description='Octant Discord Bot'
+            description='Octant Discord Bot',
+            max_messages=10000, #Added for Core plan optimization
+            chunk_guilds_at_startup=False, #Added for Core plan optimization
+            heartbeat_timeout=150.0, #Added for Core plan optimization
+            guild_ready_timeout=5.0, #Added for Core plan optimization
+            assume_unsync_clock=True #Added for Core plan optimization
+
         )
         
         # Initialize handlers
