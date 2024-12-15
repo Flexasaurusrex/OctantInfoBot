@@ -14,29 +14,38 @@ logger = logging.getLogger(__name__)
 
 class OctantBot(commands.Bot):
     def __init__(self):
+        # Core-optimized intents configuration
         intents = discord.Intents.default()
         intents.message_content = True
         intents.members = True
         
+        # Core-optimized configuration
         super().__init__(
             command_prefix='/',
             intents=intents,
             description='Octant Discord Bot',
-            max_messages=10000, #Added for Core plan optimization
-            chunk_guilds_at_startup=False, #Added for Core plan optimization
-            heartbeat_timeout=150.0, #Added for Core plan optimization
-            guild_ready_timeout=5.0, #Added for Core plan optimization
-            assume_unsync_clock=True #Added for Core plan optimization
-
+            max_messages=10000,  # Increased for Core tier
+            chunk_guilds_at_startup=False,  # Disable for faster startup
+            member_cache_flags=discord.MemberCacheFlags.none(),  # Minimal caching
+            heartbeat_timeout=150.0,  # Increased for stability
+            guild_ready_timeout=5.0,
+            assume_unsync_clock=True,
+            chunk_guilds_before_ready=False,
+            guild_subscriptions=False,
+            fetch_offline_members=False,
+            status=discord.Status.online,
+            activity=discord.Game(name="/help for commands")
         )
         
         # Initialize handlers
         self.chat_handler = ChatHandler()
         self.trivia_game = DiscordTrivia()
         self.remove_command('help')
+        
+        logger.info("Bot initialized with Core-optimized settings")
 
     async def setup_hook(self):
-        """Register commands"""
+        """Set up commands with proper error handling"""
         @self.command(name='trivia')
         async def trivia(ctx):
             """Start a trivia game"""
@@ -74,6 +83,7 @@ class OctantBot(commands.Bot):
         """Called when the bot is ready"""
         logger.info(f"Logged in as: {self.user.name}")
         logger.info(f"Bot ID: {self.user.id}")
+        logger.info(f"Discord.py API version: {discord.__version__}")
         logger.info(f"Connected to {len(self.guilds)} guilds")
 
     async def on_message(self, message):
@@ -97,35 +107,35 @@ class OctantBot(commands.Bot):
                         else:
                             await message.reply(response.strip())
 
+        except discord.errors.HTTPException as http_error:
+            logger.error(f"HTTP Error: {http_error}")
+            await message.channel.send("I encountered a network error. Please try again.")
         except Exception as e:
             logger.error(f"Error processing message: {e}")
             await message.channel.send("I encountered an error processing your message. Please try again.")
 
 async def main():
-    """Main entry point"""
-    retry_count = 0
-    max_retries = 20  # Limit maximum retries
-    while retry_count < max_retries:
+    """Main entry point with Core-optimized settings"""
+    token = os.environ.get('DISCORD_BOT_TOKEN')
+    if not token:
+        logger.error("DISCORD_BOT_TOKEN environment variable is required")
+        return
+    
+    async with OctantBot() as bot:
         try:
-            token = os.environ.get('DISCORD_BOT_TOKEN')
-            if not token:
-                raise ValueError("DISCORD_BOT_TOKEN environment variable is required")
-            
-            bot = OctantBot()
-            async with bot:
-                retry_count = 0  # Reset counter on successful connection
-                await bot.start(token)
+            logger.info("Starting bot with Core-optimized configuration...")
+            await bot.start(token)
+        except discord.errors.LoginFailure:
+            logger.error("Failed to login. Please check your token.")
         except Exception as e:
-            retry_count += 1
-            wait_time = min(retry_count * 3, 15)  # Shorter backoff, max 15s
-            logger.error(f"Connection error (attempt {retry_count}/{max_retries}): {e}")
-            if retry_count >= max_retries:
-                logger.error("Maximum retry attempts reached, restarting bot")
-                retry_count = 0  # Reset for next cycle
-            await asyncio.sleep(wait_time)
-            logger.info(f"Attempting to reconnect in {wait_time}s...")
-            continue
+            logger.error(f"Error starting bot: {e}")
 
 if __name__ == "__main__":
     import asyncio
-    asyncio.run(main())
+    
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        logger.info("Bot shutdown requested")
+    except Exception as e:
+        logger.error(f"Critical error: {e}")
