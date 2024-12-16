@@ -18,4 +18,5 @@ dependencies = [
     "telegram>=0.0.1",
     "discord-py>=2.3.2",
     "python-dotenv>=1.0.1",
+    "async-timeout>=5.0.1",
 ]
