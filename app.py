@@ -70,6 +70,82 @@ def log_request_info():
 @app.route('/')
 def index():
     return render_template('index.html')
+@app.route('/health')
+def health_check():
+    return {
+        'status': 'healthy',
+        'timestamp': datetime.now().isoformat(),
+        'services': {
+            'web': True,
+            'socket': socketio.server.manager.rooms != {},
+            'chat_handler': chat_handler is not None
+        }
+    }
+
+@app.route('/admin')
+@limiter.limit("60 per minute")
+def admin_dashboard():
+    # Enhanced bot statistics
+    stats = {
+        'active_users': len(active_connections),
+        'total_messages': sum(len(conn.get('messages', [])) for conn in active_connections.values()),
+        'uptime': round((datetime.now() - app.start_time).total_seconds() / 3600, 2),
+        'connection_status': 'Connected' if chat_handler else 'Disconnected',
+        'avg_response_time': calculate_avg_response_time(),
+        'error_rate': calculate_error_rate(),
+        'commands_used': get_command_usage_stats(),
+        'platform_stats': {
+            'discord': get_discord_stats(),
+            'telegram': get_telegram_stats(),
+            'web': len(active_connections)
+        }
+    }
+    
+    return render_template('admin.html', stats=stats)
+
+def calculate_avg_response_time():
+    if not active_connections:
+        return 0
+    response_times = [
+        msg.get('response_time', 0) 
+        for conn in active_connections.values()
+        for msg in conn.get('messages', [])
+        if msg.get('response_time')
+    ]
+    return round(sum(response_times) / len(response_times)) if response_times else 0
+
+def calculate_error_rate():
+    total_messages = sum(len(conn.get('messages', [])) for conn in active_connections.values())
+    error_count = sum(
+        len([msg for msg in conn.get('messages', []) if msg.get('error')])
+        for conn in active_connections.values()
+    )
+    return round((error_count / total_messages * 100) if total_messages else 0, 2)
+
+def get_command_usage_stats():
+    commands = {}
+    for conn in active_connections.values():
+        for msg in conn.get('messages', []):
+            if msg.get('type') == 'command':
+                cmd = msg['content'].split()[0]
+                commands[cmd] = commands.get(cmd, 0) + 1
+    return commands
+
+def get_discord_stats():
+    # Will be populated by Discord bot
+    return {
+        'guilds': 0,
+        'users': 0,
+        'messages': 0
+    }
+
+def get_telegram_stats():
+    # Will be populated by Telegram bot
+    return {
+        'chats': 0,
+        'users': 0,
+        'messages': 0
+    }
 
 @app.route('/restart', methods=['POST'])
 @limiter.limit("5 per minute")

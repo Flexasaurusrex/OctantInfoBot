@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Octant Bot Admin Panel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    <style>
+        .admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .stats-card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .stat-item {
+            padding: 1rem;
+            border-radius: 8px;
+            background: var(--bg-secondary);
+        }
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+        .status-indicator.connected {
+            background-color: #4CAF50;
+        }
+        .status-indicator.disconnected {
+            background-color: #f44336;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <header class="mb-4">
+            <h1 class="mb-3">Octant Bot Admin Panel</h1>
+            <div class="connection-status mb-4">
+                <span class="status-indicator {% if stats.connection_status == 'Connected' %}connected{% endif %}"></span>
+                <span>{{ stats.connection_status }}</span>
+            </div>
+        </header>
+
+        <section class="stats-grid">
+            <!-- Platform Stats -->
+            <div class="stat-section">
+                <h3>Platform Statistics</h3>
+                <div class="stat-item">
+                    <div class="stat-value">{{ stats.platform_stats.discord.guilds }}</div>
+                    <div class="stat-label">Discord Servers</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">{{ stats.platform_stats.telegram.chats }}</div>
+                    <div class="stat-label">Telegram Chats</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">{{ stats.platform_stats.web }}</div>
+                    <div class="stat-label">Web Users</div>
+                </div>
+            </div>
+
+            <!-- Performance Metrics -->
+            <div class="stat-section">
+                <h3>Performance</h3>
+                <div class="stat-item">
+                    <div class="stat-value">{{ stats.avg_response_time }}ms</div>
+                    <div class="stat-label">Avg Response Time</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">{{ stats.error_rate }}%</div>
+                    <div class="stat-label">Error Rate</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">{{ stats.uptime }}h</div>
+                    <div class="stat-label">Uptime</div>
+                </div>
+            </div>
+
+            <!-- Command Usage -->
+            <div class="stat-section">
+                <h3>Command Usage</h3>
+                {% for command, count in stats.commands_used.items() %}
+                <div class="stat-item">
+                    <div class="stat-value">{{ count }}</div>
+                    <div class="stat-label">{{ command }}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- Railway Deployment Status -->
+        <section class="deployment-status">
+            <h3>Deployment Status</h3>
+            <div class="deployment-info">
+                <div class="status-item">
+                    <span class="status-label">Environment:</span>
+                    <span class="status-value">Railway.app</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Last Deploy:</span>
+                    <span class="status-value" id="lastDeployTime">-</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Version:</span>
+                    <span class="status-value" id="currentVersion">1.0.0</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="action-buttons">
+            <button id="restartButton" class="btn btn-warning">
+                Restart Bot
+            </button>
+            <button id="clearLogsButton" class="btn btn-secondary">
+                Clear Logs
+            </button>
+        </section>
+
+        <section class="logs-section">
+            <h3>Recent Logs</h3>
+            <div id="logsContainer" class="stats-card" style="max-height: 400px; overflow-y: auto;">
+                <pre id="logs" style="white-space: pre-wrap;"></pre>
+            </div>
+        </section>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
+    <script>
+        const socket = io();
+        const logsContainer = document.getElementById('logs');
+        const restartButton = document.getElementById('restartButton');
+        const clearLogsButton = document.getElementById('clearLogsButton');
+
+        // Handle restart button
+        restartButton.addEventListener('click', async () => {
+            if (!confirm('Are you sure you want to restart the bot?')) return;
+            
+            try {
+                restartButton.disabled = true;
+                const response = await fetch('/restart', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                if (!response.ok) throw new Error('Restart failed');
+                
+                const data = await response.json();
+                appendLog('Restart initiated: ' + data.message);
+            } catch (error) {
+                appendLog('Error: ' + error.message);
+                restartButton.disabled = false;
+            }
+        });
+
+        // Handle clear logs button
+        clearLogsButton.addEventListener('click', () => {
+            logsContainer.innerHTML = '';
+        });
+
+        // Socket.io event handlers
+        socket.on('bot_log', (data) => {
+            appendLog(data.message);
+        });
+
+        socket.on('restart_status', (data) => {
+            appendLog(`Restart status: ${data.status} - ${data.message}`);
+            if (data.status === 'completed' || data.status === 'error') {
+                restartButton.disabled = false;
+            }
+        });
+
+        function appendLog(message) {
+            const timestamp = new Date().toISOString();
+            const logEntry = `[${timestamp}] ${message}\n`;
+            logsContainer.innerHTML += logEntry;
+            logsContainer.scrollTop = logsContainer.scrollHeight;
+        }
+
+        // Auto-refresh stats every 30 seconds
+        setInterval(() => {
+            fetch('/admin')
+                .then(response => response.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    
+                    // Update stats
+                    document.querySelector('.stats-grid').innerHTML = 
+                        doc.querySelector('.stats-grid').innerHTML;
+                    
+                    // Update connection status
+                    document.querySelector('.connection-status').innerHTML = 
+                        doc.querySelector('.connection-status').innerHTML;
+                })
+                .catch(error => appendLog('Error refreshing stats: ' + error.message));
+        }, 30000);
+    </script>
+</body>
+</html>
