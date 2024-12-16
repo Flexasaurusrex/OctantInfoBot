@@ -12206,3 +12206,12 @@ Guilds: 2
 Uptime: 0.2h
 Error Count: 0
 ━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 21:55:57,839 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 41.2%
+Latency: 34.39ms
+Guilds: 2
+Uptime: 0.2h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
