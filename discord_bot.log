@@ -12523,3 +12523,20 @@ Guilds: 0
 Uptime: 0.0h
 Error Count: 0
 ━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 23:01:02,696 - __main__ - INFO - Bot in startup grace period, skipping connection check
+2024-12-16 23:01:02,696 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 30.6%
+Latency: 29.61ms
+Guilds: 0
+Uptime: 0.0h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 23:01:13,858 - discord.gateway - INFO - Shard ID None session has been invalidated.
+2024-12-16 23:01:19,132 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: edf6ba941df91df59f8ef1a903233507).
+2024-12-16 23:01:21,138 - __main__ - INFO - ━━━━━━ Bot Ready ━━━━━━
+Logged in as: OCTANTBOT
+Bot ID: 1316950341954306159
+Guilds: 2
+━━━━━━━━━━━━━━━━━━━━━━━━
