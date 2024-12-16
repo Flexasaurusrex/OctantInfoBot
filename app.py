@@ -9,11 +9,12 @@ logger.setLevel(logging.INFO)
 handler = logging.StreamHandler()
 handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
 logger.addHandler(handler)
-from flask_socketio import SocketIO
+from flask_socketio import SocketIO, emit
 from flask_cors import CORS
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from chat_handler import ChatHandler
+import psutil
 
 # Configure logging
 logging.basicConfig(
@@ -121,6 +122,176 @@ def calculate_error_rate():
         for conn in active_connections.values()
     )
     return round((error_count / total_messages * 100) if total_messages else 0, 2)
+
+def get_service_health():
+    """Get real-time health metrics for all services with enhanced monitoring."""
+    try:
+        # Get process metrics
+        process = psutil.Process()
+        web_memory = process.memory_percent()
+        web_cpu = process.cpu_percent()
+        web_health = 100 - (web_memory + web_cpu) / 2
+        
+        # Enhanced disk and network metrics
+        disk = psutil.disk_usage('/')
+        net_io = psutil.net_io_counters()
+        
+        # Calculate service health and status with more detailed metrics
+        services = {
+            'web': {
+                'status': 'connected' if web_health > 50 else 'warning',
+                'metrics': {
+                    'health': round(web_health, 1),
+                    'memory': round(web_memory, 1),
+                    'cpu': round(web_cpu, 1),
+                    'disk': round(disk.percent, 1),
+                    'network': {
+                        'sent': round(net_io.bytes_sent / 1024 / 1024, 2),  # MB
+                        'received': round(net_io.bytes_recv / 1024 / 1024, 2)  # MB
+                    }
+                }
+            },
+            'discord': {
+                'status': 'connecting',
+                'metrics': {
+                    'health': 0,
+                    'guilds': 0,
+                    'latency': 0,
+                    'uptime': 0
+                }
+            },
+            'telegram': {
+                'status': 'connecting',
+                'metrics': {
+                    'health': 0,
+                    'chats': 0,
+                    'updates': 0,
+                    'uptime': 0
+                }
+            }
+        }
+        
+        # Enhanced Discord bot monitoring
+        try:
+            with open('discord_bot.log', 'r') as f:
+                logs = f.readlines()[-100:]
+                latest_status = {
+                    'ready': False,
+                    'guilds': 0,
+                    'latency': 0,
+                    'error_count': 0,
+                    'last_health_check': None
+                }
+                
+                for line in reversed(logs):
+                    if 'Bot Ready' in line:
+                        latest_status['ready'] = True
+                    if 'Guilds:' in line:
+                        try:
+                            latest_status['guilds'] = int(line.split('Guilds:')[1].strip())
+                        except ValueError:
+                            pass
+                    if 'Latency:' in line and 'ms' in line:
+                        try:
+                            latency = float(line.split('Latency:')[1].split('ms')[0].strip())
+                            latest_status['latency'] = round(latency, 2)
+                        except ValueError:
+                            pass
+                    if 'Error Count:' in line:
+                        try:
+                            latest_status['error_count'] = int(line.split('Error Count:')[1].strip())
+                        except ValueError:
+                            pass
+                    if 'Health Check' in line:
+                        latest_status['last_health_check'] = line.split('[')[0].strip()
+                
+                if latest_status['ready']:
+                    services['discord']['status'] = 'connected'
+                    services['discord']['metrics'].update({
+                        'health': max(0, 100 - latest_status['error_count'] * 10),
+                        'guilds': latest_status['guilds'],
+                        'latency': latest_status['latency'],
+                        'error_count': latest_status['error_count']
+                    })
+                elif 'Connection Error' in ''.join(logs[-10:]):
+                    services['discord']['status'] = 'error'
+                    
+        except Exception as e:
+            logger.error(f"Error reading Discord logs: {str(e)}")
+            
+        # Enhanced Telegram bot monitoring
+        try:
+            with open('telegram_bot.log', 'r') as f:
+                logs = f.readlines()[-100:]
+                latest_status = {
+                    'polling': False,
+                    'chats': 0,
+                    'updates': 0,
+                    'memory': 0,
+                    'cpu': 0
+                }
+                
+                for line in reversed(logs):
+                    if 'Bot started polling' in line:
+                        latest_status['polling'] = True
+                    if 'Active chats:' in line:
+                        try:
+                            latest_status['chats'] = int(line.split('Active chats:')[1].strip())
+                        except ValueError:
+                            pass
+                    if 'Memory Usage:' in line and 'MB' in line:
+                        try:
+                            latest_status['memory'] = float(line.split('Memory Usage:')[1].split('MB')[0].strip())
+                        except ValueError:
+                            pass
+                    if 'CPU Usage:' in line and '%' in line:
+                        try:
+                            latest_status['cpu'] = float(line.split('CPU Usage:')[1].split('%')[0].strip())
+                        except ValueError:
+                            pass
+                
+                if latest_status['polling']:
+                    services['telegram']['status'] = 'connected'
+                    services['telegram']['metrics'].update({
+                        'health': max(0, 100 - (latest_status['memory'] / 2 + latest_status['cpu'] / 2)),
+                        'chats': latest_status['chats'],
+                        'updates': latest_status['updates'],
+                        'memory': round(latest_status['memory'], 1),
+                        'cpu': round(latest_status['cpu'], 1)
+                    })
+                elif 'Error' in ''.join(logs[-10:]):
+                    services['telegram']['status'] = 'error'
+                    
+        except Exception as e:
+            logger.error(f"Error reading Telegram logs: {str(e)}")
+        
+        # Add warnings and errors
+        warnings = []
+        errors = []
+        
+        # Check high resource usage
+        if web_memory > 80:
+            warnings.append(f"High memory usage: {web_memory:.1f}%")
+        if web_cpu > 80:
+            warnings.append(f"High CPU usage: {web_cpu:.1f}%")
+        if disk.percent > 85:
+            warnings.append(f"High disk usage: {disk.percent}%")
+            
+        return {
+            'services': services,
+            'warnings': warnings,
+            'errors': errors,
+            'timestamp': datetime.now().isoformat()
+        }
+        
+    except Exception as e:
+        logger.error(f"Error getting service health: {str(e)}")
+        return {
+            'services': {},
+            'warnings': [],
+            'errors': [str(e)],
+            'timestamp': datetime.now().isoformat()
+        }
 
 def get_command_usage_stats():
     commands = {}
@@ -230,10 +401,28 @@ def restart_services():
 # Track active connections and their state
 active_connections = {}
 
+def start_health_monitoring():
+    """Start periodic health monitoring updates."""
+    def emit_health_update():
+        while True:
+            try:
+                health_data = get_service_health()
+                socketio.emit('health_update', health_data, broadcast=True)
+            except Exception as e:
+                logger.error(f"Health monitoring error: {str(e)}")
+            eventlet.sleep(5)  # Update every 5 seconds
+    
+    eventlet.spawn(emit_health_update)
+
 @socketio.on('connect')
 def handle_connect():
     """Handle client connection with enhanced error handling and state tracking."""
     try:
+        # Start health monitoring if not already started
+        if not hasattr(app, '_health_monitor_started'):
+            start_health_monitoring()
+            app._health_monitor_started = True
+
         client_info = {
             'sid': request.sid,
             'ip': request.remote_addr,
@@ -246,7 +435,7 @@ def handle_connect():
         logger.info(f"Client connected: {client_info}")
         
         # Send connection acknowledgment with enhanced status
-        socketio.emit('connection_status', {
+        emit('connection_status', {
             'status': 'connected',
             'sid': request.sid,
             'timestamp': datetime.now().isoformat(),
@@ -255,7 +444,7 @@ def handle_connect():
                 'max_attempts': 5,
                 'delay': 2000
             }
-        }, room=request.sid)
+        })
         
         # Send welcome message with command help
         help_message = """
@@ -274,10 +463,10 @@ def handle_connect():
 
 Type any command to get started!
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"""
-        socketio.emit('receive_message', {
+        emit('receive_message', {
             'message': help_message,
             'is_bot': True
-        }, room=request.sid)
+        })
         
     except Exception as e:
         logger.error(f"Error in handle_connect: {str(e)}", exc_info=True)
@@ -291,7 +480,7 @@ Type any command to get started!
                 'delay': 2000
             }
         }
-        socketio.emit('connection_status', error_response, room=request.sid)
+        emit('connection_status', error_response)
 
 @socketio.on('disconnect')
 def handle_disconnect():
@@ -357,10 +546,115 @@ def handle_message(data):
             'is_bot': True
         })
 
+@socketio.on('request_health_update')
+def handle_health_update_request():
+    """Handle client request for health update with enhanced error handling."""
+    try:
+        health_data = get_service_health()
+        emit('health_update', health_data)
+        logger.info("Health update sent successfully")
+    except Exception as e:
+        error_msg = f"Error sending health update: {str(e)}"
+        logger.error(error_msg, exc_info=True)
+        emit('health_update', {
+            'status': 'error',
+            'message': error_msg,
+            'timestamp': datetime.now().isoformat(),
+            'services': {
+                'web': {'status': 'error', 'metrics': {}},
+                'discord': {'status': 'error', 'metrics': {}},
+                'telegram': {'status': 'error', 'metrics': {}}
+            }
+        })
+
+def start_health_monitoring():
+    """Start periodic health monitoring updates."""
+    def emit_health_update():
+        while True:
+            try:
+                health_data = get_service_health()
+                socketio.emit('health_update', health_data)
+            except Exception as e:
+                logger.error(f"Health monitoring error: {str(e)}")
+            eventlet.sleep(5)  # Update every 5 seconds
+    
+    eventlet.spawn(emit_health_update)
+
+# Initialize health monitoring when the app starts
+# Initialize health monitoring when SocketIO starts
+@socketio.on('connect')
+def handle_connect():
+    """Handle client connection with enhanced error handling and state tracking."""
+    try:
+        # Start health monitoring if not already started
+        if not hasattr(app, '_health_monitor_started'):
+            start_health_monitoring()
+            app._health_monitor_started = True
+
+        client_info = {
+            'sid': request.sid,
+            'ip': request.remote_addr,
+            'timestamp': datetime.now().isoformat(),
+            'user_agent': request.headers.get('User-Agent', 'Unknown'),
+            'reconnect_attempts': 0,
+            'last_ping': datetime.now()
+        }
+        active_connections[request.sid] = client_info
+        logger.info(f"Client connected: {client_info}")
+        
+        # Send connection acknowledgment with enhanced status
+        emit('connection_status', {
+            'status': 'connected',
+            'sid': request.sid,
+            'timestamp': datetime.now().isoformat(),
+            'reconnect_info': {
+                'attempts': client_info['reconnect_attempts'],
+                'max_attempts': 5,
+                'delay': 2000
+            }
+        })
+        
+        # Send welcome message with command help
+        help_message = """
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📚 Available Commands
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📋 Information Commands:
+• /help - Show this help message
+• /learn - Access learning modules
+
+📌 Topic-Specific Commands:
+• /funding - Learn about Octant's funding
+• /governance - Understand governance
+• /rewards - Explore reward system
+
+Type any command to get started!
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"""
+        emit('receive_message', {
+            'message': help_message,
+            'is_bot': True
+        })
+        
+    except Exception as e:
+        logger.error(f"Error in handle_connect: {str(e)}", exc_info=True)
+        error_response = {
+            'status': 'error',
+            'message': 'Connection error occurred',
+            'timestamp': datetime.now().isoformat(),
+            'error_details': str(e),
+            'reconnect_info': {
+                'should_retry': True,
+                'delay': 2000
+            }
+        }
+        emit('connection_status', error_response)
+
 if __name__ == '__main__':
     try:
         port = int(os.environ.get('PORT', 5000))
         debug = os.environ.get('FLASK_ENV') != 'production'
+        app.start_time = datetime.now()
         
         # Enhanced startup logging
         logger.info(f"""

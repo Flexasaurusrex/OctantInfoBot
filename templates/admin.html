@@ -46,19 +46,70 @@
             gap: 1rem;
             margin-bottom: 2rem;
         }
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
         .status-indicator {
             display: inline-block;
-            width: 10px;
-            height: 10px;
+            width: 12px;
+            height: 12px;
             border-radius: 50%;
             margin-right: 0.5rem;
+            position: relative;
+        }
+        .status-indicator::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border-radius: 50%;
+            border: 2px solid;
+            animation: pulse 2s infinite;
         }
         .status-indicator.connected {
             background-color: #4CAF50;
         }
+        .status-indicator.connected::after {
+            border-color: #4CAF50;
+        }
         .status-indicator.disconnected {
             background-color: #f44336;
         }
+        .status-indicator.disconnected::after {
+            border-color: #f44336;
+            animation: none;
+        }
+        .status-indicator.connecting {
+            background-color: #FFC107;
+        }
+        .status-indicator.connecting::after {
+            border-color: #FFC107;
+            animation: spin 1s linear infinite;
+        }
+        .metric-gauge {
+            position: relative;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin-top: 0.5rem;
+        }
+        .metric-gauge-fill {
+            position: absolute;
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease-in-out;
+        }
+        .metric-gauge-fill.good { background-color: #4CAF50; }
+        .metric-gauge-fill.warning { background-color: #FFC107; }
+        .metric-gauge-fill.critical { background-color: #f44336; }
     </style>
 </head>
 <body>
@@ -72,20 +123,47 @@
         </header>
 
         <section class="stats-grid">
-            <!-- Platform Stats -->
+            <!-- Service Health -->
             <div class="stat-section">
-                <h3>Platform Statistics</h3>
+                <h3>Service Health</h3>
                 <div class="stat-item">
-                    <div class="stat-value">{{ stats.platform_stats.discord.guilds }}</div>
-                    <div class="stat-label">Discord Servers</div>
+                    <div class="service-status">
+                        <span class="status-indicator" id="web-status"></span>
+                        <span>Web Server</span>
+                    </div>
+                    <div class="metric-gauge">
+                        <div class="metric-gauge-fill" id="web-health-gauge"></div>
+                    </div>
+                    <div class="stat-details" id="web-details">
+                        <small>Memory: <span id="web-memory">-</span></small>
+                        <small>CPU: <span id="web-cpu">-</span></small>
+                    </div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-value">{{ stats.platform_stats.telegram.chats }}</div>
-                    <div class="stat-label">Telegram Chats</div>
+                    <div class="service-status">
+                        <span class="status-indicator" id="discord-status"></span>
+                        <span>Discord Bot</span>
+                    </div>
+                    <div class="metric-gauge">
+                        <div class="metric-gauge-fill" id="discord-health-gauge"></div>
+                    </div>
+                    <div class="stat-details" id="discord-details">
+                        <small>Guilds: <span id="discord-guilds">{{ stats.platform_stats.discord.guilds }}</span></small>
+                        <small>Latency: <span id="discord-latency">-</span></small>
+                    </div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-value">{{ stats.platform_stats.web }}</div>
-                    <div class="stat-label">Web Users</div>
+                    <div class="service-status">
+                        <span class="status-indicator" id="telegram-status"></span>
+                        <span>Telegram Bot</span>
+                    </div>
+                    <div class="metric-gauge">
+                        <div class="metric-gauge-fill" id="telegram-health-gauge"></div>
+                    </div>
+                    <div class="stat-details" id="telegram-details">
+                        <small>Chats: <span id="telegram-chats">{{ stats.platform_stats.telegram.chats }}</span></small>
+                        <small>Updates: <span id="telegram-updates">-</span></small>
+                    </div>
                 </div>
             </div>
 
@@ -207,24 +285,58 @@
             logsContainer.scrollTop = logsContainer.scrollHeight;
         }
 
-        // Auto-refresh stats every 30 seconds
+        // Health Dashboard Updates
+        function updateServiceStatus(service, status, metrics) {
+            const statusIndicator = document.getElementById(`${service}-status`);
+            const healthGauge = document.getElementById(`${service}-health-gauge`);
+            
+            // Update status indicator
+            statusIndicator.className = `status-indicator ${status}`;
+            
+            // Update health gauge
+            if (metrics) {
+                const health = metrics.health || 0;
+                healthGauge.style.width = `${health}%`;
+                healthGauge.className = `metric-gauge-fill ${
+                    health > 80 ? 'good' :
+                    health > 50 ? 'warning' : 'critical'
+                }`;
+                
+                // Update service-specific metrics
+                if (service === 'web') {
+                    document.getElementById('web-memory').textContent = metrics.memory + '%';
+                    document.getElementById('web-cpu').textContent = metrics.cpu + '%';
+                } else if (service === 'discord') {
+                    document.getElementById('discord-guilds').textContent = metrics.guilds || '-';
+                    document.getElementById('discord-latency').textContent = metrics.latency + 'ms';
+                } else if (service === 'telegram') {
+                    document.getElementById('telegram-chats').textContent = metrics.chats || '-';
+                    document.getElementById('telegram-updates').textContent = metrics.updates || '-';
+                }
+            }
+        }
+
+        socket.on('health_update', (data) => {
+            Object.entries(data.services).forEach(([service, info]) => {
+                updateServiceStatus(service, info.status, info.metrics);
+            });
+            
+            // Append to logs if there are any warnings or errors
+            if (data.warnings && data.warnings.length > 0) {
+                data.warnings.forEach(warning => appendLog('Warning: ' + warning));
+            }
+            if (data.errors && data.errors.length > 0) {
+                data.errors.forEach(error => appendLog('Error: ' + error));
+            }
+        });
+
+        // Initial status update request
+        socket.emit('request_health_update');
+        
+        // Request updates every 5 seconds
         setInterval(() => {
-            fetch('/admin')
-                .then(response => response.text())
-                .then(html => {
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(html, 'text/html');
-                    
-                    // Update stats
-                    document.querySelector('.stats-grid').innerHTML = 
-                        doc.querySelector('.stats-grid').innerHTML;
-                    
-                    // Update connection status
-                    document.querySelector('.connection-status').innerHTML = 
-                        doc.querySelector('.connection-status').innerHTML;
-                })
-                .catch(error => appendLog('Error refreshing stats: ' + error.message));
-        }, 30000);
+            socket.emit('request_health_update');
+        }, 5000);
     </script>
 </body>
 </html>
