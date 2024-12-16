@@ -12381,3 +12381,73 @@ Logged in as: OCTANTBOT
 Bot ID: 1316950341954306159
 Guilds: 2
 ━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 22:52:55,837 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 26.2%
+Latency: 40.36ms
+Guilds: 2
+Uptime: 0.0h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 22:53:55,855 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 29.7%
+Latency: 32.05ms
+Guilds: 2
+Uptime: 0.0h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 22:54:01,220 - chat_handler - INFO - URLs formatted successfully
+2024-12-16 22:54:55,831 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 38.2%
+Latency: 28.72ms
+Guilds: 2
+Uptime: 0.1h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 22:55:04,789 - __main__ - INFO - ━━━━━━ Connection Attempt 1 ━━━━━━
+Bot Version: 1.0.1
+Token Status: Valid
+Retry Count: 0
+Max Retries: 10
+Memory Usage: 48.8MB
+CPU Usage: 47.4%
+Last Success: 2024-12-16 22:55:04
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 22:55:04,789 - discord.client - INFO - logging in using static token
+2024-12-16 22:55:05,122 - __main__ - INFO - ━━━━━━ Bot Setup Started ━━━━━━
+Time: 2024-12-16 22:55:05
+Memory Usage: 49.4MB
+CPU Usage: 34.2%
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 22:55:05,122 - __main__ - INFO - Token format validated
+2024-12-16 22:55:05,123 - __main__ - INFO - Connection state initialized
+2024-12-16 22:55:05,123 - __main__ - INFO - Registering commands...
+2024-12-16 22:55:05,334 - __main__ - INFO - Commands registered successfully
+2024-12-16 22:55:05,334 - __main__ - INFO - Starting health monitoring...
+2024-12-16 22:55:05,334 - __main__ - INFO - Health monitoring activated
+2024-12-16 22:55:05,334 - __main__ - INFO - ━━━━━━ Setup Complete ━━━━━━
+Application ID: 1316950341954306159
+Shard Count: None
+Command Count: 3
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 22:55:05,336 - __main__ - INFO - Bot in startup grace period, skipping connection check
+2024-12-16 22:55:05,336 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 49.4%
+Latency: nanms
+Guilds: 0
+Uptime: 0.0h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 22:55:05,553 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 41a65f8d1e756338302ad520ba9fcf4a).
+2024-12-16 22:55:07,559 - __main__ - INFO - ━━━━━━ Bot Ready ━━━━━━
+Logged in as: OCTANTBOT
+Bot ID: 1316950341954306159
+Guilds: 2
+━━━━━━━━━━━━━━━━━━━━━━━━
