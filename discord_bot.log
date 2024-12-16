@@ -12043,3 +12043,67 @@ Logged in as: OCTANTBOT
 Bot ID: 1316950341954306159
 Guilds: 2
 ━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 21:42:29,465 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 58.8%
+Latency: 28.24ms
+Guilds: 2
+Uptime: 0.0h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 21:43:29,483 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 64.7%
+Latency: 25.42ms
+Guilds: 2
+Uptime: 0.0h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 21:43:57,270 - __main__ - INFO - ━━━━━━ Connection Attempt 1 ━━━━━━
+Bot Version: 1.0.1
+Token Status: Valid
+Retry Count: 0
+Max Retries: 10
+Memory Usage: 48.5MB
+CPU Usage: 68.1%
+Last Success: 2024-12-16 21:43:57
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 21:43:57,270 - discord.client - INFO - logging in using static token
+2024-12-16 21:43:57,632 - __main__ - INFO - ━━━━━━ Bot Setup Started ━━━━━━
+Time: 2024-12-16 21:43:57
+Memory Usage: 49.1MB
+CPU Usage: 60.7%
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 21:43:57,632 - __main__ - INFO - ━━━━━━ Railway Environment ━━━━━━
+Environment: development
+Service: discord-bot
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 21:43:57,632 - __main__ - INFO - Token format validated
+2024-12-16 21:43:57,632 - __main__ - INFO - Connection state initialized
+2024-12-16 21:43:57,632 - __main__ - INFO - Registering commands...
+2024-12-16 21:43:57,819 - __main__ - INFO - Commands registered successfully
+2024-12-16 21:43:57,819 - __main__ - INFO - Starting health monitoring...
+2024-12-16 21:43:57,819 - __main__ - INFO - Health monitoring activated
+2024-12-16 21:43:57,819 - __main__ - INFO - ━━━━━━ Setup Complete ━━━━━━
+Application ID: 1316950341954306159
+Shard Count: None
+Command Count: 3
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 21:43:57,820 - __main__ - INFO - Bot in startup grace period, skipping connection check
+2024-12-16 21:43:57,820 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 57.3%
+Latency: nanms
+Guilds: 0
+Uptime: 0.0h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 21:43:58,036 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: f8f9855c9eb7ae78bec2150c29ce03c7).
+2024-12-16 21:44:00,045 - __main__ - INFO - ━━━━━━ Bot Ready ━━━━━━
+Logged in as: OCTANTBOT
+Bot ID: 1316950341954306159
+Guilds: 2
+━━━━━━━━━━━━━━━━━━━━━━━━
