@@ -1,7 +1,9 @@
-
 import os
 import logging
 import psutil
+import signal
+import sys
+import traceback
 from datetime import datetime, timezone
 from app import socketio, app
 
@@ -37,43 +39,53 @@ Active Connections: {metrics['connections']}
     return metrics
 
 if __name__ == "__main__":
-    # Enhanced Railway environment detection and configuration
-    is_railway = os.getenv('RAILWAY_ENVIRONMENT') is not None
-    port = int(os.getenv('PORT', 5000))
-    env = os.getenv('RAILWAY_ENVIRONMENT', 'development')
-    debug = env != 'production'
-    version = os.getenv('RAILWAY_GIT_COMMIT_SHA', 'local')[:7]
-    
-    # Log startup configuration with enhanced metrics
-    metrics = log_system_metrics()
-    logger.info(f"""
-━━━━━━ Railway Deployment Info ━━━━━━
+    # Enhanced startup with proper error handling for Railway
+    try:
+        # Validate environment
+        port = int(os.getenv('PORT', 5000))
+        env = os.getenv('RAILWAY_ENVIRONMENT', 'development')
+        
+        # Check system resources
+        memory_usage = psutil.Process().memory_percent()
+        if memory_usage > 90:
+            logger.warning(f"High memory usage detected: {memory_usage}%")
+        
+        # Configure process monitoring
+        def handle_sigterm(signum, frame):
+            logger.info("Received SIGTERM signal, initiating graceful shutdown")
+            socketio.stop()
+            sys.exit(0)
+            
+        signal.signal(signal.SIGTERM, handle_sigterm)
+        
+        # Start server with Railway-optimized settings
+        logger.info(f"""
+━━━━━━ Railway Startup ━━━━━━
 Environment: {env}
 Port: {port}
-Debug Mode: {debug}
-Version: {version}
-Start Time: {datetime.now(timezone.utc).isoformat()}
-Memory Usage: {metrics['memory_percent']:.1f}%
-CPU Usage: {metrics['cpu_percent']:.1f}%
+Memory: {memory_usage:.1f}%
+CPU: {psutil.cpu_percent()}%
+Python: {sys.version.split()[0]}
+Time: {datetime.now(timezone.utc).isoformat()}
 ━━━━━━━━━━━━━━━━━━━━━━━━""")
-    
-    # Railway-optimized startup configuration
-    try:
+        
         socketio.run(
             app,
             host="0.0.0.0",
             port=port,
-            debug=debug,
-            use_reloader=False,  # Railway handles reloading
+            debug=env != 'production',
+            use_reloader=False,
             log_output=True,
-            allow_unsafe_werkzeug=True  # Required for Railway deployment
+            allow_unsafe_werkzeug=True
         )
     except Exception as e:
         logger.error(f"""
-━━━━━━ Startup Error ━━━━━━
-Error Type: {type(e).__name__}
-Error Message: {str(e)}
-Version: {version}
+━━━━━━ Fatal Error ━━━━━━
+Type: {type(e).__name__}
+Error: {str(e)}
+Traceback: {traceback.format_exc()}
+Memory: {psutil.Process().memory_info().rss / 1024 / 1024:.1f}MB
+CPU: {psutil.cpu_percent()}%
 Time: {datetime.now(timezone.utc).isoformat()}
 ━━━━━━━━━━━━━━━━━━━━━━━━""")
-        raise
+        sys.exit(1)  # Exit with error for Railway to detect
