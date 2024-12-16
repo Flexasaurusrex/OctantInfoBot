@@ -1,0 +1,95 @@
+Stack Trace: Traceback (most recent call last):
+
+  File "/app/discord_bot.py", line 339, in main
+
+    raise ValueError("Discord token not found in environment variables")
+
+ValueError: Discord token not found in environment variables
+
+ 
+
+━━━━━━━━━━━━━━━━━━━━━━━━
+
+2024-12-16 23:10:06,765 - __main__ - INFO - Waiting 33.0 seconds before retry...
+
+2024-12-16 23:10:39,759 - __main__ - ERROR - DISCORD_BOT_TOKEN not set
+
+2024-12-16 23:10:39,760 - __main__ - ERROR - ━━━━━━ Connection Error ━━━━━━
+
+Error Type: ValueError
+
+Error Message: Discord token not found in environment variables
+
+Retry Count: 6/10
+
+Stack Trace: Traceback (most recent call last):
+
+  File "/app/discord_bot.py", line 339, in main
+
+    raise ValueError("Discord token not found in environment variables")
+
+ValueError: Discord token not found in environment variables
+
+ 
+
+━━━━━━━━━━━━━━━━━━━━━━━━
+
+2024-12-16 23:10:39,760 - __main__ - INFO - Waiting 30.4 seconds before retry...
+
+2024-12-16 23:11:10,217 - __main__ - ERROR - DISCORD_BOT_TOKEN not set
+
+2024-12-16 23:11:10,218 - __main__ - ERROR - ━━━━━━ Connection Error ━━━━━━
+
+Error Type: ValueError
+
+Error Message: Discord token not found in environment variables
+
+Retry Count: 7/10
+
+Stack Trace: Traceback (most recent call last):
+
+  File "/app/discord_bot.py", line 339, in main
+
+    raise ValueError("Discord token not found in environment variables")
+
+ValueError: Discord token not found in environment variables
+
+ 
+
+━━━━━━━━━━━━━━━━━━━━━━━━
+
+2024-12-16 23:11:10,218 - __main__ - INFO - Waiting 32.7 seconds before retry...
+
+2024-12-16 23:11:42,965 - __main__ - ERROR - DISCORD_BOT_TOKEN not set
+
+2024-12-16 23:11:42,965 - __main__ - ERROR - ━━━━━━ Connection Error ━━━━━━
+
+Error Type: ValueError
+
+Error Message: Discord token not found in environment variables
+
+Retry Count: 8/10
+
+Stack Trace: Traceback (most recent call last):
+
+  File "/app/discord_bot.py", line 339, in main
+
+    raise ValueError("Discord token not found in environment variables")
+
+ValueError: Discord token not found in environment variables
+
+ 
+
+━━━━━━━━━━━━━━━━━━━━━━━━
+
+2024-12-16 23:11:42,965 - __main__ - INFO - Waiting 32.2 seconds before retry...
+
+Error Type: ValueError
+
+Stack Trace: Traceback (most recent call last):
+
+ 
+
+━━━━━━━━━━━━━━━━━━━━━━━━
+
+2024-12-16 23:12:15,217 - __main__ - INFO - Waiting 31.8 seconds before retry...

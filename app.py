@@ -412,16 +412,16 @@ def start_health_monitoring():
                 logger.error(f"Health monitoring error: {str(e)}")
             eventlet.sleep(5)  # Update every 5 seconds
     
-    eventlet.spawn(emit_health_update)
+    if not hasattr(app, '_health_monitor_started'):
+        eventlet.spawn(emit_health_update)
+        app._health_monitor_started = True
+        logger.info("Health monitoring started")
 
 @socketio.on('connect')
 def handle_connect():
     """Handle client connection with enhanced error handling and state tracking."""
     try:
         # Start health monitoring if not already started
-        if not hasattr(app, '_health_monitor_started'):
-            start_health_monitoring()
-            app._health_monitor_started = True
 
         client_info = {
             'sid': request.sid,
@@ -567,88 +567,11 @@ def handle_health_update_request():
             }
         })
 
-def start_health_monitoring():
-    """Start periodic health monitoring updates."""
-    def emit_health_update():
-        while True:
-            try:
-                health_data = get_service_health()
-                socketio.emit('health_update', health_data)
-            except Exception as e:
-                logger.error(f"Health monitoring error: {str(e)}")
-            eventlet.sleep(5)  # Update every 5 seconds
-    
-    eventlet.spawn(emit_health_update)
 
 # Initialize health monitoring when the app starts
+
 # Initialize health monitoring when SocketIO starts
-@socketio.on('connect')
-def handle_connect():
-    """Handle client connection with enhanced error handling and state tracking."""
-    try:
-        # Start health monitoring if not already started
-        if not hasattr(app, '_health_monitor_started'):
-            start_health_monitoring()
-            app._health_monitor_started = True
-
-        client_info = {
-            'sid': request.sid,
-            'ip': request.remote_addr,
-            'timestamp': datetime.now().isoformat(),
-            'user_agent': request.headers.get('User-Agent', 'Unknown'),
-            'reconnect_attempts': 0,
-            'last_ping': datetime.now()
-        }
-        active_connections[request.sid] = client_info
-        logger.info(f"Client connected: {client_info}")
-        
-        # Send connection acknowledgment with enhanced status
-        emit('connection_status', {
-            'status': 'connected',
-            'sid': request.sid,
-            'timestamp': datetime.now().isoformat(),
-            'reconnect_info': {
-                'attempts': client_info['reconnect_attempts'],
-                'max_attempts': 5,
-                'delay': 2000
-            }
-        })
-        
-        # Send welcome message with command help
-        help_message = """
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📚 Available Commands
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-📋 Information Commands:
-• /help - Show this help message
-• /learn - Access learning modules
-
-📌 Topic-Specific Commands:
-• /funding - Learn about Octant's funding
-• /governance - Understand governance
-• /rewards - Explore reward system
-
-Type any command to get started!
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"""
-        emit('receive_message', {
-            'message': help_message,
-            'is_bot': True
-        })
-        
-    except Exception as e:
-        logger.error(f"Error in handle_connect: {str(e)}", exc_info=True)
-        error_response = {
-            'status': 'error',
-            'message': 'Connection error occurred',
-            'timestamp': datetime.now().isoformat(),
-            'error_details': str(e),
-            'reconnect_info': {
-                'should_retry': True,
-                'delay': 2000
-            }
-        }
-        emit('connection_status', error_response)
+# This function is now called only once within the start_health_monitoring function.
 
 if __name__ == '__main__':
     try:

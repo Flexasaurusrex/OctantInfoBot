@@ -55,6 +55,20 @@
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
         }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideIn {
+            from { transform: translateX(-20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .status-update {
+            animation: fadeIn 0.3s ease-out;
+        }
+        .metric-update {
+            animation: slideIn 0.3s ease-out;
+        }
         .status-indicator {
             display: inline-block;
             width: 12px;
@@ -289,30 +303,46 @@
         function updateServiceStatus(service, status, metrics) {
             const statusIndicator = document.getElementById(`${service}-status`);
             const healthGauge = document.getElementById(`${service}-health-gauge`);
+            const detailsContainer = document.getElementById(`${service}-details`);
             
-            // Update status indicator
-            statusIndicator.className = `status-indicator ${status}`;
+            // Add animation classes
+            statusIndicator.className = `status-indicator ${status} status-update`;
             
-            // Update health gauge
+            // Update health gauge with animation
             if (metrics) {
                 const health = metrics.health || 0;
                 healthGauge.style.width = `${health}%`;
                 healthGauge.className = `metric-gauge-fill ${
                     health > 80 ? 'good' :
                     health > 50 ? 'warning' : 'critical'
-                }`;
+                } metric-update`;
                 
-                // Update service-specific metrics
+                // Update service-specific metrics with animation
                 if (service === 'web') {
-                    document.getElementById('web-memory').textContent = metrics.memory + '%';
-                    document.getElementById('web-cpu').textContent = metrics.cpu + '%';
+                    updateMetricWithAnimation('web-memory', metrics.memory + '%');
+                    updateMetricWithAnimation('web-cpu', metrics.cpu + '%');
                 } else if (service === 'discord') {
-                    document.getElementById('discord-guilds').textContent = metrics.guilds || '-';
-                    document.getElementById('discord-latency').textContent = metrics.latency + 'ms';
+                    updateMetricWithAnimation('discord-guilds', metrics.guilds || '-');
+                    updateMetricWithAnimation('discord-latency', metrics.latency + 'ms');
                 } else if (service === 'telegram') {
-                    document.getElementById('telegram-chats').textContent = metrics.chats || '-';
-                    document.getElementById('telegram-updates').textContent = metrics.updates || '-';
+                    updateMetricWithAnimation('telegram-chats', metrics.chats || '-');
+                    updateMetricWithAnimation('telegram-updates', metrics.updates || '-');
                 }
+            }
+            
+            // Reset animation classes after they complete
+            setTimeout(() => {
+                statusIndicator.classList.remove('status-update');
+                healthGauge.classList.remove('metric-update');
+            }, 300);
+        }
+        
+        function updateMetricWithAnimation(elementId, value) {
+            const element = document.getElementById(elementId);
+            if (element && element.textContent !== value) {
+                element.classList.add('metric-update');
+                element.textContent = value;
+                setTimeout(() => element.classList.remove('metric-update'), 300);
             }
         }
 
