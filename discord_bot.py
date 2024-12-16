@@ -58,15 +58,23 @@ Memory Usage: {memory_usage:.1f}MB
 CPU Usage: {cpu_usage}%
 ━━━━━━━━━━━━━━━━━━━━━━━━""")
             
-            # Enhanced token validation
+            # Enhanced token validation for Railway deployment
             token = os.getenv('DISCORD_BOT_TOKEN')
             if not token:
-                logger.error("DISCORD_BOT_TOKEN environment variable not found")
-                raise ValueError("Discord token not found in environment variables")
+                logger.error("DISCORD_BOT_TOKEN environment variable not found in Railway environment")
+                raise ValueError("Discord token not found in Railway environment variables")
             
             if len(token.split('.')) != 3:
-                logger.error("Malformed Discord token detected")
+                logger.error("Malformed Discord token detected in Railway environment")
                 raise ValueError("Invalid Discord token format")
+            
+            # Log Railway-specific environment information
+            railway_env = os.getenv('RAILWAY_ENVIRONMENT', 'development')
+            railway_service = os.getenv('RAILWAY_SERVICE_NAME', 'discord-bot')
+            logger.info(f"""━━━━━━ Railway Environment ━━━━━━
+Environment: {railway_env}
+Service: {railway_service}
+━━━━━━━━━━━━━━━━━━━━━━━━""")
             
             logger.info("Token format validated")
             

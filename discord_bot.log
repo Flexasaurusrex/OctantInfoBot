@@ -11922,3 +11922,58 @@ Logged in as: OCTANTBOT
 Bot ID: 1316950341954306159
 Guilds: 2
 ━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 21:38:23,812 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 61.7%
+Latency: 52.95ms
+Guilds: 2
+Uptime: 0.0h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 21:39:01,314 - __main__ - INFO - ━━━━━━ Connection Attempt 1 ━━━━━━
+Bot Version: 1.0.1
+Token Status: Valid
+Retry Count: 0
+Max Retries: 10
+Memory Usage: 48.5MB
+CPU Usage: 76.9%
+Last Success: 2024-12-16 21:39:01
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 21:39:01,316 - discord.client - INFO - logging in using static token
+2024-12-16 21:39:01,703 - __main__ - INFO - ━━━━━━ Bot Setup Started ━━━━━━
+Time: 2024-12-16 21:39:01
+Memory Usage: 49.1MB
+CPU Usage: 70.9%
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 21:39:01,703 - __main__ - INFO - ━━━━━━ Railway Environment ━━━━━━
+Environment: development
+Service: discord-bot
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 21:39:01,703 - __main__ - INFO - Token format validated
+2024-12-16 21:39:01,703 - __main__ - INFO - Connection state initialized
+2024-12-16 21:39:01,703 - __main__ - INFO - Registering commands...
+2024-12-16 21:39:01,877 - __main__ - INFO - Commands registered successfully
+2024-12-16 21:39:01,877 - __main__ - INFO - Starting health monitoring...
+2024-12-16 21:39:01,878 - __main__ - INFO - Health monitoring activated
+2024-12-16 21:39:01,878 - __main__ - INFO - ━━━━━━ Setup Complete ━━━━━━
+Application ID: 1316950341954306159
+Shard Count: None
+Command Count: 3
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 21:39:01,879 - __main__ - INFO - Bot in startup grace period, skipping connection check
+2024-12-16 21:39:01,879 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 69.9%
+Latency: nanms
+Guilds: 0
+Uptime: 0.0h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 21:39:02,107 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 5602f9f724a441b9fe117f74be1a4eb9).
+2024-12-16 21:39:04,113 - __main__ - INFO - ━━━━━━ Bot Ready ━━━━━━
+Logged in as: OCTANTBOT
+Bot ID: 1316950341954306159
+Guilds: 2
+━━━━━━━━━━━━━━━━━━━━━━━━
