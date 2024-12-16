@@ -13,24 +13,36 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 def log_system_metrics():
-    """Log system metrics for Railway's monitoring"""
-    metrics = {
-        'memory_percent': psutil.Process().memory_percent(),
-        'cpu_percent': psutil.cpu_percent(),
-        'disk_usage': psutil.disk_usage('/').percent,
-        'open_files': len(psutil.Process().open_files()),
-        'connections': len(psutil.Process().connections())
-    }
-    
-    logger.info(f"""
-━━━━━━ System Metrics ━━━━━━
+    """Enhanced system metrics logging for Railway's monitoring"""
+    try:
+        process = psutil.Process()
+        metrics = {
+            'memory_percent': process.memory_percent(),
+            'cpu_percent': psutil.cpu_percent(interval=1),
+            'disk_usage': psutil.disk_usage('/').percent,
+            'open_files': len(process.open_files()),
+            'connections': len(process.connections()),
+            'threads': process.num_threads(),
+            'railway_env': os.getenv('RAILWAY_ENVIRONMENT', 'development'),
+            'railway_service': os.getenv('RAILWAY_SERVICE_NAME', 'unknown')
+        }
+        
+        # Log in Railway-friendly format
+        logger.info(f"""
+━━━━━━ Railway System Metrics ━━━━━━
+Environment: {metrics['railway_env']}
+Service: {metrics['railway_service']}
 Memory Usage: {metrics['memory_percent']:.1f}%
 CPU Usage: {metrics['cpu_percent']:.1f}%
 Disk Usage: {metrics['disk_usage']:.1f}%
 Open Files: {metrics['open_files']}
 Active Connections: {metrics['connections']}
-━━━━━━━━━━━━━━━━━━━━━━━━""")
-    return metrics
+Active Threads: {metrics['threads']}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━""")
+        return metrics
+    except Exception as e:
+        logger.error(f"Error collecting metrics: {str(e)}")
+        return None
 
 if __name__ == "__main__":
     # Enhanced Railway environment detection
