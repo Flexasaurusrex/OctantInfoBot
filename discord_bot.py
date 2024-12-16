@@ -164,97 +164,132 @@ Stack Trace: {traceback.format_exc()}
             
             # Enhanced connection verification with more resilient checks
             is_connected = False
-            try:
-                # Check core connection status with detailed diagnostics
-                connection_status = {
-                    'is_ready': self.is_ready(),
-                    'has_user': hasattr(self, 'user'),
-                    'has_latency': self.latency is not None,
-                    'latency_value': f"{self.latency*1000:.2f}ms" if self.latency else "N/A",
-                    'guilds_count': len(self.guilds) if hasattr(self, 'guilds') else 0
-                }
-                
-                is_connected = all([
-                    connection_status['is_ready'],
-                    connection_status['has_user'],
-                    connection_status['has_latency']
-                ])
-                
-                # Enhanced health metrics for Railway
-                if is_connected:
-                    if self.latency > 2.0:  # Stricter latency threshold
-                        warning_msg = f"""
-⚠️ RAILWAY WARNING - High Latency Detected ⚠️
+            connection_status = {
+                'is_ready': self.is_ready(),
+                'has_user': hasattr(self, 'user'),
+                'has_latency': self.latency is not None,
+                'latency_value': f"{self.latency*1000:.2f}ms" if self.latency else "N/A",
+                'guilds_count': len(self.guilds) if hasattr(self, 'guilds') else 0,
+                'last_heartbeat': getattr(self, '_connection', {}).get('_last_heartbeat', None),
+                'ws_connected': hasattr(self, 'ws') and self.ws and not self.ws.closed
+            }
+            
+            # Check WebSocket health
+            current_time = time.time()
+            heartbeat_age = (current_time - connection_status['last_heartbeat']) if connection_status['last_heartbeat'] else float('inf')
+            
+            is_connected = all([
+                connection_status['is_ready'],
+                connection_status['has_user'],
+                connection_status['has_latency'],
+                connection_status['ws_connected'],
+                heartbeat_age < 60  # Heartbeat within last minute
+            ])
+            
+            # Enhanced health metrics with improved Railway visibility
+            if is_connected:
+                if self.latency > 2.0 or heartbeat_age > 30:  # Stricter thresholds
+                    warning_msg = f"""
+⚠️ [RAILWAY WARNING] Discord Bot Performance Degraded ⚠️
+━━━━━━ Performance Alert ━━━━━━
 • Current Latency: {connection_status['latency_value']}
+• Last Heartbeat Age: {heartbeat_age:.2f}s
 • Connected Guilds: {connection_status['guilds_count']}
 • Memory Usage: {memory:.1f}%
 • CPU Usage: {cpu:.1f}%
-"""
-                        logger.warning(warning_msg)
-                        print(warning_msg, file=sys.stderr)  # Ensure Railway sees the warning
-                        self.error_count += 1
-                    else:
-                        self.error_count = max(0, self.error_count - 1)  # Gradually reduce error count
-                        
-                # Add startup grace period with Railway visibility
-                startup_grace_period = 60  # Reduced grace period
-                if not is_connected and (datetime.now(timezone.utc) - self.start_time).total_seconds() < startup_grace_period:
+• WebSocket State: {'Connected' if connection_status['ws_connected'] else 'Disconnected'}
+━━━━━━━━━━━━━━━━━━━━━━━━"""
+                    logger.warning(warning_msg)
+                    print(warning_msg, file=sys.stderr)
+                    sys.stderr.flush()
+                    self.error_count += 1
+                else:
+                    self.error_count = max(0, self.error_count - 1)  # Gradually reduce error count
+                    
+            # Enhanced startup handling with better visibility
+            startup_grace_period = 60
+            if not is_connected:
+                if (datetime.now(timezone.utc) - self.start_time).total_seconds() < startup_grace_period:
                     startup_msg = f"""
-ℹ️ RAILWAY INFO - Bot Startup Grace Period
+ℹ️ [RAILWAY INFO] Discord Bot Startup Progress
+━━━━━━ Startup Status ━━━━━━
 • Time Elapsed: {(datetime.now(timezone.utc) - self.start_time).total_seconds():.1f}s
 • Status: Initializing
+• WebSocket: {'Connected' if connection_status['ws_connected'] else 'Connecting'}
 • Memory: {memory:.1f}%
 • CPU: {cpu:.1f}%
-"""
+━━━━━━━━━━━━━━━━━━━━━━━━"""
                     logger.info(startup_msg)
-                    is_connected = True
+                    print(startup_msg, file=sys.stderr)
+                    sys.stderr.flush()
+                    is_connected = True  # Grace period
+                else:
+                    # Log detailed connection failure after grace period
+                    failure_msg = f"""
+🔴 [RAILWAY ALERT] Discord Bot Connection Failure
+━━━━━━ Connection Diagnostics ━━━━━━
+• Ready State: {connection_status['is_ready']}
+• Has User: {connection_status['has_user']}
+• Latency Available: {connection_status['has_latency']}
+• WebSocket Connected: {connection_status['ws_connected']}
+• Last Heartbeat Age: {heartbeat_age:.2f}s
+• Guild Count: {connection_status['guilds_count']}
+━━━━━━━━━━━━━━━━━━━━━━━━"""
+                    logger.error(failure_msg)
+                    print(failure_msg, file=sys.stderr)
+                    sys.stderr.flush()
                     
-            except Exception as e:
-                logger.error(f"Error checking connection status: {e}")
-                self.error_count += 1
-                is_connected = False  # Mark as disconnected on error
-            
-            # Add grace period for initial connection
-            if not is_connected and (datetime.now(timezone.utc) - self.start_time).total_seconds() < 60:
-                is_connected = True  # Give 60 seconds grace period for startup
-                
-            connection_status = "Connected" if is_connected else "Disconnected"
-            
-            # Calculate uptime
+            # Calculate and log enhanced metrics
             uptime_hours = (datetime.now(timezone.utc) - self.start_time).total_seconds() / 3600
-            
-            # Log health status
-            logger.info(f"""━━━━━━ Health Check ━━━━━━
-Status: {connection_status}
+            detailed_status = f"""━━━━━━ Health Check ━━━━━━
+Status: {"Connected" if is_connected else "Disconnected"}
 Memory: {memory:.1f}%
 CPU: {cpu:.1f}%
-Latency: {self.latency*1000:.2f}ms
-Guilds: {len(self.guilds)}
+Latency: {connection_status['latency_value']}
+Guilds: {connection_status['guilds_count']}
 Uptime: {uptime_hours:.1f}h
 Error Count: {self.error_count}
-━━━━━━━━━━━━━━━━━━━━━━━━""")
+Last Heartbeat Age: {heartbeat_age:.2f}s
+WebSocket: {'Connected' if connection_status['ws_connected'] else 'Disconnected'}
+━━━━━━━━━━━━━━━━━━━━━━━━"""
             
-            # Enhanced health checks
+            logger.info(detailed_status)
+            if not is_connected or self.error_count > 0:
+                print(detailed_status, file=sys.stderr)
+                sys.stderr.flush()
+            
+            # Enhanced health check criteria
             needs_restart = any([
                 memory > 90,
                 cpu > 90,
                 self.latency > 5,
-                not is_connected
+                not is_connected,
+                heartbeat_age > 90
             ])
             
             if needs_restart:
                 self.error_count += 1
-                logger.warning(f"Health check failed (attempt {self.error_count}/5)")
-                
+                logger.warning(f"Health check failed (attempt {self.error_count}/3)")
                 await self._handle_health_failure()
-                
             else:
                 if self.error_count > 0:
                     logger.info("Health check recovered - resetting error count")
+                    print("[RAILWAY INFO] Bot health recovered", file=sys.stderr)
+                    sys.stderr.flush()
                 self.error_count = 0
                 
         except Exception as e:
-            logger.error(f"Health check error: {str(e)}")
+            error_msg = f"""
+‼️ [RAILWAY ERROR] Health Check Error
+━━━━━━ Error Details ━━━━━━
+Error: {str(e)}
+Stack Trace: {traceback.format_exc()}
+Time: {datetime.now(timezone.utc)}
+━━━━━━━━━━━━━━━━━━━━━━━━"""
+            logger.error(error_msg)
+            print(error_msg, file=sys.stderr)
+            sys.stderr.flush()
+            self.error_count += 1
 
     async def on_ready(self):
         logger.info(f"""━━━━━━ Bot Ready ━━━━━━
@@ -366,11 +401,14 @@ System State:
                 print(f"[RAILWAY ALERT] Recovery failed: {str(e)}", file=sys.stderr)
                 sys.stderr.flush()
 
-    async def reconnect(self):
-        """Enhanced reconnection logic with proper state management"""
+    async def connect_with_backoff(self):
+        """Enhanced reconnection logic with proper state management and backoff"""
         try:
             logger.info("Initiating reconnection sequence...")
+            print("[RAILWAY ALERT] Initiating bot reconnection sequence", file=sys.stderr)
+            
             self.connection_state['current_state'] = 'reconnecting'
+            self.connection_state['last_attempt'] = datetime.now(timezone.utc)
             
             # Close existing connection if active
             if not self.is_closed():
@@ -379,8 +417,12 @@ System State:
             
             # Implement exponential backoff
             retry_count = self.connection_state.get('consecutive_failures', 0)
-            wait_time = min(30, (2 ** retry_count) + (random.uniform(0, 1)))
+            max_wait = min(300, (2 ** retry_count))  # Cap at 5 minutes
+            wait_time = max_wait + (random.uniform(0, min(max_wait * 0.1, 30)))  # Add jitter
+            
             logger.info(f"Waiting {wait_time:.1f} seconds before reconnection attempt...")
+            print(f"[RAILWAY ALERT] Waiting {wait_time:.1f}s before reconnection (attempt {retry_count + 1})", 
+                  file=sys.stderr)
             await asyncio.sleep(wait_time)
             
             # Verify token and attempt reconnection
@@ -389,11 +431,13 @@ System State:
                 raise ValueError("Discord token not found")
             
             # Clear existing state
-            self._ready.clear()
-            self.connection_state['last_attempt'] = datetime.now(timezone.utc)
+            if hasattr(self, '_ready'):
+                self._ready.clear()
+            if hasattr(self, '_connection'):
+                self._connection.clear()
             
-            # Attempt reconnection
-            async with timeout(30):  # 30 second timeout for reconnection
+            # Attempt reconnection with timeout
+            async with timeout(60):  # 60 second timeout for reconnection
                 await self.login(token)
                 await self.connect()
             
@@ -404,29 +448,96 @@ System State:
                 'current_state': 'connected'
             })
             
-            logger.info("""━━━━━━ Reconnection Successful ━━━━━━
-Bot: {self.user.name}
+            success_msg = f"""━━━━━━ Reconnection Successful ━━━━━━
+Bot: {self.user.name if hasattr(self, 'user') else 'Unknown'}
 Latency: {self.latency*1000:.2f}ms
-Guilds: {len(self.guilds)}
-━━━━━━━━━━━━━━━━━━━━━━━━""")
+Guilds: {len(self.guilds) if hasattr(self, 'guilds') else 0}
+Time: {datetime.now(timezone.utc).isoformat()}
+━━━━━━━━━━━━━━━━━━━━━━━━"""
+            
+            logger.info(success_msg)
+            print("\n[RAILWAY ALERT] Bot reconnection successful", file=sys.stderr)
+            print(success_msg, file=sys.stderr)
+            sys.stderr.flush()
             return True
             
         except asyncio.TimeoutError:
-            logger.error("Reconnection attempt timed out")
             self.connection_state['consecutive_failures'] += 1
+            error_msg = f"Reconnection attempt {self.connection_state['consecutive_failures']} timed out"
+            logger.error(error_msg)
+            print(f"[RAILWAY ALERT] {error_msg}", file=sys.stderr)
             return False
+            
         except Exception as e:
-            logger.error(f"Reconnection failed: {str(e)}")
             self.connection_state['consecutive_failures'] += 1
+            error_msg = f"Reconnection failed: {str(e)}\n{traceback.format_exc()}"
+            logger.error(error_msg)
+            print(f"[RAILWAY ALERT] {error_msg}", file=sys.stderr)
             return False
 
+    async def reconnect(self):
+        """Implements proper reconnection logic with state management"""
+        try:
+            logger.info("Initiating reconnection sequence...")
+            print("[RAILWAY ALERT] Initiating reconnection sequence", file=sys.stderr)
+            sys.stderr.flush()
+            
+            # Update connection state
+            self.connection_state['current_state'] = 'reconnecting'
+            self.connection_state['last_attempt'] = datetime.now(timezone.utc)
+            
+            # Close existing connection if active
+            if not self.is_closed():
+                await self.close()
+            
+            # Clear existing state
+            if hasattr(self, '_ready'):
+                self._ready.clear()
+            if hasattr(self, '_connection'):
+                self._connection.clear()
+            
+            # Get token
+            token = os.getenv('DISCORD_BOT_TOKEN')
+            if not token:
+                raise ValueError("Discord token not found")
+            
+            # Attempt reconnection with timeout
+            async with timeout(30):  # 30 second timeout
+                await self.login(token)
+                await self.connect()
+            
+            # Update state on success
+            self.connection_state.update({
+                'last_success': datetime.now(timezone.utc),
+                'consecutive_failures': 0,
+                'current_state': 'connected'
+            })
+            
+            logger.info("Reconnection successful")
+            print("[RAILWAY ALERT] Bot reconnection successful", file=sys.stderr)
+            sys.stderr.flush()
+            return True
+            
+        except Exception as e:
+            self.connection_state['consecutive_failures'] += 1
+            error_msg = f"Reconnection failed: {str(e)}\n{traceback.format_exc()}"
+            logger.error(error_msg)
+            print(f"[RAILWAY ALERT] {error_msg}", file=sys.stderr)
+            sys.stderr.flush()
+            return False
+    
     async def _handle_health_failure(self):
         """Enhanced health failure handling with proper reconnection and Railway reporting"""
         try:
             # Immediately log health failure to stderr for Railway visibility
-            print(f"\n{'!'*80}\n🔴 RAILWAY HEALTH CHECK FAILURE - Discord Bot Status Alert", file=sys.stderr)
-            print(f"Time: {datetime.now(timezone.utc).isoformat()}", file=sys.stderr)
-            print(f"Error Count: {self.error_count}", file=sys.stderr)
+            alert_msg = f"""
+🔴 [RAILWAY ALERT] Discord Bot Health Check Failure 🔴
+Time: {datetime.now(timezone.utc).isoformat()}
+Error Count: {self.error_count}
+Connection State: {self.connection_state.get('current_state', 'unknown')}
+Last Success: {self.connection_state.get('last_success', 'never')}
+"""
+            print(alert_msg, file=sys.stderr)
             sys.stderr.flush()
             
             if self.error_count >= 3:
@@ -437,10 +548,10 @@ Guilds: {len(self.guilds)}
                     'memory_usage': f"{psutil.Process().memory_percent():.1f}%",
                     'cpu_usage': f"{psutil.cpu_percent()}%",
                     'uptime_hours': f"{(datetime.now(timezone.utc) - datetime.fromtimestamp(psutil.Process().create_time(), tz=timezone.utc)).total_seconds() / 3600:.1f}h",
-                    'latency': f"{self.latency*1000:.2f}ms" if self.latency else "N/A",
+                    'latency': f"{self.latency*1000:.2f}ms" if hasattr(self, 'latency') else "N/A",
                     'connected_guilds': len(self.guilds) if hasattr(self, 'guilds') else 0,
                     'last_error': traceback.format_exc() if sys.exc_info()[0] else "None",
-                    'connection_state': str(self.connection_state)
+                    'connection_state': self.connection_state
                 }
                 
                 # Railway-formatted critical error report
@@ -461,19 +572,23 @@ Time: {error_details['timestamp']}
 • Connection: DEGRADED
 • Latency: {error_details['latency']}
 • Connected Guilds: {error_details['connected_guilds']}
-• Last Known Error: {error_details['last_error']}
+• Connection State: {error_details['connection_state'].get('current_state', 'unknown')}
+• Last Success: {error_details['connection_state'].get('last_success', 'never')}
+• Consecutive Failures: {error_details['connection_state'].get('consecutive_failures', 0)}
 
 ⚠️ CRITICAL ACTION REQUIRED - Service Degraded ⚠️"""
                 
                 # Enhanced Railway visibility - use both logger and stderr
                 logger.critical(railway_error)
-                print(f"\n{'!'*80}", file=sys.stderr)
+                print("\n" + "!"*80, file=sys.stderr)
                 print(railway_error, file=sys.stderr)
-                print(f"{'!'*80}\n", file=sys.stderr)
+                print("!"*80 + "\n", file=sys.stderr)
                 sys.stderr.flush()
                 
                 # Attempt reconnection with enhanced logging
-                print("🔄 Attempting emergency reconnection...", file=sys.stderr)
+                print("[RAILWAY ALERT] Attempting emergency reconnection...", file=sys.stderr)
+                sys.stderr.flush()
+                
                 success = await self.reconnect()
                 
                 if not success:
@@ -482,40 +597,58 @@ Time: {error_details['timestamp']}
 ━━━━━━ Emergency Shutdown Sequence ━━━━━━
 Reason: Critical health check failures & failed reconnection
 Time: {datetime.now(timezone.utc)}
-Error Details: {traceback.format_exc() if sys.exc_info()[0] else "None"}
-Total Failures: {self.error_count}
-Reconnection Attempts: {self.reconnect_attempts}
-Last Known State: {self.connection_state}
+Error Count: {self.error_count}
+Last Error: {traceback.format_exc() if sys.exc_info()[0] else "None"}
+Connection State: {self.connection_state}
+Memory Usage: {psutil.Process().memory_percent():.1f}%
+CPU Usage: {psutil.cpu_percent()}%
 ━━━━━━━━━━━━━━━━━━━━━━━━"""
                     
                     # Ensure Railway sees the shutdown
                     logger.critical("EMERGENCY SHUTDOWN INITIATED")
                     logger.critical(shutdown_msg)
-                    print("\n" + "!"*50, file=sys.stderr)
-                    print("EMERGENCY SHUTDOWN: Bot crash detected", file=sys.stderr)
+                    print("\n" + "!"*80, file=sys.stderr)
+                    print("[RAILWAY EMERGENCY] Discord Bot Crash Detected", file=sys.stderr)
                     print(shutdown_msg, file=sys.stderr)
-                    print("!"*50 + "\n", file=sys.stderr)
+                    print("!"*80 + "\n", file=sys.stderr)
+                    sys.stderr.flush()
                     
                     # Force immediate exit for Railway to detect
                     os._exit(1)
             else:
-                logger.warning(f"""
+                warning_msg = f"""
 ━━━━━━ Health Check Warning ━━━━━━
 Time: {datetime.now(timezone.utc)}
 Error Count: {self.error_count}
 Status: Monitoring
 Action: Continuing operation
-━━━━━━━━━━━━━━━━━━━━━━━━""")
+Connection State: {self.connection_state}
+━━━━━━━━━━━━━━━━━━━━━━━━"""
+                logger.warning(warning_msg)
+                print("[RAILWAY WARNING] " + warning_msg, file=sys.stderr)
+                sys.stderr.flush()
+                
         except Exception as e:
-            logger.critical(f"""
-━━━━━━ Unexpected Error ━━━━━━
+            critical_error = f"""
+━━━━━━ Unexpected Error in Health Monitor ━━━━━━
 Error: {str(e)}
 Stack Trace: {traceback.format_exc()}
 Time: {datetime.now(timezone.utc)}
-━━━━━━━━━━━━━━━━━━━━━━━━""")
+Memory: {psutil.Process().memory_percent():.1f}%
+CPU: {psutil.cpu_percent()}%
+━━━━━━━━━━━━━━━━━━━━━━━━"""
+            
             # Ensure Railway sees the crash
-            print("CRITICAL ERROR: Unexpected bot failure", file=sys.stderr)
-            sys.exit(1)
+            logger.critical("CRITICAL ERROR: Health monitor failure")
+            logger.critical(critical_error)
+            print("\n" + "!"*80, file=sys.stderr)
+            print("[RAILWAY CRITICAL] Health Monitor Crash", file=sys.stderr)
+            print(critical_error, file=sys.stderr)
+            print("!"*80 + "\n", file=sys.stderr)
+            sys.stderr.flush()
+            
+            # Force exit for Railway to detect
+            os._exit(1)
 
 async def main():
         bot = OctantBot()

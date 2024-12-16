@@ -13156,3 +13156,179 @@ Logged in as: OCTANTBOT
 Bot ID: 1316950341954306159
 Guilds: 2
 ━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 23:51:22,874 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 53.8%
+Latency: 24.53ms
+Guilds: 2
+Uptime: 0.0h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 23:51:44,098 - chat_handler - INFO - URLs formatted successfully
+2024-12-16 23:51:52,855 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 34.1%
+Latency: 28.48ms
+Guilds: 2
+Uptime: 0.0h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 23:52:18,531 - __main__ - INFO - ━━━━━━ Connection Attempt 1 ━━━━━━
+Bot Version: 1.0.1
+Token Status: Valid
+Retry Count: 0
+Max Retries: 10
+Memory Usage: 49.3MB
+CPU Usage: 50.6%
+Last Success: 2024-12-16 23:52:18
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 23:52:18,532 - discord.client - INFO - logging in using static token
+2024-12-16 23:52:18,897 - __main__ - INFO - ━━━━━━ Bot Setup Started ━━━━━━
+Time: 2024-12-16 23:52:18
+Memory Usage: 49.9MB
+CPU Usage: 56.2%
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 23:52:18,897 - __main__ - INFO - Token format validated
+2024-12-16 23:52:18,897 - __main__ - INFO - Connection state initialized
+2024-12-16 23:52:18,897 - __main__ - INFO - Registering commands...
+2024-12-16 23:52:19,122 - __main__ - INFO - Commands registered successfully
+2024-12-16 23:52:19,122 - __main__ - INFO - Starting health monitoring...
+2024-12-16 23:52:19,123 - __main__ - INFO - Health monitoring activated
+2024-12-16 23:52:19,123 - __main__ - INFO - ━━━━━━ Setup Complete ━━━━━━
+Application ID: 1316950341954306159
+Shard Count: None
+Command Count: 3
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 23:52:19,124 - __main__ - INFO - 
+ℹ️ RAILWAY INFO - Bot Startup Grace Period
+• Time Elapsed: 0.6s
+• Status: Initializing
+• Memory: 0.1%
+• CPU: 32.0%
+
+2024-12-16 23:52:19,124 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 32.0%
+Latency: nanms
+Guilds: 0
+Uptime: 0.0h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 23:52:19,391 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 21127877697b4acae2bdbb90d9a53209).
+2024-12-16 23:52:21,830 - __main__ - INFO - ━━━━━━ Connection Attempt 1 ━━━━━━
+Bot Version: 1.0.1
+Token Status: Valid
+Retry Count: 0
+Max Retries: 10
+Memory Usage: 49.7MB
+CPU Usage: 37.7%
+Last Success: 2024-12-16 23:52:21
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 23:52:21,830 - discord.client - INFO - logging in using static token
+2024-12-16 23:52:22,128 - __main__ - INFO - ━━━━━━ Bot Setup Started ━━━━━━
+Time: 2024-12-16 23:52:22
+Memory Usage: 50.3MB
+CPU Usage: 32.0%
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 23:52:22,128 - __main__ - INFO - Token format validated
+2024-12-16 23:52:22,128 - __main__ - INFO - Connection state initialized
+2024-12-16 23:52:22,128 - __main__ - INFO - Registering commands...
+2024-12-16 23:53:19,256 - __main__ - INFO - Commands registered successfully
+2024-12-16 23:53:19,257 - __main__ - INFO - Starting health monitoring...
+2024-12-16 23:53:19,257 - __main__ - INFO - Health monitoring activated
+2024-12-16 23:53:19,257 - __main__ - INFO - ━━━━━━ Setup Complete ━━━━━━
+Application ID: 1316950341954306159
+Shard Count: None
+Command Count: 3
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 23:53:19,258 - __main__ - INFO - 
+ℹ️ RAILWAY INFO - Bot Startup Grace Period
+• Time Elapsed: 57.4s
+• Status: Initializing
+• Memory: 0.1%
+• CPU: 41.0%
+
+2024-12-16 23:53:19,258 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 41.0%
+Latency: nanms
+Guilds: 0
+Uptime: 0.0h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 23:53:19,453 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 72f66364558836ec9889da846f33bd19).
+2024-12-16 23:53:21,460 - __main__ - INFO - ━━━━━━ Bot Ready ━━━━━━
+Logged in as: OCTANTBOT
+Bot ID: 1316950341954306159
+Guilds: 2
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 23:53:49,286 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 32.8%
+Latency: 27.13ms
+Guilds: 2
+Uptime: 0.0h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 23:54:08,422 - __main__ - INFO - ━━━━━━ Connection Attempt 1 ━━━━━━
+Bot Version: 1.0.1
+Token Status: Valid
+Retry Count: 0
+Max Retries: 10
+Memory Usage: 49.8MB
+CPU Usage: 34.7%
+Last Success: 2024-12-16 23:54:08
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 23:54:08,422 - discord.client - INFO - logging in using static token
+2024-12-16 23:54:08,742 - __main__ - INFO - ━━━━━━ Bot Setup Started ━━━━━━
+Time: 2024-12-16 23:54:08
+Memory Usage: 50.3MB
+CPU Usage: 26.7%
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 23:54:08,742 - __main__ - INFO - Token format validated
+2024-12-16 23:54:08,742 - __main__ - INFO - Connection state initialized
+2024-12-16 23:54:08,742 - __main__ - INFO - Registering commands...
+2024-12-16 23:54:08,936 - __main__ - INFO - Commands registered successfully
+2024-12-16 23:54:08,936 - __main__ - INFO - Starting health monitoring...
+2024-12-16 23:54:08,936 - __main__ - INFO - Health monitoring activated
+2024-12-16 23:54:08,936 - __main__ - INFO - ━━━━━━ Setup Complete ━━━━━━
+Application ID: 1316950341954306159
+Shard Count: None
+Command Count: 3
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 23:54:08,938 - __main__ - ERROR - 
+‼️ [RAILWAY ERROR] Health Check Error
+━━━━━━ Error Details ━━━━━━
+Error: 'ConnectionState' object has no attribute 'get'
+Stack Trace: Traceback (most recent call last):
+  File "/home/runner/workspace/discord_bot.py", line 173, in health_check
+    'last_heartbeat': getattr(self, '_connection', {}).get('_last_heartbeat', None),
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ConnectionState' object has no attribute 'get'
+
+Time: 2024-12-16 23:54:08.938733+00:00
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 23:54:09,191 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: a8e094bd01effed6c8966318d9dab199).
+2024-12-16 23:54:10,894 - __main__ - INFO - ━━━━━━ Connection Attempt 1 ━━━━━━
+Bot Version: 1.0.1
+Token Status: Valid
+Retry Count: 0
+Max Retries: 10
+Memory Usage: 49.8MB
+CPU Usage: 33.3%
+Last Success: 2024-12-16 23:54:10
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 23:54:10,895 - discord.client - INFO - logging in using static token
+2024-12-16 23:54:11,293 - __main__ - INFO - ━━━━━━ Bot Setup Started ━━━━━━
+Time: 2024-12-16 23:54:11
+Memory Usage: 50.5MB
+CPU Usage: 31.0%
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 23:54:11,298 - __main__ - INFO - Token format validated
+2024-12-16 23:54:11,299 - __main__ - INFO - Connection state initialized
+2024-12-16 23:54:11,299 - __main__ - INFO - Registering commands...
