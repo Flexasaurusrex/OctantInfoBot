@@ -16333,3 +16333,54 @@ Timeout Threshold: 300s
 2024-12-16 23:20:15,704 - telegram.ext.Application - INFO - [_application:631] - Application started
 2024-12-16 23:20:15,704 - __main__ - INFO - [telegram_bot:458] - Starting polling...
 2024-12-16 23:20:15,816 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/deleteWebhook "HTTP/1.1 200 OK"
+2024-12-16 23:20:26,143 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-16 23:20:36,249 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-16 23:20:46,354 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-16 23:20:56,459 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-16 23:21:06,564 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-16 23:21:16,669 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-16 23:21:26,776 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-16 23:21:36,881 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-16 23:21:46,986 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-16 23:21:57,092 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-16 23:22:04,406 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 409 Conflict"
+2024-12-16 23:22:04,407 - telegram.ext.Updater - ERROR - [_updater:402] - Exception happened while polling for updates.
+Traceback (most recent call last):
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/ext/_updater.py", line 743, in _network_loop_retry
+    if not await do_action():
+           ^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/ext/_updater.py", line 737, in do_action
+    return action_cb_task.result()
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/ext/_updater.py", line 367, in polling_action_cb
+    updates = await self.bot.get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/ext/_extbot.py", line 650, in get_updates
+    updates = await super().get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_bot.py", line 4480, in get_updates
+    await self._post(
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_bot.py", line 619, in _post
+    return await self._do_post(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/ext/_extbot.py", line 354, in _do_post
+    return await super()._do_post(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_bot.py", line 648, in _do_post
+    result = await request.post(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/request/_baserequest.py", line 202, in post
+    result = await self._request_wrapper(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/request/_baserequest.py", line 385, in _request_wrapper
+    raise Conflict(message)
+telegram.error.Conflict: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2024-12-16 23:22:15,532 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-16 23:22:25,636 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-16 23:22:35,742 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-16 23:22:45,846 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-16 23:22:55,952 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-16 23:23:06,057 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-16 23:23:16,163 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-16 23:23:26,271 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"
+2024-12-16 23:23:36,376 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 200 OK"

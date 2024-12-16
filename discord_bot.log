@@ -12810,3 +12810,30 @@ Logged in as: OCTANTBOT
 Bot ID: 1316950341954306159
 Guilds: 2
 ━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 23:21:16,178 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 31.7%
+Latency: 34.01ms
+Guilds: 2
+Uptime: 0.0h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 23:22:16,196 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 36.8%
+Latency: 36.63ms
+Guilds: 2
+Uptime: 0.0h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 23:23:16,173 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 35.2%
+Latency: 37.59ms
+Guilds: 2
+Uptime: 0.1h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
