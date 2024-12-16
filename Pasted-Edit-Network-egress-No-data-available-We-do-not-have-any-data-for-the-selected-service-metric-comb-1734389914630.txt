@@ -1,0 +1,125 @@
+Edit
+Network egress
+
+No data available
+
+We do not have any data for the selected service/metric combo in the active environment.
+
+Memory usage
+
+No data available
+
+We do not have any data for the selected service/metric combo in the active environment.
+
+CPU usage
+
+No data available
+
+We do not have any data for the selected service/metric combo in the active environment.
+
+Error logs
+
+
+You reached the start of the range → Dec 16, 2024 1:58 PM
+
+Traceback (most recent call last):
+
+  File "/app/telegram_bot.py", line 91, in <module>
+
+    chat_handler = ChatHandler()
+
+                   ^^^^^^^^^^^^^
+
+  File "/app/chat_handler.py", line 172, in __init__
+
+    raise ValueError("TOGETHER_API_KEY environment variable is not set")
+
+ValueError: TOGETHER_API_KEY environment variable is not set
+
+Traceback (most recent call last):
+
+  File "/app/telegram_bot.py", line 91, in <module>
+
+    chat_handler = ChatHandler()
+
+                   ^^^^^^^^^^^^^
+
+  File "/app/chat_handler.py", line 172, in __init__
+
+    raise ValueError("TOGETHER_API_KEY environment variable is not set")
+
+ValueError: TOGETHER_API_KEY environment variable is not set
+
+Traceback (most recent call last):
+
+  File "/app/telegram_bot.py", line 91, in <module>
+
+    chat_handler = ChatHandler()
+
+                   ^^^^^^^^^^^^^
+
+  File "/app/chat_handler.py", line 172, in __init__
+
+    raise ValueError("TOGETHER_API_KEY environment variable is not set")
+
+ValueError: TOGETHER_API_KEY environment variable is not set
+
+Traceback (most recent call last):
+
+  File "/app/telegram_bot.py", line 91, in <module>
+
+    chat_handler = ChatHandler()
+
+                   ^^^^^^^^^^^^^
+
+  File "/app/chat_handler.py", line 172, in __init__
+
+    raise ValueError("TOGETHER_API_KEY environment variable is not set")
+
+ValueError: TOGETHER_API_KEY environment variable is not set
+
+Traceback (most recent call last):
+
+  File "/app/telegram_bot.py", line 91, in <module>
+
+    chat_handler = ChatHandler()
+
+          
+
+         ^
+
+^^^^^^^^^^
+
+^^
+
+  File "/app/chat_handler.py", line 172, in __init__
+
+    raise ValueError("TOGETHER_API_KEY environment variable is not set")
+
+ValueError: TOGETHER_API_KEY environment variable is not set
+
+Traceback (most recent call last):
+
+  File "/app/telegram_bot.py", line 91, in <module>
+
+    chat_handler = ChatHandler()
+
+                   ^^^^^^^^^^^^^
+
+  File "/app/chat_handler.py", line 172, in __init__
+
+    raise ValueError("TOGETHER_API_KEY environment variable is not set")
+
+ValueError: TOGETHER_API_KEY environment variable is not set
+
+Traceback (most recent call last):
+
+  File "/app/telegram_bot.py", line 91, in <module>
+
+    chat_handler = ChatHandler()
+
+                   ^^^^^^^^^^^^^
+
+  File "/app/chat_handler.py", line 172, in __init__
+
+    raise ValueError("TOGETHER_API_KEY environment variable is not set")

@@ -12451,3 +12451,75 @@ Logged in as: OCTANTBOT
 Bot ID: 1316950341954306159
 Guilds: 2
 ━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 22:56:05,354 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 29.5%
+Latency: 37.68ms
+Guilds: 2
+Uptime: 0.0h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 22:57:05,373 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 25.9%
+Latency: 26.44ms
+Guilds: 2
+Uptime: 0.0h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 22:58:05,350 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 26.3%
+Latency: 36.90ms
+Guilds: 2
+Uptime: 0.1h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 22:59:05,368 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 25.3%
+Latency: 29.50ms
+Guilds: 2
+Uptime: 0.1h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 23:00:02,016 - __main__ - INFO - ━━━━━━ Connection Attempt 1 ━━━━━━
+Bot Version: 1.0.1
+Token Status: Valid
+Retry Count: 0
+Max Retries: 10
+Memory Usage: 48.8MB
+CPU Usage: 62.7%
+Last Success: 2024-12-16 23:00:02
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 23:00:02,017 - discord.client - INFO - logging in using static token
+2024-12-16 23:00:02,414 - __main__ - INFO - ━━━━━━ Bot Setup Started ━━━━━━
+Time: 2024-12-16 23:00:02
+Memory Usage: 49.6MB
+CPU Usage: 54.7%
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 23:00:02,415 - __main__ - INFO - Token format validated
+2024-12-16 23:00:02,415 - __main__ - INFO - Connection state initialized
+2024-12-16 23:00:02,415 - __main__ - INFO - Registering commands...
+2024-12-16 23:00:02,677 - __main__ - INFO - Commands registered successfully
+2024-12-16 23:00:02,677 - __main__ - INFO - Starting health monitoring...
+2024-12-16 23:00:02,677 - __main__ - INFO - Health monitoring activated
+2024-12-16 23:00:02,677 - __main__ - INFO - ━━━━━━ Setup Complete ━━━━━━
+Application ID: 1316950341954306159
+Shard Count: None
+Command Count: 3
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 23:00:02,679 - __main__ - INFO - Bot in startup grace period, skipping connection check
+2024-12-16 23:00:02,679 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 35.1%
+Latency: nanms
+Guilds: 0
+Uptime: 0.0h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━

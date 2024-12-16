@@ -46,16 +46,38 @@ if __name__ == "__main__":
     
     while retry_count < max_retries:
         try:
-            # Enhanced environment validation
+            # Enhanced environment validation with detailed feedback
+            required_vars = {
+                'TOGETHER_API_KEY': 'Required for chat functionality',
+                'DISCORD_BOT_TOKEN': 'Required for Discord bot integration',
+                'TELEGRAM_BOT_TOKEN': 'Required for Telegram bot integration'
+            }
+            
+            # Check and log environment variables status
+            logger.info("━━━━━━ Environment Check ━━━━━━")
+            missing_vars = []
+            
+            for var, description in required_vars.items():
+                value = os.getenv(var)
+                if not value:
+                    missing_vars.append(var)
+                    logger.error(f"✗ {var}: MISSING - {description}")
+                else:
+                    logger.info(f"✓ {var}: SET")
+            
+            if missing_vars:
+                error_msg = f"""
+━━━━━━ Environment Error ━━━━━━
+Missing required variables:
+{chr(10).join(f'• {var}: {required_vars[var]}' for var in missing_vars)}
+Please set these variables in your Railway project settings.
+━━━━━━━━━━━━━━━━━━━━━━━━"""
+                logger.error(error_msg)
+                raise ValueError(error_msg)
+            
             port = int(os.getenv('PORT', 5000))
             env = os.getenv('RAILWAY_ENVIRONMENT', 'development')
             debug = env != 'production'
-            
-            # Validate required environment variables
-            required_vars = ['TOGETHER_API_KEY']
-            missing_vars = [var for var in required_vars if not os.getenv(var)]
-            if missing_vars:
-                raise ValueError(f"Missing required environment variables: {', '.join(missing_vars)}")
             
             # Check system resources
             memory_usage = psutil.Process().memory_percent()
