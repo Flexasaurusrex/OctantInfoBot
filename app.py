@@ -358,8 +358,33 @@ def handle_message(data):
         })
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
-    debug = os.environ.get('FLASK_ENV') != 'production'
-    
-    logger.info(f"Starting server on port {port} with debug={debug}")
-    socketio.run(app, host='0.0.0.0', port=5000, debug=debug)
+    try:
+        port = int(os.environ.get('PORT', 5000))
+        debug = os.environ.get('FLASK_ENV') != 'production'
+        
+        # Enhanced startup logging
+        logger.info(f"""
+━━━━━━ Server Starting ━━━━━━
+Port: {port}
+Debug: {debug}
+Environment: {os.environ.get('RAILWAY_ENVIRONMENT', 'development')}
+Memory: {psutil.Process().memory_info().rss / 1024 / 1024:.1f}MB
+CPU: {psutil.cpu_percent()}%
+━━━━━━━━━━━━━━━━━━━━━━━━""")
+        
+        socketio.run(
+            app,
+            host='0.0.0.0',
+            port=port,  # Use the port from environment
+            debug=debug,
+            use_reloader=False,  # Disable reloader for Railway
+            log_output=True
+        )
+    except Exception as e:
+        logger.error(f"""
+━━━━━━ Startup Error ━━━━━━
+Error: {str(e)}
+Type: {type(e).__name__}
+Time: {datetime.now().isoformat()}
+━━━━━━━━━━━━━━━━━━━━━━━━""")
+        raise  # Re-raise for Railway to detect failure
