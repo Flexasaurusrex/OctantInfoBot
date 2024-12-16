@@ -11922,3 +11922,261 @@ Logged in as: OCTANTBOT
 Bot ID: 1316950341954306159
 Guilds: 2
 ━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 22:06:10,429 - __main__ - INFO - ━━━━━━ Connection Attempt 1 ━━━━━━
+Bot Version: 1.0.1
+Token Status: Valid
+Retry Count: 0
+Max Retries: 10
+Memory Usage: 48.8MB
+CPU Usage: 59.7%
+Last Success: 2024-12-16 22:06:10
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 22:06:10,430 - discord.client - INFO - logging in using static token
+2024-12-16 22:06:10,916 - __main__ - INFO - ━━━━━━ Bot Setup Started ━━━━━━
+Time: 2024-12-16 22:06:10
+Memory Usage: 49.5MB
+CPU Usage: 35.4%
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 22:06:10,916 - __main__ - INFO - Token format validated
+2024-12-16 22:06:10,916 - __main__ - INFO - Connection state initialized
+2024-12-16 22:06:10,916 - __main__ - INFO - Registering commands...
+2024-12-16 22:06:11,246 - __main__ - INFO - Commands registered successfully
+2024-12-16 22:06:11,246 - __main__ - INFO - Starting health monitoring...
+2024-12-16 22:06:11,247 - __main__ - INFO - Health monitoring activated
+2024-12-16 22:06:11,247 - __main__ - INFO - ━━━━━━ Setup Complete ━━━━━━
+Application ID: 1316950341954306159
+Shard Count: None
+Command Count: 3
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 22:06:11,248 - __main__ - INFO - Bot in startup grace period, skipping connection check
+2024-12-16 22:06:11,248 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 33.9%
+Latency: nanms
+Guilds: 0
+Uptime: 0.0h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 22:06:11,418 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: f7ba73483099f2b6a4474451dba03313).
+2024-12-16 22:06:13,458 - __main__ - INFO - ━━━━━━ Bot Ready ━━━━━━
+Logged in as: OCTANTBOT
+Bot ID: 1316950341954306159
+Guilds: 2
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 22:07:11,267 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 33.6%
+Latency: 32.61ms
+Guilds: 2
+Uptime: 0.0h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 22:08:11,285 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 37.3%
+Latency: 32.32ms
+Guilds: 2
+Uptime: 0.0h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 22:09:11,263 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 31.3%
+Latency: 25.62ms
+Guilds: 2
+Uptime: 0.1h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 22:10:11,281 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 29.3%
+Latency: 35.39ms
+Guilds: 2
+Uptime: 0.1h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 22:11:11,260 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 33.2%
+Latency: 25.10ms
+Guilds: 2
+Uptime: 0.1h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 22:12:11,278 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 33.5%
+Latency: 40.69ms
+Guilds: 2
+Uptime: 0.1h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 22:13:11,255 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 32.5%
+Latency: 30.10ms
+Guilds: 2
+Uptime: 0.1h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 22:14:11,274 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 36.1%
+Latency: 33.27ms
+Guilds: 2
+Uptime: 0.1h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 22:15:11,251 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 43.2%
+Latency: 37.98ms
+Guilds: 2
+Uptime: 0.2h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 22:16:11,271 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 38.1%
+Latency: 34.69ms
+Guilds: 2
+Uptime: 0.2h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 22:17:11,289 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 42.0%
+Latency: 30.92ms
+Guilds: 2
+Uptime: 0.2h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 22:18:11,267 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 36.3%
+Latency: 26.45ms
+Guilds: 2
+Uptime: 0.2h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 22:19:11,284 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 37.0%
+Latency: 30.31ms
+Guilds: 2
+Uptime: 0.2h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 22:20:11,263 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 40.8%
+Latency: 32.42ms
+Guilds: 2
+Uptime: 0.2h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 22:21:11,282 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 35.5%
+Latency: 33.62ms
+Guilds: 2
+Uptime: 0.3h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 22:22:11,258 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 36.1%
+Latency: 42.43ms
+Guilds: 2
+Uptime: 0.3h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 22:23:11,278 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 39.9%
+Latency: 49.48ms
+Guilds: 2
+Uptime: 0.3h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 22:24:11,255 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 36.0%
+Latency: 34.40ms
+Guilds: 2
+Uptime: 0.3h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 22:25:11,274 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 37.8%
+Latency: 25.63ms
+Guilds: 2
+Uptime: 0.3h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 22:26:11,252 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 40.2%
+Latency: 35.48ms
+Guilds: 2
+Uptime: 0.3h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 22:27:11,270 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 31.6%
+Latency: 34.76ms
+Guilds: 2
+Uptime: 0.4h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 22:28:11,290 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 35.7%
+Latency: 35.22ms
+Guilds: 2
+Uptime: 0.4h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 22:29:11,266 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 41.0%
+Latency: 39.01ms
+Guilds: 2
+Uptime: 0.4h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-16 22:30:11,285 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 40.0%
+Latency: 29.12ms
+Guilds: 2
+Uptime: 0.4h
+Error Count: 0
+━━━━━━━━━━━━━━━━━━━━━━━━
