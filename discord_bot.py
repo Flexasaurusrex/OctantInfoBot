@@ -58,23 +58,15 @@ Memory Usage: {memory_usage:.1f}MB
 CPU Usage: {cpu_usage}%
 ━━━━━━━━━━━━━━━━━━━━━━━━""")
             
-            # Enhanced token validation for Railway deployment
+            # Enhanced token validation
             token = os.getenv('DISCORD_BOT_TOKEN')
             if not token:
-                logger.error("DISCORD_BOT_TOKEN environment variable not found in Railway environment")
-                raise ValueError("Discord token not found in Railway environment variables")
+                logger.error("DISCORD_BOT_TOKEN environment variable not found")
+                raise ValueError("Discord token not found in environment variables")
             
             if len(token.split('.')) != 3:
-                logger.error("Malformed Discord token detected in Railway environment")
+                logger.error("Malformed Discord token detected")
                 raise ValueError("Invalid Discord token format")
-            
-            # Log Railway-specific environment information
-            railway_env = os.getenv('RAILWAY_ENVIRONMENT', 'development')
-            railway_service = os.getenv('RAILWAY_SERVICE_NAME', 'discord-bot')
-            logger.info(f"""━━━━━━ Railway Environment ━━━━━━
-Environment: {railway_env}
-Service: {railway_service}
-━━━━━━━━━━━━━━━━━━━━━━━━""")
             
             logger.info("Token format validated")
             
@@ -343,22 +335,13 @@ async def main():
                 # Enhanced token validation
                 token = os.getenv('DISCORD_BOT_TOKEN')
                 if not token:
-                    logger.error("DISCORD_BOT_TOKEN not set in Railway environment")
-                    raise ValueError("Discord token not found in Railway environment variables")
-            
-                # Enhanced token validation for Railway
-                if len(token.split('.')) != 3:
-                    logger.error("Invalid Discord token format in Railway environment")
-                    raise ValueError("Malformed Discord token")
+                    logger.error("DISCORD_BOT_TOKEN not set")
+                    raise ValueError("Discord token not found in environment variables")
                 
-                # Railway-specific environment check
-                railway_env = os.getenv('RAILWAY_ENVIRONMENT', 'development')
-                if railway_env == 'production':
-                    logger.info("Running in Railway production environment")
-                    # Configure production-specific settings
-                    bot.connect_timeout = 60.0  # Increased timeout for Railway
-                    bot.max_reconnect_delay = 300.0  # 5 minutes max delay
-                    max_retries = 20  # Increased retries for production
+                # Validate token format
+                if len(token.split('.')) != 3:
+                    logger.error("Invalid Discord token format")
+                    raise ValueError("Malformed Discord token")
                 
                 # Reset retry count if last successful connection was more than 1 hour ago
                 if time.time() - last_success > 3600:
