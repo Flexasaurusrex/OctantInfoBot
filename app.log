@@ -586,3 +586,308 @@ Environment: development
 2024-12-17 03:19:28,839 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:19:28] "[33mGET /socket.io/?EIO=4&transport=polling&t=PFIeBZw HTTP/1.1[0m" 404 -
 2024-12-17 03:19:34,887 - __main__ - INFO - Request: GET /socket.io/ from 172.31.196.15
 2024-12-17 03:19:34,888 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:19:34] "[33mGET /socket.io/?EIO=4&transport=polling&t=PFIeD1g HTTP/1.1[0m" 404 -
+2024-12-17 03:19:36,794 - __main__ - INFO - Request: GET / from 172.31.196.15
+2024-12-17 03:19:36,794 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:19:36] "GET / HTTP/1.1" 200 -
+2024-12-17 03:19:36,992 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:19:36] "[36mGET /static/images/octant-logo.png HTTP/1.1[0m" 304 -
+2024-12-17 03:19:36,992 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:19:36] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2024-12-17 03:19:36,994 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:19:36] "[36mGET /static/js/chat.js HTTP/1.1[0m" 304 -
+2024-12-17 03:19:37,542 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:19:37] "[36mGET /static/images/2.png HTTP/1.1[0m" 304 -
+2024-12-17 03:19:40,842 - __main__ - INFO - Request: GET /socket.io/ from 172.31.196.15
+2024-12-17 03:19:40,843 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:19:40] "[33mGET /socket.io/?EIO=4&transport=polling&t=PFIeEVQ HTTP/1.1[0m" 404 -
+2024-12-17 03:19:46,849 - __main__ - INFO - Request: GET /socket.io/ from 172.31.196.15
+2024-12-17 03:19:46,850 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:19:46] "[33mGET /socket.io/?EIO=4&transport=polling&t=PFIeFzA HTTP/1.1[0m" 404 -
+2024-12-17 03:19:49,161 - __main__ - INFO - Request: POST /chat from 172.31.196.15
+2024-12-17 03:19:49,162 - __main__ - INFO - Processing message from ccbb8c26-4173-4daa-b2a6-aba67593c4a0: what is octant?...
+2024-12-17 03:19:49,162 - chat_handler - INFO - Processing message from ccbb8c26-4173-4daa-b2a6-aba67593c4a0: what is octant?...
+2024-12-17 03:19:50,461 - __main__ - INFO - Successfully generated response for ccbb8c26-4173-4daa-b2a6-aba67593c4a0
+2024-12-17 03:19:50,462 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:19:50] "POST /chat HTTP/1.1" 200 -
+2024-12-17 03:19:52,861 - __main__ - INFO - Request: GET /socket.io/ from 172.31.196.15
+2024-12-17 03:19:52,862 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:19:52] "[33mGET /socket.io/?EIO=4&transport=polling&t=PFIeHQw HTTP/1.1[0m" 404 -
+2024-12-17 03:19:58,854 - __main__ - INFO - Request: GET /socket.io/ from 172.31.196.15
+2024-12-17 03:19:58,855 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:19:58] "[33mGET /socket.io/?EIO=4&transport=polling&t=PFIeIug HTTP/1.1[0m" 404 -
+2024-12-17 03:20:04,839 - __main__ - INFO - Request: GET /socket.io/ from 172.31.196.15
+2024-12-17 03:20:04,840 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:20:04] "[33mGET /socket.io/?EIO=4&transport=polling&t=PFIeKMQ HTTP/1.1[0m" 404 -
+2024-12-17 03:20:10,854 - __main__ - INFO - Request: GET /socket.io/ from 172.31.196.15
+2024-12-17 03:20:10,855 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:20:10] "[33mGET /socket.io/?EIO=4&transport=polling&t=PFIeLqA HTTP/1.1[0m" 404 -
+2024-12-17 03:20:16,843 - __main__ - INFO - Request: GET /socket.io/ from 172.31.196.15
+2024-12-17 03:20:16,844 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:20:16] "[33mGET /socket.io/?EIO=4&transport=polling&t=PFIeNHv HTTP/1.1[0m" 404 -
+2024-12-17 03:20:22,855 - __main__ - INFO - Request: GET /socket.io/ from 172.31.196.15
+2024-12-17 03:20:22,855 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:20:22] "[33mGET /socket.io/?EIO=4&transport=polling&t=PFIeOlg HTTP/1.1[0m" 404 -
+2024-12-17 03:20:28,882 - __main__ - INFO - Request: GET /socket.io/ from 172.31.196.15
+2024-12-17 03:20:28,883 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:20:28] "[33mGET /socket.io/?EIO=4&transport=polling&t=PFIeQDQ HTTP/1.1[0m" 404 -
+2024-12-17 03:20:34,852 - __main__ - INFO - Request: GET /socket.io/ from 172.31.196.15
+2024-12-17 03:20:34,853 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:20:34] "[33mGET /socket.io/?EIO=4&transport=polling&t=PFIeRhB HTTP/1.1[0m" 404 -
+2024-12-17 03:20:40,842 - __main__ - INFO - Request: GET /socket.io/ from 172.31.196.15
+2024-12-17 03:20:40,842 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:20:40] "[33mGET /socket.io/?EIO=4&transport=polling&t=PFIeT8w HTTP/1.1[0m" 404 -
+2024-12-17 03:20:46,856 - __main__ - INFO - Request: GET /socket.io/ from 172.31.196.15
+2024-12-17 03:20:46,857 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:20:46] "[33mGET /socket.io/?EIO=4&transport=polling&t=PFIeUcg HTTP/1.1[0m" 404 -
+2024-12-17 03:20:52,851 - __main__ - INFO - Request: GET /socket.io/ from 172.31.196.15
+2024-12-17 03:20:52,852 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:20:52] "[33mGET /socket.io/?EIO=4&transport=polling&t=PFIeW4Q HTTP/1.1[0m" 404 -
+2024-12-17 03:20:55,226 - werkzeug - INFO -  * Detected change in '/home/runner/workspace/discord_bot.py', reloading
+2024-12-17 03:20:55,272 - werkzeug - INFO -  * Restarting with stat
+2024-12-17 03:20:55,736 - __main__ - INFO - 
+━━━━━━ Server Starting ━━━━━━
+Port: 5000
+Debug: True
+Environment: development
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:20:55,745 - werkzeug - WARNING -  * Debugger is active!
+2024-12-17 03:20:55,746 - werkzeug - INFO -  * Debugger PIN: 280-754-696
+2024-12-17 03:20:56,177 - __main__ - INFO - Request: GET / from 172.31.196.15
+2024-12-17 03:20:56,182 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:20:56] "GET / HTTP/1.1" 200 -
+2024-12-17 03:20:56,303 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:20:56] "[36mGET /static/js/chat.js HTTP/1.1[0m" 304 -
+2024-12-17 03:20:56,307 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:20:56] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2024-12-17 03:20:56,309 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:20:56] "[36mGET /static/images/octant-logo.png HTTP/1.1[0m" 304 -
+2024-12-17 03:20:56,921 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:20:56] "[36mGET /static/images/2.png HTTP/1.1[0m" 304 -
+2024-12-17 03:20:58,848 - __main__ - INFO - Request: GET /socket.io/ from 172.31.196.15
+2024-12-17 03:20:58,849 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:20:58] "[33mGET /socket.io/?EIO=4&transport=polling&t=PFIeXYA HTTP/1.1[0m" 404 -
+2024-12-17 03:21:01,903 - __main__ - INFO - Request: GET / from 172.31.196.15
+2024-12-17 03:21:01,904 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:21:01] "GET / HTTP/1.1" 200 -
+2024-12-17 03:21:01,948 - werkzeug - INFO -  * Detected change in '/home/runner/workspace/discord_bot.py', reloading
+2024-12-17 03:21:02,007 - werkzeug - INFO -  * Restarting with stat
+2024-12-17 03:21:02,399 - __main__ - INFO - 
+━━━━━━ Server Starting ━━━━━━
+Port: 5000
+Debug: True
+Environment: development
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:21:02,407 - werkzeug - WARNING -  * Debugger is active!
+2024-12-17 03:21:02,408 - werkzeug - INFO -  * Debugger PIN: 977-459-369
+2024-12-17 03:21:02,443 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:21:02] "[36mGET /static/images/octant-logo.png HTTP/1.1[0m" 304 -
+2024-12-17 03:21:02,447 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:21:02] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2024-12-17 03:21:02,449 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:21:02] "[36mGET /static/js/chat.js HTTP/1.1[0m" 304 -
+2024-12-17 03:21:02,661 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:21:02] "[36mGET /static/images/2.png HTTP/1.1[0m" 304 -
+2024-12-17 03:21:04,837 - __main__ - INFO - Request: GET /socket.io/ from 172.31.196.15
+2024-12-17 03:21:04,838 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:21:04] "[33mGET /socket.io/?EIO=4&transport=polling&t=PFIeY_x HTTP/1.1[0m" 404 -
+2024-12-17 03:21:05,913 - __main__ - INFO - 
+━━━━━━ Server Starting ━━━━━━
+Port: 5000
+Debug: True
+Environment: development
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:21:05,924 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.31.196.15:5000
+2024-12-17 03:21:05,924 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-12-17 03:21:05,924 - werkzeug - INFO -  * Restarting with stat
+2024-12-17 03:21:06,317 - __main__ - INFO - 
+━━━━━━ Server Starting ━━━━━━
+Port: 5000
+Debug: True
+Environment: development
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:21:06,325 - werkzeug - WARNING -  * Debugger is active!
+2024-12-17 03:21:06,327 - werkzeug - INFO -  * Debugger PIN: 141-479-305
+2024-12-17 03:21:06,354 - __main__ - INFO - Request: GET / from 172.31.196.15
+2024-12-17 03:21:06,361 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:21:06] "GET / HTTP/1.1" 200 -
+2024-12-17 03:21:06,476 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:21:06] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2024-12-17 03:21:06,482 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:21:06] "[36mGET /static/images/octant-logo.png HTTP/1.1[0m" 304 -
+2024-12-17 03:21:06,489 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:21:06] "[36mGET /static/js/chat.js HTTP/1.1[0m" 304 -
+2024-12-17 03:21:07,187 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:21:07] "[36mGET /static/images/2.png HTTP/1.1[0m" 304 -
+2024-12-17 03:21:10,854 - __main__ - INFO - Request: GET /socket.io/ from 172.31.196.15
+2024-12-17 03:21:10,854 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:21:10] "[33mGET /socket.io/?EIO=4&transport=polling&t=PFIeaTg HTTP/1.1[0m" 404 -
+2024-12-17 03:21:16,845 - __main__ - INFO - Request: GET /socket.io/ from 172.31.196.15
+2024-12-17 03:21:16,846 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:21:16] "[33mGET /socket.io/?EIO=4&transport=polling&t=PFIebxR HTTP/1.1[0m" 404 -
+2024-12-17 03:21:22,883 - __main__ - INFO - Request: GET /socket.io/ from 172.31.196.15
+2024-12-17 03:21:22,883 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:21:22] "[33mGET /socket.io/?EIO=4&transport=polling&t=PFIedPA HTTP/1.1[0m" 404 -
+2024-12-17 03:21:24,832 - werkzeug - INFO -  * Detected change in '/home/runner/workspace/discord_bot.py', reloading
+2024-12-17 03:21:24,882 - werkzeug - INFO -  * Restarting with stat
+2024-12-17 03:21:25,261 - __main__ - INFO - 
+━━━━━━ Server Starting ━━━━━━
+Port: 5000
+Debug: True
+Environment: development
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:21:25,269 - werkzeug - WARNING -  * Debugger is active!
+2024-12-17 03:21:25,271 - werkzeug - INFO -  * Debugger PIN: 127-420-520
+2024-12-17 03:21:25,533 - __main__ - INFO - Request: GET / from 172.31.196.15
+2024-12-17 03:21:25,539 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:21:25] "GET / HTTP/1.1" 200 -
+2024-12-17 03:21:25,658 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:21:25] "[36mGET /static/js/chat.js HTTP/1.1[0m" 304 -
+2024-12-17 03:21:25,662 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:21:25] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2024-12-17 03:21:25,668 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:21:25] "[36mGET /static/images/octant-logo.png HTTP/1.1[0m" 304 -
+2024-12-17 03:21:26,304 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:21:26] "[36mGET /static/images/2.png HTTP/1.1[0m" 304 -
+2024-12-17 03:21:28,843 - __main__ - INFO - Request: GET /socket.io/ from 172.31.196.15
+2024-12-17 03:21:28,844 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:21:28] "[33mGET /socket.io/?EIO=4&transport=polling&t=PFIeesx HTTP/1.1[0m" 404 -
+2024-12-17 03:21:34,850 - __main__ - INFO - Request: GET /socket.io/ from 172.31.196.15
+2024-12-17 03:21:34,851 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:21:34] "[33mGET /socket.io/?EIO=4&transport=polling&t=PFIegKg HTTP/1.1[0m" 404 -
+2024-12-17 03:21:35,564 - werkzeug - INFO -  * Detected change in '/home/runner/workspace/discord_bot.py', reloading
+2024-12-17 03:21:35,611 - werkzeug - INFO -  * Restarting with stat
+2024-12-17 03:21:35,984 - __main__ - INFO - 
+━━━━━━ Server Starting ━━━━━━
+Port: 5000
+Debug: True
+Environment: development
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:21:35,993 - werkzeug - WARNING -  * Debugger is active!
+2024-12-17 03:21:35,994 - werkzeug - INFO -  * Debugger PIN: 541-929-008
+2024-12-17 03:21:36,327 - __main__ - INFO - Request: GET / from 172.31.196.15
+2024-12-17 03:21:36,333 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:21:36] "GET / HTTP/1.1" 200 -
+2024-12-17 03:21:36,583 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:21:36] "[36mGET /static/images/octant-logo.png HTTP/1.1[0m" 304 -
+2024-12-17 03:21:36,588 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:21:36] "[36mGET /static/js/chat.js HTTP/1.1[0m" 304 -
+2024-12-17 03:21:36,589 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:21:36] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2024-12-17 03:21:37,114 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:21:37] "[36mGET /static/images/2.png HTTP/1.1[0m" 304 -
+2024-12-17 03:21:39,913 - __main__ - INFO - 
+━━━━━━ Server Starting ━━━━━━
+Port: 5000
+Debug: True
+Environment: development
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:21:39,923 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.31.196.15:5000
+2024-12-17 03:21:39,923 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-12-17 03:21:39,924 - werkzeug - INFO -  * Restarting with stat
+2024-12-17 03:21:40,305 - __main__ - INFO - 
+━━━━━━ Server Starting ━━━━━━
+Port: 5000
+Debug: True
+Environment: development
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:21:40,314 - werkzeug - WARNING -  * Debugger is active!
+2024-12-17 03:21:40,316 - werkzeug - INFO -  * Debugger PIN: 146-085-606
+2024-12-17 03:21:40,343 - __main__ - INFO - Request: GET / from 172.31.196.15
+2024-12-17 03:21:40,344 - __main__ - INFO - Request: GET / from 172.31.196.15
+2024-12-17 03:21:40,351 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:21:40] "GET / HTTP/1.1" 200 -
+2024-12-17 03:21:40,354 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:21:40] "GET / HTTP/1.1" 200 -
+2024-12-17 03:21:40,470 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:21:40] "[36mGET /static/images/octant-logo.png HTTP/1.1[0m" 304 -
+2024-12-17 03:21:40,476 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:21:40] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2024-12-17 03:21:40,559 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:21:40] "[36mGET /static/js/chat.js HTTP/1.1[0m" 304 -
+2024-12-17 03:21:40,841 - __main__ - INFO - Request: GET /socket.io/ from 172.31.196.15
+2024-12-17 03:21:40,842 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:21:40] "[33mGET /socket.io/?EIO=4&transport=polling&t=PFIehoQ HTTP/1.1[0m" 404 -
+2024-12-17 03:21:41,121 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:21:41] "[36mGET /static/images/2.png HTTP/1.1[0m" 304 -
+2024-12-17 03:21:46,849 - __main__ - INFO - Request: GET /socket.io/ from 172.31.196.15
+2024-12-17 03:21:46,849 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:21:46] "[33mGET /socket.io/?EIO=4&transport=polling&t=PFIejGB HTTP/1.1[0m" 404 -
+2024-12-17 03:21:52,843 - __main__ - INFO - Request: GET /socket.io/ from 172.31.196.15
+2024-12-17 03:21:52,844 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:21:52] "[33mGET /socket.io/?EIO=4&transport=polling&t=PFIekjx HTTP/1.1[0m" 404 -
+2024-12-17 03:21:58,851 - __main__ - INFO - Request: GET /socket.io/ from 172.31.196.15
+2024-12-17 03:21:58,851 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:21:58] "[33mGET /socket.io/?EIO=4&transport=polling&t=PFIemBg HTTP/1.1[0m" 404 -
+2024-12-17 03:22:04,845 - __main__ - INFO - Request: GET /socket.io/ from 172.31.196.15
+2024-12-17 03:22:04,846 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:22:04] "[33mGET /socket.io/?EIO=4&transport=polling&t=PFIenfQ HTTP/1.1[0m" 404 -
+2024-12-17 03:22:04,975 - werkzeug - INFO -  * Detected change in '/home/runner/workspace/discord_bot.py', reloading
+2024-12-17 03:22:05,025 - werkzeug - INFO -  * Restarting with stat
+2024-12-17 03:22:05,425 - __main__ - INFO - 
+━━━━━━ Server Starting ━━━━━━
+Port: 5000
+Debug: True
+Environment: development
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:22:05,432 - werkzeug - WARNING -  * Debugger is active!
+2024-12-17 03:22:05,433 - werkzeug - INFO -  * Debugger PIN: 636-575-179
+2024-12-17 03:22:05,481 - __main__ - INFO - Request: GET / from 172.31.196.15
+2024-12-17 03:22:05,486 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:22:05] "GET / HTTP/1.1" 200 -
+2024-12-17 03:22:05,604 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:22:05] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2024-12-17 03:22:05,613 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:22:05] "[36mGET /static/js/chat.js HTTP/1.1[0m" 304 -
+2024-12-17 03:22:05,614 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:22:05] "[36mGET /static/images/octant-logo.png HTTP/1.1[0m" 304 -
+2024-12-17 03:22:06,239 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:22:06] "[36mGET /static/images/2.png HTTP/1.1[0m" 304 -
+2024-12-17 03:22:10,852 - __main__ - INFO - Request: GET /socket.io/ from 172.31.196.15
+2024-12-17 03:22:10,853 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:22:10] "[33mGET /socket.io/?EIO=4&transport=polling&t=PFIep7B HTTP/1.1[0m" 404 -
+2024-12-17 03:22:11,636 - werkzeug - INFO -  * Detected change in '/home/runner/workspace/discord_bot.py', reloading
+2024-12-17 03:22:11,686 - werkzeug - INFO -  * Restarting with stat
+2024-12-17 03:22:12,077 - __main__ - INFO - 
+━━━━━━ Server Starting ━━━━━━
+Port: 5000
+Debug: True
+Environment: development
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:22:12,085 - werkzeug - WARNING -  * Debugger is active!
+2024-12-17 03:22:12,087 - werkzeug - INFO -  * Debugger PIN: 543-325-814
+2024-12-17 03:22:12,186 - __main__ - INFO - Request: GET / from 172.31.196.15
+2024-12-17 03:22:12,190 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:22:12] "GET / HTTP/1.1" 200 -
+2024-12-17 03:22:12,311 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:22:12] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2024-12-17 03:22:12,314 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:22:12] "[36mGET /static/js/chat.js HTTP/1.1[0m" 304 -
+2024-12-17 03:22:12,316 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:22:12] "[36mGET /static/images/octant-logo.png HTTP/1.1[0m" 304 -
+2024-12-17 03:22:12,934 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:22:12] "[36mGET /static/images/2.png HTTP/1.1[0m" 304 -
+2024-12-17 03:22:13,160 - werkzeug - INFO -  * Detected change in '/home/runner/workspace/discord_bot.py', reloading
+2024-12-17 03:22:13,223 - werkzeug - INFO -  * Restarting with stat
+2024-12-17 03:22:13,625 - __main__ - INFO - 
+━━━━━━ Server Starting ━━━━━━
+Port: 5000
+Debug: True
+Environment: development
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:22:13,635 - werkzeug - WARNING -  * Debugger is active!
+2024-12-17 03:22:13,636 - werkzeug - INFO -  * Debugger PIN: 131-877-239
+2024-12-17 03:22:13,861 - __main__ - INFO - Request: GET / from 172.31.196.15
+2024-12-17 03:22:13,866 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:22:13] "GET / HTTP/1.1" 200 -
+2024-12-17 03:22:13,979 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:22:13] "[36mGET /static/js/chat.js HTTP/1.1[0m" 304 -
+2024-12-17 03:22:13,982 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:22:13] "[36mGET /static/images/octant-logo.png HTTP/1.1[0m" 304 -
+2024-12-17 03:22:13,983 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:22:13] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2024-12-17 03:22:14,473 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:22:14] "[36mGET /static/images/2.png HTTP/1.1[0m" 304 -
+2024-12-17 03:22:16,880 - __main__ - INFO - Request: GET /socket.io/ from 172.31.196.15
+2024-12-17 03:22:18,000 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:22:18] "[33mGET /socket.io/?EIO=4&transport=polling&t=PFIeqaw HTTP/1.1[0m" 404 -
+2024-12-17 03:22:23,849 - __main__ - INFO - Request: GET /socket.io/ from 172.31.196.15
+2024-12-17 03:22:23,850 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:22:23] "[33mGET /socket.io/?EIO=4&transport=polling&t=PFIesIJ HTTP/1.1[0m" 404 -
+2024-12-17 03:22:29,924 - __main__ - INFO - Request: GET /socket.io/ from 172.31.196.15
+2024-12-17 03:22:29,925 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:22:29] "[33mGET /socket.io/?EIO=4&transport=polling&t=PFIetm2 HTTP/1.1[0m" 404 -
+2024-12-17 03:22:35,845 - __main__ - INFO - Request: GET /socket.io/ from 172.31.196.15
+2024-12-17 03:22:35,846 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:22:35] "[33mGET /socket.io/?EIO=4&transport=polling&t=PFIevDn HTTP/1.1[0m" 404 -
+2024-12-17 03:22:41,841 - __main__ - INFO - Request: GET /socket.io/ from 172.31.196.15
+2024-12-17 03:22:41,841 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:22:41] "[33mGET /socket.io/?EIO=4&transport=polling&t=PFIewhZ HTTP/1.1[0m" 404 -
+2024-12-17 03:22:47,856 - __main__ - INFO - Request: GET /socket.io/ from 172.31.196.15
+2024-12-17 03:22:47,857 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:22:47] "[33mGET /socket.io/?EIO=4&transport=polling&t=PFIey9J HTTP/1.1[0m" 404 -
+2024-12-17 03:22:53,839 - __main__ - INFO - Request: GET /socket.io/ from 172.31.196.15
+2024-12-17 03:22:53,840 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:22:53] "[33mGET /socket.io/?EIO=4&transport=polling&t=PFIezd3 HTTP/1.1[0m" 404 -
+2024-12-17 03:22:59,886 - __main__ - INFO - Request: GET /socket.io/ from 172.31.196.15
+2024-12-17 03:22:59,887 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:22:59] "[33mGET /socket.io/?EIO=4&transport=polling&t=PFIe_4p HTTP/1.1[0m" 404 -
+2024-12-17 03:23:05,845 - __main__ - INFO - Request: GET /socket.io/ from 172.31.196.15
+2024-12-17 03:23:05,846 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:23:05] "[33mGET /socket.io/?EIO=4&transport=polling&t=PFIf0YZ HTTP/1.1[0m" 404 -
+2024-12-17 03:23:11,845 - __main__ - INFO - Request: GET /socket.io/ from 172.31.196.15
+2024-12-17 03:23:11,846 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:23:11] "[33mGET /socket.io/?EIO=4&transport=polling&t=PFIf20I HTTP/1.1[0m" 404 -
+2024-12-17 03:23:17,837 - __main__ - INFO - Request: GET /socket.io/ from 172.31.196.15
+2024-12-17 03:23:17,837 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:23:17] "[33mGET /socket.io/?EIO=4&transport=polling&t=PFIf3U3 HTTP/1.1[0m" 404 -
+2024-12-17 03:23:23,850 - __main__ - INFO - Request: GET /socket.io/ from 172.31.196.15
+2024-12-17 03:23:23,851 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:23:23] "[33mGET /socket.io/?EIO=4&transport=polling&t=PFIf4xp HTTP/1.1[0m" 404 -
+2024-12-17 03:23:29,839 - __main__ - INFO - Request: GET /socket.io/ from 172.31.196.15
+2024-12-17 03:23:29,840 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:23:29] "[33mGET /socket.io/?EIO=4&transport=polling&t=PFIf6PZ HTTP/1.1[0m" 404 -
+2024-12-17 03:23:35,852 - __main__ - INFO - Request: GET /socket.io/ from 172.31.196.15
+2024-12-17 03:23:35,853 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:23:35] "[33mGET /socket.io/?EIO=4&transport=polling&t=PFIf7tJ HTTP/1.1[0m" 404 -
+2024-12-17 03:23:41,842 - __main__ - INFO - Request: GET /socket.io/ from 172.31.196.15
+2024-12-17 03:23:41,842 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:23:41] "[33mGET /socket.io/?EIO=4&transport=polling&t=PFIf9L3 HTTP/1.1[0m" 404 -
+2024-12-17 03:23:47,850 - __main__ - INFO - Request: GET /socket.io/ from 172.31.196.15
+2024-12-17 03:23:47,850 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:23:47] "[33mGET /socket.io/?EIO=4&transport=polling&t=PFIfAoo HTTP/1.1[0m" 404 -
+2024-12-17 03:23:53,870 - __main__ - INFO - Request: GET /socket.io/ from 172.31.196.15
+2024-12-17 03:23:53,870 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:23:53] "[33mGET /socket.io/?EIO=4&transport=polling&t=PFIfCGY HTTP/1.1[0m" 404 -
+2024-12-17 03:23:57,426 - __main__ - INFO - 
+━━━━━━ Server Starting ━━━━━━
+Port: 5000
+Debug: True
+Environment: development
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:23:57,436 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.31.196.15:5000
+2024-12-17 03:23:57,436 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2024-12-17 03:23:57,436 - werkzeug - INFO -  * Restarting with stat
+2024-12-17 03:23:57,812 - __main__ - INFO - 
+━━━━━━ Server Starting ━━━━━━
+Port: 5000
+Debug: True
+Environment: development
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:23:57,820 - werkzeug - WARNING -  * Debugger is active!
+2024-12-17 03:23:57,822 - werkzeug - INFO -  * Debugger PIN: 104-813-124
+2024-12-17 03:23:57,850 - __main__ - INFO - Request: GET / from 172.31.196.15
+2024-12-17 03:23:57,856 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:23:57] "GET / HTTP/1.1" 200 -
+2024-12-17 03:23:57,971 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:23:57] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2024-12-17 03:23:58,043 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:23:58] "[36mGET /static/images/octant-logo.png HTTP/1.1[0m" 304 -
+2024-12-17 03:23:58,050 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:23:58] "[36mGET /static/js/chat.js HTTP/1.1[0m" 304 -
+2024-12-17 03:23:58,642 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:23:58] "[36mGET /static/images/2.png HTTP/1.1[0m" 304 -
+2024-12-17 03:23:58,993 - __main__ - INFO - Request: GET / from 172.31.196.15
+2024-12-17 03:23:59,005 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:23:59] "GET / HTTP/1.1" 200 -
+2024-12-17 03:23:59,017 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:23:59] "GET /static/css/style.css HTTP/1.1" 200 -
+2024-12-17 03:23:59,025 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:23:59] "GET /static/js/chat.js HTTP/1.1" 200 -
+2024-12-17 03:23:59,034 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:23:59] "GET /static/images/octant-logo.png HTTP/1.1" 200 -
+2024-12-17 03:23:59,101 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:23:59] "GET /static/images/2.png HTTP/1.1" 200 -
+2024-12-17 03:23:59,216 - __main__ - INFO - Request: GET / from 172.31.196.15
+2024-12-17 03:23:59,217 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:23:59] "GET / HTTP/1.1" 200 -
+2024-12-17 03:23:59,325 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:23:59] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+2024-12-17 03:23:59,325 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:23:59] "[36mGET /static/js/chat.js HTTP/1.1[0m" 304 -
+2024-12-17 03:23:59,333 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:23:59] "[36mGET /static/images/octant-logo.png HTTP/1.1[0m" 304 -
+2024-12-17 03:23:59,638 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:23:59] "[36mGET /static/images/2.png HTTP/1.1[0m" 304 -
+2024-12-17 03:23:59,847 - __main__ - INFO - Request: GET /socket.io/ from 172.31.196.15
+2024-12-17 03:23:59,848 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:23:59] "[33mGET /socket.io/?EIO=4&transport=polling&t=PFIfDkI HTTP/1.1[0m" 404 -
+2024-12-17 03:24:05,843 - __main__ - INFO - Request: GET /socket.io/ from 172.31.196.15
+2024-12-17 03:24:05,844 - werkzeug - INFO - 172.31.196.15 - - [17/Dec/2024 03:24:05] "[33mGET /socket.io/?EIO=4&transport=polling&t=PFIfFC2 HTTP/1.1[0m" 404 -

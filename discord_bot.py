@@ -1,6 +1,7 @@
 import os
 import sys
 import logging
+import fcntl
 import asyncio
 import discord
 from discord import app_commands
@@ -19,7 +20,52 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 class OctantBot(commands.Bot):
+    _instance = None
+    _lock = asyncio.Lock()
+
+    def __new__(cls):
+        if not cls._instance:
+            cls._instance = super(OctantBot, cls).__new__(cls)
+        return cls._instance
+
+    async def ensure_single_instance(self):
+        pid_file = 'discord_bot.lock'
+        lock_fd = None
+        
+        try:
+            # Try to acquire an exclusive file lock
+            lock_fd = os.open(pid_file, os.O_CREAT | os.O_RDWR)
+            
+            try:
+                # Try to get an exclusive lock
+                fcntl.flock(lock_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                
+                # Write PID to lock file
+                os.truncate(lock_fd, 0)
+                os.write(lock_fd, str(os.getpid()).encode())
+                
+                # Keep lock_fd open - DO NOT CLOSE IT
+                # Store it for cleanup
+                self._lock_fd = lock_fd
+                logger.info(f"Successfully acquired lock for PID {os.getpid()}")
+                return True
+                
+            except (IOError, OSError) as e:
+                # Failed to acquire lock
+                logger.error("Another instance is already running")
+                os.close(lock_fd)
+                return False
+                
+        except Exception as e:
+            logger.error(f"Error in instance locking: {e}")
+            if lock_fd is not None:
+                os.close(lock_fd)
+            return False
+
     def __init__(self):
+        if hasattr(self, 'is_initialized'):
+            return
+            
         intents = discord.Intents.default()
         intents.message_content = True
         intents.members = True
@@ -32,6 +78,7 @@ class OctantBot(commands.Bot):
         
         self.chat_handler = ChatHandler()
         self.trivia = DiscordTrivia()
+        self.is_initialized = True
         
         # Remove default help
         self.remove_command('help')
@@ -225,28 +272,70 @@ Guilds connected: {len(self.guilds)}
 
 
 async def main():
+    bot = None
     try:
         bot = OctantBot()
+        
+        # Ensure single instance
+        if not await bot.ensure_single_instance():
+            logger.error("Another bot instance is already running")
+            sys.exit(1)
+        
         token = os.getenv('DISCORD_BOT_TOKEN')
         if not token:
             raise ValueError("Discord token not found in environment variables")
         
         logger.info("Starting bot...")
+        
+        # Setup signal handlers for graceful shutdown
+        def signal_handler():
+            asyncio.create_task(cleanup(bot))
+        
+        for sig in (signal.SIGINT, signal.SIGTERM):
+            loop = asyncio.get_event_loop()
+            loop.add_signal_handler(sig, signal_handler)
+        
         await bot.start(token)
         
     except Exception as e:
         logger.error(f"Bot error: {str(e)}")
+        if bot:
+            await cleanup(bot)
         sys.exit(1)
-    finally:
-        if 'bot' in locals():
+
+async def cleanup(bot):
+    """Cleanup function to handle graceful shutdown"""
+    logger.info("Starting cleanup process...")
+    try:
+        if bot:
+            # Close bot connection first
+            await bot.close()
+            logger.info("Bot connection closed")
+            
+            # Release file lock if we have it
+            if hasattr(bot, '_lock_fd'):
+                try:
+                    fcntl.flock(bot._lock_fd, fcntl.LOCK_UN)
+                    os.close(bot._lock_fd)
+                    logger.info("Released file lock")
+                except Exception as e:
+                    logger.error(f"Error releasing file lock: {e}")
+            
+            # Remove lock file
             try:
-                await bot.close()
-                logger.info("Bot shutdown complete")
+                if os.path.exists('discord_bot.lock'):
+                    os.remove('discord_bot.lock')
+                    logger.info("Removed lock file")
             except Exception as e:
-                logger.error(f"Error during shutdown: {str(e)}")
+                logger.error(f"Error removing lock file: {e}")
+                
+    except Exception as e:
+        logger.error(f"Error during cleanup: {e}")
 
 if __name__ == "__main__":
     try:
+        # Add signal module import
+        import signal
         asyncio.run(main())
     except KeyboardInterrupt:
         logger.info("Received keyboard interrupt - shutting down")

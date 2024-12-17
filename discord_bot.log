@@ -13177,3 +13177,51 @@ Logged in as: OCTANTBOT
 Bot ID: 1316950341954306159
 Guilds connected: 2
 ━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:20:07,559 - __main__ - INFO - Initialized message tracking system
+2024-12-17 03:20:07,559 - __main__ - INFO - Processing message 1318417418271330415
+2024-12-17 03:20:07,648 - chat_handler - INFO - Processing message from discord_792966572430983168_1318417418271330415: what if octant was a mystical animal what would it...
+2024-12-17 03:20:09,607 - __main__ - INFO - Response 1318417426400149605 sent for message 1318417418271330415
+2024-12-17 03:21:03,176 - discord.client - WARNING - PyNaCl is not installed, voice will NOT be supported
+2024-12-17 03:21:03,177 - __main__ - INFO - Starting bot...
+2024-12-17 03:21:03,177 - discord.client - INFO - logging in using static token
+2024-12-17 03:21:03,433 - __main__ - INFO - Initializing Discord bot...
+2024-12-17 03:21:03,664 - __main__ - INFO - Commands registered successfully
+2024-12-17 03:21:03,857 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: c89967d000750dcc01d4cfcf60f5370c).
+2024-12-17 03:21:05,504 - __main__ - ERROR - Another instance is already running
+2024-12-17 03:21:06,654 - discord.client - WARNING - PyNaCl is not installed, voice will NOT be supported
+2024-12-17 03:21:06,655 - __main__ - INFO - Starting bot...
+2024-12-17 03:21:06,655 - discord.client - INFO - logging in using static token
+2024-12-17 03:21:06,923 - __main__ - INFO - Initializing Discord bot...
+2024-12-17 03:21:37,470 - discord.client - WARNING - PyNaCl is not installed, voice will NOT be supported
+2024-12-17 03:21:37,471 - __main__ - INFO - Starting bot...
+2024-12-17 03:21:37,471 - discord.client - INFO - logging in using static token
+2024-12-17 03:21:43,769 - discord.client - WARNING - PyNaCl is not installed, voice will NOT be supported
+2024-12-17 03:21:43,771 - __main__ - INFO - Starting bot...
+2024-12-17 03:21:43,771 - discord.client - INFO - logging in using static token
+2024-12-17 03:21:45,445 - discord.client - WARNING - PyNaCl is not installed, voice will NOT be supported
+2024-12-17 03:21:45,446 - __main__ - INFO - Starting bot...
+2024-12-17 03:21:45,447 - discord.client - INFO - logging in using static token
+2024-12-17 03:22:04,017 - __main__ - INFO - Initializing Discord bot...
+2024-12-17 03:22:04,282 - __main__ - INFO - Commands registered successfully
+2024-12-17 03:22:04,480 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 580ae2657781870814fb5d2153ca6bbd).
+2024-12-17 03:22:06,486 - __main__ - INFO - ━━━━━━ Bot Ready ━━━━━━
+Logged in as: OCTANTBOT
+Bot ID: 1316950341954306159
+Guilds connected: 2
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:22:15,879 - discord.client - WARNING - PyNaCl is not installed, voice will NOT be supported
+2024-12-17 03:22:15,880 - __main__ - INFO - Successfully acquired lock for PID 16373
+2024-12-17 03:22:15,880 - __main__ - INFO - Starting bot...
+2024-12-17 03:22:15,881 - discord.client - INFO - logging in using static token
+2024-12-17 03:22:16,406 - __main__ - INFO - Initializing Discord bot...
+2024-12-17 03:23:04,291 - __main__ - INFO - Commands registered successfully
+2024-12-17 03:23:04,591 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: afe3f8aa394935e399ffa74db99c933b).
+2024-12-17 03:23:06,601 - __main__ - INFO - ━━━━━━ Bot Ready ━━━━━━
+Logged in as: OCTANTBOT
+Bot ID: 1316950341954306159
+Guilds connected: 2
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:23:26,994 - __main__ - INFO - Initialized message tracking system
+2024-12-17 03:23:26,994 - __main__ - INFO - Processing message 1318418254502297741
+2024-12-17 03:23:27,149 - chat_handler - INFO - Processing message from discord_792966572430983168_1318418254502297741: what if octant was a tasty adult beverage?...
+2024-12-17 03:23:29,465 - __main__ - INFO - Response 1318418264866557984 sent for message 1318418254502297741
