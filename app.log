@@ -84,3 +84,39 @@ CPU: 44.9%
 2024-12-17 03:05:56,341 - app - INFO - Request: GET / from 172.31.196.15
 2024-12-17 03:05:56,764 - app - INFO - Request: GET / from 172.31.196.15
 2024-12-17 03:05:56,772 - app - INFO - Request: GET / from 172.31.196.15
+2024-12-17 03:06:30,887 - app - INFO - Request: GET / from 172.31.196.15
+2024-12-17 03:07:21,218 - app - INFO - Health monitoring started
+2024-12-17 03:07:21,218 - __main__ - INFO - ━━━━━━ Environment Check ━━━━━━
+2024-12-17 03:07:21,218 - __main__ - INFO - ✓ TOGETHER_API_KEY: SET
+2024-12-17 03:07:21,218 - __main__ - INFO - ✓ DISCORD_BOT_TOKEN: SET
+2024-12-17 03:07:21,219 - __main__ - INFO - ✓ TELEGRAM_BOT_TOKEN: SET
+2024-12-17 03:07:21,219 - __main__ - INFO - 
+━━━━━━ Railway Startup ━━━━━━
+Environment: development
+Port: 5000
+Debug: True
+Memory: 0.1%
+CPU: 19.4%
+Python: 3.11.9
+Time: 2024-12-17T03:07:21.219618+00:00
+Retry: 1/5
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:07:21,534 - __main__ - INFO - Request: GET / from 172.31.196.15
+2024-12-17 03:07:21,810 - __main__ - INFO - Client connected: zVcQdWi93mnhrTOVAAAB
+2024-12-17 03:07:22,043 - engineio.server - ERROR - Invalid session 41dfqdM7EZoMyjpzAAAA (further occurrences of this error will be logged with level INFO)
+2024-12-17 03:07:22,266 - app - INFO - Request: GET /stream from 172.31.196.15
+2024-12-17 03:07:22,673 - __main__ - INFO - Health monitoring started
+2024-12-17 03:07:22,673 - __main__ - INFO - 
+━━━━━━ Server Starting ━━━━━━
+Port: 5000
+Debug: True
+Environment: development
+Memory: 62.3MB
+CPU: 33.8%
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:07:22,993 - __main__ - INFO - Request: GET / from 172.31.196.15
+2024-12-17 03:07:23,249 - __main__ - INFO - Request: GET / from 172.31.196.15
+2024-12-17 03:07:23,411 - __main__ - INFO - Request: GET / from 172.31.196.15
+2024-12-17 03:07:23,496 - __main__ - INFO - Client connected: 2MfF-bLBoHDvWdIKAAAB
+2024-12-17 03:07:23,732 - __main__ - INFO - Request: GET / from 172.31.196.15
+2024-12-17 03:07:24,132 - __main__ - INFO - Request: GET /stream from 172.31.196.15

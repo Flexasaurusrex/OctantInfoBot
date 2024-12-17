@@ -8,28 +8,38 @@ document.addEventListener('DOMContentLoaded', () => {
     let eventSource;
     
     function setupEventSource() {
+        if (eventSource) {
+            eventSource.close();
+        }
+        
         eventSource = new EventSource(`/stream?client_id=${clientId}`);
         
         eventSource.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            appendMessage(data.message, data.is_bot);
-            if (isWaitingForResponse) {
-                isWaitingForResponse = false;
-                enableInput();
+            try {
+                const data = JSON.parse(event.data);
+                appendMessage(data.message, data.is_bot);
+                if (isWaitingForResponse) {
+                    isWaitingForResponse = false;
+                    enableInput();
+                }
+            } catch (error) {
+                console.error('Error processing message:', error);
             }
         };
         
         eventSource.onerror = (error) => {
             console.error('EventSource error:', error);
             updateConnectionStatus('error');
-            eventSource.close();
-            setTimeout(setupEventSource, 3000);
+            if (eventSource.readyState === EventSource.CLOSED) {
+                setTimeout(setupEventSource, 3000);
+            }
         };
         
         eventSource.onopen = () => {
             console.log('EventSource connected');
             updateConnectionStatus('connected');
         };
+    }
 
     function updateConnectionStatus(status) {
         const statusIndicator = document.querySelector('.status-indicator');
@@ -68,24 +78,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function handleReconnection() {
-        if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
-            console.error('Max reconnection attempts reached');
-            updateConnectionStatus('error');
-            appendMessage('Connection lost. Please refresh the page to reconnect.', true);
-            return;
-        }
-
-        reconnectAttempts++;
-        updateConnectionStatus('reconnecting');
+        console.error('Connection lost');
+        updateConnectionStatus('error');
+        appendMessage('Connection lost. Attempting to reconnect...', true);
         
-        // Exponential backoff
-        retryDelay = Math.min(retryDelay * 2, 10000);
-        
+        // Attempt to reconnect EventSource
         setTimeout(() => {
-            if (!socket.connected) {
-                socket.connect();
-            }
-        }, retryDelay);
+            setupEventSource();
+        }, 3000);
     }
 
     function appendMessage(message, isBot = false) {
@@ -180,7 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Periodic connection check
     setInterval(() => {
-        if (!socket.connected && !isWaitingForResponse) {
+        if (eventSource && eventSource.readyState === EventSource.CLOSED && !isWaitingForResponse) {
             handleReconnection();
         }
     }, 5000);
