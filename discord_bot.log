@@ -13003,3 +13003,13 @@ Logged in as: OCTANTBOT
 Bot ID: 1316950341954306159
 Guilds connected: 2
 ━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 02:41:36,550 - __main__ - INFO - Starting bot...
+2024-12-17 02:41:36,550 - discord.client - INFO - logging in using static token
+2024-12-17 02:41:36,925 - __main__ - INFO - Initializing Discord bot...
+2024-12-17 02:41:37,101 - __main__ - INFO - Commands registered successfully
+2024-12-17 02:41:37,429 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 2d7b85462f40df979d5c49098b198978).
+2024-12-17 02:41:39,434 - __main__ - INFO - ━━━━━━ Bot Ready ━━━━━━
+Logged in as: OCTANTBOT
+Bot ID: 1316950341954306159
+Guilds connected: 2
+━━━━━━━━━━━━━━━━━━━━━━━━

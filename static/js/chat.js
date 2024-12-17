@@ -59,8 +59,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     socket.on('receive_message', (data) => {
+        console.log('Received message:', data);
         try {
-            appendMessage(data.message, data.is_bot);
+            if (data && typeof data === 'object') {
+                appendMessage(data.message, data.is_bot || false);
+            } else {
+                console.error('Invalid message format:', data);
+                appendMessage('Error: Received invalid message format', true);
+            }
         } catch (error) {
             console.error('Error processing received message:', error);
             appendMessage('Error displaying message', true);
@@ -70,6 +76,12 @@ document.addEventListener('DOMContentLoaded', () => {
             messageInput.disabled = false;
             messageInput.focus();
         }
+    });
+
+    // Add handler for connection status
+    socket.on('bot_status', (data) => {
+        console.log('Bot status:', data);
+        updateConnectionStatus(data.status);
     });
 
     function handleReconnection() {
@@ -121,10 +133,13 @@ document.addEventListener('DOMContentLoaded', () => {
         
         socket.emit('send_message', { message }, (error) => {
             if (error) {
+                console.error('Message send error:', error);
                 isWaitingForResponse = false;
                 sendButton.disabled = false;
                 messageInput.disabled = false;
                 appendMessage('Failed to send message. Please try again.', true);
+            } else {
+                console.log('Message sent successfully');
             }
         });
     }
