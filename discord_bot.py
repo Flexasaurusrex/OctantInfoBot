@@ -249,6 +249,12 @@ Guilds connected: {len(self.guilds)}
             # Process message with timeout protection
             try:
                 async with message.channel.typing():
+                    # Check if we've already responded to this message
+                    async with self._message_lock:
+                        if message_id in self._response_cache:
+                            logger.info(f"Skipping duplicate response for message {message_id}")
+                            return
+
                     # Generate a unique socket ID for Discord messages
                     discord_socket_id = f"discord_{message.author.id}_{message.id}"
                     response = await asyncio.wait_for(
@@ -267,17 +273,18 @@ Guilds connected: {len(self.guilds)}
                             response_text = '\n'.join(chunk.strip() for chunk in response if chunk)
                         else:
                             response_text = response.strip()
-                            
-                            # Remove 'Answer:' prefix if present
-                            if response_text.lower().startswith('answer:'):
-                                response_text = response_text[7:].strip()
                                 
-                            if response_text:
-                                # Send response and track it
-                                sent_message = await message.reply(response_text)
-                                async with self._message_lock:
-                                    self._response_cache[message_id] = sent_message.id
-                                logger.info(f"Response {sent_message.id} sent for message {message_id}")
+                        # Remove 'Answer:' prefix if present
+                        if response_text.lower().startswith('answer:'):
+                            response_text = response_text[7:].strip()
+
+                        # Only send response if we have text
+                        if response_text:
+                            # Send response and track it immediately
+                            sent_message = await message.reply(response_text)
+                            async with self._message_lock:
+                                self._response_cache[message_id] = sent_message.id
+                            logger.info(f"Response {sent_message.id} sent for message {message_id}")
 
                     else:
                         logger.warning(f"Empty response for message {message_id}")

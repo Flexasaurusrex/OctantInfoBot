@@ -13358,3 +13358,51 @@ Status: Lock acquired successfully
 ━━━━━━━━━━━━━━━━━━━━━━━━
 2024-12-17 03:37:53,735 - __main__ - INFO - Starting bot...
 2024-12-17 03:37:53,735 - discord.client - INFO - logging in using static token
+2024-12-17 03:38:19,642 - __main__ - INFO - Initializing Discord bot...
+2024-12-17 03:38:19,811 - __main__ - INFO - Commands registered successfully
+2024-12-17 03:38:19,976 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 9d0d011e686d9d8750be8e2c884da190).
+2024-12-17 03:38:21,992 - __main__ - INFO - ━━━━━━ Bot Ready ━━━━━━
+Logged in as: OCTANTBOT
+Bot ID: 1316950341954306159
+Guilds connected: 2
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:38:25,343 - __main__ - INFO - Initialized message tracking system
+2024-12-17 03:38:25,343 - __main__ - INFO - Processing message 1318422022727929897
+2024-12-17 03:38:25,426 - chat_handler - INFO - Processing message from discord_792966572430983168_1318422022727929897: you could use a l \ittle more humour ok?...
+2024-12-17 03:38:27,290 - __main__ - INFO - Response 1318422030621737053 sent for message 1318422022727929897
+2024-12-17 03:39:48,458 - discord.client - WARNING - PyNaCl is not installed, voice will NOT be supported
+2024-12-17 03:39:48,459 - __main__ - INFO - No running instance found for PID: 19105
+2024-12-17 03:39:48,459 - __main__ - INFO - Removed existing lock file
+2024-12-17 03:39:48,477 - __main__ - INFO - ━━━━━━ Bot Instance Lock ━━━━━━
+Instance PID: 19310
+Lock File: discord_bot.lock
+Status: Lock acquired successfully
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:39:48,477 - __main__ - INFO - Starting bot...
+2024-12-17 03:39:48,478 - discord.client - INFO - logging in using static token
+2024-12-17 03:39:48,820 - __main__ - INFO - Initializing Discord bot...
+2024-12-17 03:39:49,113 - __main__ - INFO - Commands registered successfully
+2024-12-17 03:39:49,304 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: c7a69caaf8f01054af70fae8f205e0d3).
+2024-12-17 03:39:51,314 - __main__ - INFO - ━━━━━━ Bot Ready ━━━━━━
+Logged in as: OCTANTBOT
+Bot ID: 1316950341954306159
+Guilds connected: 2
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:40:07,350 - discord.client - WARNING - PyNaCl is not installed, voice will NOT be supported
+2024-12-17 03:40:07,351 - __main__ - INFO - No running instance found for PID: 19310
+2024-12-17 03:40:07,351 - __main__ - INFO - Removed existing lock file
+2024-12-17 03:40:07,353 - __main__ - INFO - ━━━━━━ Bot Instance Lock ━━━━━━
+Instance PID: 19436
+Lock File: discord_bot.lock
+Status: Lock acquired successfully
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:40:07,353 - __main__ - INFO - Starting bot...
+2024-12-17 03:40:07,354 - discord.client - INFO - logging in using static token
+2024-12-17 03:40:07,619 - __main__ - INFO - Initializing Discord bot...
+2024-12-17 03:40:49,028 - __main__ - INFO - Commands registered successfully
+2024-12-17 03:40:49,326 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: b8b28deab0bf411aeac5391037b87ea9).
+2024-12-17 03:40:51,339 - __main__ - INFO - ━━━━━━ Bot Ready ━━━━━━
+Logged in as: OCTANTBOT
+Bot ID: 1316950341954306159
+Guilds connected: 2
+━━━━━━━━━━━━━━━━━━━━━━━━
