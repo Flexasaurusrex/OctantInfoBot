@@ -262,15 +262,22 @@ Guilds connected: {len(self.guilds)}
 
                     if response:
                         # Format response
-                        response_text = ('\n'.join(filter(None, (chunk.strip() for chunk in response))) 
-                                       if isinstance(response, list) else response.strip())
-                        
-                        if response_text:
-                            # Send response and track it
-                            sent_message = await message.reply(response_text)
-                            async with self._message_lock:
-                                self._response_cache[message_id] = sent_message.id
-                            logger.info(f"Response {sent_message.id} sent for message {message_id}")
+                        # Clean up response text and normalize
+                        if isinstance(response, list):
+                            response_text = '\n'.join(chunk.strip() for chunk in response if chunk)
+                        else:
+                            response_text = response.strip()
+                            
+                            # Remove 'Answer:' prefix if present
+                            if response_text.lower().startswith('answer:'):
+                                response_text = response_text[7:].strip()
+                                
+                            if response_text:
+                                # Send response and track it
+                                sent_message = await message.reply(response_text)
+                                async with self._message_lock:
+                                    self._response_cache[message_id] = sent_message.id
+                                logger.info(f"Response {sent_message.id} sent for message {message_id}")
 
                     else:
                         logger.warning(f"Empty response for message {message_id}")

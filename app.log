@@ -1135,3 +1135,249 @@ Environment: development
 2024-12-17 03:30:36,332 - werkzeug - INFO -  * Debugger PIN: 385-162-407
 2024-12-17 03:30:36,762 - __main__ - INFO - Request: GET / from 172.31.196.15
 2024-12-17 03:32:46,847 - __main__ - INFO - Request: GET / from 172.31.196.15
+2024-12-17 03:34:10,995 - werkzeug - INFO -  * Detected change in '/home/runner/workspace/discord_bot.py', reloading
+2024-12-17 03:34:11,057 - werkzeug - INFO -  * Restarting with stat
+2024-12-17 03:34:11,577 - __main__ - INFO - 
+━━━━━━ Server Starting ━━━━━━
+Port: 5000
+Debug: True
+Environment: development
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:34:11,582 - werkzeug - WARNING -  * Debugger is active!
+2024-12-17 03:34:11,583 - werkzeug - INFO -  * Debugger PIN: 480-192-008
+2024-12-17 03:34:11,918 - __main__ - INFO - Request: GET / from 172.31.196.15
+2024-12-17 03:34:12,988 - __main__ - INFO - ━━━━━━ Environment Check ━━━━━━
+2024-12-17 03:34:12,988 - __main__ - INFO - ✓ TOGETHER_API_KEY: SET
+2024-12-17 03:34:12,989 - __main__ - INFO - ✓ DISCORD_BOT_TOKEN: SET
+2024-12-17 03:34:12,989 - __main__ - INFO - ✓ TELEGRAM_BOT_TOKEN: SET
+2024-12-17 03:34:12,989 - __main__ - INFO - 
+━━━━━━ Railway Startup ━━━━━━
+Environment: development
+Port: 5000
+Debug: True
+Memory: 0.1%
+CPU: 22.0%
+Python: 3.11.9
+Time: 2024-12-17T03:34:12.989792+00:00
+Retry: 1/5
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:34:13,128 - engineio.server - ERROR - Invalid session 6qkrubI56pwh7ro7AAAA (further occurrences of this error will be logged with level INFO)
+2024-12-17 03:34:13,698 - __main__ - INFO - 
+━━━━━━ Server Starting ━━━━━━
+Port: 5000
+Debug: True
+Environment: development
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:34:13,703 - werkzeug - INFO -  * Restarting with stat
+2024-12-17 03:34:14,187 - __main__ - INFO - 
+━━━━━━ Server Starting ━━━━━━
+Port: 5000
+Debug: True
+Environment: development
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:34:14,192 - werkzeug - WARNING -  * Debugger is active!
+2024-12-17 03:34:14,193 - werkzeug - INFO -  * Debugger PIN: 145-540-494
+2024-12-17 03:34:14,451 - app - INFO - Request: GET / from 172.31.196.15
+2024-12-17 03:34:30,661 - werkzeug - INFO -  * Detected change in '/home/runner/workspace/discord_bot.py', reloading
+2024-12-17 03:34:30,731 - werkzeug - INFO -  * Restarting with stat
+2024-12-17 03:34:31,240 - __main__ - INFO - 
+━━━━━━ Server Starting ━━━━━━
+Port: 5000
+Debug: True
+Environment: development
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:34:31,246 - werkzeug - WARNING -  * Debugger is active!
+2024-12-17 03:34:31,248 - werkzeug - INFO -  * Debugger PIN: 135-609-795
+2024-12-17 03:34:31,548 - app - INFO - Request: GET / from 172.31.196.15
+2024-12-17 03:34:33,533 - __main__ - INFO - ━━━━━━ Environment Check ━━━━━━
+2024-12-17 03:34:33,533 - __main__ - INFO - ✓ TOGETHER_API_KEY: SET
+2024-12-17 03:34:33,533 - __main__ - INFO - ✓ DISCORD_BOT_TOKEN: SET
+2024-12-17 03:34:33,533 - __main__ - INFO - ✓ TELEGRAM_BOT_TOKEN: SET
+2024-12-17 03:34:33,534 - __main__ - INFO - 
+━━━━━━ Railway Startup ━━━━━━
+Environment: development
+Port: 5000
+Debug: True
+Memory: 0.1%
+CPU: 22.2%
+Python: 3.11.9
+Time: 2024-12-17T03:34:33.534412+00:00
+Retry: 1/5
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:34:33,760 - app - INFO - Request: GET / from 172.31.196.15
+2024-12-17 03:34:34,241 - __main__ - INFO - 
+━━━━━━ Server Starting ━━━━━━
+Port: 5000
+Debug: True
+Environment: development
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:34:34,247 - werkzeug - INFO -  * Restarting with stat
+2024-12-17 03:34:34,725 - __main__ - INFO - 
+━━━━━━ Server Starting ━━━━━━
+Port: 5000
+Debug: True
+Environment: development
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:34:34,730 - werkzeug - WARNING -  * Debugger is active!
+2024-12-17 03:34:34,731 - werkzeug - INFO -  * Debugger PIN: 374-064-184
+2024-12-17 03:34:34,987 - app - INFO - Request: GET / from 172.31.196.15
+2024-12-17 03:34:49,157 - werkzeug - INFO -  * Detected change in '/home/runner/workspace/discord_bot.py', reloading
+2024-12-17 03:34:49,220 - werkzeug - INFO -  * Restarting with stat
+2024-12-17 03:34:49,698 - __main__ - INFO - 
+━━━━━━ Server Starting ━━━━━━
+Port: 5000
+Debug: True
+Environment: development
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:34:49,703 - werkzeug - WARNING -  * Debugger is active!
+2024-12-17 03:34:49,704 - werkzeug - INFO -  * Debugger PIN: 174-512-418
+2024-12-17 03:34:49,958 - app - INFO - Request: GET / from 172.31.196.15
+2024-12-17 03:34:52,213 - __main__ - INFO - ━━━━━━ Environment Check ━━━━━━
+2024-12-17 03:34:52,213 - __main__ - INFO - ✓ TOGETHER_API_KEY: SET
+2024-12-17 03:34:52,214 - __main__ - INFO - ✓ DISCORD_BOT_TOKEN: SET
+2024-12-17 03:34:52,214 - __main__ - INFO - ✓ TELEGRAM_BOT_TOKEN: SET
+2024-12-17 03:34:52,214 - __main__ - INFO - 
+━━━━━━ Railway Startup ━━━━━━
+Environment: development
+Port: 5000
+Debug: True
+Memory: 0.1%
+CPU: 20.4%
+Python: 3.11.9
+Time: 2024-12-17T03:34:52.214675+00:00
+Retry: 1/5
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:34:52,499 - app - INFO - Request: GET / from 172.31.196.15
+2024-12-17 03:34:52,963 - __main__ - INFO - 
+━━━━━━ Server Starting ━━━━━━
+Port: 5000
+Debug: True
+Environment: development
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:34:52,970 - werkzeug - INFO -  * Restarting with stat
+2024-12-17 03:34:53,667 - __main__ - INFO - 
+━━━━━━ Server Starting ━━━━━━
+Port: 5000
+Debug: True
+Environment: development
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:34:53,674 - werkzeug - WARNING -  * Debugger is active!
+2024-12-17 03:34:53,675 - werkzeug - INFO -  * Debugger PIN: 130-380-391
+2024-12-17 03:34:53,974 - app - INFO - Request: GET / from 172.31.196.15
+2024-12-17 03:35:14,281 - werkzeug - INFO -  * Detected change in '/home/runner/workspace/discord_bot.py', reloading
+2024-12-17 03:35:14,343 - werkzeug - INFO -  * Restarting with stat
+2024-12-17 03:35:14,807 - __main__ - INFO - 
+━━━━━━ Server Starting ━━━━━━
+Port: 5000
+Debug: True
+Environment: development
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:35:14,813 - werkzeug - WARNING -  * Debugger is active!
+2024-12-17 03:35:14,814 - werkzeug - INFO -  * Debugger PIN: 902-612-647
+2024-12-17 03:35:15,130 - app - INFO - Request: GET / from 172.31.196.15
+2024-12-17 03:35:17,267 - __main__ - INFO - ━━━━━━ Environment Check ━━━━━━
+2024-12-17 03:35:17,267 - __main__ - INFO - ✓ TOGETHER_API_KEY: SET
+2024-12-17 03:35:17,267 - __main__ - INFO - ✓ DISCORD_BOT_TOKEN: SET
+2024-12-17 03:35:17,267 - __main__ - INFO - ✓ TELEGRAM_BOT_TOKEN: SET
+2024-12-17 03:35:17,268 - __main__ - INFO - 
+━━━━━━ Railway Startup ━━━━━━
+Environment: development
+Port: 5000
+Debug: True
+Memory: 0.1%
+CPU: 37.4%
+Python: 3.11.9
+Time: 2024-12-17T03:35:17.268368+00:00
+Retry: 1/5
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:35:17,577 - app - INFO - Request: GET / from 172.31.196.15
+2024-12-17 03:35:17,987 - __main__ - INFO - 
+━━━━━━ Server Starting ━━━━━━
+Port: 5000
+Debug: True
+Environment: development
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:35:17,994 - werkzeug - INFO -  * Restarting with stat
+2024-12-17 03:35:18,463 - __main__ - INFO - 
+━━━━━━ Server Starting ━━━━━━
+Port: 5000
+Debug: True
+Environment: development
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:35:18,470 - werkzeug - WARNING -  * Debugger is active!
+2024-12-17 03:35:18,485 - werkzeug - INFO -  * Debugger PIN: 454-545-643
+2024-12-17 03:35:18,835 - app - INFO - Request: GET / from 172.31.196.15
+2024-12-17 03:35:18,950 - engineio.server - ERROR - Invalid session v7wYAsskVIlItW8dAAAA (further occurrences of this error will be logged with level INFO)
+2024-12-17 03:35:20,943 - engineio.server - ERROR - Invalid session NJsqlzvzZfpMv38BAAAA (further occurrences of this error will be logged with level INFO)
+2024-12-17 03:35:59,629 - werkzeug - INFO -  * Detected change in '/home/runner/workspace/discord_bot.py', reloading
+2024-12-17 03:36:00,331 - __main__ - INFO - ━━━━━━ Environment Check ━━━━━━
+2024-12-17 03:36:00,331 - __main__ - INFO - ✓ TOGETHER_API_KEY: SET
+2024-12-17 03:36:00,332 - __main__ - INFO - ✓ DISCORD_BOT_TOKEN: SET
+2024-12-17 03:36:00,332 - __main__ - INFO - ✓ TELEGRAM_BOT_TOKEN: SET
+2024-12-17 03:36:00,332 - __main__ - INFO - 
+━━━━━━ Railway Startup ━━━━━━
+Environment: development
+Port: 5000
+Debug: True
+Memory: 0.1%
+CPU: 39.7%
+Python: 3.11.9
+Time: 2024-12-17T03:36:00.332690+00:00
+Retry: 1/5
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:36:00,355 - engineio.server - ERROR - Invalid session srLK44lpINXIsWMxAAAB (further occurrences of this error will be logged with level INFO)
+2024-12-17 03:36:00,603 - app - INFO - Request: GET / from 172.31.196.15
+2024-12-17 03:36:01,057 - __main__ - INFO - 
+━━━━━━ Server Starting ━━━━━━
+Port: 5000
+Debug: True
+Environment: development
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:36:01,063 - werkzeug - INFO -  * Restarting with stat
+2024-12-17 03:36:01,537 - __main__ - INFO - 
+━━━━━━ Server Starting ━━━━━━
+Port: 5000
+Debug: True
+Environment: development
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:36:01,543 - werkzeug - WARNING -  * Debugger is active!
+2024-12-17 03:36:01,544 - werkzeug - INFO -  * Debugger PIN: 140-343-066
+2024-12-17 03:36:01,806 - app - INFO - Request: GET / from 172.31.196.15
+2024-12-17 03:36:03,263 - engineio.server - ERROR - Invalid session gMs-00c3YQE5oCTXAAAA (further occurrences of this error will be logged with level INFO)
+2024-12-17 03:36:40,607 - werkzeug - INFO -  * Detected change in '/home/runner/workspace/discord_bot.py', reloading
+2024-12-17 03:36:40,668 - werkzeug - INFO -  * Restarting with stat
+2024-12-17 03:36:41,145 - __main__ - INFO - 
+━━━━━━ Server Starting ━━━━━━
+Port: 5000
+Debug: True
+Environment: development
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:36:41,151 - werkzeug - WARNING -  * Debugger is active!
+2024-12-17 03:36:41,152 - werkzeug - INFO -  * Debugger PIN: 888-041-563
+2024-12-17 03:36:41,479 - app - INFO - Request: GET / from 172.31.196.15
+2024-12-17 03:36:45,919 - app - INFO - Request: POST /chat from 172.31.196.15
+2024-12-17 03:36:45,920 - app - INFO - Processing message from ccbb8c26-4173-4daa-b2a6-aba67593c4a0: what is glm?...
+2024-12-17 03:36:45,920 - chat_handler - INFO - Processing message from ccbb8c26-4173-4daa-b2a6-aba67593c4a0: what is glm?...
+2024-12-17 03:36:47,310 - app - INFO - Successfully generated response for ccbb8c26-4173-4daa-b2a6-aba67593c4a0
+2024-12-17 03:37:18,236 - werkzeug - INFO -  * Detected change in '/home/runner/workspace/discord_bot.py', reloading
+2024-12-17 03:37:18,297 - werkzeug - INFO -  * Restarting with stat
+2024-12-17 03:37:18,762 - __main__ - INFO - 
+━━━━━━ Server Starting ━━━━━━
+Port: 5000
+Debug: True
+Environment: development
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:37:18,769 - werkzeug - WARNING -  * Debugger is active!
+2024-12-17 03:37:18,770 - werkzeug - INFO -  * Debugger PIN: 464-442-873
+2024-12-17 03:37:19,185 - app - INFO - Request: GET / from 172.31.196.15
+2024-12-17 03:37:42,440 - werkzeug - INFO -  * Detected change in '/home/runner/workspace/discord_bot.py', reloading
+2024-12-17 03:37:42,505 - werkzeug - INFO -  * Restarting with stat
+2024-12-17 03:37:43,027 - __main__ - INFO - 
+━━━━━━ Server Starting ━━━━━━
+Port: 5000
+Debug: True
+Environment: development
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:37:43,035 - werkzeug - WARNING -  * Debugger is active!
+2024-12-17 03:37:43,037 - werkzeug - INFO -  * Debugger PIN: 125-585-633
+2024-12-17 03:37:43,827 - app - INFO - Request: GET / from 172.31.196.15
