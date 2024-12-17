@@ -6,7 +6,6 @@
     <title>Octant Information Bot</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
 </head>
 <body>
@@ -26,14 +25,14 @@
             
             <nav class="sidebar-nav">
                 <button class="sidebar-button" onclick="toggleTheme()">
-                    <svg class="light-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                         <path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM12 21.75a.75.75 0 01-.75-.75v-2.25a.75.75 0 011.5 0V21a.75.75 0 01-.75.75zM3 12a.75.75 0 01.75-.75h2.25a.75.75 0 010 1.5H3.75A.75.75 0 013 12zM21 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5h2.25A.75.75 0 0121 12z"/>
                     </svg>
                     <span>Theme</span>
                 </button>
 
                 <button class="sidebar-button" id="restartButton">
-                    <svg class="restart-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                         <path d="M12 4.5c-4.14 0-7.5 3.36-7.5 7.5s3.36 7.5 7.5 7.5c3.53 0 6.48-2.44 7.28-5.72.14-.58-.22-1.16-.8-1.3-.58-.14-1.16.22-1.3.8-.6 2.5-2.83 4.22-5.18 4.22-3.03 0-5.5-2.47-5.5-5.5s2.47-5.5 5.5-5.5c1.45 0 2.84.57 3.89 1.59l-1.89 1.89c-.65.65-.2 1.77.72 1.77h4c.55 0 1-.45 1-1v-4c0-.92-1.12-1.37-1.77-.72l-1.49 1.49C13.64 5.05 12.38 4.5 11 4.5z"/>
                     </svg>
                     <span>Restart Services</span>
@@ -55,24 +54,21 @@
                             <span class="stat-value" id="active-users">0</span>
                         </div>
                     </div>
-                    <div class="chart-container">
-                        <canvas id="activity-chart"></canvas>
-                    </div>
                 </div>
-                <div class="connection-status">
-                    <div class="status-indicator"></div>
-                    <span class="status-text">Disconnected</span>
-                </div>
+            </nav>
+            <div class="connection-status">
+                <div class="status-indicator"></div>
+                <span class="status-text">Disconnected</span>
             </div>
         </aside>
 
         <!-- Main Content -->
         <div class="main-content">
             <header class="header">
-                <div class="container text-center">
+                <div class="container">
                     <div class="header-content">
-                        <h1 class="mb-0">Octant Information Bot</h1>
-                        <p class="mt-3 description">THE DEFINITIVE GUIDE TO THE OCTANT ECOSYSTEM</p>
+                        <h1>Octant Information Bot</h1>
+                        <p class="description">THE DEFINITIVE GUIDE TO THE OCTANT ECOSYSTEM</p>
                         <p class="mt-2">Ask me anything about Octant, GLM tokens, or the platform's features!</p>
                     </div>
                 </div>
@@ -81,12 +77,11 @@
             <main class="container">
                 <div class="chat-container">
                     <div id="messages" class="messages-container">
+                        <!-- Messages will be inserted here -->
                     </div>
-                    
                     <div class="input-container">
-                        <input type="text" id="message-input" class="form-control" 
-                               placeholder="Type your message here..." autocomplete="off">
-                        <button id="send-button" class="btn">Send</button>
+                        <input type="text" id="message-input" placeholder="Type your message here..." autocomplete="off">
+                        <button id="send-button">Send</button>
                     </div>
                 </div>
             </main>
@@ -95,17 +90,14 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="{{ url_for('static', filename='js/chat.js') }}"></script>
     <script>
-        // Check for saved theme preference
         const savedTheme = localStorage.getItem('theme') || 'light';
         document.documentElement.setAttribute('data-theme', savedTheme);
 
         function toggleTheme() {
             const currentTheme = document.documentElement.getAttribute('data-theme');
             const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-            
             document.documentElement.setAttribute('data-theme', newTheme);
             localStorage.setItem('theme', newTheme);
         }

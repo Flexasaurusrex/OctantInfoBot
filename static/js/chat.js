@@ -3,7 +3,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const sendButton = document.getElementById('send-button');
     const messagesContainer = document.getElementById('messages');
     let isWaitingForResponse = false;
-    let socket = null;
     let reconnectAttempts = 0;
     const MAX_RECONNECT_ATTEMPTS = 5;
     const INITIAL_RETRY_DELAY = 1000;
@@ -28,60 +27,50 @@ document.addEventListener('DOMContentLoaded', () => {
         statusText.textContent = currentStatus.text;
     }
 
-    function createSocket() {
-        if (socket) {
-            socket.disconnect();
+    const socket = io({
+        reconnection: true,
+        reconnectionAttempts: MAX_RECONNECT_ATTEMPTS,
+        reconnectionDelay: INITIAL_RETRY_DELAY,
+        reconnectionDelayMax: 5000,
+        timeout: 20000,
+        transports: ['websocket', 'polling']
+    });
+
+    socket.on('connect', () => {
+        console.log('Connected to server');
+        reconnectAttempts = 0;
+        updateConnectionStatus('connected');
+    });
+
+    socket.on('connect_error', (error) => {
+        console.warn('Connection error:', error);
+        handleReconnection();
+    });
+
+    socket.on('disconnect', (reason) => {
+        console.warn('Disconnected:', reason);
+        updateConnectionStatus('disconnected');
+        handleReconnection();
+    });
+
+    socket.on('error', (error) => {
+        console.error('Socket error:', error);
+        handleReconnection();
+    });
+
+    socket.on('receive_message', (data) => {
+        try {
+            appendMessage(data.message, data.is_bot);
+        } catch (error) {
+            console.error('Error processing received message:', error);
+            appendMessage('Error displaying message', true);
+        } finally {
+            isWaitingForResponse = false;
+            sendButton.disabled = false;
+            messageInput.disabled = false;
+            messageInput.focus();
         }
-
-        socket = io({
-            reconnection: true,
-            reconnectionAttempts: MAX_RECONNECT_ATTEMPTS,
-            reconnectionDelay: INITIAL_RETRY_DELAY,
-            reconnectionDelayMax: 5000,
-            timeout: 20000,
-            transports: ['websocket', 'polling']
-        });
-
-        socket.on('connect', () => {
-            console.log('Connected to server');
-            reconnectAttempts = 0;
-            updateConnectionStatus('connected');
-            const errorDiv = document.querySelector('.connection-error');
-            if (errorDiv) {
-                errorDiv.remove();
-            }
-        });
-
-        socket.on('connect_error', (error) => {
-            console.warn('Connection error:', error);
-            handleReconnection();
-        });
-
-        socket.on('disconnect', (reason) => {
-            console.warn('Disconnected:', reason);
-            updateConnectionStatus('disconnected');
-            handleReconnection();
-        });
-
-        socket.on('error', (error) => {
-            console.error('Socket error:', error);
-            handleReconnection();
-        });
-
-        socket.on('receive_message', (data) => {
-            try {
-                appendMessage(data.message, data.is_bot);
-            } catch (error) {
-                console.error('Error processing received message:', error);
-                appendMessage('Error displaying message', true);
-            } finally {
-                isWaitingForResponse = false;
-                sendButton.disabled = false;
-                messageInput.disabled = false;
-                messageInput.focus();
-            }
-        });
-    }
+    });
 
     function handleReconnection() {
         if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
@@ -93,10 +82,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         reconnectAttempts++;
         updateConnectionStatus('reconnecting');
-        
-        setTimeout(() => {
-            createSocket();
-        }, INITIAL_RETRY_DELAY * Math.pow(2, reconnectAttempts - 1));
     }
 
     function appendMessage(message, isBot = false) {
@@ -119,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function sendMessage() {
-        if (isWaitingForResponse || !socket || !socket.connected) {
+        if (isWaitingForResponse || !socket.connected) {
             console.warn('Cannot send message: Socket not ready or waiting for response');
             return;
         }
@@ -143,9 +128,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-
-    // Initialize socket
-    createSocket();
 
     // UI Event Listeners
     sendButton.addEventListener('click', sendMessage);
