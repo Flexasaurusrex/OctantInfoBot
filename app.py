@@ -4,9 +4,9 @@ from flask import Flask, render_template, request, jsonify, session
 from flask_cors import CORS
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from flask_socketio import SocketIO
 from datetime import datetime
 import uuid
-import logging
 from chat_handler import ChatHandler
 
 # Configure logging
@@ -25,6 +25,8 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get("FLASK_SECRET_KEY", "octant-chat-secret")
 CORS(app)
 
+# Initialize SocketIO
+socketio = SocketIO(app, cors_allowed_origins="*")
 # Initialize rate limiter
 limiter = Limiter(
     app=app,
@@ -122,10 +124,12 @@ Debug: {debug}
 Environment: {os.environ.get('FLASK_ENV', 'development')}
 ━━━━━━━━━━━━━━━━━━━━━━━━""")
         
-        app.run(
+        socketio.run(
+            app,
             host='0.0.0.0',
             port=port,
-            debug=debug
+            debug=debug,
+            allow_unsafe_werkzeug=True
         )
         
     except Exception as e:

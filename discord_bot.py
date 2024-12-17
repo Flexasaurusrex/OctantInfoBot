@@ -3,6 +3,7 @@ import sys
 import logging
 import fcntl
 import asyncio
+import signal
 import discord
 from discord import app_commands
 from discord.ext import commands
@@ -29,38 +30,97 @@ class OctantBot(commands.Bot):
         return cls._instance
 
     async def ensure_single_instance(self):
+        """Ensure only one instance of the bot is running using file-based locking."""
         pid_file = 'discord_bot.lock'
-        lock_fd = None
+        self._lock_fd = None
+        
+        # Force cleanup any existing instances
+        await self.cleanup_existing_instances()
         
         try:
-            # Try to acquire an exclusive file lock
-            lock_fd = os.open(pid_file, os.O_CREAT | os.O_RDWR)
+            # Create new lock file with exclusive access
+            self._lock_fd = os.open(pid_file, os.O_CREAT | os.O_RDWR)
             
             try:
-                # Try to get an exclusive lock
-                fcntl.flock(lock_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                # Try to acquire an exclusive lock
+                fcntl.flock(self._lock_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
                 
-                # Write PID to lock file
-                os.truncate(lock_fd, 0)
-                os.write(lock_fd, str(os.getpid()).encode())
+                # Write current PID to lock file and flush immediately
+                current_pid = str(os.getpid())
+                os.write(self._lock_fd, current_pid.encode())
+                os.fsync(self._lock_fd)
                 
-                # Keep lock_fd open - DO NOT CLOSE IT
-                # Store it for cleanup
-                self._lock_fd = lock_fd
-                logger.info(f"Successfully acquired lock for PID {os.getpid()}")
+                logger.info(f"""━━━━━━ Bot Instance Lock ━━━━━━
+Instance PID: {current_pid}
+Lock File: {pid_file}
+Status: Lock acquired successfully
+━━━━━━━━━━━━━━━━━━━━━━━━""")
                 return True
                 
-            except (IOError, OSError) as e:
-                # Failed to acquire lock
-                logger.error("Another instance is already running")
-                os.close(lock_fd)
+            except BlockingIOError:
+                try:
+                    # Read PID of the running instance
+                    os.lseek(self._lock_fd, 0, os.SEEK_SET)
+                    existing_pid = int(os.read(self._lock_fd, 32).decode().strip())
+                    logger.error(f"Another bot instance is running (PID: {existing_pid})")
+                except (ValueError, OSError) as e:
+                    logger.error(f"Error reading existing PID: {e}")
+                
+                if self._lock_fd is not None:
+                    os.close(self._lock_fd)
+                    self._lock_fd = None
                 return False
                 
-        except Exception as e:
-            logger.error(f"Error in instance locking: {e}")
-            if lock_fd is not None:
-                os.close(lock_fd)
+        except (OSError, IOError) as e:
+            logger.error(f"Failed to create/acquire lock file: {e}")
+            if self._lock_fd is not None:
+                try:
+                    os.close(self._lock_fd)
+                    self._lock_fd = None
+                except OSError:
+                    pass
             return False
+            
+    async def cleanup_existing_instances(self):
+        """Force cleanup of any existing bot instances."""
+        pid_file = 'discord_bot.lock'
+        
+        if os.path.exists(pid_file):
+            try:
+                with open(pid_file, 'r') as f:
+                    old_pid = int(f.read().strip())
+                    
+                    try:
+                        # Check if process exists and terminate it
+                        os.kill(old_pid, signal.SIGTERM)
+                        logger.info(f"Sent termination signal to existing instance (PID: {old_pid})")
+                        
+                        # Wait for process to terminate
+                        for _ in range(5):  # Wait up to 5 seconds
+                            await asyncio.sleep(1)
+                            try:
+                                os.kill(old_pid, 0)
+                            except OSError:
+                                break
+                        else:
+                            # Force kill if still running
+                            try:
+                                os.kill(old_pid, signal.SIGKILL)
+                                logger.info(f"Force killed existing instance (PID: {old_pid})")
+                            except OSError:
+                                pass
+                                
+                    except OSError:
+                        logger.info(f"No running instance found for PID: {old_pid}")
+                        
+            except (ValueError, OSError) as e:
+                logger.info(f"Invalid lock file found: {e}")
+                
+            try:
+                os.remove(pid_file)
+                logger.info("Removed existing lock file")
+            except OSError as e:
+                logger.error(f"Error removing lock file: {e}")
 
     def __init__(self):
         if hasattr(self, 'is_initialized'):
@@ -305,32 +365,45 @@ async def main():
 
 async def cleanup(bot):
     """Cleanup function to handle graceful shutdown"""
-    logger.info("Starting cleanup process...")
+    logger.info("━━━━━━ Starting Cleanup ━━━━━━")
+    
+    if not bot:
+        logger.warning("No bot instance provided for cleanup")
+        return
+        
     try:
-        if bot:
-            # Close bot connection first
+        # Close Discord connection
+        try:
             await bot.close()
-            logger.info("Bot connection closed")
+            logger.info("Discord connection closed")
+        except Exception as e:
+            logger.error(f"Error closing Discord connection: {e}")
             
-            # Release file lock if we have it
-            if hasattr(bot, '_lock_fd'):
-                try:
-                    fcntl.flock(bot._lock_fd, fcntl.LOCK_UN)
-                    os.close(bot._lock_fd)
-                    logger.info("Released file lock")
-                except Exception as e:
-                    logger.error(f"Error releasing file lock: {e}")
-            
-            # Remove lock file
+        # Release file lock
+        if hasattr(bot, '_lock_fd') and bot._lock_fd is not None:
             try:
-                if os.path.exists('discord_bot.lock'):
-                    os.remove('discord_bot.lock')
-                    logger.info("Removed lock file")
+                fcntl.flock(bot._lock_fd, fcntl.LOCK_UN)
+                os.close(bot._lock_fd)
+                bot._lock_fd = None
+                logger.info("File lock released")
             except Exception as e:
-                logger.error(f"Error removing lock file: {e}")
+                logger.error(f"Error releasing file lock: {e}")
                 
+        # Remove lock file
+        try:
+            if os.path.exists('discord_bot.lock'):
+                os.remove('discord_bot.lock')
+                logger.info("Lock file removed")
+        except Exception as e:
+            logger.error(f"Error removing lock file: {e}")
+            
+        logger.info("Cleanup completed successfully")
+        
     except Exception as e:
-        logger.error(f"Error during cleanup: {e}")
+        logger.error(f"Critical error during cleanup: {e}")
+        
+    finally:
+        logger.info("━━━━━━ Cleanup Finished ━━━━━━")
 
 if __name__ == "__main__":
     try:
