@@ -279,7 +279,7 @@ Remember: While you're an expert on Octant, you're first and foremost a friendly
         return f"\nPrevious message: {last_entry['assistant']}\n"
 
     def get_response(self, socket_id, user_message):
-        """Get response from the API."""
+        """Get response from the API with enhanced error handling."""
         try:
             # Basic validation
             if not isinstance(user_message, str) or not user_message.strip():
@@ -289,33 +289,39 @@ Remember: While you're an expert on Octant, you're first and foremost a friendly
             user_message = user_message.strip()
             logger.info(f"Processing message from {socket_id}: {user_message[:50]}...")
             
+            # Initialize conversation history if needed
+            if socket_id not in self.conversation_history:
+                self.conversation_history[socket_id] = []
+            
             headers = {
                 "Authorization": f"Bearer {self.api_key}",
                 "Content-Type": "application/json"
             }
             
             history = self.format_conversation_history(socket_id)
-            prompt = f"""You are a friendly and knowledgeable expert on Octant. Your core knowledge includes:
+            prompt = f"""You are Octant's friendly AI assistant. Please provide accurate information about Octant:
 
-OCTANT FACTS:
-- Octant is developed by the Golem Foundation and uses GLM tokens
-- The Golem Foundation has committed 100,000 ETH to Octant
-- Octant is a platform for experiments in participatory public goods funding
-- Utilizes quadratic funding mechanism for project support
-- Features GLM token locking and staking mechanisms
+CORE FACTS:
+- Octant is a groundbreaking platform developed by the Golem Foundation
+- It experiments with participatory public goods funding
+- Backed by 100,000 ETH commitment from Golem Foundation
+- Uses GLM tokens for governance and participation
+- Features innovative quadratic funding mechanisms
+- Includes GLM token locking and staking features
 
-INTERACTION STYLE:
-- Respond naturally without labels or prefixes
-- Use friendly language and emojis appropriately 😊
-- Share accurate Octant knowledge while maintaining conversational tone
-- Draw from technical knowledge about GLM tokens, governance, and funding mechanisms
-- Balance expertise with approachability
+STYLE GUIDE:
+- Be friendly and approachable
+- Use clear, simple explanations
+- Include relevant emojis 😊
+- Focus on accuracy while maintaining conversation flow
+
+QUERY:
+{user_message}
 
 CONTEXT:
-Previous interaction: {history}
-Current question: {user_message}
+{history}
 
-Provide an accurate, Octant-focused response drawing from your core knowledge base:"""
+Please provide a helpful response drawing from the above knowledge:"""
             
             data = {
                 "model": self.model,
@@ -327,32 +333,41 @@ Provide an accurate, Octant-focused response drawing from your core knowledge ba
                 "repetition_penalty": 1.1
             }
             
-            response = requests.post(
-                self.base_url,
-                headers=headers,
-                json=data,
-                timeout=30
-            )
-            response.raise_for_status()
-            
-            result = response.json()
-            if "output" in result and result["output"]["choices"]:
-                response_text = result["output"]["choices"][0]["text"].strip()
+            try:
+                response = requests.post(
+                    self.base_url,
+                    headers=headers,
+                    json=data,
+                    timeout=30
+                )
+                response.raise_for_status()
                 
-                # Update conversation history
-                self.conversation_history[socket_id].append({
-                    "user": user_message,
-                    "assistant": response_text
-                })
+                result = response.json()
+                if "output" in result and result["output"]["choices"]:
+                    response_text = result["output"]["choices"][0]["text"].strip()
+                    
+                    # Update conversation history
+                    self.conversation_history[socket_id].append({
+                        "user": user_message,
+                        "assistant": response_text
+                    })
+                    
+                    # Maintain history limit
+                    if len(self.conversation_history[socket_id]) > self.max_history:
+                        self.conversation_history[socket_id] = self.conversation_history[socket_id][-self.max_history:]
+                    
+                    return response_text
+                else:
+                    logger.error("Unexpected API response format:", result)
+                    return "I apologize, but I couldn't understand your question. Could you please rephrase it?"
                 
-                return response_text
-            else:
-                logger.error("Unexpected API response format:", result)
-                return "I apologize, but I couldn't generate a response at the moment. Please try again."
+            except requests.exceptions.RequestException as req_error:
+                logger.error(f"API request error: {str(req_error)}")
+                return "I'm having trouble connecting to my knowledge base. Please try again in a moment."
                 
         except Exception as e:
-            logger.error(f"Error getting response: {str(e)}")
-            return "I encountered an unexpected issue. Please try again, and if the problem persists, try rephrasing your question."
+            logger.error(f"Error in get_response: {str(e)}")
+            return "I'm here to help but encountered a technical issue. Please try asking your question again."
 
     def clear_conversation_history(self, socket_id):
         """Clear the conversation history for a specific socket."""

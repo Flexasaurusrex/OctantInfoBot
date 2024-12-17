@@ -13111,3 +13111,69 @@ TypeError: ChatHandler.get_response() missing 1 required positional argument: 'u
 2024-12-17 03:11:56,082 - discord.client - WARNING - PyNaCl is not installed, voice will NOT be supported
 2024-12-17 03:11:56,083 - __main__ - INFO - Starting bot...
 2024-12-17 03:11:56,083 - discord.client - INFO - logging in using static token
+2024-12-17 03:12:30,790 - __main__ - INFO - Initializing Discord bot...
+2024-12-17 03:12:30,999 - __main__ - INFO - Commands registered successfully
+2024-12-17 03:12:31,216 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 708678d286db90e407854144eefe3e1e).
+2024-12-17 03:12:33,221 - __main__ - INFO - ━━━━━━ Bot Ready ━━━━━━
+Logged in as: OCTANTBOT
+Bot ID: 1316950341954306159
+Guilds connected: 2
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:13:48,229 - discord.client - WARNING - PyNaCl is not installed, voice will NOT be supported
+2024-12-17 03:13:48,229 - __main__ - INFO - Starting bot...
+2024-12-17 03:13:48,230 - discord.client - INFO - logging in using static token
+2024-12-17 03:13:48,508 - __main__ - INFO - Initializing Discord bot...
+2024-12-17 03:13:48,680 - __main__ - INFO - Commands registered successfully
+2024-12-17 03:13:48,890 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: f44f0aa2ba895360a4d6c86840591072).
+2024-12-17 03:13:50,898 - __main__ - INFO - ━━━━━━ Bot Ready ━━━━━━
+Logged in as: OCTANTBOT
+Bot ID: 1316950341954306159
+Guilds connected: 2
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:15:07,410 - __main__ - INFO - Initialized message tracking system
+2024-12-17 03:15:07,410 - __main__ - INFO - Processing message 1318416159254511648
+2024-12-17 03:15:07,540 - chat_handler - INFO - Processing message from discord_792966572430983168_1318416159254511648: sounds powerful!@...
+2024-12-17 03:15:08,626 - chat_handler - ERROR - Error getting response: 'discord_792966572430983168_1318416159254511648'
+2024-12-17 03:15:08,808 - __main__ - INFO - Response 1318416165055369216 sent for message 1318416159254511648
+2024-12-17 03:16:05,305 - discord.client - WARNING - PyNaCl is not installed, voice will NOT be supported
+2024-12-17 03:16:05,306 - __main__ - INFO - Starting bot...
+2024-12-17 03:16:05,306 - discord.client - INFO - logging in using static token
+2024-12-17 03:16:05,551 - __main__ - INFO - Initializing Discord bot...
+2024-12-17 03:16:05,788 - __main__ - INFO - Commands registered successfully
+2024-12-17 03:16:05,966 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: be0dd7032c43e5544226042ddb053848).
+2024-12-17 03:16:07,972 - __main__ - INFO - ━━━━━━ Bot Ready ━━━━━━
+Logged in as: OCTANTBOT
+Bot ID: 1316950341954306159
+Guilds connected: 2
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:17:41,809 - __main__ - INFO - Initialized message tracking system
+2024-12-17 03:17:41,809 - __main__ - INFO - Processing message 1318416806808915969
+2024-12-17 03:17:41,989 - chat_handler - INFO - Processing message from discord_792966572430983168_1318416806808915969: what is staking?...
+2024-12-17 03:17:43,930 - chat_handler - ERROR - Error getting response: 'discord_792966572430983168_1318416806808915969'
+2024-12-17 03:17:44,120 - __main__ - INFO - Response 1318416816430776451 sent for message 1318416806808915969
+2024-12-17 03:18:04,162 - discord.client - WARNING - PyNaCl is not installed, voice will NOT be supported
+2024-12-17 03:18:04,163 - __main__ - INFO - Starting bot...
+2024-12-17 03:18:04,163 - discord.client - INFO - logging in using static token
+2024-12-17 03:18:04,467 - __main__ - INFO - Initializing Discord bot...
+2024-12-17 03:18:04,639 - __main__ - INFO - Commands registered successfully
+2024-12-17 03:18:04,951 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 6a8bd70a0a4fe5c374b9f53d52be5e4c).
+2024-12-17 03:18:06,956 - __main__ - INFO - ━━━━━━ Bot Ready ━━━━━━
+Logged in as: OCTANTBOT
+Bot ID: 1316950341954306159
+Guilds connected: 2
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:19:08,450 - __main__ - INFO - Initialized message tracking system
+2024-12-17 03:19:08,450 - __main__ - INFO - Processing message 1318417170102882345
+2024-12-17 03:19:08,547 - chat_handler - INFO - Processing message from discord_792966572430983168_1318417170102882345: you don't say........
+2024-12-17 03:19:10,600 - __main__ - INFO - Response 1318417179259047956 sent for message 1318417170102882345
+2024-12-17 03:19:25,001 - discord.client - WARNING - PyNaCl is not installed, voice will NOT be supported
+2024-12-17 03:19:25,002 - __main__ - INFO - Starting bot...
+2024-12-17 03:19:25,003 - discord.client - INFO - logging in using static token
+2024-12-17 03:19:25,314 - __main__ - INFO - Initializing Discord bot...
+2024-12-17 03:19:25,472 - __main__ - INFO - Commands registered successfully
+2024-12-17 03:19:25,842 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 089fe2d4b1bafc9e55f8656db97de8c4).
+2024-12-17 03:19:27,847 - __main__ - INFO - ━━━━━━ Bot Ready ━━━━━━
+Logged in as: OCTANTBOT
+Bot ID: 1316950341954306159
+Guilds connected: 2
+━━━━━━━━━━━━━━━━━━━━━━━━
