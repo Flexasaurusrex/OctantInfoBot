@@ -24,8 +24,7 @@ function updateConnectionStatus(status) {
     const messagesContainer = document.getElementById('messages');
     let isWaitingForResponse = false;
 
-// Global connection state
-let reconnectAttempts = 0;
+// Connection constants
 const MAX_RECONNECT_ATTEMPTS = 5;
 const INITIAL_RETRY_DELAY = 1000;
 
@@ -189,16 +188,17 @@ async function cleanupSocket(socket) {
             return;
         }
 
-        console.log(`Attempting to reconnect (${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})...`);
+        const currentAttempt = socket.connectionState.attemptCount;
+        console.log(`Attempting to reconnect (${currentAttempt}/${MAX_RECONNECT_ATTEMPTS})...`);
         
         // Enhanced exponential backoff with jitter
-        const baseDelay = INITIAL_RETRY_DELAY * Math.pow(2, reconnectAttempts - 1);
+        const baseDelay = INITIAL_RETRY_DELAY * Math.pow(2, currentAttempt - 1);
         const maxJitter = Math.min(baseDelay * 0.25, 2000);
         const jitter = Math.random() * maxJitter;
         const delay = Math.min(baseDelay + jitter, 15000);
         
         updateConnectionStatus('reconnecting');
-        appendMessage(`📡 Reconnecting in ${(delay/1000).toFixed(1)} seconds... (Attempt ${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})`, true);
+        appendMessage(`📡 Reconnecting in ${(delay/1000).toFixed(1)} seconds... (Attempt ${currentAttempt}/${MAX_RECONNECT_ATTEMPTS})`, true);
         
         // Cleanup existing connection
         if (socket) {
@@ -256,7 +256,10 @@ async function cleanupSocket(socket) {
         // Core connection events
         socket.on('connect', () => {
             console.log('Connected to server');
-            reconnectAttempts = 0;
+            if (socket.connectionState) {
+                socket.connectionState.attemptCount = 0;
+                socket.connectionState.isReconnecting = false;
+            }
             updateConnectionStatus('connected');
             const errorDiv = document.querySelector('.connection-error');
             if (errorDiv) {
