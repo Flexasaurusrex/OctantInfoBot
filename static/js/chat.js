@@ -27,6 +27,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const messagesContainer = document.getElementById('messages');
     let isWaitingForResponse = false;
 
+    // Initialize with welcome message
+    appendMessage("👋 Hello! I'm the Octant Information Bot. I'm here to help you learn about Octant, GLM tokens, and everything related to the platform. Feel free to ask me anything!", true);
+
     function createSocket() {
         if (socket) {
             socket.disconnect();
@@ -53,13 +56,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         socket.on('connect_error', (error) => {
             console.warn('Connection error:', error);
-            if (!document.querySelector('.connection-error')) {
-                const errorDiv = document.createElement('div');
-                errorDiv.className = 'message bot-message connection-error';
-                errorDiv.innerHTML = 'Connection lost. Attempting to reconnect...';
-                messagesContainer.appendChild(errorDiv);
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            }
             handleReconnection();
         });
 
@@ -100,12 +96,9 @@ document.addEventListener('DOMContentLoaded', () => {
         reconnectAttempts++;
         updateConnectionStatus('reconnecting');
         
-        const delay = INITIAL_RETRY_DELAY * Math.pow(2, reconnectAttempts - 1);
-        appendMessage(`Reconnecting in ${(delay/1000).toFixed(1)} seconds... (Attempt ${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})`, true);
-        
         setTimeout(() => {
             createSocket();
-        }, delay);
+        }, INITIAL_RETRY_DELAY * Math.pow(2, reconnectAttempts - 1));
     }
 
     function appendMessage(message, isBot = false) {
@@ -125,10 +118,6 @@ document.addEventListener('DOMContentLoaded', () => {
         
         messagesContainer.appendChild(messageDiv);
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
-        if (isBot && message.includes('✅ Correct! Well done!')) {
-            triggerConfetti();
-        }
     }
 
     function sendMessage() {
@@ -147,18 +136,8 @@ document.addEventListener('DOMContentLoaded', () => {
         sendButton.disabled = true;
         messageInput.disabled = true;
         
-        const messageTimeout = setTimeout(() => {
-            if (isWaitingForResponse) {
-                isWaitingForResponse = false;
-                sendButton.disabled = false;
-                messageInput.disabled = false;
-                appendMessage('Message timed out. Please try again.', true);
-            }
-        }, 30000);
-
         socket.emit('send_message', { message }, (error) => {
             if (error) {
-                clearTimeout(messageTimeout);
                 isWaitingForResponse = false;
                 sendButton.disabled = false;
                 messageInput.disabled = false;
@@ -179,26 +158,4 @@ document.addEventListener('DOMContentLoaded', () => {
             sendMessage();
         }
     });
-
-    // Trivia click handlers
-    messagesContainer.addEventListener('click', (e) => {
-        const triviaOption = e.target.closest('.trivia-option');
-        if (triviaOption && !isWaitingForResponse) {
-            const option = triviaOption.dataset.option;
-            if (option) {
-                messageInput.value = option;
-                sendMessage();
-            }
-        }
-    });
 });
-
-function triggerConfetti() {
-    confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 },
-        colors: ['#ff0000', '#00ff00', '#0000ff'],
-        disableForReducedMotion: true
-    });
-}

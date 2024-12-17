@@ -38,7 +38,7 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    zoom: 75%;
+    zoom: 100%;
 }
 
 /* App Layout */
