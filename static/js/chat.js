@@ -1,34 +1,32 @@
-// Global socket instance
-let socket = null;
-let reconnectAttempts = 0;
-const MAX_RECONNECT_ATTEMPTS = 5;
-const INITIAL_RETRY_DELAY = 1000;
-
-function updateConnectionStatus(status) {
-    const statusIndicator = document.querySelector('.status-indicator');
-    const statusText = document.querySelector('.status-text');
-    
-    if (!statusIndicator || !statusText) return;
-    
-    const statusMap = {
-        'connected': { text: 'Connected', class: 'connected' },
-        'disconnected': { text: 'Disconnected', class: 'disconnected' },
-        'reconnecting': { text: 'Reconnecting...', class: 'reconnecting' }
-    };
-    
-    const currentStatus = statusMap[status] || statusMap.disconnected;
-    statusIndicator.className = 'status-indicator ' + currentStatus.class;
-    statusText.textContent = currentStatus.text;
-}
-
 document.addEventListener('DOMContentLoaded', () => {
     const messageInput = document.getElementById('message-input');
     const sendButton = document.getElementById('send-button');
     const messagesContainer = document.getElementById('messages');
     let isWaitingForResponse = false;
+    let socket = null;
+    let reconnectAttempts = 0;
+    const MAX_RECONNECT_ATTEMPTS = 5;
+    const INITIAL_RETRY_DELAY = 1000;
 
     // Initialize with welcome message
     appendMessage("👋 Hello! I'm the Octant Information Bot. I'm here to help you learn about Octant, GLM tokens, and everything related to the platform. Feel free to ask me anything!", true);
+
+    function updateConnectionStatus(status) {
+        const statusIndicator = document.querySelector('.status-indicator');
+        const statusText = document.querySelector('.status-text');
+        
+        if (!statusIndicator || !statusText) return;
+        
+        const statusMap = {
+            'connected': { text: 'Connected', class: 'connected' },
+            'disconnected': { text: 'Disconnected', class: 'disconnected' },
+            'reconnecting': { text: 'Reconnecting...', class: 'reconnecting' }
+        };
+        
+        const currentStatus = statusMap[status] || statusMap.disconnected;
+        statusIndicator.className = 'status-indicator ' + currentStatus.class;
+        statusText.textContent = currentStatus.text;
+    }
 
     function createSocket() {
         if (socket) {

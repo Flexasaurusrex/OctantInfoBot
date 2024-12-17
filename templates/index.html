@@ -110,41 +110,10 @@
             localStorage.setItem('theme', newTheme);
         }
 
-        let sidebarOpen = false; // added state variable
-
-        function toggleSidebar() {
-            sidebarOpen = !sidebarOpen;
-            document.querySelector('.sidebar').classList.toggle('open', sidebarOpen);
-        }
-
-        // Initially close the sidebar.
-        toggleSidebar();
-
-    </script>
-    <script>
         function toggleSidebar() {
             const sidebar = document.querySelector('.sidebar');
             sidebar.classList.toggle('expanded');
         }
-
-        // Update connection status
-        const socket = io();
-        
-        socket.on('connect', () => {
-            const statusIndicator = document.querySelector('.status-indicator');
-            if (statusIndicator) {
-                statusIndicator.classList.add('connected');
-                document.querySelector('.status-text').textContent = 'Connected';
-            }
-        });
-        
-        socket.on('disconnect', () => {
-            const statusIndicator = document.querySelector('.status-indicator');
-            if (statusIndicator) {
-                statusIndicator.classList.remove('connected');
-                document.querySelector('.status-text').textContent = 'Disconnected';
-            }
-        });
     </script>
 </body>
 </html>
