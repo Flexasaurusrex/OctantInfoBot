@@ -73,38 +73,15 @@ def index():
     return render_template('index.html')
 @app.route('/health')
 def health_check():
-    """Enhanced health check endpoint for Railway."""
-    try:
-        # Check critical services
-        services_status = {
+    return {
+        'status': 'healthy',
+        'timestamp': datetime.now().isoformat(),
+        'services': {
             'web': True,
-            'socket': bool(socketio and hasattr(socketio, 'server')),
+            'socket': socketio.server.manager.rooms != {},
             'chat_handler': chat_handler is not None
         }
-        
-        # Check system resources
-        process = psutil.Process()
-        memory_usage = process.memory_percent()
-        cpu_usage = process.cpu_percent()
-        
-        response = {
-            'status': 'healthy',
-            'timestamp': datetime.now().isoformat(),
-            'services': services_status,
-            'system': {
-                'memory_usage': f"{memory_usage:.1f}%",
-                'cpu_usage': f"{cpu_usage:.1f}%",
-                'uptime': str(datetime.now() - app.start_time) if hasattr(app, 'start_time') else 'N/A'
-            }
-        }
-        return response, 200
-    except Exception as e:
-        logger.error(f"Health check failed: {str(e)}")
-        return {
-            'status': 'unhealthy',
-            'timestamp': datetime.now().isoformat(),
-            'error': str(e)
-        }, 500
+    }
 
 @app.route('/admin')
 @limiter.limit("60 per minute")
@@ -598,57 +575,33 @@ def handle_health_update_request():
 
 if __name__ == '__main__':
     try:
-        # Railway specific configuration
         port = int(os.environ.get('PORT', 5000))
         debug = os.environ.get('FLASK_ENV') != 'production'
         app.start_time = datetime.now()
         
-        # Initialize required services
-        if not chat_handler:
-            logger.warning("Chat handler not initialized, attempting to initialize...")
-            try:
-                chat_handler = ChatHandler()
-            except Exception as e:
-                logger.error(f"Failed to initialize chat handler: {e}")
-                # Continue anyway as this is not critical for health checks
-        
-        # Enhanced startup logging with Railway specific info
+        # Enhanced startup logging
         logger.info(f"""
-━━━━━━ Railway Server Starting ━━━━━━
+━━━━━━ Server Starting ━━━━━━
 Port: {port}
-Host: 0.0.0.0
 Debug: {debug}
 Environment: {os.environ.get('RAILWAY_ENVIRONMENT', 'development')}
 Memory: {psutil.Process().memory_info().rss / 1024 / 1024:.1f}MB
 CPU: {psutil.cpu_percent()}%
-Services:
-- Chat Handler: {'✓' if chat_handler else '✗'}
-- Socket.IO: ✓
 ━━━━━━━━━━━━━━━━━━━━━━━━""")
         
-        # Start health monitoring
-        start_health_monitoring()
-        
-        # Run the application with Railway optimized settings
         socketio.run(
             app,
-            host='0.0.0.0',  # Required for Railway
-            port=port,
+            host='0.0.0.0',
+            port=port,  # Use the port from environment
             debug=debug,
             use_reloader=False,  # Disable reloader for Railway
-            log_output=True,
-            allow_unsafe_werkzeug=True  # Required for Railway
+            log_output=True
         )
     except Exception as e:
-        error_msg = f"""
-━━━━━━ Railway Startup Error ━━━━━━
+        logger.error(f"""
+━━━━━━ Startup Error ━━━━━━
 Error: {str(e)}
 Type: {type(e).__name__}
 Time: {datetime.now().isoformat()}
-Memory: {psutil.Process().memory_info().rss / 1024 / 1024:.1f}MB
-CPU: {psutil.cpu_percent()}%
-━━━━━━━━━━━━━━━━━━━━━━━━"""
-        logger.error(error_msg)
-        # Ensure the error is visible in Railway logs
-        print(error_msg, file=sys.stderr)
+━━━━━━━━━━━━━━━━━━━━━━━━""")
         raise  # Re-raise for Railway to detect failure
