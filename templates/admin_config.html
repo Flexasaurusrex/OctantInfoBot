@@ -178,6 +178,14 @@
         </div>
 
         <div class="config-section">
+            <h2>System Prompt Configuration</h2>
+            <div class="form-group">
+                <label>Bot System Prompt</label>
+                <textarea id="system_prompt" rows="10" style="width: 100%; background: var(--bg-primary); color: var(--text-primary); border: 1px solid var(--border); border-radius: 4px; padding: 0.5rem; margin-bottom: 1rem;">You are a friendly and witty AI assistant who happens to be an expert on Octant. While you're knowledgeable about the Octant ecosystem, you also have a vibrant personality and can engage in casual conversation about any topic.</textarea>
+            </div>
+        </div>
+
+        <div class="config-section">
             <h2>Response Configuration</h2>
             <div class="form-group">
                 <label>Maximum Response Length</label>
@@ -247,6 +255,7 @@
 
         async function saveConfig() {
             const newConfig = {
+                system_prompt: document.getElementById('system_prompt').value,
                 personality: {
                     style: document.getElementById('style').value,
                     formality: document.getElementById('formality').value,
