@@ -18595,3 +18595,101 @@ Current Time: 2024-12-17 01:48:43.525337
 Time Since Last Ping: 300.02s
 Timeout Threshold: 300s
 ━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 01:57:29,151 - __main__ - INFO - [telegram_bot:526] - ━━━━━━ Initializing Chat Handler ━━━━━━
+2024-12-17 01:57:29,152 - __main__ - INFO - [telegram_bot:529] - Chat handler configuration:
+2024-12-17 01:57:29,152 - __main__ - INFO - [telegram_bot:530] - Model: mistralai/Mixtral-8x7B-Instruct-v0.1
+2024-12-17 01:57:29,152 - __main__ - INFO - [telegram_bot:531] - Max history: 5
+2024-12-17 01:57:29,153 - __main__ - INFO - [telegram_bot:532] - TelegramTrivia initialized
+2024-12-17 01:57:29,153 - __main__ - INFO - [telegram_bot:533] - Chat handler initialized successfully
+2024-12-17 01:57:29,153 - __main__ - INFO - [telegram_bot:534] - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 01:57:29,153 - __main__ - INFO - [telegram_bot:548] - Starting main loop...
+2024-12-17 01:57:29,168 - __main__ - INFO - [telegram_bot:395] - Initializing Telegram bot...
+2024-12-17 01:57:29,280 - __main__ - INFO - [telegram_bot:437] - ━━━━━━ Bot Configuration ━━━━━━
+2024-12-17 01:57:29,280 - __main__ - INFO - [telegram_bot:438] - Start Time: 2024-12-17 01:57:29
+2024-12-17 01:57:29,281 - __main__ - INFO - [telegram_bot:439] - Retry Count: 0
+2024-12-17 01:57:29,282 - __main__ - INFO - [telegram_bot:440] - Bot Version: 1.0.1
+2024-12-17 01:57:29,282 - __main__ - INFO - [telegram_bot:441] - Connection Parameters:
+2024-12-17 01:57:29,283 - __main__ - INFO - [telegram_bot:442] - - Polling Timeout: 60s
+2024-12-17 01:57:29,283 - __main__ - INFO - [telegram_bot:443] - - Connection Retries: infinite
+2024-12-17 01:57:29,283 - __main__ - INFO - [telegram_bot:444] - - Update Mode: polling
+2024-12-17 01:57:29,283 - __main__ - INFO - [telegram_bot:445] - - Health Check: Active
+2024-12-17 01:57:29,284 - __main__ - INFO - [telegram_bot:446] - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 01:57:29,284 - __main__ - INFO - [telegram_bot:330] - ━━━━━━ System Health Check ━━━━━━
+2024-12-17 01:57:29,285 - __main__ - INFO - [telegram_bot:331] - Uptime: 0h 0m 0s
+2024-12-17 01:57:29,285 - __main__ - INFO - [telegram_bot:332] - Memory Usage: 50.64 MB (0.1%)
+2024-12-17 01:57:29,285 - __main__ - INFO - [telegram_bot:333] - CPU Usage: 0.0%
+2024-12-17 01:57:29,285 - __main__ - INFO - [telegram_bot:334] - Network I/O: ↑8.7MB ↓18.1MB
+2024-12-17 01:57:29,286 - __main__ - INFO - [telegram_bot:335] - Disk Usage: 28.5%
+2024-12-17 01:57:29,286 - __main__ - INFO - [telegram_bot:336] - Retry Count: 0
+2024-12-17 01:57:29,286 - __main__ - INFO - [telegram_bot:337] - Last Update Time: 2024-12-17 01:57:29
+2024-12-17 01:57:29,286 - __main__ - INFO - [telegram_bot:339] - Message Processing Rate: Monitoring
+2024-12-17 01:57:29,286 - __main__ - INFO - [telegram_bot:340] - Connection Status: Active
+2024-12-17 01:57:29,287 - __main__ - INFO - [telegram_bot:341] - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 01:57:29,624 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getMe "HTTP/1.1 200 OK"
+2024-12-17 01:57:29,626 - telegram.ext.Application - INFO - [_application:631] - Application started
+2024-12-17 01:57:29,627 - __main__ - INFO - [telegram_bot:458] - Starting polling...
+2024-12-17 01:57:29,731 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/deleteWebhook "HTTP/1.1 200 OK"
+2024-12-17 01:57:34,220 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 409 Conflict"
+2024-12-17 01:57:34,221 - telegram.ext.Updater - ERROR - [_updater:402] - Exception happened while polling for updates.
+Traceback (most recent call last):
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/ext/_updater.py", line 743, in _network_loop_retry
+    if not await do_action():
+           ^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/ext/_updater.py", line 737, in do_action
+    return action_cb_task.result()
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/ext/_updater.py", line 367, in polling_action_cb
+    updates = await self.bot.get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/ext/_extbot.py", line 650, in get_updates
+    updates = await super().get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_bot.py", line 4480, in get_updates
+    await self._post(
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_bot.py", line 619, in _post
+    return await self._do_post(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/ext/_extbot.py", line 354, in _do_post
+    return await super()._do_post(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_bot.py", line 648, in _do_post
+    result = await request.post(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/request/_baserequest.py", line 202, in post
+    result = await self._request_wrapper(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/request/_baserequest.py", line 385, in _request_wrapper
+    raise Conflict(message)
+telegram.error.Conflict: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2024-12-17 01:57:39,986 - httpx - INFO - [_client:1742] - HTTP Request: POST https://api.telegram.org/bot8132599480:AAF6t5to2vOuGx09hTm7Xrjp5Lqe3iViEtc/getUpdates "HTTP/1.1 409 Conflict"
+2024-12-17 01:57:39,986 - telegram.ext.Updater - ERROR - [_updater:402] - Exception happened while polling for updates.
+Traceback (most recent call last):
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/ext/_updater.py", line 743, in _network_loop_retry
+    if not await do_action():
+           ^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/ext/_updater.py", line 737, in do_action
+    return action_cb_task.result()
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/ext/_updater.py", line 367, in polling_action_cb
+    updates = await self.bot.get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/ext/_extbot.py", line 650, in get_updates
+    updates = await super().get_updates(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_bot.py", line 4480, in get_updates
+    await self._post(
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_bot.py", line 619, in _post
+    return await self._do_post(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/ext/_extbot.py", line 354, in _do_post
+    return await super()._do_post(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/_bot.py", line 648, in _do_post
+    result = await request.post(
+             ^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/request/_baserequest.py", line 202, in post
+    result = await self._request_wrapper(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/telegram/request/_baserequest.py", line 385, in _request_wrapper
+    raise Conflict(message)
+telegram.error.Conflict: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running

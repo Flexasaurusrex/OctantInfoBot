@@ -24,6 +24,32 @@ function updateConnectionStatus(status) {
     const messagesContainer = document.getElementById('messages');
     let isWaitingForResponse = false;
 
+async function cleanupSocket(socket) {
+    if (!socket) return;
+    
+    try {
+        // Clear all intervals associated with this socket
+        if (socket.connectionState && socket.connectionState.monitors) {
+            socket.connectionState.monitors.forEach(clearInterval);
+            socket.connectionState.monitors.clear();
+        }
+        
+        // Remove all listeners
+        socket.removeAllListeners();
+        
+        // Ensure proper disconnection
+        if (socket.connected) {
+            await new Promise((resolve) => {
+                socket.once('disconnect', resolve);
+                socket.disconnect();
+            });
+        }
+        
+        socket.close();
+    } catch (error) {
+        console.warn('Error during socket cleanup:', error);
+    }
+}
     function createSocket() {
         try {
             // Cleanup existing socket
@@ -46,34 +72,36 @@ function updateConnectionStatus(status) {
                 transports: ['websocket', 'polling']
             });
 
-            // Add connection state monitoring
-            let connectionMonitor = setInterval(() => {
-                if (socket && !socket.connected && !socket.connecting) {
-                    console.log('Connection monitor: detected disconnection');
+            // Single consolidated connection monitor
+            const connectionMonitor = setInterval(() => {
+                if (!socket) return;
+                
+                const now = Date.now();
+                const timeSinceLastAttempt = now - socket.connectionState.lastAttempt;
+                
+                if (!socket.connected && !socket.connecting && 
+                    !socket.connectionState.isReconnecting && 
+                    timeSinceLastAttempt > 5000) {
+                    console.warn('Connection monitor: detected disconnection');
                     handleReconnection();
                 }
-            }, 10000);
+            }, 5000);
 
-            // Track connection state
+            // Enhanced connection state tracking
             socket.connectionState = {
                 lastAttempt: Date.now(),
                 attemptCount: 0,
                 lastError: null,
-                isReconnecting: false
+                isReconnecting: false,
+                monitors: new Set([connectionMonitor])
             };
 
+            // Initialize socket events
             initializeSocketEvents();
-            
-            // Monitor socket health
-            const healthCheck = setInterval(() => {
-                if (socket && !socket.connected && !socket.connectionState.isReconnecting) {
-                    console.warn('Socket health check failed - initiating reconnection');
-                    handleReconnection();
-                }
-            }, 30000);
 
             socket.on('close', () => {
-                clearInterval(healthCheck);
+                socket.connectionState.monitors.forEach(clearInterval);
+                socket.connectionState.monitors.clear();
             });
 
             return true;
@@ -85,7 +113,9 @@ function updateConnectionStatus(status) {
     }
 
     async function handleReconnection() {
-        if (socket && socket.connectionState.isReconnecting) {
+        if (!socket) return;
+        
+        if (socket.connectionState.isReconnecting) {
             console.warn('Reconnection already in progress');
             return;
         }
@@ -96,37 +126,42 @@ function updateConnectionStatus(status) {
         
         updateConnectionStatus('reconnecting');
         
+        // Calculate backoff with jitter
+        const backoff = Math.min(1000 * Math.pow(2, socket.connectionState.attemptCount - 1), 10000);
+        const jitter = Math.random() * Math.min(backoff * 0.1, 1000);
+        const delay = backoff + jitter;
+        
+        console.log(`Reconnection attempt ${socket.connectionState.attemptCount}/${MAX_RECONNECT_ATTEMPTS} (delay: ${delay}ms)`);
+        appendMessage(`🔄 Attempting to reconnect... (${socket.connectionState.attemptCount}/${MAX_RECONNECT_ATTEMPTS})`, true);
+        
         if (socket.connectionState.attemptCount > MAX_RECONNECT_ATTEMPTS) {
             console.error('Max reconnection attempts reached');
             updateConnectionStatus('disconnected');
-            appendMessage('🔄 Connection lost. Maximum retry attempts reached.', true);
-            appendMessage('⚡ Attempting emergency recovery...', true);
+            appendMessage('📡 Connection lost. Initiating recovery process...', true);
             
             try {
-                // Enhanced recovery process
-                await cleanupConnection();
+                // Cleanup existing socket
+                await cleanupSocket(socket);
+                
+                // Attempt recovery
                 const response = await fetch('/restart', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    signal: AbortSignal.timeout(10000) // 10s timeout
+                    signal: AbortSignal.timeout(10000)
                 });
                 
                 if (response.ok) {
                     const data = await response.json();
-                    appendMessage(`✨ ${data.message || 'Recovery initiated'}. Page will refresh in 5 seconds...`, true);
-                    await new Promise(resolve => setTimeout(resolve, 5000));
+                    appendMessage('✨ Recovery initiated. Refreshing connection...', true);
+                    await new Promise(resolve => setTimeout(resolve, 3000));
                     window.location.reload();
                 } else {
-                    throw new Error(`Recovery failed: ${response.statusText}`);
+                    throw new Error('Server recovery failed');
                 }
             } catch (error) {
-                console.error('Recovery error:', error);
-                appendMessage('❌ Recovery failed. Please refresh the page manually.', true);
-                appendMessage(`Error details: ${error.message}`, true);
-                
-                // Attempt one final reconnect after a longer delay
-                await new Promise(resolve => setTimeout(resolve, 10000));
-                createSocket();
+                console.error('Recovery failed:', error);
+                appendMessage('❌ Unable to restore connection. Please refresh the page.', true);
+                updateConnectionStatus('disconnected');
             } finally {
                 socket.connectionState.isReconnecting = false;
             }
