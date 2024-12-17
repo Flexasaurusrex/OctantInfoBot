@@ -6,22 +6,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const statusIndicator = document.querySelector('.status-indicator');
     const statusText = document.querySelector('.status-text');
     
-    // Global state
-    let socket = null;
-    let isWaitingForResponse = false;
-    
-    function updateConnectionStatus(status) {
+    // Initialize socket with basic configuration
+    const socket = io({
+        transports: ['websocket'],
+        reconnection: true,
+        reconnectionAttempts: 3
+    });
+
+    function updateConnectionStatus(connected) {
         if (!statusIndicator || !statusText) return;
         
-        const statusMap = {
-            'connected': { text: 'Connected', class: 'connected' },
-            'disconnected': { text: 'Disconnected', class: 'disconnected' },
-            'connecting': { text: 'Connecting...', class: 'connecting' }
-        };
-        
-        const currentStatus = statusMap[status] || statusMap.disconnected;
-        statusIndicator.className = 'status-indicator ' + currentStatus.class;
-        statusText.textContent = currentStatus.text;
+        if (connected) {
+            statusIndicator.className = 'status-indicator connected';
+            statusText.textContent = 'Connected to server';
+        } else {
+            statusIndicator.className = 'status-indicator disconnected';
+            statusText.textContent = 'Disconnected';
+        }
     }
 
     function appendMessage(message, isBot = false) {
@@ -43,102 +44,46 @@ document.addEventListener('DOMContentLoaded', () => {
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
 
-    function enableMessageInput() {
+    // Socket event handlers
+    socket.on('connect', () => {
+        console.log('Connected to server');
+        updateConnectionStatus(true);
         messageInput.disabled = false;
         sendButton.disabled = false;
-        messageInput.focus();
-    }
+    });
 
-    function disableMessageInput() {
+    socket.on('disconnect', () => {
+        console.log('Disconnected from server');
+        updateConnectionStatus(false);
         messageInput.disabled = true;
         sendButton.disabled = true;
-    }
+    });
 
-    function initializeSocket() {
-        if (socket) {
-            socket.disconnect();
-            socket.removeAllListeners();
+    socket.on('receive_message', (data) => {
+        try {
+            appendMessage(data.message, data.is_bot);
+            messageInput.disabled = false;
+            sendButton.disabled = false;
+        } catch (error) {
+            console.error('Error displaying message:', error);
         }
+    });
 
-        socket = io({
-            transports: ['websocket'],
-            reconnection: true,
-            reconnectionAttempts: 5,
-            reconnectionDelay: 1000
-        });
-
-        socket.on('connect', () => {
-            console.log('Connected to server');
-            updateConnectionStatus('connected');
-            enableMessageInput();
-            appendMessage('✅ Connected to server', true);
-        });
-
-        socket.on('disconnect', () => {
-            console.log('Disconnected from server');
-            updateConnectionStatus('disconnected');
-            disableMessageInput();
-            appendMessage('❌ Disconnected from server', true);
-        });
-
-        socket.on('connect_error', (error) => {
-            console.error('Connection error:', error);
-            updateConnectionStatus('disconnected');
-        });
-
-        socket.on('receive_message', (data) => {
-            try {
-                appendMessage(data.message, data.is_bot);
-            } catch (error) {
-                console.error('Error processing message:', error);
-                appendMessage('Error displaying message', true);
-            } finally {
-                isWaitingForResponse = false;
-                enableMessageInput();
-            }
-        });
-    }
-
+    // Send message function
     function sendMessage() {
-        if (isWaitingForResponse || !socket?.connected) {
-            console.warn('Cannot send message: Socket not ready or waiting for response');
-            return;
-        }
-        
         const message = messageInput.value.trim();
-        if (!message) return;
+        if (!message || !socket.connected) return;
         
         appendMessage(message);
         messageInput.value = '';
+        messageInput.disabled = true;
+        sendButton.disabled = true;
         
-        isWaitingForResponse = true;
-        disableMessageInput();
-        
-        socket.emit('send_message', { message }, (error) => {
-            if (error) {
-                console.error('Error sending message:', error);
-                isWaitingForResponse = false;
-                enableMessageInput();
-                appendMessage('Failed to send message. Please try again.', true);
-            }
-        });
-
-        // Add timeout for message response
-        setTimeout(() => {
-            if (isWaitingForResponse) {
-                isWaitingForResponse = false;
-                enableMessageInput();
-                appendMessage('Message timed out. Please try again.', true);
-            }
-        }, 30000);
+        socket.emit('send_message', { message });
     }
 
-    // Initialize connection
-    initializeSocket();
-
-    // Event Listeners
+    // Event listeners
     sendButton.addEventListener('click', sendMessage);
-
     messageInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
