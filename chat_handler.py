@@ -214,25 +214,28 @@ Remember: While you're an expert on Octant, you're first and foremost a friendly
             if message.startswith('/'):
                 response = self.command_handler.handle_command(message)
                 if response:
-                    emit('response', response, room=socket_id) # Emit response to the client
                     if message.lower() == '/trivia':
                         self.is_playing_trivia = True
-                    return
+                    return response
             
             # Get response from API
             response = self.get_response(socket_id, message)
             
-            # Emit response to the client
-            emit('response', response, room=socket_id)
-            
             # Update conversation history
+            self.conversation_history[socket_id].append({
+                'user': message,
+                'assistant': response
+            })
+            
+            # Maintain history limit
             if len(self.conversation_history[socket_id]) > self.max_history:
                 self.conversation_history[socket_id] = self.conversation_history[socket_id][-self.max_history:]
-            
+                
+            return response
 
         except Exception as e:
             logger.error(f"Error handling socket message: {str(e)}")
-            emit('response', "I apologize, but I encountered an error processing your message. Please try again.", room=socket_id)
+            return "I apologize, but I encountered an error processing your message. Please try again."
 
     def format_conversation_history(self, socket_id):
         """Format the conversation history for the prompt."""

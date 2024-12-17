@@ -7,6 +7,8 @@ import traceback
 import time
 from datetime import datetime, timezone
 from app import socketio, app
+from flask import request #Added import
+from flask_socketio import emit #Added import
 
 # Enhanced logging for Railway with structured logging
 logging.basicConfig(
@@ -121,28 +123,37 @@ Retry: {retry_count + 1}/{max_retries}
             
             @socketio.on('connect')
             def handle_connect():
-                logger.info("Client connected")
-                emit('bot_status', {'status': 'connected'})
+                logger.info(f"Client connected: {request.sid}")
+                emit('bot_status', {'status': 'connected'}, room=request.sid)
+                return True
 
             @socketio.on('disconnect')
             def handle_disconnect():
-                logger.info("Client disconnected")
+                logger.info(f"Client disconnected: {request.sid}")
 
             @socketio.on('send_message')
             def handle_message(data):
                 try:
                     if not isinstance(data, dict) or 'message' not in data:
+                        logger.error("Invalid message format received")
                         raise ValueError("Invalid message format")
                     
                     message = data['message']
+                    logger.info(f"Message received from {request.sid}: {message}")
+                    
+                    # Direct socket message handling
                     response = chat_handler.get_response(request.sid, message)
-                    emit('receive_message', {'message': response, 'is_bot': True})
+                    emit('receive_message', {
+                        'message': response,
+                        'is_bot': True
+                    }, room=request.sid)
+                    
                 except Exception as e:
                     logger.error(f"Error handling message: {str(e)}")
                     emit('receive_message', {
                         'message': 'I apologize, but I encountered an error. Please try again.',
                         'is_bot': True
-                    })
+                    }, room=request.sid)
 
             socketio.init_app(
                 app,
