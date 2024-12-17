@@ -24,43 +24,58 @@ function updateConnectionStatus(status) {
     const messagesContainer = document.getElementById('messages');
     let isWaitingForResponse = false;
 
+// Global connection state
+let reconnectAttempts = 0;
+const MAX_RECONNECT_ATTEMPTS = 5;
+const INITIAL_RETRY_DELAY = 1000;
+
 async function cleanupSocket(socket) {
     if (!socket) return;
     
+    console.log('Cleaning up socket connection...');
     try {
         // Clear all intervals associated with this socket
         if (socket.connectionState && socket.connectionState.monitors) {
+            console.log('Clearing monitors:', socket.connectionState.monitors.size);
             socket.connectionState.monitors.forEach(clearInterval);
             socket.connectionState.monitors.clear();
         }
         
         // Remove all listeners
+        console.log('Removing socket listeners');
         socket.removeAllListeners();
         
         // Ensure proper disconnection
         if (socket.connected) {
+            console.log('Disconnecting active socket');
             await new Promise((resolve) => {
-                socket.once('disconnect', resolve);
+                const timeout = setTimeout(() => {
+                    console.warn('Socket disconnect timeout');
+                    resolve();
+                }, 5000);
+                
+                socket.once('disconnect', () => {
+                    clearTimeout(timeout);
+                    resolve();
+                });
                 socket.disconnect();
             });
         }
         
+        console.log('Closing socket');
         socket.close();
     } catch (error) {
-        console.warn('Error during socket cleanup:', error);
+        console.error('Error during socket cleanup:', error);
     }
 }
-    function createSocket() {
+    async function createSocket() {
         try {
+            console.log('Creating new socket connection');
+            
             // Cleanup existing socket
             if (socket) {
-                try {
-                    socket.removeAllListeners();
-                    socket.close();
-                    socket.disconnect();
-                } catch (e) {
-                    console.warn('Error cleaning up existing socket:', e);
-                }
+                console.log('Cleaning up existing socket before creating new one');
+                await cleanupSocket(socket);
             }
             
             socket = io({
@@ -72,9 +87,11 @@ async function cleanupSocket(socket) {
                 transports: ['websocket', 'polling']
             });
 
+            console.log('Socket instance created');
+
             // Single consolidated connection monitor
             const connectionMonitor = setInterval(() => {
-                if (!socket) return;
+                if (!socket?.connectionState) return;
                 
                 const now = Date.now();
                 const timeSinceLastAttempt = now - socket.connectionState.lastAttempt;
@@ -83,6 +100,7 @@ async function cleanupSocket(socket) {
                     !socket.connectionState.isReconnecting && 
                     timeSinceLastAttempt > 5000) {
                     console.warn('Connection monitor: detected disconnection');
+                    socket.connectionState.monitors.forEach(clearInterval);
                     handleReconnection();
                 }
             }, 5000);
@@ -97,11 +115,14 @@ async function cleanupSocket(socket) {
             };
 
             // Initialize socket events
-            initializeSocketEvents();
+            await initializeSocketEvents();
 
             socket.on('close', () => {
-                socket.connectionState.monitors.forEach(clearInterval);
-                socket.connectionState.monitors.clear();
+                console.log('Socket closed, cleaning up monitors');
+                if (socket?.connectionState?.monitors) {
+                    socket.connectionState.monitors.forEach(clearInterval);
+                    socket.connectionState.monitors.clear();
+                }
             });
 
             return true;
@@ -221,22 +242,18 @@ async function cleanupSocket(socket) {
         }
     }
 
-    function initializeSocketEvents() {
+    async function initializeSocketEvents() {
         if (!socket) {
             console.error('Cannot initialize events: Socket is null');
             return;
         }
         
-        // Clean up existing listeners before adding new ones
-        socket.removeAllListeners('connect');
-        socket.removeAllListeners('connect_error');
-        socket.removeAllListeners('disconnect');
-        socket.removeAllListeners('reconnect_attempt');
-        socket.removeAllListeners('reconnect');
-        socket.removeAllListeners('error');
-        socket.removeAllListeners('receive_message');
-        socket.removeAllListeners('restart_status');
-
+        console.log('Initializing socket events');
+        
+        // Remove all existing listeners
+        socket.removeAllListeners();
+        
+        // Core connection events
         socket.on('connect', () => {
             console.log('Connected to server');
             reconnectAttempts = 0;
@@ -245,6 +262,7 @@ async function cleanupSocket(socket) {
             if (errorDiv) {
                 errorDiv.remove();
             }
+            appendMessage('✅ Connected to server', true);
         });
 
         
