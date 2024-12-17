@@ -92,18 +92,48 @@ def update_config():
 
 @app.route('/api/health')
 def health_check():
-    # Enhanced health check for Railway integration
-    return jsonify({
-        "status": "healthy",
-        "timestamp": datetime.utcnow().isoformat(),
-        "version": "1.0.0",
-        "service": "admin_dashboard",
-        "uptime": os.getenv("RAILWAY_UPTIME", "0"),
-        "environment": os.getenv("RAILWAY_ENVIRONMENT", "development"),
-        "region": os.getenv("RAILWAY_REGION", "unknown"),
-        "memory_usage": psutil.Process().memory_percent(),
-        "cpu_usage": psutil.cpu_percent()
-    })
+    """Enhanced health check endpoint for Railway integration."""
+    try:
+        process = psutil.Process()
+        memory_info = process.memory_info()
+        
+        return jsonify({
+            "status": "healthy",
+            "timestamp": datetime.utcnow().isoformat(),
+            "version": "1.0.0",
+            "service": {
+                "name": "admin_dashboard",
+                "type": "configuration",
+                "status": "running"
+            },
+            "system": {
+                "memory": {
+                    "used_percent": process.memory_percent(),
+                    "rss": memory_info.rss,
+                    "vms": memory_info.vms
+                },
+                "cpu": {
+                    "percent": psutil.cpu_percent(interval=0.1),
+                    "count": psutil.cpu_count()
+                },
+                "disk": {
+                    "usage": psutil.disk_usage('/').percent
+                }
+            },
+            "railway": {
+                "environment": os.getenv("RAILWAY_ENVIRONMENT", "development"),
+                "region": os.getenv("RAILWAY_REGION", "unknown"),
+                "service": os.getenv("RAILWAY_SERVICE_NAME", "admin-dashboard"),
+                "uptime": os.getenv("RAILWAY_UPTIME", "0")
+            }
+        }), 200
+    except Exception as e:
+        logger.error(f"Health check error: {str(e)}")
+        return jsonify({
+            "status": "unhealthy",
+            "error": str(e),
+            "timestamp": datetime.utcnow().isoformat()
+        }), 500
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 3000))
