@@ -141,15 +141,30 @@ Retry: {retry_count + 1}/{max_retries}
                     message = data['message']
                     logger.info(f"Message received from {request.sid}: {message}")
                     
-                    # Direct socket message handling
-                    response = chat_handler.get_response(request.sid, message)
-                    emit('receive_message', {
-                        'message': response,
-                        'is_bot': True
-                    }, room=request.sid)
+                    # Initialize chat handler if not exists
+                    if not hasattr(handle_message, 'chat_handler'):
+                        from chat_handler import ChatHandler
+                        handle_message.chat_handler = ChatHandler()
                     
+                    # Get response from chat handler
+                    response = handle_message.chat_handler.handle_socket_message(request.sid, message)
+                    logger.info(f"Generated response: {response}")
+                    
+                    if response:
+                        # Emit response back to client
+                        emit('receive_message', {
+                            'message': response,
+                            'is_bot': True
+                        }, room=request.sid)
+                        logger.info(f"Response emitted to {request.sid}")
+                    else:
+                        logger.error("No response generated from chat handler")
+                        raise ValueError("No response generated")
+                        
                 except Exception as e:
-                    logger.error(f"Error handling message: {str(e)}")
+                    error_msg = str(e)
+                    logger.error(f"Error handling message: {error_msg}")
+                    logger.error(traceback.format_exc())
                     emit('receive_message', {
                         'message': 'I apologize, but I encountered an error. Please try again.',
                         'is_bot': True

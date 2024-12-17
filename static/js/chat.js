@@ -61,26 +61,47 @@ document.addEventListener('DOMContentLoaded', () => {
     socket.on('receive_message', (data) => {
         console.log('Received message:', data);
         try {
-            if (data && typeof data === 'object') {
-                if (data.error) {
-                    console.error('Error from server:', data.error);
-                    appendMessage('Sorry, I encountered an error. Please try again.', true);
-                } else {
-                    appendMessage(data.message, data.is_bot || false);
-                }
-            } else {
-                console.error('Invalid message format:', data);
-                appendMessage('Error: Received invalid message format', true);
+            if (!data) {
+                throw new Error('No data received from server');
             }
+
+            if (typeof data !== 'object') {
+                throw new Error('Invalid message format received');
+            }
+
+            if (data.error) {
+                console.error('Error from server:', data.error);
+                appendMessage('Sorry, I encountered an error. Please try again.', true);
+                return;
+            }
+
+            if (!data.message) {
+                throw new Error('Message content is missing');
+            }
+
+            appendMessage(data.message, data.is_bot || false);
         } catch (error) {
             console.error('Error processing received message:', error);
-            appendMessage('Error displaying message', true);
+            appendMessage('Error: ' + error.message, true);
         } finally {
             isWaitingForResponse = false;
             sendButton.disabled = false;
             messageInput.disabled = false;
             messageInput.focus();
         }
+    });
+
+    // Enhanced error handling for socket events
+    socket.on('error', (error) => {
+        console.error('Socket error:', error);
+        appendMessage('Connection error occurred. Please try again.', true);
+        updateConnectionStatus('disconnected');
+    });
+
+    socket.on('connect_error', (error) => {
+        console.error('Connection error:', error);
+        appendMessage('Failed to connect to server. Please refresh the page.', true);
+        updateConnectionStatus('disconnected');
     });
 
     // Add handler for connection status

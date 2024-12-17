@@ -13043,3 +13043,28 @@ Logged in as: OCTANTBOT
 Bot ID: 1316950341954306159
 Guilds connected: 2
 ━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 02:50:10,021 - __main__ - INFO - Initialized message tracking system
+2024-12-17 02:50:10,021 - __main__ - INFO - Processing message 1318409878884061224
+2024-12-17 02:50:10,108 - __main__ - ERROR - Response error: ChatHandler.get_response() missing 1 required positional argument: 'user_message'
+Traceback (most recent call last):
+  File "/home/runner/workspace/discord_bot.py", line 146, in on_message
+    self.chat_handler.get_response(content),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: ChatHandler.get_response() missing 1 required positional argument: 'user_message'
+2024-12-17 02:51:09,347 - __main__ - INFO - Processing message 1318410127698825347
+2024-12-17 02:51:09,456 - __main__ - ERROR - Response error: ChatHandler.get_response() missing 1 required positional argument: 'user_message'
+Traceback (most recent call last):
+  File "/home/runner/workspace/discord_bot.py", line 146, in on_message
+    self.chat_handler.get_response(content),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: ChatHandler.get_response() missing 1 required positional argument: 'user_message'
+2024-12-17 02:51:27,943 - __main__ - INFO - Starting bot...
+2024-12-17 02:51:27,943 - discord.client - INFO - logging in using static token
+2024-12-17 02:51:28,236 - __main__ - INFO - Initializing Discord bot...
+2024-12-17 02:51:28,388 - __main__ - INFO - Commands registered successfully
+2024-12-17 02:51:28,588 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: b3ea4f7a57a09fd6b2da17fff1c4af10).
+2024-12-17 02:51:30,595 - __main__ - INFO - ━━━━━━ Bot Ready ━━━━━━
+Logged in as: OCTANTBOT
+Bot ID: 1316950341954306159
+Guilds connected: 2
+━━━━━━━━━━━━━━━━━━━━━━━━

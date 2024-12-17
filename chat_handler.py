@@ -206,20 +206,42 @@ Remember: While you're an expert on Octant, you're first and foremost a friendly
     def handle_socket_message(self, socket_id, message):
         """Handle incoming socket messages."""
         try:
+            if not message or not isinstance(message, str):
+                logger.error(f"Invalid message format from {socket_id}")
+                return "I couldn't process your message. Please try again with a text message."
+            
+            logger.info(f"Processing message from {socket_id}: {message}")
+            
             # Initialize conversation history for new users
             if socket_id not in self.conversation_history:
                 self.conversation_history[socket_id] = []
+                logger.info(f"Initialized conversation history for {socket_id}")
             
             # Handle commands
             if message.startswith('/'):
                 response = self.command_handler.handle_command(message)
                 if response:
+                    logger.info(f"Command response: {response}")
                     if message.lower() == '/trivia':
                         self.is_playing_trivia = True
                     return response
+                else:
+                    return "Command not recognized. Type /help for available commands."
+            
+            # Validate API key
+            if not self.api_key:
+                logger.error("API key not found")
+                return "I apologize, but I'm not properly configured. Please contact support."
             
             # Get response from API
-            response = self.get_response(socket_id, message)
+            try:
+                response = self.get_response(socket_id, message)
+                if not response:
+                    raise ValueError("Empty response received from API")
+                logger.info(f"API response received for {socket_id}")
+            except Exception as api_error:
+                logger.error(f"API error: {str(api_error)}")
+                return "I apologize, but I encountered an error generating a response. Please try again."
             
             # Update conversation history
             self.conversation_history[socket_id].append({
@@ -230,11 +252,13 @@ Remember: While you're an expert on Octant, you're first and foremost a friendly
             # Maintain history limit
             if len(self.conversation_history[socket_id]) > self.max_history:
                 self.conversation_history[socket_id] = self.conversation_history[socket_id][-self.max_history:]
-                
+            
+            logger.info(f"Returning response for {socket_id}")
             return response
 
         except Exception as e:
             logger.error(f"Error handling socket message: {str(e)}")
+            logger.error(traceback.format_exc())
             return "I apologize, but I encountered an error processing your message. Please try again."
 
     def format_conversation_history(self, socket_id):
