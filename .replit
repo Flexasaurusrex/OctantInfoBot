@@ -83,7 +83,6 @@ task = "packager.installForAll"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "python admin_dashboard.py"
-waitForPort = 3000
 
 [deployment]
 run = ["sh", "-c", "python main.py"]
