@@ -1,0 +1,86 @@
+2024-12-17 03:05:32,044 - __main__ - INFO - Health monitoring started
+2024-12-17 03:05:32,045 - __main__ - INFO - 
+━━━━━━ Server Starting ━━━━━━
+Port: 5000
+Debug: True
+Environment: development
+Memory: 62.3MB
+CPU: 24.0%
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:05:32,061 - __main__ - ERROR - Health monitoring error: Server.emit() got an unexpected keyword argument 'broadcast'
+2024-12-17 03:05:32,215 - __main__ - INFO - Client connected: Uw80H_LvaGH-Vg-1AAAB
+2024-12-17 03:05:32,215 - __main__ - ERROR - Error in handle_connect: name 'emit' is not defined
+2024-12-17 03:05:32,216 - engineio.server - ERROR - message handler error
+Traceback (most recent call last):
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask_socketio/__init__.py", line 834, in _handle_event
+    ret = handler(auth)
+          ^^^^^^^^^^^^^
+TypeError: handle_connect() takes 0 positional arguments but 1 was given
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/runner/workspace/app.py", line 476, in handle_connect
+    emit('connection_status', {
+    ^^^^
+NameError: name 'emit' is not defined
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/engineio/server.py", line 441, in run_handler
+    return self.handlers[event](*args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/socketio/server.py", line 643, in _handle_eio_message
+    self._handle_connect(eio_sid, pkt.namespace, pkt.data)
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/socketio/server.py", line 537, in _handle_connect
+    success = self._trigger_event(
+              ^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/socketio/server.py", line 614, in _trigger_event
+    return handler(*args)
+           ^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask_socketio/__init__.py", line 293, in _handler
+    return self._handle_event(handler, message, real_ns, sid,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/workspace/.pythonlibs/lib/python3.11/site-packages/flask_socketio/__init__.py", line 836, in _handle_event
+    ret = handler()
+          ^^^^^^^^^
+  File "/home/runner/workspace/app.py", line 490, in handle_connect
+    emit('connection_status', {'status': 'error', 'message': str(e)})
+    ^^^^
+NameError: name 'emit' is not defined
+2024-12-17 03:05:32,637 - __main__ - INFO - Request: GET / from 172.31.196.15
+2024-12-17 03:05:32,794 - __main__ - INFO - Request: GET / from 172.31.196.15
+2024-12-17 03:05:37,074 - __main__ - ERROR - Health monitoring error: Server.emit() got an unexpected keyword argument 'broadcast'
+2024-12-17 03:05:42,088 - __main__ - ERROR - Health monitoring error: Server.emit() got an unexpected keyword argument 'broadcast'
+2024-12-17 03:05:47,101 - __main__ - ERROR - Health monitoring error: Server.emit() got an unexpected keyword argument 'broadcast'
+2024-12-17 03:05:52,114 - __main__ - ERROR - Health monitoring error: Server.emit() got an unexpected keyword argument 'broadcast'
+2024-12-17 03:05:54,776 - app - INFO - Health monitoring started
+2024-12-17 03:05:54,777 - __main__ - INFO - ━━━━━━ Environment Check ━━━━━━
+2024-12-17 03:05:54,777 - __main__ - INFO - ✓ TOGETHER_API_KEY: SET
+2024-12-17 03:05:54,777 - __main__ - INFO - ✓ DISCORD_BOT_TOKEN: SET
+2024-12-17 03:05:54,777 - __main__ - INFO - ✓ TELEGRAM_BOT_TOKEN: SET
+2024-12-17 03:05:54,778 - __main__ - INFO - 
+━━━━━━ Railway Startup ━━━━━━
+Environment: development
+Port: 5000
+Debug: True
+Memory: 0.1%
+CPU: 18.8%
+Python: 3.11.9
+Time: 2024-12-17T03:05:54.778160+00:00
+Retry: 1/5
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:05:55,030 - __main__ - INFO - Request: GET / from 172.31.196.15
+2024-12-17 03:05:56,104 - __main__ - INFO - Health monitoring started
+2024-12-17 03:05:56,105 - __main__ - INFO - 
+━━━━━━ Server Starting ━━━━━━
+Port: 5000
+Debug: True
+Environment: development
+Memory: 61.7MB
+CPU: 44.9%
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:05:56,341 - app - INFO - Request: GET / from 172.31.196.15
+2024-12-17 03:05:56,764 - app - INFO - Request: GET / from 172.31.196.15
+2024-12-17 03:05:56,772 - app - INFO - Request: GET / from 172.31.196.15

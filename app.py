@@ -1,67 +1,115 @@
-import eventlet
-eventlet.monkey_patch()
 import os
 import logging
-from datetime import datetime
-from flask import Flask, render_template, request
-logger = logging.getLogger('app')
-logger.setLevel(logging.INFO)
-handler = logging.StreamHandler()
-handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
-logger.addHandler(handler)
+import json
+from flask import Flask, render_template, request, Response, stream_with_context
 from flask_socketio import SocketIO, emit
 from flask_cors import CORS
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-from chat_handler import ChatHandler
+import queue
+import threading
 import psutil
+from datetime import datetime
+import eventlet
+from chat_handler import ChatHandler
 
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(),
+        logging.FileHandler('app.log')
+    ]
 )
 logger = logging.getLogger(__name__)
 
+# Initialize Flask app
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get("FLASK_SECRET_KEY", "octant-chat-secret")
+socketio = SocketIO(app, cors_allowed_origins="*")
 
-# Configure CORS for production
-if os.environ.get('FLASK_ENV') == 'production':
-    CORS(app, resources={r"/*": {"origins": "*"}})
-else:
-    CORS(app)
-# Configure rate limiter
+# Initialize rate limiter
 limiter = Limiter(
+    get_remote_address,
     app=app,
-    key_func=get_remote_address,
     default_limits=["200 per day", "50 per hour"],
     storage_uri="memory://"
 )
 
-# Configure Socket.IO with enhanced connection handling
-socketio = SocketIO(
-    app,
-    cors_allowed_origins="*",
-    async_mode='eventlet',
-    ping_timeout=20,
-    ping_interval=10,
-    reconnection=True,
-    reconnection_attempts=3,
-    reconnection_delay=2000,
-    reconnection_delay_max=5000,
-    max_http_buffer_size=5e6,
-    async_handlers=True,
-    logger=True,
-    engineio_logger=True
-)
-chat_handler = None
+def message_stream(client_id):
+    """Generate SSE stream for client."""
+    if client_id not in client_queues:
+        with client_lock:
+            client_queues[client_id] = queue.Queue()
+    
+    def generate():
+        try:
+            while True:
+                message = client_queues[client_id].get()
+                yield f"data: {json.dumps(message)}\n\n"
+        except GeneratorExit:
+            with client_lock:
+                if client_id in client_queues:
+                    del client_queues[client_id]
+                    
+    return generate()
 
+@app.route('/stream')
+def stream():
+    """SSE endpoint for real-time messages."""
+    client_id = request.args.get('client_id')
+    if not client_id:
+        return "Client ID required", 400
+        
+    return Response(
+        stream_with_context(message_stream(client_id)),
+        mimetype='text/event-stream',
+        headers={
+            'Cache-Control': 'no-cache',
+            'Connection': 'keep-alive',
+            'X-Accel-Buffering': 'no'
+        }
+    )
+
+@app.route('/send', methods=['POST'])
+def send_message():
+    """Endpoint for sending messages to the bot."""
+    try:
+        data = request.json
+        if not data or 'message' not in data or 'client_id' not in data:
+            return {'error': 'Invalid request format'}, 400
+            
+        client_id = data['client_id']
+        message = data['message']
+        
+        # Process message using chat handler
+        response = chat_handler.handle_socket_message(client_id, message)
+        
+        # Send response to client's queue
+        if client_id in client_queues:
+            client_queues[client_id].put({
+                'message': response,
+                'is_bot': True
+            })
+            
+        return {'status': 'success'}
+        
+    except Exception as e:
+        logger.error(f"Error processing message: {str(e)}")
+        return {'error': 'Internal server error'}, 500
+CORS(app)
+
+# Message queues for each client
+client_queues = {}
+client_lock = threading.Lock()
+
+# Initialize chat handler
 try:
     chat_handler = ChatHandler()
-except ValueError as e:
-    logger.error(f"Failed to initialize ChatHandler: {str(e)}")
-    raise
+except Exception as e:
+    logger.error(f"Failed to initialize ChatHandler: {e}")
+    chat_handler = None
 
 @app.before_request
 def log_request_info():
@@ -407,7 +455,7 @@ def start_health_monitoring():
         while True:
             try:
                 health_data = get_service_health()
-                socketio.emit('health_update', health_data, broadcast=True)
+                socketio.emit('health_update', health_data, namespace='/', room=None)
             except Exception as e:
                 logger.error(f"Health monitoring error: {str(e)}")
             eventlet.sleep(5)  # Update every 5 seconds
@@ -419,86 +467,51 @@ def start_health_monitoring():
 
 @socketio.on('connect')
 def handle_connect():
-    """Handle client connection with enhanced error handling and state tracking."""
+    """Handle client connection with enhanced state tracking"""
     try:
-        # Start health monitoring if not already started
-
-        client_info = {
-            'sid': request.sid,
-            'ip': request.remote_addr,
-            'timestamp': datetime.now().isoformat(),
-            'user_agent': request.headers.get('User-Agent', 'Unknown'),
-            'reconnect_attempts': 0,
+        client_id = request.sid
+        logger.info(f"Client connected: {client_id}")
+        
+        # Initialize client state
+        active_connections[client_id] = {
+            'connected_at': datetime.now().isoformat(),
+            'messages': [],
             'last_ping': datetime.now()
         }
-        active_connections[request.sid] = client_info
-        logger.info(f"Client connected: {client_info}")
         
-        # Send connection acknowledgment with enhanced status
+        # Send connection acknowledgment
         emit('connection_status', {
             'status': 'connected',
-            'sid': request.sid,
-            'timestamp': datetime.now().isoformat(),
-            'reconnect_info': {
-                'attempts': client_info['reconnect_attempts'],
-                'max_attempts': 5,
-                'delay': 2000
-            }
-        })
+            'client_id': client_id,
+            'timestamp': datetime.now().isoformat()
+        }, room=client_id)
         
-        # Send welcome message with command help
-        help_message = """
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📚 Available Commands
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-📋 Information Commands:
-• /help - Show this help message
-• /learn - Access learning modules
-
-📌 Topic-Specific Commands:
-• /funding - Learn about Octant's funding
-• /governance - Understand governance
-• /rewards - Explore reward system
-
-Type any command to get started!
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"""
+        # Send welcome message
         emit('receive_message', {
-            'message': help_message,
+            'message': "👋 Hello! I'm the Octant Information Bot. How can I help you today?",
             'is_bot': True
-        })
+        }, room=client_id)
+        
+        return True
         
     except Exception as e:
-        logger.error(f"Error in handle_connect: {str(e)}", exc_info=True)
-        error_response = {
-            'status': 'error',
-            'message': 'Connection error occurred',
-            'timestamp': datetime.now().isoformat(),
-            'error_details': str(e),
-            'reconnect_info': {
-                'should_retry': True,
-                'delay': 2000
-            }
-        }
-        emit('connection_status', error_response)
+        logger.error(f"Error in handle_connect: {e}")
+        emit('connection_status', {
+            'status': 'error', 
+            'message': str(e)
+        }, room=client_id)
+        return False
 
 @socketio.on('disconnect')
 def handle_disconnect():
-    """Handle client disconnection with cleanup and reconnection support."""
+    """Handle client disconnection with cleanup"""
     try:
-        client_info = active_connections.get(request.sid)
-        if client_info:
-            logger.info(f"Client disconnected: {client_info}")
-            # Update reconnection attempts for tracking
-            client_info['reconnect_attempts'] += 1
-            # Keep connection info for potential reconnection
-            if client_info['reconnect_attempts'] < 5:
-                client_info['last_disconnect'] = datetime.now().isoformat()
-            else:
-                # Clean up if max reconnection attempts reached
-                active_connections.pop(request.sid, None)
+        client_id = request.sid
+        logger.info(f"Client disconnected: {client_id}")
+        
+        
     except Exception as e:
-        logger.error(f"Error in handle_disconnect: {str(e)}", exc_info=True)
+        logger.error(f"Error in handle_disconnect: {e}")
 
 @socketio.on('ping')
 def handle_ping():
@@ -511,38 +524,40 @@ def handle_ping():
         logger.error(f"Error in handle_ping: {str(e)}")
         return {'status': 'error', 'message': str(e)}
 
+
 @socketio.on('send_message')
 def handle_message(data):
+    """Handle incoming messages with enhanced error recovery"""
     try:
-        message = data['message']
-        logger.info(f"Received message from {request.sid}: {message[:50]}...")
+        client_id = request.sid
         
-        if chat_handler is None:
-            logger.error("ChatHandler not initialized")
-            raise RuntimeError("ChatHandler not initialized")
+        if not isinstance(data, dict) or 'message' not in data:
+            raise ValueError("Invalid message format")
+        
+        message = data['message']
+        logger.info(f"Message received from {client_id}: {message[:50]}...")
+        
+        if not chat_handler:
+            raise RuntimeError("Chat handler not initialized")
+        
+        # Process message and get response
+        response = chat_handler.handle_socket_message(client_id, message)
+        
+        if response:
+            # Send response to client
+            emit('receive_message', {
+                'message': response,
+                'is_bot': True
+            })
+            logger.info(f"Response sent to {client_id}")
             
-        response = chat_handler.get_response(message)
-        socketio.emit('receive_message', {
-            'message': response,
-            'is_bot': True
-        })
-        logger.info(f"Sent response to {request.sid}")
-    except KeyError as e:
-        logger.error(f"Invalid message format from {request.sid}: {str(e)}")
-        socketio.emit('receive_message', {
-            'message': "I couldn't process your message. Please try again with a valid message format.",
-            'is_bot': True
-        })
-    except RuntimeError as e:
-        logger.error(f"Runtime error: {str(e)}")
-        socketio.emit('receive_message', {
-            'message': "The chat service is currently unavailable. Please try again in a few moments.",
-            'is_bot': True
-        })
+        else:
+            raise ValueError("No response generated")
+            
     except Exception as e:
-        logger.error(f"Unexpected error handling message: {str(e)}")
-        socketio.emit('receive_message', {
-            'message': "I apologize, but I encountered an unexpected error. Please try again.",
+        logger.error(f"Error handling message: {e}")
+        emit('receive_message', {
+            'message': 'I apologize, but I encountered an error. Please try again.',
             'is_bot': True
         })
 
@@ -569,22 +584,20 @@ def handle_health_update_request():
 
 
 # Initialize health monitoring when the app starts
+start_health_monitoring()
 
-# Initialize health monitoring when SocketIO starts
-# This function is now called only once within the start_health_monitoring function.
-
-if __name__ == '__main__':
+def start_server():
+    """Start the server with enhanced error handling"""
     try:
         port = int(os.environ.get('PORT', 5000))
         debug = os.environ.get('FLASK_ENV') != 'production'
         app.start_time = datetime.now()
         
-        # Enhanced startup logging
         logger.info(f"""
 ━━━━━━ Server Starting ━━━━━━
 Port: {port}
 Debug: {debug}
-Environment: {os.environ.get('RAILWAY_ENVIRONMENT', 'development')}
+Environment: {os.environ.get('FLASK_ENV', 'development')}
 Memory: {psutil.Process().memory_info().rss / 1024 / 1024:.1f}MB
 CPU: {psutil.cpu_percent()}%
 ━━━━━━━━━━━━━━━━━━━━━━━━""")
@@ -592,16 +605,15 @@ CPU: {psutil.cpu_percent()}%
         socketio.run(
             app,
             host='0.0.0.0',
-            port=port,  # Use the port from environment
+            port=port,
             debug=debug,
-            use_reloader=False,  # Disable reloader for Railway
+            use_reloader=False,
             log_output=True
         )
+        
     except Exception as e:
-        logger.error(f"""
-━━━━━━ Startup Error ━━━━━━
-Error: {str(e)}
-Type: {type(e).__name__}
-Time: {datetime.now().isoformat()}
-━━━━━━━━━━━━━━━━━━━━━━━━""")
-        raise  # Re-raise for Railway to detect failure
+        logger.error(f"Failed to start server: {e}")
+        raise
+
+if __name__ == '__main__':
+    start_server()

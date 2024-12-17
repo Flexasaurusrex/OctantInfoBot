@@ -13068,3 +13068,14 @@ Logged in as: OCTANTBOT
 Bot ID: 1316950341954306159
 Guilds connected: 2
 ━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:05:55,586 - discord.client - WARNING - PyNaCl is not installed, voice will NOT be supported
+2024-12-17 03:05:55,587 - __main__ - INFO - Starting bot...
+2024-12-17 03:05:55,587 - discord.client - INFO - logging in using static token
+2024-12-17 03:05:56,180 - __main__ - INFO - Initializing Discord bot...
+2024-12-17 03:05:56,384 - __main__ - INFO - Commands registered successfully
+2024-12-17 03:05:56,591 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 4142f6546bea0647961ef787d06e5692).
+2024-12-17 03:05:58,596 - __main__ - INFO - ━━━━━━ Bot Ready ━━━━━━
+Logged in as: OCTANTBOT
+Bot ID: 1316950341954306159
+Guilds connected: 2
+━━━━━━━━━━━━━━━━━━━━━━━━
