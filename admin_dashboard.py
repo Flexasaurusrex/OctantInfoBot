@@ -67,6 +67,10 @@ def save_config(config):
         logger.error(f"Error saving config: {e}")
         return False
 
+@app.route('/')
+def index():
+    return render_template('admin_config.html', config=load_config())
+
 @app.route('/admin/config')
 def admin_config():
     return render_template('admin_config.html', config=load_config())
@@ -88,10 +92,17 @@ def update_config():
 
 @app.route('/api/health')
 def health_check():
+    # Enhanced health check for Railway integration
     return jsonify({
         "status": "healthy",
         "timestamp": datetime.utcnow().isoformat(),
-        "version": "1.0.0"
+        "version": "1.0.0",
+        "service": "admin_dashboard",
+        "uptime": os.getenv("RAILWAY_UPTIME", "0"),
+        "environment": os.getenv("RAILWAY_ENVIRONMENT", "development"),
+        "region": os.getenv("RAILWAY_REGION", "unknown"),
+        "memory_usage": psutil.Process().memory_percent(),
+        "cpu_usage": psutil.cpu_percent()
     })
 
 if __name__ == '__main__':
