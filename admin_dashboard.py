@@ -3,7 +3,11 @@ from flask_socketio import SocketIO
 import os
 import json
 import logging
+import psutil
 from datetime import datetime
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
 
 app = Flask(__name__)
 socketio = SocketIO(app)
@@ -93,47 +97,82 @@ def update_config():
 @app.route('/api/health')
 def health_check():
     """Enhanced health check endpoint for Railway integration."""
+    health_data = {
+        "status": "healthy",
+        "timestamp": datetime.utcnow().isoformat(),
+        "version": "1.0.0",
+        "service": {
+            "name": "admin_dashboard",
+            "type": "configuration",
+            "status": "running"
+        },
+        "system": {
+            "memory": {},
+            "cpu": {},
+            "disk": {}
+        },
+        "railway": {
+            "environment": os.getenv("RAILWAY_ENVIRONMENT", "development"),
+            "region": os.getenv("RAILWAY_REGION", "unknown"),
+            "service": os.getenv("RAILWAY_SERVICE_NAME", "admin-dashboard"),
+            "uptime": os.getenv("RAILWAY_UPTIME", "0")
+        }
+    }
+    
     try:
+        # Get process metrics
         process = psutil.Process()
         memory_info = process.memory_info()
-        
-        return jsonify({
-            "status": "healthy",
-            "timestamp": datetime.utcnow().isoformat(),
-            "version": "1.0.0",
-            "service": {
-                "name": "admin_dashboard",
-                "type": "configuration",
-                "status": "running"
-            },
-            "system": {
-                "memory": {
-                    "used_percent": process.memory_percent(),
-                    "rss": memory_info.rss,
-                    "vms": memory_info.vms
-                },
-                "cpu": {
-                    "percent": psutil.cpu_percent(interval=0.1),
-                    "count": psutil.cpu_count()
-                },
-                "disk": {
-                    "usage": psutil.disk_usage('/').percent
-                }
-            },
-            "railway": {
-                "environment": os.getenv("RAILWAY_ENVIRONMENT", "development"),
-                "region": os.getenv("RAILWAY_REGION", "unknown"),
-                "service": os.getenv("RAILWAY_SERVICE_NAME", "admin-dashboard"),
-                "uptime": os.getenv("RAILWAY_UPTIME", "0")
-            }
-        }), 200
+        health_data["system"]["memory"] = {
+            "used_percent": round(process.memory_percent(), 2),
+            "rss": memory_info.rss,
+            "vms": memory_info.vms
+        }
     except Exception as e:
-        logger.error(f"Health check error: {str(e)}")
-        return jsonify({
-            "status": "unhealthy",
-            "error": str(e),
-            "timestamp": datetime.utcnow().isoformat()
-        }), 500
+        logger.warning(f"Error collecting memory metrics: {e}")
+        health_data["system"]["memory"] = {
+            "error": "Unable to collect memory metrics",
+            "used_percent": 0,
+            "rss": 0,
+            "vms": 0
+        }
+
+    try:
+        # Get CPU metrics
+        health_data["system"]["cpu"] = {
+            "percent": round(psutil.cpu_percent(interval=0.1), 2),
+            "count": psutil.cpu_count()
+        }
+    except Exception as e:
+        logger.warning(f"Error collecting CPU metrics: {e}")
+        health_data["system"]["cpu"] = {
+            "error": "Unable to collect CPU metrics",
+            "percent": 0,
+            "count": 0
+        }
+
+    try:
+        # Get disk metrics
+        health_data["system"]["disk"] = {
+            "usage": round(psutil.disk_usage('/').percent, 2)
+        }
+    except Exception as e:
+        logger.warning(f"Error collecting disk metrics: {e}")
+        health_data["system"]["disk"] = {
+            "error": "Unable to collect disk metrics",
+            "usage": 0
+        }
+
+    # Set overall status based on metrics
+    if all(component.get("error") is None for component in [
+        health_data["system"]["memory"],
+        health_data["system"]["cpu"],
+        health_data["system"]["disk"]
+    ]):
+        return jsonify(health_data), 200
+    else:
+        health_data["status"] = "degraded"
+        return jsonify(health_data), 200
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 3000))
