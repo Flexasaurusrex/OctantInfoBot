@@ -58,61 +58,130 @@ Memory Usage: {memory_usage:.1f}MB
 CPU Usage: {cpu_usage}%
 ━━━━━━━━━━━━━━━━━━━━━━━━""")
             
-            # Enhanced token validation
+            # Enhanced token validation with detailed reporting
             token = os.getenv('DISCORD_BOT_TOKEN')
             if not token:
                 logger.error("DISCORD_BOT_TOKEN environment variable not found")
+                print("[RAILWAY ERROR] Discord token not found", file=sys.stderr)
                 raise ValueError("Discord token not found in environment variables")
             
             if len(token.split('.')) != 3:
                 logger.error("Malformed Discord token detected")
+                print("[RAILWAY ERROR] Invalid Discord token format", file=sys.stderr)
                 raise ValueError("Invalid Discord token format")
             
-            logger.info("Token format validated")
+            # Verify token prefix
+            token_parts = token.split('.')
+            if not token_parts[0].isalnum():
+                logger.error("Invalid token prefix format")
+                print("[RAILWAY ERROR] Token prefix is invalid", file=sys.stderr)
+                raise ValueError("Invalid token prefix format")
             
-            # Set connection timeout
+            logger.info("Token validation successful")
+            print("[RAILWAY INFO] Discord token validated successfully", file=sys.stderr)
+            
+            # Enhanced connection settings
             self.connect_timeout = 30.0
             self.max_reconnect_delay = 120.0
+            self.gateway_queue_size = 100
+            self.max_ratelimit_timeout = 60.0
+            self.connection_retries = 0
+            self.max_connection_retries = 5
             
-            # Initialize connection state tracking
+            # Initialize detailed connection state tracking
             self.connection_state = {
                 'last_attempt': datetime.now(timezone.utc),
                 'consecutive_failures': 0,
                 'last_success': None,
-                'current_state': 'initializing'
+                'current_state': 'initializing',
+                'gateway_connected': False,
+                'heartbeat_latency': None,
+                'identify_attempts': 0,
+                'session_id': None,
+                'resume_gateway_url': None,
+                'last_heartbeat_ack': None,
+                'detailed_status': 'Starting up'
             }
             
-            logger.info("Connection state initialized")
+            logger.info("Enhanced connection state initialized")
+            print("[RAILWAY INFO] Connection state tracking initialized", file=sys.stderr)
             
-            # Initialize commands
+            # Initialize commands with verification
             logger.info("Registering commands...")
             await self.register_commands()
             logger.info("Commands registered successfully")
             
-            # Start health monitoring
+            # Start enhanced health monitoring
             logger.info("Starting health monitoring...")
             self.health_check.start()
             logger.info("Health monitoring activated")
             
-            # Final setup verification
-            # Log setup completion with proper string formatting
+            # Gateway connection monitoring
+            self._gateway_monitor = asyncio.create_task(self._monitor_gateway_connection())
+            
+            # Final setup verification with enhanced metrics
             app_id = self.application_id if hasattr(self, 'application_id') else 'Pending'
             shard_count = self.shard_count if hasattr(self, 'shard_count') and self.shard_count else 'None'
             cmd_count = len(self.tree.get_commands()) if hasattr(self, 'tree') else 0
             
-            logger.info(f"""━━━━━━ Setup Complete ━━━━━━
+            startup_status = f"""━━━━━━ Setup Complete ━━━━━━
 Application ID: {app_id}
 Shard Count: {shard_count}
 Command Count: {cmd_count}
-━━━━━━━━━━━━━━━━━━━━━━━━""")
+Gateway Queue Size: {self.gateway_queue_size}
+Connection Settings:
+- Timeout: {self.connect_timeout}s
+- Max Retries: {self.max_connection_retries}
+- Max Ratelimit: {self.max_ratelimit_timeout}s
+━━━━━━━━━━━━━━━━━━━━━━━━"""
+            
+            logger.info(startup_status)
+            print(f"[RAILWAY INFO] {startup_status}", file=sys.stderr)
             
         except Exception as e:
-            logger.error(f"""━━━━━━ Setup Error ━━━━━━
+            error_msg = f"""━━━━━━ Setup Error ━━━━━━
 Error Type: {type(e).__name__}
 Error Message: {str(e)}
 Stack Trace: {traceback.format_exc()}
-━━━━━━━━━━━━━━━━━━━━━━━━""")
+Memory Usage: {psutil.Process().memory_percent():.1f}%
+CPU Usage: {psutil.cpu_percent()}%
+━━━━━━━━━━━━━━━━━━━━━━━━"""
+            
+            logger.error(error_msg)
+            print(f"[RAILWAY ERROR] {error_msg}", file=sys.stderr)
             raise
+
+    async def _monitor_gateway_connection(self):
+        """Monitor gateway connection status and handle reconnection."""
+        while True:
+            try:
+                if hasattr(self, '_connection') and self._connection:
+                    ws = self._connection.ws
+                    if ws is None or ws.closed:
+                        logger.warning("Gateway connection lost or not established")
+                        print("[RAILWAY WARNING] Discord gateway connection lost", file=sys.stderr)
+                        self.connection_state.update({
+                            'gateway_connected': False,
+                            'detailed_status': 'Gateway disconnected'
+                        })
+                        
+                        # Attempt reconnection if not already in progress
+                        if not self.is_closed():
+                            logger.info("Attempting gateway reconnection...")
+                            print("[RAILWAY INFO] Initiating gateway reconnection", file=sys.stderr)
+                            await self.connect_with_backoff()
+                    else:
+                        self.connection_state.update({
+                            'gateway_connected': True,
+                            'detailed_status': 'Connected to gateway'
+                        })
+                
+                await asyncio.sleep(5)  # Check every 5 seconds
+                
+            except Exception as e:
+                logger.error(f"Gateway monitoring error: {str(e)}")
+                print(f"[RAILWAY ERROR] Gateway monitor: {str(e)}", file=sys.stderr)
+                await asyncio.sleep(5)  # Wait before retrying
         
     async def register_commands(self):
         @self.tree.command(name="help", description="Show available commands")
@@ -170,8 +239,8 @@ Stack Trace: {traceback.format_exc()}
                 'has_latency': self.latency is not None,
                 'latency_value': f"{self.latency*1000:.2f}ms" if self.latency else "N/A",
                 'guilds_count': len(self.guilds) if hasattr(self, 'guilds') else 0,
-                'last_heartbeat': getattr(self, '_connection', {}).get('_last_heartbeat', None),
-                'ws_connected': hasattr(self, 'ws') and self.ws and not self.ws.closed
+                'last_heartbeat': getattr(getattr(self, '_connection', None), '_last_heartbeat', None),
+                'ws_connected': hasattr(self, 'ws') and self.ws and not self.ws.closed if hasattr(self, 'ws') else False
             }
             
             # Check WebSocket health
@@ -315,43 +384,61 @@ Guilds: {len(self.guilds)}
     _last_processed = {}
     
     async def on_message(self, message):
+        """Handle incoming messages with proper error handling and deduplication."""
+        # Ignore our own messages
         if message.author == self.user:
             return
             
         # Generate a unique message ID
         message_id = f"{message.channel.id}:{message.id}"
-        if message_id in self._last_processed:
-            return
-            
-        # Check for bot mention or reply
-        is_mention = self.user.mentioned_in(message)
-        is_reply = message.reference and message.reference.resolved and message.reference.resolved.author == self.user
         
-        if is_reply or is_mention:
-            try:
-                # Track this message as processed
-                self._last_processed[message_id] = time.time()
+        try:
+            # Skip if we've already processed this message
+            if message_id in self._last_processed:
+                return
                 
-                # Clean the message content
-                content = message.content
-                if is_mention:
-                    # Remove the bot mention
-                    for mention in message.mentions:
-                        if mention == self.user:
-                            content = content.replace(f'<@{mention.id}>', '').strip()
-                async with message.channel.typing():
-                    response = self.chat_handler.get_response(content)
-                    
+            # Only respond to mentions or replies to the bot
+            is_mention = self.user.mentioned_in(message)
+            is_reply = (
+                message.reference and 
+                message.reference.resolved and 
+                message.reference.resolved.author == self.user
+            )
+            
+            if not (is_reply or is_mention):
+                return
+                
+            # Track this message as processed immediately
+            self._last_processed[message_id] = time.time()
+            
+            # Clean the message content
+            content = message.content
+            if is_mention:
+                # Remove all bot mentions from the content
+                for mention in message.mentions:
+                    if mention == self.user:
+                        content = content.replace(f'<@{mention.id}>', '').strip()
+                        content = content.replace(f'<@!{mention.id}>', '').strip()
+            
+            # Get and send the response
+            async with message.channel.typing():
+                response = self.chat_handler.get_response(content)
+                
+                # Handle both single string and list responses
                 if isinstance(response, list):
                     for chunk in response:
-                        if chunk.strip():
+                        if chunk and chunk.strip():
                             await message.reply(chunk.strip())
-                else:
+                elif response and response.strip():
                     await message.reply(response.strip())
                     
-            except Exception as e:
-                logger.error(f"Message handling error: {str(e)}")
-                await message.reply("I encountered an error. Please try again.")
+        except Exception as e:
+            logger.error(f"Error processing message {message_id if 'message_id' in locals() else 'unknown'}: {str(e)}")
+            logger.error(f"Stack trace: {traceback.format_exc()}")
+            try:
+                await message.reply("I encountered an error processing your message. Please try again.")
+            except:
+                logger.error("Failed to send error message to user")
 
     async def on_error(self, event, *args, **kwargs):
         """Enhanced error handling with Railway visibility"""
@@ -406,9 +493,24 @@ System State:
         try:
             logger.info("Initiating reconnection sequence...")
             print("[RAILWAY ALERT] Initiating bot reconnection sequence", file=sys.stderr)
+            sys.stderr.flush()
+            
+            # Enhanced connection state tracking
+            detailed_state = {
+                'timestamp': datetime.now(timezone.utc).isoformat(),
+                'memory_usage': f"{psutil.Process().memory_percent():.1f}%",
+                'cpu_usage': f"{psutil.cpu_percent()}%",
+                'connection_attempts': self.reconnect_attempts,
+                'last_error': traceback.format_exc() if sys.exc_info()[0] else None
+            }
+            
+            logger.info(f"Current connection state: {detailed_state}")
+            print(f"[RAILWAY DEBUG] Connection state: {detailed_state}", file=sys.stderr)
+            sys.stderr.flush()
             
             self.connection_state['current_state'] = 'reconnecting'
             self.connection_state['last_attempt'] = datetime.now(timezone.utc)
+            self.connection_state['detailed_state'] = detailed_state
             
             # Close existing connection if active
             if not self.is_closed():

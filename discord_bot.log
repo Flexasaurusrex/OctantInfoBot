@@ -14661,3 +14661,582 @@ Logged in as: OCTANTBOT
 Bot ID: 1316950341954306159
 Guilds: 2
 ━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 00:53:54,817 - __main__ - ERROR - 
+‼️ [RAILWAY ERROR] Health Check Error
+━━━━━━ Error Details ━━━━━━
+Error: 'ConnectionState' object has no attribute 'get'
+Stack Trace: Traceback (most recent call last):
+  File "/home/runner/workspace/discord_bot.py", line 173, in health_check
+    'last_heartbeat': getattr(self, '_connection', {}).get('_last_heartbeat', None),
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ConnectionState' object has no attribute 'get'
+
+Time: 2024-12-17 00:53:54.817601+00:00
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 00:54:24,807 - __main__ - ERROR - 
+‼️ [RAILWAY ERROR] Health Check Error
+━━━━━━ Error Details ━━━━━━
+Error: 'ConnectionState' object has no attribute 'get'
+Stack Trace: Traceback (most recent call last):
+  File "/home/runner/workspace/discord_bot.py", line 173, in health_check
+    'last_heartbeat': getattr(self, '_connection', {}).get('_last_heartbeat', None),
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ConnectionState' object has no attribute 'get'
+
+Time: 2024-12-17 00:54:24.807936+00:00
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 00:54:54,797 - __main__ - ERROR - 
+‼️ [RAILWAY ERROR] Health Check Error
+━━━━━━ Error Details ━━━━━━
+Error: 'ConnectionState' object has no attribute 'get'
+Stack Trace: Traceback (most recent call last):
+  File "/home/runner/workspace/discord_bot.py", line 173, in health_check
+    'last_heartbeat': getattr(self, '_connection', {}).get('_last_heartbeat', None),
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ConnectionState' object has no attribute 'get'
+
+Time: 2024-12-17 00:54:54.797875+00:00
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 00:55:24,819 - __main__ - ERROR - 
+‼️ [RAILWAY ERROR] Health Check Error
+━━━━━━ Error Details ━━━━━━
+Error: 'ConnectionState' object has no attribute 'get'
+Stack Trace: Traceback (most recent call last):
+  File "/home/runner/workspace/discord_bot.py", line 173, in health_check
+    'last_heartbeat': getattr(self, '_connection', {}).get('_last_heartbeat', None),
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ConnectionState' object has no attribute 'get'
+
+Time: 2024-12-17 00:55:24.819813+00:00
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 00:55:54,816 - __main__ - ERROR - 
+‼️ [RAILWAY ERROR] Health Check Error
+━━━━━━ Error Details ━━━━━━
+Error: 'ConnectionState' object has no attribute 'get'
+Stack Trace: Traceback (most recent call last):
+  File "/home/runner/workspace/discord_bot.py", line 173, in health_check
+    'last_heartbeat': getattr(self, '_connection', {}).get('_last_heartbeat', None),
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ConnectionState' object has no attribute 'get'
+
+Time: 2024-12-17 00:55:54.816517+00:00
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 00:56:24,804 - __main__ - ERROR - 
+‼️ [RAILWAY ERROR] Health Check Error
+━━━━━━ Error Details ━━━━━━
+Error: 'ConnectionState' object has no attribute 'get'
+Stack Trace: Traceback (most recent call last):
+  File "/home/runner/workspace/discord_bot.py", line 173, in health_check
+    'last_heartbeat': getattr(self, '_connection', {}).get('_last_heartbeat', None),
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ConnectionState' object has no attribute 'get'
+
+Time: 2024-12-17 00:56:24.804391+00:00
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 00:56:54,793 - __main__ - ERROR - 
+‼️ [RAILWAY ERROR] Health Check Error
+━━━━━━ Error Details ━━━━━━
+Error: 'ConnectionState' object has no attribute 'get'
+Stack Trace: Traceback (most recent call last):
+  File "/home/runner/workspace/discord_bot.py", line 173, in health_check
+    'last_heartbeat': getattr(self, '_connection', {}).get('_last_heartbeat', None),
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ConnectionState' object has no attribute 'get'
+
+Time: 2024-12-17 00:56:54.793834+00:00
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 00:57:24,819 - __main__ - ERROR - 
+‼️ [RAILWAY ERROR] Health Check Error
+━━━━━━ Error Details ━━━━━━
+Error: 'ConnectionState' object has no attribute 'get'
+Stack Trace: Traceback (most recent call last):
+  File "/home/runner/workspace/discord_bot.py", line 173, in health_check
+    'last_heartbeat': getattr(self, '_connection', {}).get('_last_heartbeat', None),
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ConnectionState' object has no attribute 'get'
+
+Time: 2024-12-17 00:57:24.819716+00:00
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 00:57:54,811 - __main__ - ERROR - 
+‼️ [RAILWAY ERROR] Health Check Error
+━━━━━━ Error Details ━━━━━━
+Error: 'ConnectionState' object has no attribute 'get'
+Stack Trace: Traceback (most recent call last):
+  File "/home/runner/workspace/discord_bot.py", line 173, in health_check
+    'last_heartbeat': getattr(self, '_connection', {}).get('_last_heartbeat', None),
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ConnectionState' object has no attribute 'get'
+
+Time: 2024-12-17 00:57:54.811822+00:00
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 00:58:24,801 - __main__ - ERROR - 
+‼️ [RAILWAY ERROR] Health Check Error
+━━━━━━ Error Details ━━━━━━
+Error: 'ConnectionState' object has no attribute 'get'
+Stack Trace: Traceback (most recent call last):
+  File "/home/runner/workspace/discord_bot.py", line 173, in health_check
+    'last_heartbeat': getattr(self, '_connection', {}).get('_last_heartbeat', None),
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ConnectionState' object has no attribute 'get'
+
+Time: 2024-12-17 00:58:24.801321+00:00
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 00:58:54,817 - __main__ - ERROR - 
+‼️ [RAILWAY ERROR] Health Check Error
+━━━━━━ Error Details ━━━━━━
+Error: 'ConnectionState' object has no attribute 'get'
+Stack Trace: Traceback (most recent call last):
+  File "/home/runner/workspace/discord_bot.py", line 173, in health_check
+    'last_heartbeat': getattr(self, '_connection', {}).get('_last_heartbeat', None),
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ConnectionState' object has no attribute 'get'
+
+Time: 2024-12-17 00:58:54.817744+00:00
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 00:59:24,819 - __main__ - ERROR - 
+‼️ [RAILWAY ERROR] Health Check Error
+━━━━━━ Error Details ━━━━━━
+Error: 'ConnectionState' object has no attribute 'get'
+Stack Trace: Traceback (most recent call last):
+  File "/home/runner/workspace/discord_bot.py", line 173, in health_check
+    'last_heartbeat': getattr(self, '_connection', {}).get('_last_heartbeat', None),
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ConnectionState' object has no attribute 'get'
+
+Time: 2024-12-17 00:59:24.819347+00:00
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 00:59:54,807 - __main__ - ERROR - 
+‼️ [RAILWAY ERROR] Health Check Error
+━━━━━━ Error Details ━━━━━━
+Error: 'ConnectionState' object has no attribute 'get'
+Stack Trace: Traceback (most recent call last):
+  File "/home/runner/workspace/discord_bot.py", line 173, in health_check
+    'last_heartbeat': getattr(self, '_connection', {}).get('_last_heartbeat', None),
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ConnectionState' object has no attribute 'get'
+
+Time: 2024-12-17 00:59:54.807824+00:00
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 01:00:24,796 - __main__ - ERROR - 
+‼️ [RAILWAY ERROR] Health Check Error
+━━━━━━ Error Details ━━━━━━
+Error: 'ConnectionState' object has no attribute 'get'
+Stack Trace: Traceback (most recent call last):
+  File "/home/runner/workspace/discord_bot.py", line 173, in health_check
+    'last_heartbeat': getattr(self, '_connection', {}).get('_last_heartbeat', None),
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ConnectionState' object has no attribute 'get'
+
+Time: 2024-12-17 01:00:24.796790+00:00
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 01:00:54,819 - __main__ - ERROR - 
+‼️ [RAILWAY ERROR] Health Check Error
+━━━━━━ Error Details ━━━━━━
+Error: 'ConnectionState' object has no attribute 'get'
+Stack Trace: Traceback (most recent call last):
+  File "/home/runner/workspace/discord_bot.py", line 173, in health_check
+    'last_heartbeat': getattr(self, '_connection', {}).get('_last_heartbeat', None),
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ConnectionState' object has no attribute 'get'
+
+Time: 2024-12-17 01:00:54.819734+00:00
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 01:01:24,815 - __main__ - ERROR - 
+‼️ [RAILWAY ERROR] Health Check Error
+━━━━━━ Error Details ━━━━━━
+Error: 'ConnectionState' object has no attribute 'get'
+Stack Trace: Traceback (most recent call last):
+  File "/home/runner/workspace/discord_bot.py", line 173, in health_check
+    'last_heartbeat': getattr(self, '_connection', {}).get('_last_heartbeat', None),
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ConnectionState' object has no attribute 'get'
+
+Time: 2024-12-17 01:01:24.815783+00:00
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 01:01:54,804 - __main__ - ERROR - 
+‼️ [RAILWAY ERROR] Health Check Error
+━━━━━━ Error Details ━━━━━━
+Error: 'ConnectionState' object has no attribute 'get'
+Stack Trace: Traceback (most recent call last):
+  File "/home/runner/workspace/discord_bot.py", line 173, in health_check
+    'last_heartbeat': getattr(self, '_connection', {}).get('_last_heartbeat', None),
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ConnectionState' object has no attribute 'get'
+
+Time: 2024-12-17 01:01:54.804755+00:00
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 01:02:24,792 - __main__ - ERROR - 
+‼️ [RAILWAY ERROR] Health Check Error
+━━━━━━ Error Details ━━━━━━
+Error: 'ConnectionState' object has no attribute 'get'
+Stack Trace: Traceback (most recent call last):
+  File "/home/runner/workspace/discord_bot.py", line 173, in health_check
+    'last_heartbeat': getattr(self, '_connection', {}).get('_last_heartbeat', None),
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ConnectionState' object has no attribute 'get'
+
+Time: 2024-12-17 01:02:24.792888+00:00
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 01:02:54,820 - __main__ - ERROR - 
+‼️ [RAILWAY ERROR] Health Check Error
+━━━━━━ Error Details ━━━━━━
+Error: 'ConnectionState' object has no attribute 'get'
+Stack Trace: Traceback (most recent call last):
+  File "/home/runner/workspace/discord_bot.py", line 173, in health_check
+    'last_heartbeat': getattr(self, '_connection', {}).get('_last_heartbeat', None),
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ConnectionState' object has no attribute 'get'
+
+Time: 2024-12-17 01:02:54.820891+00:00
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 01:03:24,813 - __main__ - ERROR - 
+‼️ [RAILWAY ERROR] Health Check Error
+━━━━━━ Error Details ━━━━━━
+Error: 'ConnectionState' object has no attribute 'get'
+Stack Trace: Traceback (most recent call last):
+  File "/home/runner/workspace/discord_bot.py", line 173, in health_check
+    'last_heartbeat': getattr(self, '_connection', {}).get('_last_heartbeat', None),
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ConnectionState' object has no attribute 'get'
+
+Time: 2024-12-17 01:03:24.813770+00:00
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 01:03:54,800 - __main__ - ERROR - 
+‼️ [RAILWAY ERROR] Health Check Error
+━━━━━━ Error Details ━━━━━━
+Error: 'ConnectionState' object has no attribute 'get'
+Stack Trace: Traceback (most recent call last):
+  File "/home/runner/workspace/discord_bot.py", line 173, in health_check
+    'last_heartbeat': getattr(self, '_connection', {}).get('_last_heartbeat', None),
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ConnectionState' object has no attribute 'get'
+
+Time: 2024-12-17 01:03:54.800899+00:00
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 01:04:24,819 - __main__ - ERROR - 
+‼️ [RAILWAY ERROR] Health Check Error
+━━━━━━ Error Details ━━━━━━
+Error: 'ConnectionState' object has no attribute 'get'
+Stack Trace: Traceback (most recent call last):
+  File "/home/runner/workspace/discord_bot.py", line 173, in health_check
+    'last_heartbeat': getattr(self, '_connection', {}).get('_last_heartbeat', None),
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ConnectionState' object has no attribute 'get'
+
+Time: 2024-12-17 01:04:24.819707+00:00
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 01:04:54,820 - __main__ - ERROR - 
+‼️ [RAILWAY ERROR] Health Check Error
+━━━━━━ Error Details ━━━━━━
+Error: 'ConnectionState' object has no attribute 'get'
+Stack Trace: Traceback (most recent call last):
+  File "/home/runner/workspace/discord_bot.py", line 173, in health_check
+    'last_heartbeat': getattr(self, '_connection', {}).get('_last_heartbeat', None),
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ConnectionState' object has no attribute 'get'
+
+Time: 2024-12-17 01:04:54.820688+00:00
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 01:05:16,526 - chat_handler - INFO - URLs formatted successfully
+2024-12-17 01:05:24,798 - __main__ - ERROR - 
+‼️ [RAILWAY ERROR] Health Check Error
+━━━━━━ Error Details ━━━━━━
+Error: 'ConnectionState' object has no attribute 'get'
+Stack Trace: Traceback (most recent call last):
+  File "/home/runner/workspace/discord_bot.py", line 173, in health_check
+    'last_heartbeat': getattr(self, '_connection', {}).get('_last_heartbeat', None),
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ConnectionState' object has no attribute 'get'
+
+Time: 2024-12-17 01:05:24.798909+00:00
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 01:05:34,360 - chat_handler - INFO - URLs formatted successfully
+2024-12-17 01:05:54,797 - __main__ - ERROR - 
+‼️ [RAILWAY ERROR] Health Check Error
+━━━━━━ Error Details ━━━━━━
+Error: 'ConnectionState' object has no attribute 'get'
+Stack Trace: Traceback (most recent call last):
+  File "/home/runner/workspace/discord_bot.py", line 173, in health_check
+    'last_heartbeat': getattr(self, '_connection', {}).get('_last_heartbeat', None),
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ConnectionState' object has no attribute 'get'
+
+Time: 2024-12-17 01:05:54.797712+00:00
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 01:06:24,819 - __main__ - ERROR - 
+‼️ [RAILWAY ERROR] Health Check Error
+━━━━━━ Error Details ━━━━━━
+Error: 'ConnectionState' object has no attribute 'get'
+Stack Trace: Traceback (most recent call last):
+  File "/home/runner/workspace/discord_bot.py", line 173, in health_check
+    'last_heartbeat': getattr(self, '_connection', {}).get('_last_heartbeat', None),
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ConnectionState' object has no attribute 'get'
+
+Time: 2024-12-17 01:06:24.819266+00:00
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 01:06:54,815 - __main__ - ERROR - 
+‼️ [RAILWAY ERROR] Health Check Error
+━━━━━━ Error Details ━━━━━━
+Error: 'ConnectionState' object has no attribute 'get'
+Stack Trace: Traceback (most recent call last):
+  File "/home/runner/workspace/discord_bot.py", line 173, in health_check
+    'last_heartbeat': getattr(self, '_connection', {}).get('_last_heartbeat', None),
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ConnectionState' object has no attribute 'get'
+
+Time: 2024-12-17 01:06:54.815348+00:00
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 01:09:12,066 - __main__ - INFO - ━━━━━━ Connection Attempt 1 ━━━━━━
+Bot Version: 1.0.1
+Token Status: Valid
+Retry Count: 0
+Max Retries: 10
+Memory Usage: 49.8MB
+CPU Usage: 50.8%
+Last Success: 2024-12-17 01:09:12
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 01:09:12,066 - discord.client - INFO - logging in using static token
+2024-12-17 01:09:12,474 - __main__ - INFO - ━━━━━━ Bot Setup Started ━━━━━━
+Time: 2024-12-17 01:09:12
+Memory Usage: 50.4MB
+CPU Usage: 44.7%
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 01:09:12,474 - __main__ - INFO - Token format validated
+2024-12-17 01:09:12,474 - __main__ - INFO - Connection state initialized
+2024-12-17 01:09:12,475 - __main__ - INFO - Registering commands...
+2024-12-17 01:09:12,744 - __main__ - INFO - Commands registered successfully
+2024-12-17 01:09:12,745 - __main__ - INFO - Starting health monitoring...
+2024-12-17 01:09:12,745 - __main__ - INFO - Health monitoring activated
+2024-12-17 01:09:12,745 - __main__ - INFO - ━━━━━━ Setup Complete ━━━━━━
+Application ID: 1316950341954306159
+Shard Count: None
+Command Count: 3
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 01:09:12,747 - __main__ - ERROR - 
+‼️ [RAILWAY ERROR] Health Check Error
+━━━━━━ Error Details ━━━━━━
+Error: 'ConnectionState' object has no attribute 'get'
+Stack Trace: Traceback (most recent call last):
+  File "/home/runner/workspace/discord_bot.py", line 173, in health_check
+    'last_heartbeat': getattr(self, '_connection', {}).get('_last_heartbeat', None),
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ConnectionState' object has no attribute 'get'
+
+Time: 2024-12-17 01:09:12.747042+00:00
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 01:09:12,953 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 171afedafaf8934adcdc3fc759ee6e5f).
+2024-12-17 01:09:15,170 - __main__ - INFO - ━━━━━━ Connection Attempt 1 ━━━━━━
+Bot Version: 1.0.1
+Token Status: Valid
+Retry Count: 0
+Max Retries: 10
+Memory Usage: 49.7MB
+CPU Usage: 51.8%
+Last Success: 2024-12-17 01:09:15
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 01:09:15,170 - discord.client - INFO - logging in using static token
+2024-12-17 01:09:15,460 - __main__ - INFO - ━━━━━━ Bot Setup Started ━━━━━━
+Time: 2024-12-17 01:09:15
+Memory Usage: 50.2MB
+CPU Usage: 61.5%
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 01:09:15,462 - __main__ - INFO - Token format validated
+2024-12-17 01:09:15,462 - __main__ - INFO - Connection state initialized
+2024-12-17 01:09:15,462 - __main__ - INFO - Registering commands...
+2024-12-17 01:09:44,623 - __main__ - INFO - ━━━━━━ Connection Attempt 1 ━━━━━━
+Bot Version: 1.0.1
+Token Status: Valid
+Retry Count: 0
+Max Retries: 10
+Memory Usage: 49.4MB
+CPU Usage: 59.7%
+Last Success: 2024-12-17 01:09:44
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 01:09:44,623 - discord.client - INFO - logging in using static token
+2024-12-17 01:09:47,785 - __main__ - INFO - ━━━━━━ Connection Attempt 1 ━━━━━━
+Bot Version: 1.0.1
+Token Status: Valid
+Retry Count: 0
+Max Retries: 10
+Memory Usage: 49.7MB
+CPU Usage: 92.9%
+Last Success: 2024-12-17 01:09:47
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 01:09:47,786 - discord.client - INFO - logging in using static token
+2024-12-17 01:10:12,861 - __main__ - INFO - ━━━━━━ Bot Setup Started ━━━━━━
+Time: 2024-12-17 01:10:12
+Memory Usage: 50.1MB
+CPU Usage: 45.0%
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 01:10:12,861 - __main__ - INFO - Token format validated
+2024-12-17 01:10:12,861 - __main__ - INFO - Connection state initialized
+2024-12-17 01:10:12,861 - __main__ - INFO - Registering commands...
+2024-12-17 01:10:13,140 - __main__ - INFO - Commands registered successfully
+2024-12-17 01:10:13,141 - __main__ - INFO - Starting health monitoring...
+2024-12-17 01:10:13,141 - __main__ - INFO - Health monitoring activated
+2024-12-17 01:10:13,141 - __main__ - INFO - ━━━━━━ Setup Complete ━━━━━━
+Application ID: 1316950341954306159
+Shard Count: None
+Command Count: 3
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 01:10:13,143 - __main__ - ERROR - 
+‼️ [RAILWAY ERROR] Health Check Error
+━━━━━━ Error Details ━━━━━━
+Error: 'ConnectionState' object has no attribute 'get'
+Stack Trace: Traceback (most recent call last):
+  File "/home/runner/workspace/discord_bot.py", line 173, in health_check
+    'last_heartbeat': getattr(self, '_connection', {}).get('_last_heartbeat', None),
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ConnectionState' object has no attribute 'get'
+
+Time: 2024-12-17 01:10:13.143289+00:00
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 01:10:13,386 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 6b789c8f723e77db3751bef661a7534e).
+2024-12-17 01:10:15,397 - __main__ - INFO - ━━━━━━ Bot Ready ━━━━━━
+Logged in as: OCTANTBOT
+Bot ID: 1316950341954306159
+Guilds: 2
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 01:10:43,172 - __main__ - ERROR - 
+‼️ [RAILWAY ERROR] Health Check Error
+━━━━━━ Error Details ━━━━━━
+Error: 'ConnectionState' object has no attribute 'get'
+Stack Trace: Traceback (most recent call last):
+  File "/home/runner/workspace/discord_bot.py", line 173, in health_check
+    'last_heartbeat': getattr(self, '_connection', {}).get('_last_heartbeat', None),
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ConnectionState' object has no attribute 'get'
+
+Time: 2024-12-17 01:10:43.172091+00:00
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 01:10:57,139 - __main__ - INFO - ━━━━━━ Connection Attempt 1 ━━━━━━
+Bot Version: 1.0.1
+Token Status: Valid
+Retry Count: 0
+Max Retries: 10
+Memory Usage: 49.5MB
+CPU Usage: 57.4%
+Last Success: 2024-12-17 01:10:57
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 01:10:57,139 - discord.client - INFO - logging in using static token
+2024-12-17 01:10:57,578 - __main__ - INFO - ━━━━━━ Bot Setup Started ━━━━━━
+Time: 2024-12-17 01:10:57
+Memory Usage: 50.2MB
+CPU Usage: 54.4%
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 01:10:57,579 - __main__ - INFO - Token format validated
+2024-12-17 01:10:57,579 - __main__ - INFO - Connection state initialized
+2024-12-17 01:10:57,579 - __main__ - INFO - Registering commands...
+2024-12-17 01:10:57,737 - __main__ - INFO - Commands registered successfully
+2024-12-17 01:10:57,740 - __main__ - INFO - Starting health monitoring...
+2024-12-17 01:10:57,740 - __main__ - INFO - Health monitoring activated
+2024-12-17 01:10:57,741 - __main__ - INFO - ━━━━━━ Setup Complete ━━━━━━
+Application ID: 1316950341954306159
+Shard Count: None
+Command Count: 3
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 01:10:57,742 - __main__ - INFO - 
+ℹ️ [RAILWAY INFO] Discord Bot Startup Progress
+━━━━━━ Startup Status ━━━━━━
+• Time Elapsed: 0.6s
+• Status: Initializing
+• WebSocket: Connecting
+• Memory: 0.1%
+• CPU: 54.9%
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 01:10:57,742 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 54.9%
+Latency: nanms
+Guilds: 0
+Uptime: 0.0h
+Error Count: 0
+Last Heartbeat Age: infs
+WebSocket: Disconnected
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 01:10:57,742 - __main__ - WARNING - Health check failed (attempt 1/3)
+2024-12-17 01:10:57,743 - __main__ - WARNING - 
+━━━━━━ Health Check Warning ━━━━━━
+Time: 2024-12-17 01:10:57.743031+00:00
+Error Count: 1
+Status: Monitoring
+Action: Continuing operation
+Connection State: {'last_attempt': datetime.datetime(2024, 12, 17, 1, 10, 57, 579585, tzinfo=datetime.timezone.utc), 'consecutive_failures': 0, 'last_success': None, 'current_state': 'initializing'}
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 01:10:57,992 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: b03a9117259c7c818fd697799c6e590f).
+2024-12-17 01:10:59,056 - __main__ - INFO - ━━━━━━ Connection Attempt 1 ━━━━━━
+Bot Version: 1.0.1
+Token Status: Valid
+Retry Count: 0
+Max Retries: 10
+Memory Usage: 49.4MB
+CPU Usage: 55.0%
+Last Success: 2024-12-17 01:10:59
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 01:10:59,056 - discord.client - INFO - logging in using static token
+2024-12-17 01:10:59,337 - __main__ - INFO - ━━━━━━ Bot Setup Started ━━━━━━
+Time: 2024-12-17 01:10:59
+Memory Usage: 50.0MB
+CPU Usage: 40.8%
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 01:10:59,338 - __main__ - INFO - Token format validated
+2024-12-17 01:10:59,338 - __main__ - INFO - Connection state initialized
+2024-12-17 01:10:59,338 - __main__ - INFO - Registering commands...
+2024-12-17 01:11:57,981 - __main__ - INFO - Commands registered successfully
+2024-12-17 01:11:57,981 - __main__ - INFO - Starting health monitoring...
+2024-12-17 01:11:57,981 - __main__ - INFO - Health monitoring activated
+2024-12-17 01:11:57,981 - __main__ - INFO - ━━━━━━ Setup Complete ━━━━━━
+Application ID: 1316950341954306159
+Shard Count: None
+Command Count: 3
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 01:11:57,983 - __main__ - INFO - 
+ℹ️ [RAILWAY INFO] Discord Bot Startup Progress
+━━━━━━ Startup Status ━━━━━━
+• Time Elapsed: 58.9s
+• Status: Initializing
+• WebSocket: Connecting
+• Memory: 0.1%
+• CPU: 54.5%
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 01:11:57,983 - __main__ - INFO - ━━━━━━ Health Check ━━━━━━
+Status: Connected
+Memory: 0.1%
+CPU: 54.5%
+Latency: nanms
+Guilds: 0
+Uptime: 0.0h
+Error Count: 0
+Last Heartbeat Age: infs
+WebSocket: Disconnected
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 01:11:57,983 - __main__ - WARNING - Health check failed (attempt 1/3)
+2024-12-17 01:11:57,983 - __main__ - WARNING - 
+━━━━━━ Health Check Warning ━━━━━━
+Time: 2024-12-17 01:11:57.983500+00:00
+Error Count: 1
+Status: Monitoring
+Action: Continuing operation
+Connection State: {'last_attempt': datetime.datetime(2024, 12, 17, 1, 10, 59, 338544, tzinfo=datetime.timezone.utc), 'consecutive_failures': 0, 'last_success': None, 'current_state': 'initializing'}
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 01:11:58,158 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 9a3dae6c9ad9d600474bc461bdf2e7a8).
+2024-12-17 01:12:00,169 - __main__ - INFO - ━━━━━━ Bot Ready ━━━━━━
+Logged in as: OCTANTBOT
+Bot ID: 1316950341954306159
+Guilds: 2
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 01:12:10,273 - chat_handler - INFO - URLs formatted successfully
+2024-12-17 01:12:28,000 - __main__ - ERROR - 
+‼️ [RAILWAY ERROR] Health Check Error
+━━━━━━ Error Details ━━━━━━
+Error: 'DiscordWebSocket' object has no attribute 'closed'
+Stack Trace: Traceback (most recent call last):
+  File "/home/runner/workspace/discord_bot.py", line 174, in health_check
+    self.connection_state.update({
+                                   
+AttributeError: 'DiscordWebSocket' object has no attribute 'closed'
+
+Time: 2024-12-17 01:12:28.000938+00:00
+━━━━━━━━━━━━━━━━━━━━━━━━
