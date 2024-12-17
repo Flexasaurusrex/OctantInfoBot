@@ -142,8 +142,14 @@ Guilds connected: {len(self.guilds)}
             # Process message with timeout protection
             try:
                 async with message.channel.typing():
+                    # Generate a unique socket ID for Discord messages
+                    discord_socket_id = f"discord_{message.author.id}_{message.id}"
                     response = await asyncio.wait_for(
-                        self.chat_handler.get_response(content),
+                        asyncio.to_thread(
+                            self.chat_handler.get_response,
+                            discord_socket_id,
+                            content
+                        ),
                         timeout=30.0
                     )
 

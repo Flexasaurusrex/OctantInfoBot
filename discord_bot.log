@@ -13090,3 +13090,24 @@ Logged in as: OCTANTBOT
 Bot ID: 1316950341954306159
 Guilds connected: 2
 ━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:10:45,442 - __main__ - INFO - Initialized message tracking system
+2024-12-17 03:10:45,442 - __main__ - INFO - Processing message 1318415060623949824
+2024-12-17 03:10:45,613 - __main__ - ERROR - Response error: ChatHandler.get_response() missing 1 required positional argument: 'user_message'
+Traceback (most recent call last):
+  File "/home/runner/workspace/discord_bot.py", line 146, in on_message
+    self.chat_handler.get_response(content),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: ChatHandler.get_response() missing 1 required positional argument: 'user_message'
+2024-12-17 03:11:30,172 - discord.client - WARNING - PyNaCl is not installed, voice will NOT be supported
+2024-12-17 03:11:30,173 - __main__ - INFO - Starting bot...
+2024-12-17 03:11:30,173 - discord.client - INFO - logging in using static token
+2024-12-17 03:11:30,468 - __main__ - INFO - Initializing Discord bot...
+2024-12-17 03:11:30,692 - __main__ - INFO - Commands registered successfully
+2024-12-17 03:11:30,879 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 496bb35867b01b50c09a33669d4aaed7).
+2024-12-17 03:11:31,514 - discord.client - WARNING - PyNaCl is not installed, voice will NOT be supported
+2024-12-17 03:11:31,515 - __main__ - INFO - Starting bot...
+2024-12-17 03:11:31,515 - discord.client - INFO - logging in using static token
+2024-12-17 03:11:31,797 - __main__ - INFO - Initializing Discord bot...
+2024-12-17 03:11:56,082 - discord.client - WARNING - PyNaCl is not installed, voice will NOT be supported
+2024-12-17 03:11:56,083 - __main__ - INFO - Starting bot...
+2024-12-17 03:11:56,083 - discord.client - INFO - logging in using static token

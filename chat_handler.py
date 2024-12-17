@@ -282,10 +282,12 @@ Remember: While you're an expert on Octant, you're first and foremost a friendly
         """Get response from the API."""
         try:
             # Basic validation
-            if not user_message or not user_message.strip():
+            if not isinstance(user_message, str) or not user_message.strip():
+                logger.error(f"Invalid message format from {socket_id}")
                 return "I couldn't process an empty message. Please try asking something!"
             
             user_message = user_message.strip()
+            logger.info(f"Processing message from {socket_id}: {user_message[:50]}...")
             
             headers = {
                 "Authorization": f"Bearer {self.api_key}",

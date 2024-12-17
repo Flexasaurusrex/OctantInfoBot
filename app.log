@@ -120,3 +120,66 @@ CPU: 33.8%
 2024-12-17 03:07:23,496 - __main__ - INFO - Client connected: 2MfF-bLBoHDvWdIKAAAB
 2024-12-17 03:07:23,732 - __main__ - INFO - Request: GET / from 172.31.196.15
 2024-12-17 03:07:24,132 - __main__ - INFO - Request: GET /stream from 172.31.196.15
+2024-12-17 03:11:29,155 - app - INFO - Health monitoring started
+2024-12-17 03:11:29,156 - __main__ - INFO - ━━━━━━ Environment Check ━━━━━━
+2024-12-17 03:11:29,156 - __main__ - INFO - ✓ TOGETHER_API_KEY: SET
+2024-12-17 03:11:29,156 - __main__ - INFO - ✓ DISCORD_BOT_TOKEN: SET
+2024-12-17 03:11:29,156 - __main__ - INFO - ✓ TELEGRAM_BOT_TOKEN: SET
+2024-12-17 03:11:29,157 - __main__ - INFO - 
+━━━━━━ Railway Startup ━━━━━━
+Environment: development
+Port: 5000
+Debug: True
+Memory: 0.1%
+CPU: 20.5%
+Python: 3.11.9
+Time: 2024-12-17T03:11:29.157092+00:00
+Retry: 1/5
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:11:30,136 - engineio.server - ERROR - Invalid session ubrI-f4TecVE-ClCAAAA (further occurrences of this error will be logged with level INFO)
+2024-12-17 03:11:30,145 - app - INFO - Request: GET / from 172.31.196.15
+2024-12-17 03:11:30,746 - __main__ - INFO - Health monitoring started
+2024-12-17 03:11:30,746 - __main__ - INFO - 
+━━━━━━ Server Starting ━━━━━━
+Port: 5000
+Debug: True
+Environment: development
+Memory: 62.1MB
+CPU: 34.7%
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:11:30,985 - app - INFO - Request: GET / from 172.31.196.15
+2024-12-17 03:11:31,204 - app - INFO - Request: GET / from 172.31.196.15
+2024-12-17 03:11:31,682 - app - INFO - Request: GET /stream from 172.31.196.15
+2024-12-17 03:11:54,464 - __main__ - INFO - Request: GET / from 172.31.196.15
+2024-12-17 03:11:55,041 - app - INFO - Health monitoring started
+2024-12-17 03:11:55,041 - __main__ - INFO - ━━━━━━ Environment Check ━━━━━━
+2024-12-17 03:11:55,041 - __main__ - INFO - ✓ TOGETHER_API_KEY: SET
+2024-12-17 03:11:55,041 - __main__ - INFO - ✓ DISCORD_BOT_TOKEN: SET
+2024-12-17 03:11:55,041 - __main__ - INFO - ✓ TELEGRAM_BOT_TOKEN: SET
+2024-12-17 03:11:55,042 - __main__ - INFO - 
+━━━━━━ Railway Startup ━━━━━━
+Environment: development
+Port: 5000
+Debug: True
+Memory: 0.1%
+CPU: 21.1%
+Python: 3.11.9
+Time: 2024-12-17T03:11:55.042397+00:00
+Retry: 1/5
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:11:55,225 - __main__ - INFO - Request: GET /stream from 172.31.196.15
+2024-12-17 03:11:55,982 - app - INFO - Request: GET / from 172.31.196.15
+2024-12-17 03:11:56,585 - __main__ - INFO - Health monitoring started
+2024-12-17 03:11:56,586 - __main__ - INFO - 
+━━━━━━ Server Starting ━━━━━━
+Port: 5000
+Debug: True
+Environment: development
+Memory: 62.1MB
+CPU: 31.1%
+━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 03:11:56,807 - app - INFO - Request: GET / from 172.31.196.15
+2024-12-17 03:11:57,184 - __main__ - INFO - Request: GET / from 172.31.196.15
+2024-12-17 03:11:57,269 - __main__ - INFO - Request: GET / from 172.31.196.15
+2024-12-17 03:11:57,364 - app - INFO - Request: GET /stream from 172.31.196.15
+2024-12-17 03:11:57,872 - __main__ - INFO - Request: GET /stream from 172.31.196.15
