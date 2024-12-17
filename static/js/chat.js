@@ -1,129 +1,97 @@
 document.addEventListener('DOMContentLoaded', () => {
-function updateConnectionStatus(status) {
-    const statusIndicator = document.querySelector('.status-indicator');
-    const statusText = document.querySelector('.status-text');
-    
-    if (!statusIndicator || !statusText) return;
-    
-    const statusMap = {
-        'connected': { text: 'Connected', class: 'connected' },
-        'disconnected': { text: 'Disconnected', class: '' },
-        'reconnecting': { text: 'Reconnecting...', class: '' }
-    };
-    
-    const currentStatus = statusMap[status] || statusMap.disconnected;
-    statusIndicator.className = 'status-indicator ' + currentStatus.class;
-    statusText.textContent = currentStatus.text;
-}
-    let socket = null;
-    let reconnectAttempts = 0;
-    const MAX_RECONNECT_ATTEMPTS = 5;
-    const INITIAL_RETRY_DELAY = 1000;
+    // UI Elements
     const messageInput = document.getElementById('message-input');
     const sendButton = document.getElementById('send-button');
     const messagesContainer = document.getElementById('messages');
-    let isWaitingForResponse = false;
-
-// Connection constants
-const MAX_RECONNECT_ATTEMPTS = 5;
-const INITIAL_RETRY_DELAY = 1000;
-
-async function cleanupSocket(socket) {
-    if (!socket) return;
     
-    console.log('Cleaning up socket connection...');
-    try {
-        // Clear all intervals associated with this socket
-        if (socket.connectionState && socket.connectionState.monitors) {
-            console.log('Clearing monitors:', socket.connectionState.monitors.size);
-            socket.connectionState.monitors.forEach(clearInterval);
-            socket.connectionState.monitors.clear();
-        }
+    // Connection constants
+    const MAX_RECONNECT_ATTEMPTS = 5;
+    const INITIAL_RETRY_DELAY = 1000;
+    
+    // Socket and state management
+    let socket = null;
+    let isWaitingForResponse = false;
+    
+    function updateConnectionStatus(status) {
+        const statusIndicator = document.querySelector('.status-indicator');
+        const statusText = document.querySelector('.status-text');
         
-        // Remove all listeners
-        console.log('Removing socket listeners');
-        socket.removeAllListeners();
+        if (!statusIndicator || !statusText) return;
         
-        // Ensure proper disconnection
-        if (socket.connected) {
-            console.log('Disconnecting active socket');
-            await new Promise((resolve) => {
-                const timeout = setTimeout(() => {
-                    console.warn('Socket disconnect timeout');
-                    resolve();
-                }, 5000);
-                
-                socket.once('disconnect', () => {
-                    clearTimeout(timeout);
-                    resolve();
-                });
-                socket.disconnect();
-            });
-        }
+        const statusMap = {
+            'connected': { text: 'Connected', class: 'connected' },
+            'disconnected': { text: 'Disconnected', class: '' },
+            'reconnecting': { text: 'Reconnecting...', class: '' }
+        };
         
-        console.log('Closing socket');
-        socket.close();
-    } catch (error) {
-        console.error('Error during socket cleanup:', error);
+        const currentStatus = statusMap[status] || statusMap.disconnected;
+        statusIndicator.className = 'status-indicator ' + currentStatus.class;
+        statusText.textContent = currentStatus.text;
     }
-}
+
+    async function cleanupSocket(socket) {
+        if (!socket) return;
+        
+        console.log('Cleaning up socket connection...');
+        try {
+            if (socket.connectionState?.monitors) {
+                socket.connectionState.monitors.forEach(clearInterval);
+                socket.connectionState.monitors.clear();
+            }
+            
+            socket.removeAllListeners();
+            
+            if (socket.connected) {
+                await new Promise((resolve) => {
+                    const timeout = setTimeout(() => {
+                        console.warn('Socket disconnect timeout');
+                        resolve();
+                    }, 5000);
+                    
+                    socket.once('disconnect', () => {
+                        clearTimeout(timeout);
+                        resolve();
+                    });
+                    socket.disconnect();
+                });
+            }
+            
+            socket.close();
+        } catch (error) {
+            console.error('Error during socket cleanup:', error);
+        }
+    }
+
     async function createSocket() {
         try {
-            console.log('Creating new socket connection');
-            
-            // Cleanup existing socket
             if (socket) {
-                console.log('Cleaning up existing socket before creating new one');
                 await cleanupSocket(socket);
             }
             
             socket = io({
-                reconnection: true,
-                reconnectionAttempts: MAX_RECONNECT_ATTEMPTS,
-                reconnectionDelay: INITIAL_RETRY_DELAY,
-                reconnectionDelayMax: 5000,
+                reconnection: false, // We'll handle reconnection manually
                 timeout: 20000,
                 transports: ['websocket', 'polling']
             });
-
-            console.log('Socket instance created');
-
-            // Single consolidated connection monitor
+            
+            socket.connectionState = {
+                attemptCount: 0,
+                lastAttempt: Date.now(),
+                isReconnecting: false,
+                monitors: new Set()
+            };
+            
             const connectionMonitor = setInterval(() => {
-                if (!socket?.connectionState) return;
-                
-                const now = Date.now();
-                const timeSinceLastAttempt = now - socket.connectionState.lastAttempt;
-                
-                if (!socket.connected && !socket.connecting && 
-                    !socket.connectionState.isReconnecting && 
-                    timeSinceLastAttempt > 5000) {
-                    console.warn('Connection monitor: detected disconnection');
-                    socket.connectionState.monitors.forEach(clearInterval);
+                if (!socket?.connected && !socket?.connecting && 
+                    !socket.connectionState.isReconnecting &&
+                    Date.now() - socket.connectionState.lastAttempt > 5000) {
                     handleReconnection();
                 }
             }, 5000);
-
-            // Enhanced connection state tracking
-            socket.connectionState = {
-                lastAttempt: Date.now(),
-                attemptCount: 0,
-                lastError: null,
-                isReconnecting: false,
-                monitors: new Set([connectionMonitor])
-            };
-
-            // Initialize socket events
+            
+            socket.connectionState.monitors.add(connectionMonitor);
+            
             await initializeSocketEvents();
-
-            socket.on('close', () => {
-                console.log('Socket closed, cleaning up monitors');
-                if (socket?.connectionState?.monitors) {
-                    socket.connectionState.monitors.forEach(clearInterval);
-                    socket.connectionState.monitors.clear();
-                }
-            });
-
             return true;
         } catch (error) {
             console.error('Error creating socket:', error);
@@ -133,152 +101,58 @@ async function cleanupSocket(socket) {
     }
 
     async function handleReconnection() {
-        if (!socket) return;
+        if (!socket?.connectionState || socket.connectionState.isReconnecting) return;
         
-        if (socket.connectionState.isReconnecting) {
-            console.warn('Reconnection already in progress');
-            return;
-        }
-
         socket.connectionState.attemptCount++;
         socket.connectionState.isReconnecting = true;
         socket.connectionState.lastAttempt = Date.now();
         
         updateConnectionStatus('reconnecting');
         
-        // Calculate backoff with jitter
-        const backoff = Math.min(1000 * Math.pow(2, socket.connectionState.attemptCount - 1), 10000);
-        const jitter = Math.random() * Math.min(backoff * 0.1, 1000);
-        const delay = backoff + jitter;
-        
-        console.log(`Reconnection attempt ${socket.connectionState.attemptCount}/${MAX_RECONNECT_ATTEMPTS} (delay: ${delay}ms)`);
-        appendMessage(`🔄 Attempting to reconnect... (${socket.connectionState.attemptCount}/${MAX_RECONNECT_ATTEMPTS})`, true);
-        
         if (socket.connectionState.attemptCount > MAX_RECONNECT_ATTEMPTS) {
             console.error('Max reconnection attempts reached');
             updateConnectionStatus('disconnected');
-            appendMessage('📡 Connection lost. Initiating recovery process...', true);
-            
-            try {
-                // Cleanup existing socket
-                await cleanupSocket(socket);
-                
-                // Attempt recovery
-                const response = await fetch('/restart', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    signal: AbortSignal.timeout(10000)
-                });
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    appendMessage('✨ Recovery initiated. Refreshing connection...', true);
-                    await new Promise(resolve => setTimeout(resolve, 3000));
-                    window.location.reload();
-                } else {
-                    throw new Error('Server recovery failed');
-                }
-            } catch (error) {
-                console.error('Recovery failed:', error);
-                appendMessage('❌ Unable to restore connection. Please refresh the page.', true);
-                updateConnectionStatus('disconnected');
-            } finally {
-                socket.connectionState.isReconnecting = false;
-            }
+            appendMessage('📡 Connection lost. Please refresh the page.', true);
             return;
         }
-
-        const currentAttempt = socket.connectionState.attemptCount;
-        console.log(`Attempting to reconnect (${currentAttempt}/${MAX_RECONNECT_ATTEMPTS})...`);
         
-        // Enhanced exponential backoff with jitter
-        const baseDelay = INITIAL_RETRY_DELAY * Math.pow(2, currentAttempt - 1);
-        const maxJitter = Math.min(baseDelay * 0.25, 2000);
-        const jitter = Math.random() * maxJitter;
-        const delay = Math.min(baseDelay + jitter, 15000);
+        const attempt = socket.connectionState.attemptCount;
+        const baseDelay = INITIAL_RETRY_DELAY * Math.pow(2, attempt - 1);
+        const jitter = Math.random() * Math.min(baseDelay * 0.1, 1000);
+        const delay = baseDelay + jitter;
         
-        updateConnectionStatus('reconnecting');
-        appendMessage(`📡 Reconnecting in ${(delay/1000).toFixed(1)} seconds... (Attempt ${currentAttempt}/${MAX_RECONNECT_ATTEMPTS})`, true);
+        appendMessage(`🔄 Attempting to reconnect... (${attempt}/${MAX_RECONNECT_ATTEMPTS})`, true);
         
-        // Cleanup existing connection
-        if (socket) {
-            try {
-                socket.removeAllListeners();
-                await new Promise(resolve => {
-                    socket.once('disconnect', resolve);
-                    socket.close();
-                });
-            } catch (e) {
-                console.warn('Error during socket cleanup:', e);
-            }
-        }
-        
-        // Wait for the backoff delay
         await new Promise(resolve => setTimeout(resolve, delay));
         
         try {
-            if (createSocket()) {
-                // Wait for connection or timeout
-                await Promise.race([
-                    new Promise((resolve, reject) => {
-                        socket.once('connect', () => {
-                            reconnectAttempts = 0;
-                            console.log('Connection restored');
-                            updateConnectionStatus('connected');
-                            appendMessage('✅ Connection restored! You can continue chatting.', true);
-                            resolve();
-                        });
-                        socket.once('connect_error', reject);
-                    }),
-                    new Promise((_, reject) => setTimeout(() => reject(new Error('Connection timeout')), 5000))
-                ]);
-            } else {
-                throw new Error('Failed to recreate socket');
+            if (await createSocket()) {
+                socket.connectionState.isReconnecting = false;
+                updateConnectionStatus('connected');
+                appendMessage('✅ Connection restored!', true);
             }
         } catch (error) {
-            console.error('Error during reconnection:', error);
-            updateConnectionStatus('disconnected');
+            console.error('Reconnection failed:', error);
+            socket.connectionState.isReconnecting = false;
             handleReconnection();
         }
     }
 
     async function initializeSocketEvents() {
-        if (!socket) {
-            console.error('Cannot initialize events: Socket is null');
-            return;
-        }
+        if (!socket) return;
         
-        console.log('Initializing socket events');
-        
-        // Remove all existing listeners
         socket.removeAllListeners();
         
-        // Core connection events
         socket.on('connect', () => {
             console.log('Connected to server');
-            if (socket.connectionState) {
-                socket.connectionState.attemptCount = 0;
-                socket.connectionState.isReconnecting = false;
-            }
+            socket.connectionState.attemptCount = 0;
+            socket.connectionState.isReconnecting = false;
             updateConnectionStatus('connected');
-            const errorDiv = document.querySelector('.connection-error');
-            if (errorDiv) {
-                errorDiv.remove();
-            }
             appendMessage('✅ Connected to server', true);
         });
 
-        
-
         socket.on('connect_error', (error) => {
             console.warn('Connection error:', error);
-            if (!document.querySelector('.connection-error')) {
-                const errorDiv = document.createElement('div');
-                errorDiv.className = 'message bot-message connection-error';
-                errorDiv.innerHTML = 'Connection lost. Attempting to reconnect...';
-                messagesContainer.appendChild(errorDiv);
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            }
             handleReconnection();
         });
 
@@ -292,22 +166,6 @@ async function cleanupSocket(socket) {
             }
         });
 
-        socket.on('reconnect_attempt', (attemptNumber) => {
-            console.log(`Reconnection attempt ${attemptNumber}/${MAX_RECONNECT_ATTEMPTS}`);
-            updateConnectionStatus('reconnecting');
-            appendMessage(`Attempting to reconnect (${attemptNumber}/${MAX_RECONNECT_ATTEMPTS})...`, true);
-        });
-
-        socket.on('reconnect', (attemptNumber) => {
-            console.log('Reconnected after', attemptNumber, 'attempts');
-            reconnectAttempts = 0;
-            const errorDiv = document.querySelector('.connection-error');
-            if (errorDiv) {
-                errorDiv.remove();
-            }
-            appendMessage('Connection restored!', true);
-        });
-
         socket.on('error', (error) => {
             console.error('Socket error:', error);
             handleReconnection();
@@ -317,7 +175,7 @@ async function cleanupSocket(socket) {
             try {
                 appendMessage(data.message, data.is_bot);
             } catch (error) {
-                console.error('Error processing received message:', error);
+                console.error('Error processing message:', error);
                 appendMessage('Error displaying message', true);
             } finally {
                 isWaitingForResponse = false;
@@ -325,16 +183,6 @@ async function cleanupSocket(socket) {
                 messageInput.disabled = false;
                 messageInput.focus();
             }
-        });
-    }
-
-    function triggerConfetti() {
-        confetti({
-            particleCount: 100,
-            spread: 70,
-            origin: { y: 0.6 },
-            colors: ['#ff0000', '#00ff00', '#0000ff'],
-            disableForReducedMotion: true
         });
     }
 
@@ -355,14 +203,10 @@ async function cleanupSocket(socket) {
         
         messagesContainer.appendChild(messageDiv);
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
-        if (isBot && message.includes('✅ Correct! Well done!')) {
-            triggerConfetti();
-        }
     }
 
     function sendMessage() {
-        if (isWaitingForResponse || !socket || !socket.connected) {
+        if (isWaitingForResponse || !socket?.connected) {
             console.warn('Cannot send message: Socket not ready or waiting for response');
             return;
         }
@@ -397,7 +241,7 @@ async function cleanupSocket(socket) {
         });
     }
 
-    // Initialize socket and UI event listeners
+    // Initialize connection and UI handlers
     if (!createSocket()) {
         appendMessage('Failed to establish connection. Please refresh the page.', true);
     }
@@ -412,18 +256,6 @@ async function cleanupSocket(socket) {
         }
     });
 
-    // Trivia click handlers
-    messagesContainer.addEventListener('click', (e) => {
-        const triviaOption = e.target.closest('.trivia-option');
-        if (triviaOption && !isWaitingForResponse) {
-            const option = triviaOption.dataset.option;
-            if (option) {
-                messageInput.value = option;
-                sendMessage();
-            }
-        }
-    });
-
     // Handle unhandled promise rejections
     window.addEventListener('unhandledrejection', (event) => {
         console.warn('Unhandled promise rejection:', event.reason);
@@ -432,175 +264,4 @@ async function cleanupSocket(socket) {
             handleReconnection();
         }
     });
-
-    // Enhanced restart functionality with better state management
-    socket.on('restart_status', (data) => {
-        const restartBtn = document.querySelector('#restartButton');
-        if (!restartBtn) return;
-
-        if (data.status === 'restarting') {
-            restartBtn.classList.add('restarting');
-            restartBtn.disabled = true;
-            appendMessage('🔄 Restarting services... Please wait.', true);
-            setTimeout(() => {
-                appendMessage('⚡ Services restarting, page will refresh in 5 seconds...', true);
-                setTimeout(() => {
-                    window.location.reload();
-                }, 5000);
-            }, 1000);
-        } else if (data.status === 'error') {
-            restartBtn.classList.remove('restarting');
-            restartBtn.disabled = false;
-            appendMessage('❌ Restart failed: ' + (data.message || 'Unknown error'), true);
-        }
-    });
 });
-
-// Keep only one instance of appendMessage
-
-// Initialize restart button functionality once
-const initializeRestartButton = () => {
-    const restartButton = document.getElementById('restartButton');
-    if (!restartButton || restartButton.hasListener) return;
-    
-    restartButton.hasListener = true;
-    restartButton.addEventListener('click', async () => {
-            if (!confirm('Are you sure you want to restart all services? This will briefly interrupt the connection.')) {
-                return;
-            }
-
-            try {
-                console.log('Initiating restart process...');
-                restartButton.classList.add('restarting');
-                restartButton.disabled = true;
-                appendMessage('🔄 Initiating service restart...', true);
-
-                // Send restart request
-                const response = await fetch('/restart', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' }
-                });
-
-                if (!response.ok) {
-                    throw new Error(`Restart failed: ${response.statusText}`);
-                }
-
-                // Show restart progress
-                appendMessage('📡 Disconnecting services...', true);
-                if (socket) {
-                    socket.disconnect();
-                }
-
-                // Sequential restart process with visual feedback
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                appendMessage('⚡ Restarting services...', true);
-                
-                await new Promise(resolve => setTimeout(resolve, 2000));
-                appendMessage('🔄 Page will refresh in 5 seconds...', true);
-                
-                await new Promise(resolve => setTimeout(resolve, 5000));
-                window.location.reload();
-
-            } catch (error) {
-                console.error('Restart error:', error);
-                restartButton.classList.remove('restarting');
-                restartButton.disabled = false;
-                appendMessage(`❌ Restart failed: ${error.message}`, true);
-            }
-        });
-    }
-
-    // Listen for restart status updates using the main socket
-    socket.on('restart_status', (data) => {
-        console.log('Received restart status:', data);
-        const restartBtn = document.querySelector('.sidebar-button');
-        
-        if (data.status === 'restarting') {
-            restartBtn.classList.add('restarting');
-            restartBtn.disabled = true;
-            appendMessage(data.message || 'Restarting services...', true);
-        } else if (data.status === 'error') {
-            restartBtn.classList.remove('restarting');
-            restartBtn.disabled = false;
-            appendMessage(data.message || 'Restart failed. Please try again.', true);
-        }
-    });
-});
-
-async function restartServices(socket) {
-    const restartBtn = document.querySelector('.sidebar-button');
-    if (!restartBtn || restartBtn.classList.contains('restarting')) return;
-
-    try {
-        if (!confirm('Are you sure you want to restart all services? This will briefly interrupt the chat.')) {
-            return;
-        }
-
-        // Disable button and show restarting state
-        restartBtn.classList.add('restarting');
-        restartBtn.disabled = true;
-
-        // Update connection status
-        updateConnectionStatus('reconnecting');
-        
-        // Disconnect existing socket connections
-        if (socket) {
-            socket.disconnect();
-        }
-
-        // Show countdown
-        for (let i = 5; i > 0; i--) {
-            appendMessage(`🔄 Restarting services in ${i} seconds...`, true);
-            await new Promise(resolve => setTimeout(resolve, 1000));
-        }
-
-        // Send restart request
-        const response = await fetch('/restart', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-
-        if (!response.ok) {
-            throw new Error(`Restart request failed: ${response.statusText}`);
-        }
-
-        // Show progress messages
-        const steps = [
-            '📡 Disconnecting active connections...',
-            '🔄 Preparing services for restart...',
-            '⚡ Restarting all services...',
-            '🔁 Initializing new connections...',
-            '✅ Services restarted successfully!'
-        ];
-
-        for (const step of steps) {
-            appendMessage(step, true);
-            await new Promise(resolve => setTimeout(resolve, 1000));
-        }
-
-        appendMessage('🔄 Refreshing page to complete restart...', true);
-        
-        // Wait briefly before refresh
-        await new Promise(resolve => setTimeout(resolve, 3000));
-        
-        // Reload the page
-        window.location.reload();
-
-    } catch (error) {
-        console.error('Restart error:', error);
-        
-        // Reset button state
-        restartBtn.classList.remove('restarting');
-        restartBtn.disabled = false;
-        
-        // Show error message
-        appendMessage('❌ Failed to restart services. Please try again.', true);
-        appendMessage(`Error details: ${error.message}`, true);
-        
-        // Attempt to restore connection
-        updateConnectionStatus('disconnected');
-        handleReconnection();
-    }
-}
