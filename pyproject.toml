@@ -20,4 +20,6 @@ dependencies = [
     "python-dotenv>=1.0.1",
     "async-timeout>=5.0.1",
     "openai>=1.57.4",
+    "flask-login>=0.6.3",
+    "flask-wtf>=1.2.2",
 ]

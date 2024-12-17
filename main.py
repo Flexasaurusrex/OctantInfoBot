@@ -116,6 +116,34 @@ Retry: {retry_count + 1}/{max_retries}
 ━━━━━━━━━━━━━━━━━━━━━━━━""")
             
             # Initialize socket.io with Railway-optimized settings
+            from chat_handler import ChatHandler
+            chat_handler = ChatHandler()
+            
+            @socketio.on('connect')
+            def handle_connect():
+                logger.info("Client connected")
+                emit('bot_status', {'status': 'connected'})
+
+            @socketio.on('disconnect')
+            def handle_disconnect():
+                logger.info("Client disconnected")
+
+            @socketio.on('send_message')
+            def handle_message(data):
+                try:
+                    if not isinstance(data, dict) or 'message' not in data:
+                        raise ValueError("Invalid message format")
+                    
+                    message = data['message']
+                    response = chat_handler.get_response(request.sid, message)
+                    emit('receive_message', {'message': response, 'is_bot': True})
+                except Exception as e:
+                    logger.error(f"Error handling message: {str(e)}")
+                    emit('receive_message', {
+                        'message': 'I apologize, but I encountered an error. Please try again.',
+                        'is_bot': True
+                    })
+
             socketio.init_app(
                 app,
                 cors_allowed_origins="*",

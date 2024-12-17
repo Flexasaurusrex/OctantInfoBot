@@ -62,7 +62,12 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('Received message:', data);
         try {
             if (data && typeof data === 'object') {
-                appendMessage(data.message, data.is_bot || false);
+                if (data.error) {
+                    console.error('Error from server:', data.error);
+                    appendMessage('Sorry, I encountered an error. Please try again.', true);
+                } else {
+                    appendMessage(data.message, data.is_bot || false);
+                }
             } else {
                 console.error('Invalid message format:', data);
                 appendMessage('Error: Received invalid message format', true);

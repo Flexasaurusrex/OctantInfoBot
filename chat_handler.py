@@ -4,6 +4,8 @@ from collections import deque
 from trivia import Trivia
 import logging
 import re
+from flask import session
+from flask_socketio import emit
 
 logger = logging.getLogger(__name__)
 
@@ -172,7 +174,7 @@ class ChatHandler:
             raise ValueError("TOGETHER_API_KEY environment variable is not set")
         self.model = "mistralai/Mixtral-8x7B-Instruct-v0.1"
         self.base_url = "https://api.together.xyz/inference"
-        self.conversation_history = []
+        self.conversation_history = {}
         self.max_history = 5
         self.trivia_game = Trivia()
         self.is_playing_trivia = False
@@ -201,6 +203,125 @@ class ChatHandler:
 
 Remember: While you're an expert on Octant, you're first and foremost a friendly conversationalist who can discuss anything from favorite colors to complex blockchain concepts!"""
 
+    def handle_socket_message(self, socket_id, message):
+        """Handle incoming socket messages."""
+        try:
+            # Initialize conversation history for new users
+            if socket_id not in self.conversation_history:
+                self.conversation_history[socket_id] = []
+            
+            # Handle commands
+            if message.startswith('/'):
+                response = self.command_handler.handle_command(message)
+                if response:
+                    emit('response', response, room=socket_id) # Emit response to the client
+                    if message.lower() == '/trivia':
+                        self.is_playing_trivia = True
+                    return
+            
+            # Get response from API
+            response = self.get_response(socket_id, message)
+            
+            # Emit response to the client
+            emit('response', response, room=socket_id)
+            
+            # Update conversation history
+            if len(self.conversation_history[socket_id]) > self.max_history:
+                self.conversation_history[socket_id] = self.conversation_history[socket_id][-self.max_history:]
+            
+
+        except Exception as e:
+            logger.error(f"Error handling socket message: {str(e)}")
+            emit('response', "I apologize, but I encountered an error processing your message. Please try again.", room=socket_id)
+
+    def format_conversation_history(self, socket_id):
+        """Format the conversation history for the prompt."""
+        if not self.conversation_history.get(socket_id, []):
+            return ""
+        
+        # Only include the last message for immediate context
+        last_entry = self.conversation_history[socket_id][-1]
+        return f"\nPrevious message: {last_entry['assistant']}\n"
+
+    def get_response(self, socket_id, user_message):
+        """Get response from the API."""
+        try:
+            # Basic validation
+            if not user_message or not user_message.strip():
+                return "I couldn't process an empty message. Please try asking something!"
+            
+            user_message = user_message.strip()
+            
+            headers = {
+                "Authorization": f"Bearer {self.api_key}",
+                "Content-Type": "application/json"
+            }
+            
+            history = self.format_conversation_history(socket_id)
+            prompt = f"""You are a friendly and knowledgeable expert on Octant. Your core knowledge includes:
+
+OCTANT FACTS:
+- Octant is developed by the Golem Foundation and uses GLM tokens
+- The Golem Foundation has committed 100,000 ETH to Octant
+- Octant is a platform for experiments in participatory public goods funding
+- Utilizes quadratic funding mechanism for project support
+- Features GLM token locking and staking mechanisms
+
+INTERACTION STYLE:
+- Respond naturally without labels or prefixes
+- Use friendly language and emojis appropriately 😊
+- Share accurate Octant knowledge while maintaining conversational tone
+- Draw from technical knowledge about GLM tokens, governance, and funding mechanisms
+- Balance expertise with approachability
+
+CONTEXT:
+Previous interaction: {history}
+Current question: {user_message}
+
+Provide an accurate, Octant-focused response drawing from your core knowledge base:"""
+            
+            data = {
+                "model": self.model,
+                "prompt": prompt,
+                "max_tokens": 2048,
+                "temperature": 0.7,
+                "top_p": 0.9,
+                "top_k": 50,
+                "repetition_penalty": 1.1
+            }
+            
+            response = requests.post(
+                self.base_url,
+                headers=headers,
+                json=data,
+                timeout=30
+            )
+            response.raise_for_status()
+            
+            result = response.json()
+            if "output" in result and result["output"]["choices"]:
+                response_text = result["output"]["choices"][0]["text"].strip()
+                
+                # Update conversation history
+                self.conversation_history[socket_id].append({
+                    "user": user_message,
+                    "assistant": response_text
+                })
+                
+                return response_text
+            else:
+                logger.error("Unexpected API response format:", result)
+                return "I apologize, but I couldn't generate a response at the moment. Please try again."
+                
+        except Exception as e:
+            logger.error(f"Error getting response: {str(e)}")
+            return "I encountered an unexpected issue. Please try again, and if the problem persists, try rephrasing your question."
+
+    def clear_conversation_history(self, socket_id):
+        """Clear the conversation history for a specific socket."""
+        if socket_id in self.conversation_history:
+            self.conversation_history[socket_id] = []
+
     def validate_response_content(self, response):
         """Validate that the response is appropriate while encouraging natural conversation."""
         # Always allow casual conversations and personal expressions
@@ -217,14 +338,6 @@ Remember: While you're an expert on Octant, you're first and foremost a friendly
         if not message or not message.strip():
             raise ValueError("Message cannot be empty")
         return message.strip()
-
-    def format_conversation_history(self):
-        """Format the conversation history for the prompt."""
-        if not self.conversation_history:
-            return ""
-        # Only include the last message for immediate context
-        last_entry = self.conversation_history[-1]
-        return f"\nPrevious message: {last_entry['assistant']}\n"
 
     def format_urls(self, text):
         """Format URLs in a simple, consistent way."""
@@ -326,159 +439,3 @@ LinkedIn: https://www.linkedin.com/in/vpabundance"""
             chunks.append(current_chunk.strip())
         
         return chunks
-
-    def get_response(self, user_message):
-        try:
-            # Basic validation - just check for empty messages
-            if not user_message or not user_message.strip():
-                return "I couldn't process an empty message. Please try asking something!"
-            
-            user_message = user_message.strip()
-            
-            # Check for commands
-            if user_message.startswith('/'):
-                command_response = self.command_handler.handle_command(user_message)
-                if command_response:
-                    if user_message.lower() == '/trivia':
-                        self.is_playing_trivia = True
-                    return command_response
-            
-            # Handle trivia commands
-            lower_message = user_message.lower()
-            if lower_message == "start trivia":
-                self.is_playing_trivia = True
-                return self.trivia_game.start_game()
-            elif lower_message == "end trivia":
-                self.is_playing_trivia = False
-                self.trivia_game.reset_game()
-                return "Thanks for playing Octant Trivia! Feel free to start a new game anytime by saying 'start trivia'."
-            elif self.is_playing_trivia:
-                lower_message = user_message.lower()
-                # Check for trivia-specific commands first
-                if lower_message == "next question":
-                    return self.trivia_game.get_next_question()
-                elif lower_message in ['a', 'b', 'c', 'd']:
-                    return self.trivia_game.check_answer(user_message)
-                elif lower_message.startswith('/') or lower_message in ['help', 'stats', 'learn']:
-                    # Allow certain commands during trivia
-                    command_response = self.command_handler.handle_command(user_message)
-                    if command_response:
-                        return command_response
-                    self.is_playing_trivia = False
-                else:
-                    # Only exit trivia mode if explicitly requested or after game completion
-                    if lower_message != "end trivia":
-                        return "You're currently in a trivia game! Please answer with A, B, C, or D, or type 'end trivia' to quit."
-            
-            headers = {
-                "Authorization": f"Bearer {self.api_key}",
-                "Content-Type": "application/json"
-            }
-            
-            # Enhanced context control and response validation
-            history = self.format_conversation_history()
-            prompt = f"""You are a friendly and knowledgeable expert on Octant. Your core knowledge includes:
-
-OCTANT FACTS:
-- Octant is developed by the Golem Foundation and uses GLM tokens
-- The Golem Foundation has committed 100,000 ETH to Octant
-- Octant is a platform for experiments in participatory public goods funding
-- Utilizes quadratic funding mechanism for project support
-- Features GLM token locking and staking mechanisms
-
-INTERACTION STYLE:
-- Respond naturally without labels or prefixes
-- Use friendly language and emojis appropriately 😊
-- Share accurate Octant knowledge while maintaining conversational tone
-- Draw from technical knowledge about GLM tokens, governance, and funding mechanisms
-- Balance expertise with approachability
-
-CONTEXT:
-Previous interaction: {history}
-Current question: {user_message}
-
-Provide an accurate, Octant-focused response drawing from your core knowledge base:"""
-            
-            data = {
-                "model": self.model,
-                "prompt": prompt,
-                "max_tokens": 2048,
-                "temperature": 0.7,
-                "top_p": 0.9,
-                "top_k": 50,
-                "repetition_penalty": 1.1
-            }
-            
-            response = requests.post(
-                self.base_url,
-                headers=headers,
-                json=data,
-                timeout=30
-            )
-            response.raise_for_status()
-            
-            result = response.json()
-            if "output" in result and result["output"]["choices"]:
-                # Get the raw response text
-                response_text = result["output"]["choices"][0]["text"].strip()
-                
-                try:
-                    # Format URLs with the improved function
-                    formatted_text = self.format_urls(response_text)
-                    logger.info("URLs formatted successfully")
-                    
-                    # Validate response content
-                    validated_text = self.validate_response_content(response_text)
-                    
-                    # Format URLs in validated response
-                    formatted_text = self.format_urls(validated_text)
-                    
-                    # Update conversation history
-                    self.conversation_history.append({
-                        "user": user_message,
-                        "assistant": formatted_text
-                    })
-                except Exception as format_error:
-                    logger.error(f"Error formatting URLs: {str(format_error)}")
-                    formatted_text = self.validate_response_content(response_text)  # Fall back to validated but unformatted text
-                
-                # Keep only the last max_history entries
-                if len(self.conversation_history) > self.max_history:
-                    self.conversation_history = self.conversation_history[-self.max_history:]
-                
-                # Handle long responses
-                if len(formatted_text) > 2000:  # Discord's limit
-                    return self.validate_response_length(formatted_text)
-                
-                return formatted_text
-            else:
-                logger.error("Unexpected API response format:", result)
-                return "I apologize, but I couldn't generate a response at the moment. Please try again."
-                
-        except ValueError as e:
-            error_message = str(e)
-            logger.error(f"Validation error: {error_message}")
-            return f"I couldn't process your message: {error_message}"
-            
-        except requests.exceptions.Timeout:
-            logger.error("API request timed out")
-            return "I'm sorry, but the request is taking longer than expected. Please try again in a moment."
-            
-        except requests.exceptions.RequestException as e:
-            logger.error(f"API request error: {str(e)}")
-            return """I apologize for the temporary issue. I'm here to help you with:
-
-• Octant's ecosystem and features
-• GLM token utility and staking
-• Governance and funding mechanisms
-• Community participation
-
-Please try your question again or ask about any of these topics!"""
-            
-        except Exception as e:
-            logger.error(f"Unexpected error: {str(e)}")
-            return "I encountered an unexpected issue. Please try again, and if the problem persists, try rephrasing your question."
-            
-    def clear_conversation_history(self):
-        """Clear the conversation history."""
-        self.conversation_history = []
