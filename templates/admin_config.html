@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OctantBot Configuration</title>
+    <style>
+        :root {
+            --bg-primary: #1a1b1e;
+            --bg-secondary: #2a2b2e;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --accent: #6366f1;
+            --border: #3a3b3e;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --error: #ef4444;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 0;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .config-section {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border);
+        }
+
+        h1, h2 {
+            margin: 0 0 1.5rem 0;
+            color: var(--text-primary);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        select, input[type="range"], input[type="number"] {
+            width: 100%;
+            padding: 0.5rem;
+            border-radius: 4px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .toggle-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        button {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: opacity 0.2s;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .status {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            padding: 1rem;
+            border-radius: 4px;
+            display: none;
+        }
+
+        .status.success {
+            background: var(--success);
+            color: white;
+        }
+
+        .status.error {
+            background: var(--error);
+            color: white;
+        }
+
+        .preview {
+            background: var(--bg-primary);
+            padding: 1rem;
+            border-radius: 4px;
+            margin-top: 1rem;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>OctantBot Configuration</h1>
+        
+        <div class="config-section">
+            <h2>Personality Settings</h2>
+            <div class="form-group">
+                <label>Conversation Style</label>
+                <select id="style">
+                    <option value="friendly">Friendly</option>
+                    <option value="professional">Professional</option>
+                    <option value="technical">Technical</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Formality Level</label>
+                <select id="formality">
+                    <option value="casual">Casual</option>
+                    <option value="neutral">Neutral</option>
+                    <option value="formal">Formal</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Emoji Usage</label>
+                <select id="emoji_usage">
+                    <option value="none">None</option>
+                    <option value="minimal">Minimal</option>
+                    <option value="moderate">Moderate</option>
+                    <option value="abundant">Abundant</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="config-section">
+            <h2>Knowledge Base</h2>
+            <div class="toggle-group">
+                <div class="toggle">
+                    <input type="checkbox" id="octant_core" checked>
+                    <label for="octant_core">Octant Core</label>
+                </div>
+                <div class="toggle">
+                    <input type="checkbox" id="glm_token" checked>
+                    <label for="glm_token">GLM Token</label>
+                </div>
+                <div class="toggle">
+                    <input type="checkbox" id="community" checked>
+                    <label for="community">Community</label>
+                </div>
+                <div class="toggle">
+                    <input type="checkbox" id="technical" checked>
+                    <label for="technical">Technical Details</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="config-section">
+            <h2>Response Configuration</h2>
+            <div class="form-group">
+                <label>Maximum Response Length</label>
+                <input type="range" id="max_length" min="500" max="4000" step="100" value="2000">
+                <span id="max_length_value">2000 characters</span>
+            </div>
+            
+            <div class="form-group">
+                <label>Temperature (Creativity)</label>
+                <input type="range" id="temperature" min="0" max="1" step="0.1" value="0.7">
+                <span id="temperature_value">0.7</span>
+            </div>
+            
+            <div class="form-group">
+                <label>Frequency Penalty</label>
+                <input type="range" id="frequency_penalty" min="0" max="2" step="0.1" value="1.1">
+                <span id="frequency_penalty_value">1.1</span>
+            </div>
+        </div>
+
+        <button onclick="saveConfig()">Save Configuration</button>
+    </div>
+
+    <div id="status" class="status"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
+    <script>
+        const socket = io();
+        let config = {{ config|tojson|safe }};
+
+        // Initialize form values
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set personality values
+            document.getElementById('style').value = config.personality.style;
+            document.getElementById('formality').value = config.personality.formality;
+            document.getElementById('emoji_usage').value = config.personality.emoji_usage;
+
+            // Set knowledge base toggles
+            for (const [key, value] of Object.entries(config.knowledge_base)) {
+                const element = document.getElementById(key);
+                if (element) element.checked = value;
+            }
+
+            // Set response configuration
+            document.getElementById('max_length').value = config.response_config.max_length;
+            document.getElementById('temperature').value = config.response_config.temperature;
+            document.getElementById('frequency_penalty').value = config.response_config.frequency_penalty;
+
+            // Update display values
+            updateDisplayValues();
+        });
+
+        // Update display values for range inputs
+        function updateDisplayValues() {
+            document.getElementById('max_length_value').textContent = 
+                `${document.getElementById('max_length').value} characters`;
+            document.getElementById('temperature_value').textContent = 
+                document.getElementById('temperature').value;
+            document.getElementById('frequency_penalty_value').textContent = 
+                document.getElementById('frequency_penalty').value;
+        }
+
+        // Add listeners for range inputs
+        document.getElementById('max_length').addEventListener('input', updateDisplayValues);
+        document.getElementById('temperature').addEventListener('input', updateDisplayValues);
+        document.getElementById('frequency_penalty').addEventListener('input', updateDisplayValues);
+
+        async function saveConfig() {
+            const newConfig = {
+                personality: {
+                    style: document.getElementById('style').value,
+                    formality: document.getElementById('formality').value,
+                    emoji_usage: document.getElementById('emoji_usage').value
+                },
+                knowledge_base: {
+                    octant_core: document.getElementById('octant_core').checked,
+                    glm_token: document.getElementById('glm_token').checked,
+                    community: document.getElementById('community').checked,
+                    technical: document.getElementById('technical').checked
+                },
+                response_config: {
+                    max_length: parseInt(document.getElementById('max_length').value),
+                    temperature: parseFloat(document.getElementById('temperature').value),
+                    frequency_penalty: parseFloat(document.getElementById('frequency_penalty').value)
+                }
+            };
+
+            try {
+                const response = await fetch('/api/config', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(newConfig)
+                });
+                
+                const result = await response.json();
+                showStatus(result.status === 'success' ? 'success' : 'error', result.message);
+            } catch (error) {
+                showStatus('error', 'Failed to save configuration');
+            }
+        }
+
+        function showStatus(type, message) {
+            const status = document.getElementById('status');
+            status.className = `status ${type}`;
+            status.textContent = message;
+            status.style.display = 'block';
+            setTimeout(() => {
+                status.style.display = 'none';
+            }, 3000);
+        }
+
+        // Socket.io connection for real-time updates
+        socket.on('config_updated', (newConfig) => {
+            config = newConfig;
+            showStatus('success', 'Configuration updated successfully');
+        });
+    </script>
+</body>
+</html>

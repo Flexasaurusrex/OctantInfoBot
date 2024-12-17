@@ -12837,3 +12837,13 @@ Guilds: 2
 Uptime: 0.1h
 Error Count: 0
 ━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 01:30:40,345 - __main__ - INFO - Starting bot...
+2024-12-17 01:30:40,345 - discord.client - INFO - logging in using static token
+2024-12-17 01:30:40,651 - __main__ - INFO - Initializing Discord bot...
+2024-12-17 01:30:41,011 - __main__ - INFO - Commands registered successfully
+2024-12-17 01:30:41,236 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 1d8512f48c9fe83044ddeb0ea9e13652).
+2024-12-17 01:30:43,245 - __main__ - INFO - ━━━━━━ Bot Ready ━━━━━━
+Logged in as: OCTANTBOT
+Bot ID: 1316950341954306159
+Guilds connected: 2
+━━━━━━━━━━━━━━━━━━━━━━━━
