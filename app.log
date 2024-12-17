@@ -1403,3 +1403,8 @@ Environment: development
 2024-12-17 03:40:06,209 - werkzeug - WARNING -  * Debugger is active!
 2024-12-17 03:40:06,214 - werkzeug - INFO -  * Debugger PIN: 845-698-400
 2024-12-17 03:40:06,571 - app - INFO - Request: GET / from 172.31.196.15
+2024-12-17 03:41:03,306 - __main__ - INFO - Request: GET / from 172.31.196.15
+2024-12-17 03:42:07,023 - __main__ - INFO - Request: POST /chat from 172.31.196.15
+2024-12-17 03:42:07,025 - __main__ - INFO - Processing message from ccbb8c26-4173-4daa-b2a6-aba67593c4a0: what is octant?...
+2024-12-17 03:42:07,025 - chat_handler - INFO - Processing message from ccbb8c26-4173-4daa-b2a6-aba67593c4a0: what is octant?...
+2024-12-17 03:42:09,186 - __main__ - INFO - Successfully generated response for ccbb8c26-4173-4daa-b2a6-aba67593c4a0
