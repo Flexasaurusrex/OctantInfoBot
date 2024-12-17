@@ -226,6 +226,16 @@ async function cleanupSocket(socket) {
             console.error('Cannot initialize events: Socket is null');
             return;
         }
+        
+        // Clean up existing listeners before adding new ones
+        socket.removeAllListeners('connect');
+        socket.removeAllListeners('connect_error');
+        socket.removeAllListeners('disconnect');
+        socket.removeAllListeners('reconnect_attempt');
+        socket.removeAllListeners('reconnect');
+        socket.removeAllListeners('error');
+        socket.removeAllListeners('receive_message');
+        socket.removeAllListeners('restart_status');
 
         socket.on('connect', () => {
             console.log('Connected to server');
@@ -425,36 +435,15 @@ async function cleanupSocket(socket) {
     });
 });
 
-// Global appendMessage function for restart functionality
-function appendMessage(message, isBot = false) {
-    const messagesContainer = document.getElementById('messages');
-    const messageDiv = document.createElement('div');
-    messageDiv.className = `message ${isBot ? 'bot-message' : 'user-message'}`;
-    
-    if (isBot) {
-        const botAvatar = document.createElement('img');
-        botAvatar.src = '/static/images/2.png';
-        botAvatar.className = 'bot-avatar';
-        messageDiv.appendChild(botAvatar);
-    }
+// Keep only one instance of appendMessage
 
-    const messageContent = document.createElement('span');
-    messageContent.innerHTML = message;
-    messageDiv.appendChild(messageContent);
-    
-    messagesContainer.appendChild(messageDiv);
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
-    if (isBot && message.includes('✅ Correct! Well done!')) {
-        triggerConfetti();
-    }
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    // Initialize restart button functionality
+// Initialize restart button functionality once
+const initializeRestartButton = () => {
     const restartButton = document.getElementById('restartButton');
-    if (restartButton) {
-        restartButton.addEventListener('click', async () => {
+    if (!restartButton || restartButton.hasListener) return;
+    
+    restartButton.hasListener = true;
+    restartButton.addEventListener('click', async () => {
             if (!confirm('Are you sure you want to restart all services? This will briefly interrupt the connection.')) {
                 return;
             }

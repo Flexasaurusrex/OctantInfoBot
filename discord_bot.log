@@ -12971,3 +12971,30 @@ Logged in as: OCTANTBOT
 Bot ID: 1316950341954306159
 Guilds connected: 2
 ━━━━━━━━━━━━━━━━━━━━━━━━
+2024-12-17 02:12:04,899 - __main__ - INFO - Initialized message tracking system
+2024-12-17 02:12:04,899 - __main__ - INFO - Processing message 1318400294349967411
+2024-12-17 02:12:06,810 - chat_handler - INFO - URLs formatted successfully
+2024-12-17 02:12:06,811 - __main__ - ERROR - Response error: An asyncio.Future, a coroutine or an awaitable is required
+Traceback (most recent call last):
+  File "/home/runner/workspace/discord_bot.py", line 145, in on_message
+    response = await asyncio.wait_for(
+               ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/nix/store/f98g7xbckgqbkagdvpzc2r6lv3h1p9ki-python3-3.11.9/lib/python3.11/asyncio/tasks.py", line 470, in wait_for
+    fut = ensure_future(fut, loop=loop)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/nix/store/f98g7xbckgqbkagdvpzc2r6lv3h1p9ki-python3-3.11.9/lib/python3.11/asyncio/tasks.py", line 659, in ensure_future
+    return _ensure_future(coro_or_future, loop=loop)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/nix/store/f98g7xbckgqbkagdvpzc2r6lv3h1p9ki-python3-3.11.9/lib/python3.11/asyncio/tasks.py", line 674, in _ensure_future
+    raise TypeError('An asyncio.Future, a coroutine or an awaitable '
+TypeError: An asyncio.Future, a coroutine or an awaitable is required
+2024-12-17 02:13:00,827 - __main__ - INFO - Starting bot...
+2024-12-17 02:13:00,827 - discord.client - INFO - logging in using static token
+2024-12-17 02:13:01,107 - __main__ - INFO - Initializing Discord bot...
+2024-12-17 02:13:01,447 - __main__ - INFO - Commands registered successfully
+2024-12-17 02:13:01,638 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: f708ee7316d85ec9e059aab7c69a237b).
+2024-12-17 02:13:03,645 - __main__ - INFO - ━━━━━━ Bot Ready ━━━━━━
+Logged in as: OCTANTBOT
+Bot ID: 1316950341954306159
+Guilds connected: 2
+━━━━━━━━━━━━━━━━━━━━━━━━
