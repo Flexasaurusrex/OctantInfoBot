@@ -8,9 +8,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const MAX_RECONNECT_ATTEMPTS = 5;
     const INITIAL_RETRY_DELAY = 1000;
     
-    // Socket and state management
+    // Global state
     let socket = null;
     let isWaitingForResponse = false;
+    let reconnectAttempts = 0;
+    let connectionTimeout = null;
     
     function updateConnectionStatus(status) {
         const statusIndicator = document.querySelector('.status-indicator');
@@ -20,8 +22,8 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const statusMap = {
             'connected': { text: 'Connected', class: 'connected' },
-            'disconnected': { text: 'Disconnected', class: '' },
-            'reconnecting': { text: 'Reconnecting...', class: '' }
+            'disconnected': { text: 'Disconnected', class: 'disconnected' },
+            'reconnecting': { text: 'Reconnecting...', class: 'reconnecting' }
         };
         
         const currentStatus = statusMap[status] || statusMap.disconnected;
@@ -29,161 +31,101 @@ document.addEventListener('DOMContentLoaded', () => {
         statusText.textContent = currentStatus.text;
     }
 
-    async function cleanupSocket(socket) {
+    async function cleanupSocket() {
         if (!socket) return;
         
         console.log('Cleaning up socket connection...');
         try {
-            if (socket.connectionState?.monitors) {
-                socket.connectionState.monitors.forEach(clearInterval);
-                socket.connectionState.monitors.clear();
+            clearTimeout(connectionTimeout);
+            
+            if (socket.connected) {
+                socket.disconnect();
             }
             
             socket.removeAllListeners();
-            
-            if (socket.connected) {
-                await new Promise((resolve) => {
-                    const timeout = setTimeout(() => {
-                        console.warn('Socket disconnect timeout');
-                        resolve();
-                    }, 5000);
-                    
-                    socket.once('disconnect', () => {
-                        clearTimeout(timeout);
-                        resolve();
-                    });
-                    socket.disconnect();
-                });
-            }
-            
             socket.close();
+            socket = null;
         } catch (error) {
             console.error('Error during socket cleanup:', error);
         }
     }
 
-    async function createSocket() {
+    async function initializeSocket() {
         try {
-            if (socket) {
-                await cleanupSocket(socket);
-            }
+            await cleanupSocket();
             
             socket = io({
-                reconnection: false, // We'll handle reconnection manually
+                reconnection: false,
                 timeout: 20000,
-                transports: ['websocket', 'polling']
+                transports: ['websocket']
             });
             
-            socket.connectionState = {
-                attemptCount: 0,
-                lastAttempt: Date.now(),
-                isReconnecting: false,
-                monitors: new Set()
-            };
-            
-            const connectionMonitor = setInterval(() => {
-                if (!socket?.connected && !socket?.connecting && 
-                    !socket.connectionState.isReconnecting &&
-                    Date.now() - socket.connectionState.lastAttempt > 5000) {
-                    handleReconnection();
+            socket.on('connect', () => {
+                console.log('Connected to server');
+                reconnectAttempts = 0;
+                updateConnectionStatus('connected');
+                appendMessage('✅ Connected to server', true);
+            });
+
+            socket.on('connect_error', (error) => {
+                console.warn('Connection error:', error);
+                handleReconnection();
+            });
+
+            socket.on('disconnect', (reason) => {
+                console.warn('Disconnected:', reason);
+                updateConnectionStatus('disconnected');
+                handleReconnection();
+            });
+
+            socket.on('error', (error) => {
+                console.error('Socket error:', error);
+                handleReconnection();
+            });
+
+            socket.on('receive_message', (data) => {
+                try {
+                    appendMessage(data.message, data.is_bot);
+                } catch (error) {
+                    console.error('Error processing message:', error);
+                    appendMessage('Error displaying message', true);
+                } finally {
+                    isWaitingForResponse = false;
+                    enableMessageInput();
                 }
-            }, 5000);
+            });
             
-            socket.connectionState.monitors.add(connectionMonitor);
-            
-            await initializeSocketEvents();
             return true;
         } catch (error) {
-            console.error('Error creating socket:', error);
+            console.error('Error initializing socket:', error);
             updateConnectionStatus('disconnected');
             return false;
         }
     }
 
     async function handleReconnection() {
-        if (!socket?.connectionState || socket.connectionState.isReconnecting) return;
-        
-        socket.connectionState.attemptCount++;
-        socket.connectionState.isReconnecting = true;
-        socket.connectionState.lastAttempt = Date.now();
-        
-        updateConnectionStatus('reconnecting');
-        
-        if (socket.connectionState.attemptCount > MAX_RECONNECT_ATTEMPTS) {
+        if (!socket || reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
             console.error('Max reconnection attempts reached');
             updateConnectionStatus('disconnected');
             appendMessage('📡 Connection lost. Please refresh the page.', true);
             return;
         }
         
-        const attempt = socket.connectionState.attemptCount;
-        const baseDelay = INITIAL_RETRY_DELAY * Math.pow(2, attempt - 1);
+        reconnectAttempts++;
+        updateConnectionStatus('reconnecting');
+        
+        const baseDelay = INITIAL_RETRY_DELAY * Math.pow(2, reconnectAttempts - 1);
         const jitter = Math.random() * Math.min(baseDelay * 0.1, 1000);
         const delay = baseDelay + jitter;
         
-        appendMessage(`🔄 Attempting to reconnect... (${attempt}/${MAX_RECONNECT_ATTEMPTS})`, true);
+        appendMessage(`🔄 Attempting to reconnect... (${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})`, true);
         
         await new Promise(resolve => setTimeout(resolve, delay));
         
-        try {
-            if (await createSocket()) {
-                socket.connectionState.isReconnecting = false;
-                updateConnectionStatus('connected');
-                appendMessage('✅ Connection restored!', true);
-            }
-        } catch (error) {
-            console.error('Reconnection failed:', error);
-            socket.connectionState.isReconnecting = false;
-            handleReconnection();
-        }
-    }
-
-    async function initializeSocketEvents() {
-        if (!socket) return;
-        
-        socket.removeAllListeners();
-        
-        socket.on('connect', () => {
-            console.log('Connected to server');
-            socket.connectionState.attemptCount = 0;
-            socket.connectionState.isReconnecting = false;
+        if (await initializeSocket()) {
             updateConnectionStatus('connected');
-            appendMessage('✅ Connected to server', true);
-        });
-
-        socket.on('connect_error', (error) => {
-            console.warn('Connection error:', error);
-            handleReconnection();
-        });
-
-        socket.on('disconnect', (reason) => {
-            console.warn('Disconnected:', reason);
-            updateConnectionStatus('disconnected');
-            if (reason === 'io server disconnect') {
-                socket.connect();
-            } else {
-                handleReconnection();
-            }
-        });
-
-        socket.on('error', (error) => {
-            console.error('Socket error:', error);
-            handleReconnection();
-        });
-
-        socket.on('receive_message', (data) => {
-            try {
-                appendMessage(data.message, data.is_bot);
-            } catch (error) {
-                console.error('Error processing message:', error);
-                appendMessage('Error displaying message', true);
-            } finally {
-                isWaitingForResponse = false;
-                sendButton.disabled = false;
-                messageInput.disabled = false;
-                messageInput.focus();
-            }
-        });
+            appendMessage('✅ Connection restored!', true);
+        }
     }
 
     function appendMessage(message, isBot = false) {
@@ -205,6 +147,17 @@ document.addEventListener('DOMContentLoaded', () => {
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
 
+    function disableMessageInput() {
+        sendButton.disabled = true;
+        messageInput.disabled = true;
+    }
+
+    function enableMessageInput() {
+        sendButton.disabled = false;
+        messageInput.disabled = false;
+        messageInput.focus();
+    }
+
     function sendMessage() {
         if (isWaitingForResponse || !socket?.connected) {
             console.warn('Cannot send message: Socket not ready or waiting for response');
@@ -218,35 +171,32 @@ document.addEventListener('DOMContentLoaded', () => {
         messageInput.value = '';
         
         isWaitingForResponse = true;
-        sendButton.disabled = true;
-        messageInput.disabled = true;
+        disableMessageInput();
         
-        const messageTimeout = setTimeout(() => {
+        connectionTimeout = setTimeout(() => {
             if (isWaitingForResponse) {
                 isWaitingForResponse = false;
-                sendButton.disabled = false;
-                messageInput.disabled = false;
+                enableMessageInput();
                 appendMessage('Message timed out. Please try again.', true);
             }
         }, 30000);
 
         socket.emit('send_message', { message }, (error) => {
             if (error) {
-                clearTimeout(messageTimeout);
+                clearTimeout(connectionTimeout);
                 isWaitingForResponse = false;
-                sendButton.disabled = false;
-                messageInput.disabled = false;
+                enableMessageInput();
                 appendMessage('Failed to send message. Please try again.', true);
             }
         });
     }
 
-    // Initialize connection and UI handlers
-    if (!createSocket()) {
+    // Initialize connection
+    if (!initializeSocket()) {
         appendMessage('Failed to establish connection. Please refresh the page.', true);
     }
 
-    // UI Event Listeners
+    // Event Listeners
     sendButton.addEventListener('click', sendMessage);
 
     messageInput.addEventListener('keypress', (e) => {
@@ -258,9 +208,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Handle unhandled promise rejections
     window.addEventListener('unhandledrejection', (event) => {
-        console.warn('Unhandled promise rejection:', event.reason);
-        event.preventDefault();
-        if (socket && !socket.connected) {
+        console.error('Unhandled promise rejection:', event.reason);
+        if (!socket?.connected) {
             handleReconnection();
         }
     });
